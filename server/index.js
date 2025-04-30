@@ -5,10 +5,14 @@ const bodyParser = require("body-parser");
 const cors =  require('cors');
 const routes = require("./routes/index");
 const { dbConnection } = require('./config/db');
+const dotenv = require('dotenv');
+
 app.use(express.json());
 
 
 
+
+dotenv.config();
 dbConnection();
 app.use(express.json());
 app.use(bodyParser.json());

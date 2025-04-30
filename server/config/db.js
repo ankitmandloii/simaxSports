@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 exports.dbConnection = async () => {
-    mongoose.connect(`mongodb+srv://ankitprajapat:0fWMgJGKmoAsdhDq@cluster1.figh24a.mongodb.net/testingHospitalManagement`)
+    mongoose.connect(`${process.env.DB_URL}`)
         .then((res) => {
             console.log("--- Connected to Mongoose Successfully ---");
         })

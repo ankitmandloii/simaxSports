@@ -8,6 +8,10 @@ node_modules
 logs
 *.log
 
+# dotenv environment variables file
+.env
+.env.test
+
 # vite build output
 dist/
 
