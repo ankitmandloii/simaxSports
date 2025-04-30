@@ -11,8 +11,13 @@ const Layout = () => {
       <div className="layout-container">
   
         <div className="page-content">
+          <div className="layout-toolbar">
           <Outlet /> 
+          </div>
+          <div className="layout-product">
           <ProductContainer/>
+
+          </div>
         </div>
       </div>
     </div>

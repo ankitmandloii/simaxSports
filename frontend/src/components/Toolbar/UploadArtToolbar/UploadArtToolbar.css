@@ -1,0 +1,60 @@
+/* UploadArtToolbar.css */
+
+.upload-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 40px auto;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.drop-zone {
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+  background-color: #fafafa;
+}
+
+.drop-zone:hover {
+  background-color: #f0f8ff;
+  border-color: #1e90ff;
+}
+
+.drop-zone p {
+  margin: 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.file-list {
+  margin-top: 20px;
+  background-color: #fdfdfd;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.file-list h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #333;
+}
+
+.file-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.file-list li {
+  padding: 6px 0;
+  font-size: 14px;
+  color: #444;
+  border-bottom: 1px solid #eee;
+}
+
+.file-list li:last-child {
+  border-bottom: none;
+}

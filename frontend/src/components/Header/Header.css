@@ -27,6 +27,9 @@
   font-size: 14px;
   color: #888;
 }
+.nav-steps a{
+  color:#888;
+}
 
 .step.active {
   color: black;

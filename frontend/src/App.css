@@ -1,23 +1,89 @@
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-body{
+
+body {
   width: 100%;
+  position: relative;
+  font-family: "Inter", sans-serif;
 
 }
-.main-container{
+
+a {
+  list-style: none;
+  text-decoration: none;
+}
+
+.main-container {
   width: 100%;
   display: flex;
   flex-direction: row;
 }
-.sidebar-container{
+
+.sidebar-container {
   width: 15%;
 }
-.layout-container{
+
+.main-layout-container {
   width: 85%;
+  background-color: #f1f1f1;
+
+
 }
-.flex{
+
+.flex {
+  display:
+    flex;
+}
+
+.page-content {
   display: flex;
+}
+
+.layout-toolbar {
+  width: 25%;
+  /* background-color: aquamarine; */
+  height: 80vh;
+  padding: 1.2rem;
+
+}
+
+.layout-product {
+  width: 75%;
+  background-color: bisque;
+
+}
+
+.layout-container {
+  width: 100%;
+}
+
+.black-button {
+  background-color: black;
+  color: white;
+  border: none;
+  height: 20px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* common css of toolbar head */
+.toolbar-main-heading h3 {
+  font-size: 1rem;
+  font-weight: 700;
+
+}
+.toolbar-main-heading .Toolbar-badge {
+  background-color: red;
+  color: white;
+  width: fit-content;
+ 
+
+}
+.toolbar-main-heading p {
+  font-size: small;
 }
