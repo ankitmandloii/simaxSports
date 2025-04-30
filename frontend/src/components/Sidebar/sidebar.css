@@ -2,6 +2,15 @@
   display: flex;
   position: relative;
 }
+.logo{
+  width: 7.625rem;
+height: 1.375rem;
+
+}
+.sidebar-label{
+  font-size: 16px;
+  font-weight: 500;
+}
 
 /* Toggle Button */
 .sidebar-toggle-btn {
@@ -27,11 +36,11 @@
 /* Sidebar */
 .sidebar {
   width: 100%;
-  max-width: 250px;
+  max-width: 270px;
   height: 100vh;
   background-color: #fff;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-  padding-top: 20px;
+  /* padding-top: 20px; */
   transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
@@ -62,8 +71,10 @@
 /* Header */
 .sidebar-header {
   text-align: center;
-  padding: 0 10px 20px;
+  padding: 29px 113px 20px 25px;
+
 }
+
 
 .sidebar-title {
   font-size: 20px;
@@ -81,11 +92,12 @@
 .sidebar-link {
   display: flex;
   align-items: center;
-  padding: 10px 14px;
   margin: 4px 0;
   text-decoration: none;
   color: black;
   transition: background-color 0.2s;
+  height: 60px;
+    padding: 0px 25px;
 }
 
 .sidebar-link:hover {
@@ -94,13 +106,17 @@
 
 .sidebar-link.active {
   background-color: #e9ecef;
-  border-right: 3px solid black;
+  border-right: 3px solid #000000;
 }
 
 /* Icons always visible */
-.sidebar-icon {
+.sidebar-icon svg {
   font-size: 18px;
-  margin-right: 12px;
+  margin-right: 8px;
+
+    height: 23px;
+      width: 26px;
+  
 }
 
 .sidebar.collapsed .sidebar-icon {

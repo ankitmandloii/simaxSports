@@ -50,34 +50,59 @@
   bottom: 0;
   width: 80%;
   background-color: #fff;
-  padding: 1rem 2rem;
+  padding: 20px;
   /* padding inside the footer */
   display: flex;
   justify-content: space-between;
 
   border-radius: 10px;
-  margin: 0 20px;
+  margin: 0  20px 20px;
 
 }
 
 
 .footer-btn {
-  height: 2.2rem;
+  height: 42px;
   background: #fff;
-  width: 8rem;
+  width: 155px;
   color: black;
   border: 1px solid rgb(34, 32, 32);
   justify-content: center;
-  border-radius: 5px;
-  font-size: 15px;
+  border-radius: 8px;
+  font-size: 13px;
   display: inline-flex;
-  gap: .7rem;
+  gap: 7px;
   align-items: center;
+  padding: 11px 26px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  /* transition: background-color 0.3s ease, transform 0.2s ease; */
+}
+.footer-btn1{
+  height: 42px;
+  background: #fff;
+  width: 127px;
+  color: black;
+  border: 1px solid rgb(34, 32, 32);
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 13.34px;
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  padding: 11px 26px;
+  cursor: pointer;
+  /* transition: background-color 0.3s ease, transform 0.2s ease; */
+}
+.footer-btn svg{
+  width: 20px;
+  height: 20px;
+}
+.footer-btn1 svg{
+  width: 18px;
+  height: 19.88px;
 }
 
 .footer-btn-container {
   display: flex;
-  gap: 1.2rem;
+  gap: 10px;
 }
