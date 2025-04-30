@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  FaHome,
   FaUsers,
   FaStore,
   FaMoneyCheckAlt,
@@ -11,19 +10,36 @@ import "./sidebar.css";
 import { RiTShirt2Line } from "react-icons/ri";
 import { BsCloudUpload } from "react-icons/bs";
 import { MdAddchart } from "react-icons/md";
+import Logo from '../images/Logo.png'
 
 const AdminSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
 
+  // Close mobile sidebar on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1024) {
+        setMobileOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const toggleSidebar = () => {
-    setCollapsed(!collapsed);
+    if (window.innerWidth > 1024) {
+      setCollapsed((prev) => !prev);
+    } else {
+      setMobileOpen((prev) => !prev);
+    }
   };
 
   const menuItems = [
     { path: "/product", icon: <RiTShirt2Line />, label: "Products" },
     { path: "/addText", icon: <FaUsers />, label: "Add Text" },
-    { path: "/admin/merchants", icon: <BsCloudUpload />, label: "Upload Art" },
+    { path: "/uploadArt", icon: <BsCloudUpload />, label: "Upload Art" },
     { path: "/admin/transactions", icon: <MdAddchart />, label: "Add Art" },
     { path: "/admin/admins", icon: <FaStore />, label: "Names And Numbers" },
   ];
@@ -34,9 +50,14 @@ const AdminSidebar = () => {
         <FaBars />
       </button>
 
-      <div className={`sidebar ${collapsed ? "collapsed" : ""}`}>
+      <div
+        className={`sidebar ${collapsed ? "collapsed" : ""} ${
+          mobileOpen ? "show" : ""
+        }`}
+      >
         <div className="sidebar-header">
-          <h1 className="sidebar-title">SIMAX</h1>
+          {/* <h1 className="sidebar-title">SIMAX</h1> */}
+          <img src={Logo} alt="SIMAX" className="logo" />
         </div>
 
         <nav className="sidebar-menu">
@@ -47,6 +68,7 @@ const AdminSidebar = () => {
               className={`sidebar-link ${
                 location.pathname === item.path ? "active" : ""
               }`}
+              onClick={() => setMobileOpen(false)} // close mobile sidebar on nav
             >
               <span className="sidebar-icon">{item.icon}</span>
               {!collapsed && <span className="sidebar-label">{item.label}</span>}
