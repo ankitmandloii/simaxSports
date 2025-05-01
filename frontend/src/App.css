@@ -74,7 +74,7 @@ h4{
 }
 
 .layout-toolbar {
-  width: 25%;
+  width: 30%;
   /* background-color: aquamarine; */
   height: 80vh;
   padding: 24px;
@@ -82,8 +82,8 @@ h4{
 }
 
 .layout-product {
-  width: 75%;
-  background-color: bisque;
+  width: 60%;
+  /* background-color: bisque; */
 
 }
 
@@ -133,4 +133,8 @@ h4{
 } */
 .toolbar-main-heading{
   line-height: 31px;
+}
+
+.cursor {
+  cursor: pointer;
 }

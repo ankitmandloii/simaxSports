@@ -12,22 +12,22 @@ const Footer = () => {
     <div className='footer-container'>
       <button className="footer-btn1 ">
         <IoShareSocialOutline />
-        Home
+        SHARE
       </button>
       <div className="footer-btn-container ">
         <button className="footer-btn ">
         <IoPricetagOutline />
 
-          Get Price
+          GET PRICE
         </button>
         <button className="footer-btn ">
         <FiSave />
 
-          Save Design
+          SAVE DESIGN
         </button>
         <button className="footer-btn ">
           
-          Next Step
+          NEXT STEP
           <FaArrowRightLong />
 
         </button>
