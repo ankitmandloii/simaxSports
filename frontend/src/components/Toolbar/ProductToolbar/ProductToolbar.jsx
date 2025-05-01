@@ -1,11 +1,18 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './ProductToolbar.css'
 import { IoAdd } from "react-icons/io5";
 import miniProd from '../../images/mini-prod.png'
 import colorwheel from '../../images/color-wheel.png'
+// import AddProductContainer from '../../addProductContainer/AddProductContainer';
 const ProductToolbar = () => {
+  const [showModal, setShowModal] = useState(false);
   return (
     <div className="toolbar-main-container">
+       {/* <AddProductContainer
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        products={products}
+      /> */}
 <div className='toolbar-main-heading'>
   <h5 className='Toolbar-badge'>Product</h5>
   <h2 >Manage Your Products</h2>
@@ -32,7 +39,7 @@ const ProductToolbar = () => {
   </div>
   </div>
   
-  <button className='add-product-btn'> <IoAdd/> Add Products</button>
+  <button className='add-product-btn' onClick={()=>setShowModal(true)}> <IoAdd/> Add Products</button>
   <p className='center'>Customize Method Example</p>
   <div className='common-btn active'>
     <h4>Printing</h4>
