@@ -10,12 +10,42 @@ body {
   font-family: "Inter", sans-serif;
 
 }
+:root {
+  --red:#ED2224;
+  ;
+}
+
+/* Font
+Inter
+Weight
+700
+Size
+20px
+Line height
+31.43px
+Letter spacing
+0.35p */
+h2{
+  font-size: 20px;
+  font-weight: 700;
+  
+
+}
+p{
+  font-size: 12px;
+  font-weight: 400;
+}
 
 a {
   list-style: none;
   text-decoration: none;
 }
+h4{
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
 
+}
 .main-container {
   width: 100%;
   display: flex;
@@ -47,7 +77,7 @@ a {
   width: 25%;
   /* background-color: aquamarine; */
   height: 80vh;
-  padding: 1.2rem;
+  padding: 24px;
 
 }
 
@@ -62,29 +92,45 @@ a {
 }
 
 .black-button {
-  background-color: black;
+  background-color: #000000;
   color: white;
   border: none;
-  height: 20px;
+  height: 27px;
+  width: 119px;
   padding: 10px;
   display: flex;
   justify-content: center;
+  border-radius: 4px;
   align-items: center;
+  padding: 6px 10px;
 }
 
 /* common css of toolbar head */
-.toolbar-main-heading h3 {
+/* .toolbar-main-heading h3 {
   font-size: 1rem;
   font-weight: 700;
 
-}
+} */
 .toolbar-main-heading .Toolbar-badge {
   background-color: red;
+  font-size: 12px;
   color: white;
   width: fit-content;
+  width: 78px;
+  height: 21px;
+  border-radius: 4px;
+  /* padding: 2px 8px; */
+  display: flex
+;
+  justify-content: center;
+  align-items: center;
+  text-transform: upperca
  
 
 }
-.toolbar-main-heading p {
+/* .toolbar-main-heading p {
   font-size: small;
+} */
+.toolbar-main-heading{
+  line-height: 31px;
 }

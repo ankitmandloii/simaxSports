@@ -7,6 +7,8 @@
 .toolbar-box-top-content {
   background-color: #f1f1f1;
   padding: 10px;
+  width: 355px;
+    height: 151px;
 }
 
 /* .toolbar-main-heading .Toolbar-badge {
@@ -19,22 +21,36 @@
 
 .toolbar-box {
   background-color: #ffffff;
-  padding: 1rem;
+  padding: 20px;
   margin-top: 15px;
-  border-radius: 5px;
+  border-radius: 10px;
+  height: 456.95px;
+  width: 395px;
 }
 
-.toolbar-head h3 {
+
+
+/* .toolbar-head h3 {
   font-size: 12.5px;
   font-weight: 500;
-}
+} */
 
 /* .toolbar-main-heading p {
   font-size: small;
 } */
 
 .product-mini-img {
-  height: 3.2rem;
+  height: 3.375rem;
+  
+}
+.mini-prod-img-container{
+  width:63px ;
+  height: 75px;
+  border:2px solid var(--red) ;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .toolbar-head {
@@ -47,19 +63,82 @@
 
 .add-product-btn {
   width: 100%;
-  height: 2rem;
+  height: 52px;
   margin: 1rem 0;
+  font-size: 14px;
+  color: #8D9095;
+  border:  1.5px dashed #8D9095;
 }
-
+/* Width
+355px
+Height
+59.98px
+Radius
+8px
+Border
+2px */
+.center{
+  text-align: center;
+}
 .common-btn {
   background-color: #ffffff;
-  height: 3rem;
+  height: 59.98px;
   width: 100%;
-  padding: 5px;
+  padding: 8px;
   color: black;
-  border: 1px solid black;
-  border-radius: 5px;
+  margin-top: 1rem;
+  border: 2px solid #F0F6FE;
+  ;
+  border-radius: 8px;
   font-size: small;
+  display: flex;
+  /* justify-content: center; */
+  flex-direction: column;
+  /* align-items:center ; */
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.common-btn.active{
+  border: 2px solid var(--red);
+  background-color: #F0F6FE;
+  ;
+
+}
+.toolbar-span{
+  height: 25px;
+  width: 81.29px;
+  background-color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.toolbar-span::after{
+  content: "";
+  position: absolute;
+  background-color: var(--red);
+  height: 10px;
+  width: 10px;
+  bottom: 8px;
+  border-radius: 100%;
+  left: 4px;
+  right: 0;
+}
+.color-img{
+  height: 20px;
+}
+.addCart-button{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+.addCart-button p{
+  font-size: 9px;
+}
+.toolbar-middle-button{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
