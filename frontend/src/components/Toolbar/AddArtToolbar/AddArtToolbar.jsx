@@ -1,0 +1,57 @@
+// import React from 'react'
+// import  './AddArtToolbar.css'
+
+// const AddArtToolbar = () => {
+//   return (
+//     <div>AddArtToolbar</div>
+//   )
+// }
+
+// export default AddArtToolbar
+import React, { useState } from 'react';
+import '../ProductToolbar/ProductToolbar.css';
+import { SearchIcon } from '../../iconsSvg/CustomIcon';
+import {aiContent} from '../../json/aiicontent';
+import SubArtBox from './SubArtBox';
+import './AddArtToolbar.css'
+const AddArtToolbar = () => {
+  const [subArt,setSubArt]=useState(false);
+  const [category,setCategory]=useState("");
+  const handlesubArt=()=>{
+    setSubArt(!subArt);
+  }
+  const handleSubClick=(category)=>{
+setCategory(category);
+setSubArt(!subArt);
+  }
+  return (
+    <div className="toolbar-main-container">
+      <div className="toolbar-main-heading ai-relative">
+        <h5 className="Toolbar-badge">Art Powered By AI</h5>
+        <h2 >Add Art</h2>
+        <span className='ai-spannn'>AI</span>
+        <p>Add your own artwork or choose from our library to personalize your design.</p>
+      </div>
+{subArt ? <SubArtBox category={category} goBack={() => setSubArt(false)}/> : <div className="toolbar-box">
+        <div className="addArtToolbar-search-box">
+          <input type="text" placeholder="Search for Clipart and AI Generated Art" />
+          <SearchIcon />
+        </div>
+
+        <div className="addArtToolbarBoxContent">
+          {aiContent.map((item) => (
+            <button key={item.id} className="art-button" onClick={()=>handleSubClick(item.title)}>
+              {item.svg}
+              <span>{item.title}</span>
+            </button>
+          ))}
+        </div>
+
+        <button className="upload-button">Upload Your Own Image</button>
+      </div>}
+      
+    </div>
+  );
+};
+
+export default AddArtToolbar;

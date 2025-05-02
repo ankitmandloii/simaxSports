@@ -1,5 +1,8 @@
 import React, { useState, useRef } from "react";
 import './UploadArtToolbar.css';
+import { ChooseFileIcon } from "../../iconsSvg/CustomIcon";
+import dropBox from '../../images/dropBox.png'
+import googleDrive from "../../images/googleDrive.png"
 
 const UploadArtToolbar = () => {
   const [files, setFiles] = useState([]);
@@ -46,24 +49,30 @@ const UploadArtToolbar = () => {
         >
           <p> Drag & drop files here</p>
           <p>or</p>
-          <div className="btn-container">
-            
-          </div>
+           <button className="upload-file-btn " onClick={handleClick}>
+                  <ChooseFileIcon />
+                  SHARE
+                </button>
           <div className="upload-option">
-          <button className="upload-btn" onClick={handleClick}>Upload Files</button>
+          {/* <button className="upload-btn" >Upload Files</button> */}
         </div>
         </div>
 
         {/* Option 2: Google Drive */}
-        <div className="upload-option" onClick={() => alert('Integrate Google Drive API')}>
-          <p> Upload from Google Drive</p>
+        <div className="upload-btn-flex-container">
+        <div className="upload-option-btn" onClick={() => alert('Integrate Google Drive API')}>
+          <img src={googleDrive}/>
+          <p> Use Google Drive</p>
         </div>
 
         {/* Option 3: Dropbox */}
-        <div className="upload-option" onClick={() => alert('Integrate Dropbox API')}>
-          <p> Upload from Dropbox</p>
+        <div className="upload-option-btn" onClick={() => alert('Integrate Dropbox API')}>
+          <img src={dropBox}/>
+          <p> Use Dropbox</p>
         </div>
-
+        </div>
+       
+<p className="upload-para">Upload ANY file type, but we prefer vector, high-res, or large files such as: .AI, .EPS, .PDF, .TIFF, .PSD, .JPG, .PNG</p>
         {/* Option 4: Upload button */}
         
 

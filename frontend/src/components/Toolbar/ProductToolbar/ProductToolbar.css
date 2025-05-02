@@ -12,6 +12,12 @@
   width: 100%;
   
 }
+.middle-color-pick{
+  margin: 8px 0;
+  font-size: 14px;
+  display: flex;
+  gap:12px
+}
 
 /* .toolbar-main-heading .Toolbar-badge {
   background-color: red;
@@ -20,7 +26,23 @@
  
 
 } */
-
+ .addCart-button{
+  cursor: pointer;
+ }
+ .color-box-top span{
+  font-size: 10px;
+ }
+.small-color-box{
+  display: flex;
+  gap:0.5rem;
+  flex-wrap: wrap;
+}
+/* .small-color-span{
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  background-color: red;
+} */
 .toolbar-box {
   background-color: #ffffff;
   padding: 10px;
@@ -33,7 +55,23 @@
   
 }
 
-
+.add-color-btn-main-container{
+  position: relative;
+}
+.choose-color-box{
+  padding: 10px;
+  position: absolute;
+  background-color: #fff;
+  height: 8rem;
+  width: 15rem;
+  z-index: 7;
+}
+.color-box-top{
+  display: flex;
+  justify-content: space-between;
+  padding: 4px;
+border-bottom: 2px solid red;
+}
 
 /* .toolbar-head h3 {
   font-size: 12.5px;

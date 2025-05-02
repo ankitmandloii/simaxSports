@@ -15,7 +15,7 @@ const Header = () => {
         {/* <img src={logo} alt="SIMAX" className="logo" /> */}
         
         <nav className="nav-steps">
-          <Link to="/product" className={`step ${location.pathname === '/product' ? 'active' : ''}`}>
+          <Link to="/product" className={`step ${location.pathname === '/product'|| '/addArt' || '/uploadArt' || '/addNames' ? 'active' : ''}`}>
           <span className='nav-span-number'>1</span>DESIGN
           </Link>
           <Link to="/quantity" className={`step ${location.pathname === '/quantity' ? 'active' : ''}`}>
