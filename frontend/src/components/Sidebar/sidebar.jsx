@@ -41,8 +41,8 @@ const AdminSidebar = () => {
     { path: "/product", icon: <RiTShirt2Line />, label: "Products" },
     { path: "/addText", icon: <AddProductIcon/>, label: "Add Text" },
     { path: "/uploadArt", icon: <AddArtIcon/>, label: "Upload Art" },
-    { path: "/admin/transactions", icon: <MdAddchart />, label: "Add Art" },
-    { path: "/admin/admins", icon: <NumberIcon />, label: "Names And Numbers" },
+    { path: "/addArt", icon: <MdAddchart />, label: "Add Art" },
+    { path: "/addNames", icon: <NumberIcon />, label: "Names And Numbers" },
   ];
 
   return (

@@ -1,0 +1,13 @@
+.clipart-grid{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.clipart-grid img{
+  width: 5rem;
+  height: 3rem;
+}
+.margin-bottom{
+  margin-bottom: 8px;
+}

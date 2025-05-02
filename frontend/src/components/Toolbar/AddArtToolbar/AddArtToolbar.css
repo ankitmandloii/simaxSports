@@ -1,0 +1,75 @@
+
+
+.addArtToolbar-search-box {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.addArtToolbar-search-box input {
+  width: 90%;
+  border: none;
+  outline: none;
+}
+
+
+.addArtToolbarBoxContent {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 11px;
+  margin-bottom: 20px;
+}
+
+.art-button {
+  display: flex;
+  height: 2rem;
+  width: 5.6rem;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  gap: 2px;
+}
+
+.art-button svg{
+  /* font-size: 4px; */
+  height: 15px;
+}
+
+.art-button span {
+  font-size: 14px;
+}
+
+.upload-button {
+  width: 100%;
+  padding: 4px;
+  background: black;
+  color: white;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: .7rem;
+}
+
+.ai-relative{
+  position: relative;
+}
+.ai-spannn {
+  position: absolute;
+  top: 27px;
+  left: 68px;
+  background-color: red;
+  color: #fff;
+  font-size: 10px;
+  height: .8rem;
+  width: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

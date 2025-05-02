@@ -14,7 +14,7 @@
   text-align: center;
   cursor: pointer;
   transition: background-color 0.25s ease, border-color 0.25s ease;
-  background-color: #fafafa;
+  background-color: #F7F7F7;
 }
 
 .drop-zone:hover {
@@ -57,4 +57,48 @@
 
 .file-list li:last-child {
   border-bottom: none;
+}
+
+.upload-file-btn {
+  height: 33px;
+  background: black;
+  width: 126px;
+  color: #fff;
+  border: 1px solid rgb(34, 32, 32);
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 11px;
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 10px;
+  cursor: pointer;
+  /* transition: background-color 0.3s ease, transform 0.2s ease; */
+}
+.upload-btn-flex-container{
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 0;
+}
+.upload-option-btn{
+  cursor: pointer;
+  font-size: 12px;
+  justify-content: center;
+  gap:10px;
+  align-items: center;
+  border: 1px solid #8D9095;
+  display: flex;
+  height: 2.5rem;
+  /* background-color: aquamarine; */
+  width: 9rem;
+  border-radius: 5px;
+}
+.upload-option-btn img{
+  height: 15px;
+}
+
+.upload-para{
+  font-size: 12px;
+  color:  #8A9099;
+  ;
 }

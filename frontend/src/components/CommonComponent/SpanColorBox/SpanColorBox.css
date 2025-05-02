@@ -1,0 +1,6 @@
+.small-color-span{
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  background-color: red;
+}

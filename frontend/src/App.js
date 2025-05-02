@@ -10,6 +10,8 @@ import Header from './components/Header/Header';
 import './App.css'
 import Footer from './components/Footer/Footer';
 import UploadArtToolbar from './components/Toolbar/UploadArtToolbar/UploadArtToolbar';
+import AddArtToolbar from './components/Toolbar/AddArtToolbar/AddArtToolbar';
+import NamesToolbar from './components/Toolbar/NamesToolbar/NamesToolbar';
 function App() {
   return (
     <>
@@ -29,6 +31,9 @@ function App() {
           <Route path="addText" element={<AddTextToolbar />} />
           <Route path="products" element={<ProductContainer />} />
           <Route path='uploadArt' element={<UploadArtToolbar/>}/>
+          <Route path='addArt' element={<AddArtToolbar/>}/>
+          <Route path='addNames' element={<NamesToolbar/>}/>
+
         </Route>
         <Route path="review" element={<Review />} />
         {/* <Route path="design" element={<Design />} /> */}

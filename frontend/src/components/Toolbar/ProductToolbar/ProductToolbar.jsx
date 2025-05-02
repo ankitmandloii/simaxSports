@@ -3,12 +3,19 @@ import './ProductToolbar.css'
 import { IoAdd } from "react-icons/io5";
 import miniProd from '../../images/mini-prod.png'
 import colorwheel from '../../images/color-wheel.png'
+import { RxCross1 } from "react-icons/rx";
 import ChangePopup from '../../PopupComponent/ChangeProductPopup/ChangePopup';
+import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox';
 // import AddProductContainer from '../../addProductContainer/AddProductContainer';
 const ProductToolbar = () => {
   const [changeProductPopup,setchangeProductPopup]=useState(false);
+  const [addColorPopup,setaddColorPopup]=useState(false);
+
   const changeProductPopupHandler=()=>{
     setchangeProductPopup(!changeProductPopup);
+  }
+  const addColorPopupHAndler=()=>{
+    setaddColorPopup(!addColorPopup);
   }
   const Onclose=()=>{
     setchangeProductPopup(false);
@@ -40,10 +47,39 @@ const ProductToolbar = () => {
   </div>
   <div className='toolbar-middle-button '>
     <button className='black-button' onClick={changeProductPopupHandler}>Change Product</button>
-    <div className='addCart-button'>
+    <div className="add-color-btn-main-container">
+    <div className='addCart-button' onClick={addColorPopupHAndler}>
       <img src={colorwheel} alt="image" className='color-img'/>
-       <p>Add Color</p>
+       <p >Add Color</p>
     </div>
+    {addColorPopup &&  <div className="choose-color-box">
+      <div className="color-box-top">
+        <h6>Add another color</h6>
+        <span style={{cursor:"pointer"}} onClick={addColorPopupHAndler}><RxCross1/></span>
+        
+      </div>
+      <div className="middle-color-pick">
+       <span >Color:</span>
+       <SpanColorBox/>
+       <span>Red</span>
+      </div>
+      <div className="small-color-box">
+     <SpanColorBox/>
+     <SpanColorBox/>
+     <SpanColorBox/>
+     <SpanColorBox/>
+     <SpanColorBox/>
+     <SpanColorBox/>
+     <SpanColorBox/>
+     <SpanColorBox/>
+
+      </div>
+     
+
+    </div>}
+   
+    </div>
+   
   </div>
   </div>
   
