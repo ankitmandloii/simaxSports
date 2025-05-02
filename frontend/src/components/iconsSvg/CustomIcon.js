@@ -44,6 +44,43 @@ const LayeringSecondIcon = () => (
   </svg>
 );
 
+const FlagIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+    <g clip-path="url(#clip0_15984_15118)">
+      <path d="M5.39427 19.983L5.76247 19.8801C6.11664 19.7811 6.32351 19.4137 6.22454 19.0595L2.01478 3.99444C1.95538 3.78184 1.81395 3.60154 1.62161 3.49321C1.42926 3.38489 1.20176 3.35741 0.989162 3.41682L0.94161 3.4301C0.49886 3.5538 0.240221 4.013 0.36392 4.45575L4.57378 19.5209C4.67275 19.875 5.04009 20.0819 5.39427 19.983Z" fill="black" />
+      <path d="M20.2343 9.47258C18.8993 8.80691 17.6642 7.95725 16.5653 6.94844C16.4729 6.86388 16.4368 6.73409 16.4722 6.61396C17.0167 4.55402 17.4211 2.45958 17.6825 0.344995C17.7239 -0.00672925 17.5343 -0.110178 17.3343 0.131202C13.4101 4.82431 6.62048 -0.727419 2.5791 3.5381C2.62762 3.62894 2.66579 3.72495 2.69289 3.82431L5.42393 13.6036C9.47221 9.38982 16.2377 14.9071 20.155 10.2243C20.355 9.98293 20.3929 9.54155 20.2343 9.47258Z" fill="black" />
+    </g>
+    <defs>
+      <clipPath id="clip0_15984_15118">
+        <rect width="20" height="20" fill="white" transform="translate(0.333008)" />
+      </clipPath>
+    </defs>
+  </svg>
+);
+
+const ChooseFileIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
+    <g clip-path="url(#clip0_15757_2857)">
+      <path d="M11.0119 4.31642L4.61523 10.8191C4.39045 11.0506 4.26581 11.3613 4.26824 11.684C4.27067 12.0067 4.39997 12.3155 4.62822 12.5436C4.85646 12.7718 5.1653 12.9009 5.488 12.9032C5.81071 12.9055 6.12135 12.7807 6.3528 12.5559L13.978 4.82548C14.4388 4.36465 14.6977 3.73962 14.6977 3.08791C14.6977 2.43619 14.4388 1.81117 13.978 1.35034C13.5172 0.889508 12.8921 0.630615 12.2404 0.630615C11.5887 0.630615 10.9637 0.889508 10.5028 1.35034L2.87766 9.08148C2.19579 9.77455 1.81541 10.709 1.81937 11.6812C1.82333 12.6535 2.21131 13.5848 2.8988 14.2723C3.58629 14.9598 4.5176 15.3478 5.48985 15.3517C6.4621 15.3557 7.39653 14.9753 8.0896 14.2934L14.3903 8.00193" stroke="white" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <defs>
+      <clipPath id="clip0_15757_2857">
+        <rect width="16" height="16" fill="white" transform="translate(0.5)" />
+      </clipPath>
+    </defs>
+  </svg>);
+const SearchIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <path d="M9.16667 15.8333C12.8486 15.8333 15.8333 12.8486 15.8333 9.16667C15.8333 5.48477 12.8486 2.5 9.16667 2.5C5.48477 2.5 2.5 5.48477 2.5 9.16667C2.5 12.8486 5.48477 15.8333 9.16667 15.8333Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M17.5 17.5L13.875 13.875" stroke="black" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="round" />
+  </svg>
+);
+const NatureSvg = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+<path d="M17.7782 3.68131C17.7589 3.61379 17.7171 3.55491 17.6596 3.51453C17.6022 3.47415 17.5326 3.4547 17.4625 3.45944C9.92301 3.68015 4.73232 8.60268 3.98759 15.122C3.98501 15.18 3.99841 15.2376 4.02633 15.2885C4.05424 15.3394 4.0956 15.3817 4.1459 15.4107C4.19619 15.4397 4.25349 15.4544 4.31153 15.453C4.36957 15.4517 4.42614 15.4344 4.47505 15.4032L11.475 10.7001C9.93056 13.0694 7.88574 15.0715 5.48441 16.5657C4.41588 17.2185 3.27618 17.7469 2.08754 18.1407C2.01004 18.1678 1.9463 18.2242 1.91006 18.2979C1.87382 18.3716 1.86799 18.4565 1.89383 18.5344C1.91967 18.6124 1.97511 18.677 2.04818 18.7144C2.12125 18.7518 2.20611 18.759 2.28443 18.7344C3.4644 18.3419 4.59815 17.8222 5.66566 17.1844C8.61254 18.7438 11.8 17.4782 11.9375 17.4219C20.675 13.8094 17.8094 3.78131 17.7782 3.68131Z" fill="black"/>
+<path d="M3.80979 12.8282C4.5747 10.1031 6.17207 7.68524 8.37856 5.91256C8.03385 3.96599 6.68661 1.81943 4.85977 1.26568C4.80865 1.2491 4.75409 1.24614 4.70149 1.2571C4.64888 1.26806 4.60004 1.29256 4.5598 1.32818C2.40222 3.20435 -0.139612 8.43719 3.80979 12.8282Z" fill="black"/>
+</svg>
+);
 const FlipFirstIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none">
     <path d="M7.99986 9.56038C8.35333 9.56038 8.63986 9.26518 8.63986 8.90104C8.63986 8.5369 8.35333 8.2417 7.99986 8.2417C7.6464 8.2417 7.35986 8.5369 7.35986 8.90104C7.35986 9.26518 7.6464 9.56038 7.99986 9.56038Z" fill="black" />
@@ -88,10 +125,15 @@ const DuplicateIcon = () => (
   </svg>
 );
 
+const CrossIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path d="M1.33325 1.33325L14.6666 14.6666" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M14.6666 1.33325L1.33325 14.6666" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+);
+
 const AngleActionIcon = () => (
 <svg xmlns="http://www.w3.org/2000/svg" width="6" height="12" viewBox="0 0 6 12" fill="none">
 <path d="M0.749999 1.5L5.25 6L0.75 10.5" stroke="#ED2224" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>);
-export { AddProductIcon, NumberIcon, AddArtIcon, AlignCenterIcon, LayeringFirstIcon, LayeringSecondIcon, FlipFirstIcon, FlipSecondIcon, LockIcon, DuplicateIcon, AngleActionIcon };
-
-
+export {ChooseFileIcon,SearchIcon,NatureSvg, FlagIcon,AddProductIcon, NumberIcon, AddArtIcon, AlignCenterIcon, LayeringFirstIcon, LayeringSecondIcon, FlipFirstIcon, FlipSecondIcon, LockIcon, DuplicateIcon, AngleActionIcon,CrossIcon };
