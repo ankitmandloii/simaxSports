@@ -75,8 +75,8 @@ h4{
 .layout-toolbar {
   width: 30%;
   /* background-color: aquamarine; */
-  height: 80vh;
-  padding: 24px;
+  /* height: 80vh; */
+  padding: 10px;
 
 }
 
@@ -140,5 +140,45 @@ h4{
 .cursor {
   cursor: pointer;
 }
+
+
+input[type="range"] {
+  
+  -webkit-appearance: none;
+  /* width: 90%; */
+  height: 2px;
+  background: #B4B8C1; 
+  border-radius: 2px;
+  outline: none;
+  padding: 0;
+  margin: 0;
+}
+
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid red;
+  cursor: pointer;
+  margin-top: -3px; /* To align with the track */
+}
+
+.toolbar-box {
+  height: 22rem;
+  background-color: #ffffff;
+  padding: 10px 15px;
+  overflow-y: scroll;
+  
+  /* margin-top: 15px; */
+  border-radius: 10px;
+
+  
+}
+
+
 /* @media only screen and (max-width: 600px) and (min-width: 300px) */
 /* @media only screen and (max-width: 600px) and (min-width: 300px) */
