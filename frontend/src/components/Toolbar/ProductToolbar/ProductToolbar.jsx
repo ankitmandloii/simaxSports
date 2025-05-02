@@ -3,8 +3,16 @@ import './ProductToolbar.css'
 import { IoAdd } from "react-icons/io5";
 import miniProd from '../../images/mini-prod.png'
 import colorwheel from '../../images/color-wheel.png'
+import ChangePopup from '../../PopupComponent/ChangeProductPopup/ChangePopup';
 // import AddProductContainer from '../../addProductContainer/AddProductContainer';
 const ProductToolbar = () => {
+  const [changeProductPopup,setchangeProductPopup]=useState(false);
+  const changeProductPopupHandler=()=>{
+    setchangeProductPopup(!changeProductPopup);
+  }
+  const Onclose=()=>{
+    setchangeProductPopup(false);
+  }
   const [showModal, setShowModal] = useState(false);
   return (
     <div className="toolbar-main-container">
@@ -31,7 +39,7 @@ const ProductToolbar = () => {
     </div>
   </div>
   <div className='toolbar-middle-button '>
-    <button className='black-button'>Change Product</button>
+    <button className='black-button' onClick={changeProductPopupHandler}>Change Product</button>
     <div className='addCart-button'>
       <img src={colorwheel} alt="image" className='color-img'/>
        <p>Add Color</p>
@@ -52,7 +60,10 @@ const ProductToolbar = () => {
 
   </div>
 </div>
+{changeProductPopup && <ChangePopup onClose={Onclose}/>}
     </div>
+    
+
     
   )
 }

@@ -28,21 +28,15 @@ height: 1.375rem;
   display: none;
 }
 
-@media (max-width: 1024px) {
-  .sidebar-toggle-btn {
-    display: block;
-  }
-}
-
 /* Sidebar */
 .sidebar {
   width: 100%;
-  max-width: 270px;
+  /* max-width: 270px; */
   height: 100vh;
   background-color: #fff;
   /* box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); */
   /* padding-top: 20px; */
-  transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+  /* transition: transform 0.3s ease-in-out, width 0.3s ease-in-out; */
 }
 
 /* Collapsed on desktop */
@@ -52,21 +46,30 @@ height: 1.375rem;
 
 /* Mobile behavior */
 @media (max-width: 1024px) {
+  .sidebar-toggle-btn {
+    display: block;
+  }
   .sidebar {
     position: fixed;
     top: 0;
     left: 0;
     transform: translateX(-100%);
     z-index: 1000;
+    
   }
 
   .sidebar.show {
     transform: translateX(0);
+    width: 30%;
   }
 
   .sidebar.collapsed {
     transform: translateX(-100%);
   }
+  .sidebar-container{
+    width: 0% !important;
+  }
+ 
 }
 
 /* Header */

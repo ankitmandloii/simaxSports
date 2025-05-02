@@ -10,7 +10,7 @@ import { FaArrowRightLong } from "react-icons/fa6";
 const Footer = () => {
   return (
     <div className='footer-container'>
-      <button className="footer-btn1 ">
+      <button className="footer-btn ">
         <IoShareSocialOutline />
         SHARE
       </button>

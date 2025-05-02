@@ -1,0 +1,145 @@
+/* Overlay for modal background */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* Modal container */
+.popup-container {
+  background: #fff;
+  width: 95%;
+  height: 85%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Header with close button */
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.popup-header h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.close-btn {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Content layout with sidebar and main */
+.popup-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Sidebar styling */
+.sidebar {
+  width: 220px;
+  background: #f9f9f9;
+  padding: 1rem;
+  overflow-y: auto;
+  border-right: 1px solid #ddd;
+}
+
+.sidebar-item {
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-item:hover,
+.sidebar-item.active {
+  background: #eee;
+  border-left: 3px solid #e32636;
+  color: #e32636;
+}
+
+/* Main product grid */
+.product-grid {
+  flex: 1;
+  padding: 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); 
+  overflow-y: auto;
+  background: #fff;
+}
+
+/* Individual product card */
+.product-card {
+  width: 7rem;    /* 264px */
+  height: 9rem; /* 246px */
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  box-sizing: border-box;
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-card:hover {
+  transform: scale(1.02);
+}
+
+.product-card img {
+  width: 100%;
+  height: 130px;
+  object-fit: contain;
+}
+
+.product-card p {
+  font-size: 14px;
+  margin-top: 0.5rem;
+}
+
+/* Load more button */
+.load-more {
+  text-align: center;
+  height: 33px;
+  width: 126px;
+  color: #fff;
+  background-color: black;
+  border: 1px solid rgb(34, 32, 32);
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 11px;
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 10px;
+  cursor: pointer;
+  grid-column: span 5;
+  margin: 0 auto;
+}
+.no-products {
+  grid-column: span 5;
+  text-align: center;
+  font-size: 16px;
+  color: #999;
+  margin-top: 2rem;
+}

@@ -15,24 +15,14 @@ body {
   ;
 }
 
-/* Font
-Inter
-Weight
-700
-Size
-20px
-Line height
-31.43px
-Letter spacing
-0.35p */
 h2{
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 700;
   
 
 }
 p{
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 400;
 }
 
@@ -41,7 +31,7 @@ a {
   text-decoration: none;
 }
 h4{
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 20px;
 
@@ -53,11 +43,13 @@ h4{
 }
 
 .sidebar-container {
-  width: 260px;
+  /* max-width: 260px; */
+  /* width: 15%; */
 }
 
 .main-layout-container {
-  width: calc(100% - 270px);
+  /* width: calc(100% - 270px); */
+  width: 85%;
 
   background-color: #f1f1f1;
 
@@ -82,13 +74,16 @@ h4{
 }
 
 .layout-product {
-  width: 60%;
+  width: 70%;
+  padding: 24px;
   /* background-color: bisque; */
 
 }
 
 .layout-container {
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .black-button {
@@ -138,3 +133,5 @@ h4{
 .cursor {
   cursor: pointer;
 }
+/* @media only screen and (max-width: 600px) and (min-width: 300px) */
+/* @media only screen and (max-width: 600px) and (min-width: 300px) */

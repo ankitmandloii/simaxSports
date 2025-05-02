@@ -32,7 +32,7 @@ function App() {
         <Route path="review" element={<Review />} />
         {/* <Route path="design" element={<Design />} /> */}
       </Routes>
-      {/* <Footer/> */}
+      <Footer/>
 
       </div>
       

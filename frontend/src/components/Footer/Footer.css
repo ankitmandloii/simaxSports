@@ -50,30 +50,27 @@
   bottom: 0;
   width: 80%;
   background-color: #fff;
-  padding: 20px;
-  /* padding inside the footer */
+  padding: 13px;
   display: flex;
   justify-content: space-between;
-
   border-radius: 10px;
   margin: 0  20px 20px;
-
 }
 
 
 .footer-btn {
-  height: 42px;
+  height: 33px;
   background: #fff;
-  width: 155px;
+  width: 126px;
   color: black;
   border: 1px solid rgb(34, 32, 32);
   justify-content: center;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 11px;
   display: inline-flex;
-  gap: 7px;
+  gap: 10px;
   align-items: center;
-  padding: 11px 26px;
+  padding: 6px 10px;
   cursor: pointer;
   /* transition: background-color 0.3s ease, transform 0.2s ease; */
 }
