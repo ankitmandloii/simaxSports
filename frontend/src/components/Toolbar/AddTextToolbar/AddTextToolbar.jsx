@@ -16,23 +16,24 @@ import {
 import MyCompo from '../../style/MyCompo';
 import FontCollectionList from './FontCollectionList';
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox';
-import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox';import { useDispatch, useSelector } from 'react-redux';
+import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox';
+import { useDispatch, useSelector } from 'react-redux';
 import { setText } from '../../../redux/canvasSlice/CanvasSlice.js';
 
-
 const AddTextToolbar = () => {
-
-
   const dispatch = useDispatch();
   const text = useSelector((state) => state.canvas.text);
 
   const [rangeValue, setRangeValue] = useState([20, 80]);
   const [textColorPopup, setTextColorPopup] = useState(false);
   const [outlineColorPopup, setOutlineColorPopup] = useState(false);
-
   const [showContent, setShowContent] = useState(false);
   const [showFontSelector, setShowFontSelector] = useState(false);
   const [selectedFont, setSelectedFont] = useState('Interstate');
+
+  const [textColor, setTextColor] = useState('#FFFFFF');
+  const [outlineColor, setOutlineColor] = useState('#FF0000');
+  const [outlineSize, setOutlineSize] = useState(20);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -48,16 +49,14 @@ const AddTextToolbar = () => {
   };
 
   const handleShowContent = (e) => {
-    const { name, value } = e.target;
-    if(value.length > 0) {
+    const { value } = e.target;
+    if (value.length > 0) {
       setShowContent(true);
-      dispatch(setText(e.target.value));
-    }else{
+      dispatch(setText(value)); // Update the content
+    } else {
       setShowContent(false);
     }
-  }
-
-
+  };
 
   const handleFontSelect = (font) => {
     setSelectedFont(font);
@@ -83,10 +82,15 @@ const AddTextToolbar = () => {
         <h3>Add new Text</h3>
         <p>You can select multiple products and colors</p>
       </div>
+
       <div className="toolbar-box">
         {!showFontSelector ? (
           <>
-            <textarea  value={text} onChange={handleShowContent}></textarea>
+            <textarea 
+              value={text} 
+              onChange={handleShowContent} 
+             
+            />
 
             {showContent && (
               <>
@@ -136,14 +140,16 @@ const AddTextToolbar = () => {
 
                 <div className='toolbar-box-Font-Value-set-inner-container'>
                   <div className='toolbar-box-Font-Value-set-inner-actionheading'>Color</div>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>
-                    White
-                    <SpanColorBox/>
-                    <span onClick={toggleTextColorPopup}><AngleActionIcon /></span>
+                  <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleTextColorPopup}>
+                    {textColor}
+                    <SpanColorBox color={textColor} />
+                    <span><AngleActionIcon /></span>
                     {textColorPopup && (
                       <ChooseColorBox
                         addColorPopupHAndler={toggleTextColorPopup}
                         title="Text Color"
+                        defaultColor={textColor}
+                        onColorChange={(color) => setTextColor(color)}  // Update text color
                         button={true}
                       />
                     )}
@@ -154,16 +160,17 @@ const AddTextToolbar = () => {
 
                 <div className='toolbar-box-Font-Value-set-inner-container'>
                   <div className='toolbar-box-Font-Value-set-inner-actionheading'>Outline</div>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>
-                    None
-                    <span   className='none-svg-icon'><NoneIcon/></span>
-                    <span  onClick={toggleOutlineColorPopup}><AngleActionIcon /></span>
-                    
+                  <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleOutlineColorPopup}>
+                    {outlineColor ? outlineColor : 'None'}
+                    <span className='none-svg-icon'><NoneIcon /></span>
+                    <span><AngleActionIcon /></span>
                     {outlineColorPopup && (
                       <ChooseColorBox
                         addColorPopupHAndler={toggleOutlineColorPopup}
                         title="Outline Color"
-                     
+                        defaultColor={outlineColor}
+                        onColorChange={(color) => setOutlineColor(color)} // Update outline color
+                        onRangeChange={(range) => setOutlineSize(range[0])} // Update outline size
                         button={true}
                         range={true}
                       />

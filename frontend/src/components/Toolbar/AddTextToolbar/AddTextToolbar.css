@@ -137,6 +137,7 @@
 .toolbar-box-Font-Value-set-inner-actionheading {
     font-weight: 500;
     font-size: 12px;
+    cursor: pointer;
     /* position: relative; */
     display: flex;
     align-items: center;
