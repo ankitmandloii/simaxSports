@@ -15,10 +15,11 @@ import NamesToolbar from './components/Toolbar/NamesToolbar/NamesToolbar';
 function App() {
   return (
     <>
-    <div className='main-container'>
+    <div className='app-main-container'>
 
- 
-      <div className="sidebar-container">
+    <div className='main-inner-container'>
+      
+    <div className="sidebar-container">
         <AdminSidebar />
       </div>
       <div className='main-layout-container'>
@@ -41,6 +42,7 @@ function App() {
 
       </div>
       
+    </div>
       </div>
       </>
   );

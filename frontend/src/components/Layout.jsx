@@ -6,7 +6,7 @@ import ProductContainer from './ProductContainer';
 
 const Layout = () => {
   return (
-    <div className="main-container">
+    <div className="layout-main-container">
     
       <div className="layout-container">
   
@@ -14,10 +14,7 @@ const Layout = () => {
           <div className="layout-toolbar">
           <Outlet /> 
           </div>
-          <div className="layout-product">
           <ProductContainer/>
-
-          </div>
         </div>
       </div>
     </div>

@@ -5,9 +5,10 @@
 }
 
 body {
-  width: 100%;
   position: relative;
+  /* width: 100%; */
   font-family: "Inter", sans-serif;
+  overflow-x: hidden;
 
 }
 :root {
@@ -38,9 +39,15 @@ h4{
 
 }
 .main-container {
-  width: 100%;
+  width: 600PX;
   display: flex;
-  flex-direction: row;
+}
+
+.main-inner-container{
+  /* width: 100%; */
+  max-width: 1400px;
+  display: flex;
+  margin: 0 auto;
 }
 
 .sidebar-container {
@@ -53,7 +60,6 @@ h4{
   width: 85%;
 
   background-color: #f1f1f1;
-
 
 }
 
