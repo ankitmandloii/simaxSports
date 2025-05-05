@@ -16,9 +16,16 @@ import {
 import MyCompo from '../../style/MyCompo';
 import FontCollectionList from './FontCollectionList';
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox';
-import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox';
+import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox';import { useDispatch, useSelector } from 'react-redux';
+import { setText } from '../../../redux/canvasSlice/CanvasSlice.js';
+
 
 const AddTextToolbar = () => {
+
+
+  const dispatch = useDispatch();
+  const text = useSelector((state) => state.canvas.text);
+
   const [rangeValue, setRangeValue] = useState([20, 80]);
   const [textColorPopup, setTextColorPopup] = useState(false);
   const [outlineColorPopup, setOutlineColorPopup] = useState(false);
@@ -41,9 +48,16 @@ const AddTextToolbar = () => {
   };
 
   const handleShowContent = (e) => {
-    const { value } = e.target;
-    setShowContent(value.length > 0);
-  };
+    const { name, value } = e.target;
+    if(value.length > 0) {
+      setShowContent(true);
+      dispatch(setText(e.target.value));
+    }else{
+      setShowContent(false);
+    }
+  }
+
+
 
   const handleFontSelect = (font) => {
     setSelectedFont(font);
@@ -72,7 +86,7 @@ const AddTextToolbar = () => {
       <div className="toolbar-box">
         {!showFontSelector ? (
           <>
-            <textarea placeholder='Begain Typing...' onChange={handleShowContent}></textarea>
+            <textarea  value={text} onChange={handleShowContent}></textarea>
 
             {showContent && (
               <>
