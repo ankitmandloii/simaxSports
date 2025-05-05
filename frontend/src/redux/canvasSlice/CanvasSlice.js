@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const canvasSlice = createSlice({
   name: 'canvas',
   initialState: {
-    text: 'Begain Typing....',
+    text: "",
   },
   reducers: {
     setText: (state, action) => {
