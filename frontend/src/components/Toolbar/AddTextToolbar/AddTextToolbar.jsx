@@ -49,14 +49,17 @@ const AddTextToolbar = () => {
   };
 
   const handleShowContent = (e) => {
-    const { value } = e.target;
-    if (value.length > 0) {
+    const { name, value } = e.target;
+    if(value.length > 0) {
       setShowContent(true);
-      dispatch(setText(value)); // Update the content
-    } else {
+      dispatch(setText(e.target.value));
+    }else{
       setShowContent(false);
+      dispatch(setText(e.target.value));
     }
-  };
+  }
+
+
 
   const handleFontSelect = (font) => {
     setSelectedFont(font);
@@ -86,12 +89,7 @@ const AddTextToolbar = () => {
       <div className="toolbar-box">
         {!showFontSelector ? (
           <>
-            <textarea 
-              value={text} 
-              onChange={handleShowContent} 
-             
-            />
-
+           <textarea  placeholder='Begain Typing....' value={text} onChange={handleShowContent}></textarea>
             {showContent && (
               <>
                 <div className='addText-first-toolbar-box-container'>
