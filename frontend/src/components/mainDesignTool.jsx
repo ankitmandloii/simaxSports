@@ -5,14 +5,29 @@ import { TbArrowForwardUp } from "react-icons/tb";
 import { TbArrowBack } from "react-icons/tb";
 import { VscZoomIn } from "react-icons/vsc";
 import "./MainDesigntool.css"
-const MainDesignTool = ({ backgroundImage,mirrorCanvasRef }) => {
+import { useSelector } from "react-redux";
+const MainDesignTool = ({  backgroundImage,mirrorCanvasRef }) => {
 
     const canvasRef = useRef(null);
     const fabricCanvasRef = useRef(null);
     // const mirrorCanvasRef = useRef(null);
-
+    const textContent = useSelector((state) => state.canvas.text);
     const [selectedHeight, setSelectedHeight] = useState("");
+    const mirrorFabricRef = useRef(null);
 
+
+    useEffect(() => {
+        const canvas = fabricCanvasRef.current;
+        if (!canvas) return;
+    
+        const textbox = canvas.getObjects().find(obj => obj.type === "textbox");
+        if (textbox && textContent !== textbox.text) {
+            textbox.text = textContent;
+            canvas.requestRenderAll();
+            syncMirrorCanvas(); // if you want the mirror to reflect this too
+        }
+    }, [textContent]);
+    
     const iconImages = useMemo(() => {
         const imgs = {};
         for (const key in icons) {
@@ -243,7 +258,7 @@ const MainDesignTool = ({ backgroundImage,mirrorCanvasRef }) => {
             width: 650,
             height: 410,
             // backgroundColor: "#f1f1f1",
-            backgroundColor: "gray",
+            // backgroundColor: "gray",
         });
         fabricCanvasRef.current = canvas;
 
@@ -271,9 +286,9 @@ const MainDesignTool = ({ backgroundImage,mirrorCanvasRef }) => {
         });
         rect.controls = createControls();
 
-        const textbox = new fabric.Textbox("Edit me", {
-            top: 400,
-            left: 200,
+        const textbox = new fabric.Textbox(textContent || "Default text", {
+            top: 100,
+            left: 320,
             originX: "center",
             textAlign: "center",
             fontSize: 24,
@@ -283,6 +298,8 @@ const MainDesignTool = ({ backgroundImage,mirrorCanvasRef }) => {
             borderColor: "orange",
             borderDashArray: [4, 4],
             hasBorders: true,
+         
+            editable: false,   // ensures non-editable
         });
 
         textbox.controls = createControls();
@@ -415,6 +432,7 @@ const MainDesignTool = ({ backgroundImage,mirrorCanvasRef }) => {
                 <li><button className='ProductContainerButton'><span><TbArrowForwardUp /></span>REDO</button></li>
                 <li><button className='ProductContainerButton'>START OVER</button></li>
             </ul> */}
+
         </div>
     );
 };
