@@ -6,12 +6,23 @@ import { TbArrowBack } from "react-icons/tb";
 import { VscZoomIn } from "react-icons/vsc";
 import "./MainDesigntool.css"
 import { useSelector } from "react-redux";
-const MainDesignTool = ({  backgroundImage,mirrorCanvasRef }) => {
+const MainDesignTool = ({ backgroundImage, mirrorCanvasRef }) => {
 
     const canvasRef = useRef(null);
     const fabricCanvasRef = useRef(null);
     // const mirrorCanvasRef = useRef(null);
-    const textContent = useSelector((state) => state.canvas.text);
+    const textContentState = useSelector((state) => state.canvas.text);
+    const textColorState = useSelector((state) => state.canvas.textColor);
+    const fontFamilyState = useSelector((state) => state.canvas.fontFamily);
+    const sizeState = useSelector((state) => state.canvas.size);
+    const arcState = useSelector((state) => state.canvas.arc);
+    const rotateState = useSelector((state) => state.canvas.rotate);
+    const spacingState = useSelector((state) => state.canvas.spacing);
+    const outLineColorState = useSelector((state) => state.canvas.outLineColor);
+    const outLineSizeState = useSelector((state) => state.canvas.outLineSize);
+    const centerState = useSelector((state)=> state.canvas.center);
+    const flipXYState = useSelector((state)=> state.canvas.flipXY);
+
     const [selectedHeight, setSelectedHeight] = useState("");
     const mirrorFabricRef = useRef(null);
 
@@ -19,15 +30,80 @@ const MainDesignTool = ({  backgroundImage,mirrorCanvasRef }) => {
     useEffect(() => {
         const canvas = fabricCanvasRef.current;
         if (!canvas) return;
-    
-        const textbox = canvas.getObjects().find(obj => obj.type === "textbox");
-        if (textbox && textContent !== textbox.text) {
-            textbox.text = textContent;
-            canvas.requestRenderAll();
-            syncMirrorCanvas(); // if you want the mirror to reflect this too
+       
+       
+        const textbox = canvas.getActiveObject();
+
+        // const textbox = canvas.getObjects().find(obj => obj.type === "textbox");
+        if (!textbox || textbox.type !== 'textbox') return;
+        if (textbox) {
+            let updated = false;
+
+            if (textContentState !== textbox.text) {
+                textbox.text = textContentState;
+                updated = true;
+            }
+
+            if (textbox.fill !== textColorState) {
+                textbox.fill= textColorState; // Set text color
+                updated = true;
+            }
+
+            if (textbox.fontFamily !== fontFamilyState) {
+                textbox.fontFamily = fontFamilyState; // Set font family
+                updated = true;
+            }
+
+            if (textbox.fontSize !== sizeState) {
+                textbox.fontSize = sizeState; // Set font size
+                updated = true;
+            }
+
+            // if (textbox.strokeWidth !== arcState) {
+            //     textbox.set("strokeWidth", arcState); // Set stroke width
+            //     updated = true;
+            // }
+
+            if (textbox.angle !== rotateState) {
+                textbox.angle = rotateState; // Set rotation angle
+                updated = true;
+            }
+
+            if (textbox.charSpacing !== spacingState) {
+                textbox.charSpacing = spacingState; // Set character spacing
+                updated = true;
+            }
+
+            if (textbox.stroke !== outLineColorState) {
+                textbox.stroke = outLineColorState;
+              
+                updated = true;
+            }
+            if (textbox.strokeWidth !== outLineSizeState) {
+               textbox.strokeWidth = outLineSizeState;
+              
+                updated = true;
+            }
+
+            if (textbox.textAlign !== centerState) {
+                textbox.textAlign = centerState; // Set character spacing
+                updated = true;
+            }
+
+            if (textbox.scaleX !== flipXYState) {
+                textbox.scaleX =  flipXYState;
+                updated = true;
+            }
+
+        
+
+            if (updated) {
+                canvas.requestRenderAll();
+                syncMirrorCanvas(); // reflect changes in mirror if needed
+            }
         }
-    }, [textContent]);
-    
+    }, [textColorState, textContentState, fontFamilyState, sizeState, arcState, rotateState, spacingState, outLineSizeState, outLineColorState,flipXYState,centerState]);
+
     const iconImages = useMemo(() => {
         const imgs = {};
         for (const key in icons) {
@@ -38,12 +114,12 @@ const MainDesignTool = ({  backgroundImage,mirrorCanvasRef }) => {
         return imgs;
     }, []);
     const syncMirrorCanvas = () => {
-        
+
         const parent = document.querySelector(".corner-img-canva-container");
 
-        const w = parent.clientWidth ;
+        const w = parent.clientWidth;
         const h = parent.clientHeight - 30;
-      console.log(mirrorCanvasRef.current,"dafh")
+        console.log(mirrorCanvasRef.current, "dafh")
         const mirrorCanvas = mirrorCanvasRef.current;
         const mainCanvas = fabricCanvasRef.current;
 
@@ -233,6 +309,7 @@ const MainDesignTool = ({  backgroundImage,mirrorCanvasRef }) => {
         return fabric.controlsUtils.rotationWithSnapping(eventData, transform, x, y);
     };
 
+
     const handleHeightChange = (e) => {
         const value = parseFloat(e.target.value);
         setSelectedHeight(e.target.value);
@@ -262,7 +339,7 @@ const MainDesignTool = ({  backgroundImage,mirrorCanvasRef }) => {
         });
         fabricCanvasRef.current = canvas;
 
-        mirrorCanvasRef.current = new fabric.StaticCanvas( mirrorCanvasRef.current);
+        mirrorCanvasRef.current = new fabric.StaticCanvas(mirrorCanvasRef.current);
         // const mirrorEl = document.getElementById("mirrorCanvas");
         // if (mirrorCanvasRef.current) {
         // }
@@ -286,19 +363,20 @@ const MainDesignTool = ({  backgroundImage,mirrorCanvasRef }) => {
         });
         rect.controls = createControls();
 
-        const textbox = new fabric.Textbox(textContent || "Default text", {
+        const textbox = new fabric.Textbox(textContentState || "Default text", {
             top: 100,
             left: 320,
             originX: "center",
-            textAlign: "center",
-            fontSize: 24,
+            // textAlign: centerState,
+            // fontSize: 24,
             width: 100,
-            fill: "white",
+            // fill: textColorState || "#000000",
+            // fontFamily: "Segoe UI",
             objectCaching: false,
             borderColor: "orange",
             borderDashArray: [4, 4],
             hasBorders: true,
-         
+
             editable: false,   // ensures non-editable
         });
 
@@ -394,7 +472,7 @@ const MainDesignTool = ({  backgroundImage,mirrorCanvasRef }) => {
     }, [iconImages]);
 
     return (
-        <div style={{ position: "relative"}} id="">
+        <div style={{ position: "relative" }} id="">
             <canvas ref={canvasRef} />
 
             {/* <div

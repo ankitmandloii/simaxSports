@@ -5,7 +5,7 @@ import { IoShareSocialOutline } from "react-icons/io5";
 import { IoPricetagOutline } from "react-icons/io5";
 import { FiSave } from "react-icons/fi";
 import { FaArrowRightLong } from "react-icons/fa6";
-import SaveDesignPopup from '../PopupComponent/SaveDesignPopup/SaveDesignPopup';
+import SaveDesignPopup from '../PopupComponent/saveDesignPopup/SaveDesignPopup.jsx';
 
 const Footer = () => {
   const [savedesignpopup,setSavedesignPopup]=useState(false);

@@ -13,20 +13,16 @@ const ChooseColorBox = ({
   onRangeChange = () => {},
 }) => {
   const [selectedColor, setSelectedColor] = useState(defaultColor);
-  const [rangeValue, setRangeValue] = useState([20, 80]);
+  const [rangeValue, setRangeValue] = useState(10);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    const newRangeValue = [...rangeValue];
+    
 
-    if (name === 'min') {
-      newRangeValue[0] = parseInt(value);
-    } else if (name === 'max') {
-      newRangeValue[1] = parseInt(value);
-    }
+   
 
-    setRangeValue(newRangeValue);
-    onRangeChange(newRangeValue); // Notify parent
+    setRangeValue(parseInt(value));
+    onRangeChange(parseInt(value)); // Notify parent
   };
 
   const handleColorSelect = (color) => {
@@ -71,8 +67,8 @@ const ChooseColorBox = ({
               id="min"
               name="min"
               min="0"
-              max="100"
-              value={rangeValue[0]}
+              max="10"
+              value={rangeValue}
               onChange={handleInputChange}
             />
           </div>
