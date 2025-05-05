@@ -85,16 +85,19 @@ const ProductToolbar = () => {
   
   <button className='add-product-btn' onClick={()=>setShowModal(true)}> <IoAdd/> Add Products</button>
   <p className='center'>Customize Method Example</p>
+  
+  <div className='no-minimum-butn-container'>
   <div className='common-btn active'>
     <h4>Printing</h4>
     <p>No minimum</p>
-
   </div>
   <div className='common-btn'>
     <h4>Ebbroidery</h4>
     <p>No minimum</p>
 
   </div>
+  </div>
+  
 </div>
 {changeProductPopup && <ChangePopup onClose={Onclose}/>}
     </div>
