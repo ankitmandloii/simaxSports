@@ -1,0 +1,52 @@
+/* .size-section {
+  margin-top: 20px;
+} */
+
+.size-group h5 {
+  margin-bottom: 8px;
+}
+.size-group{
+  margin-top: 5px;
+}
+.size-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.size-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 25px;
+}
+
+.size-box input {
+  width: 18px;
+  /* padding: 5px; */
+  text-align: center;
+}
+
+.license-options {
+  /* margin-top: 20px; */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calculate-btn {
+  width: 100%;
+  padding: 12px;
+  background: black;
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.size-box label{
+  font-size: 8px;
+}
+.license-options label{
+  font-size: 12px;
+}

@@ -63,6 +63,15 @@ h4{
 
 }
 
+.main-layout-container.quantity-page {
+  width: 100%;
+  background-color: #f1f1f1;
+}
+/* .layout-main-container.quantity-page {
+  height: calc(100vh - 60px);
+
+} */
+
 .flex {
   display:
     flex;
