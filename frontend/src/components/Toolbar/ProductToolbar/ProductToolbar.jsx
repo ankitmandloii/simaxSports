@@ -6,6 +6,7 @@ import colorwheel from '../../images/color-wheel.png'
 import { RxCross1 } from "react-icons/rx";
 import ChangePopup from '../../PopupComponent/ChangeProductPopup/ChangePopup';
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox';
+import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox';
 // import AddProductContainer from '../../addProductContainer/AddProductContainer';
 const ProductToolbar = () => {
   const [changeProductPopup,setchangeProductPopup]=useState(false);
@@ -52,31 +53,7 @@ const ProductToolbar = () => {
       <img src={colorwheel} alt="image" className='color-img'/>
        <p >Add Color</p>
     </div>
-    {addColorPopup &&  <div className="choose-color-box">
-      <div className="color-box-top">
-        <h6>Add another color</h6>
-        <span style={{cursor:"pointer"}} onClick={addColorPopupHAndler}><RxCross1/></span>
-        
-      </div>
-      <div className="middle-color-pick">
-       <span >Color:</span>
-       <SpanColorBox/>
-       <span>Red</span>
-      </div>
-      <div className="small-color-box">
-     <SpanColorBox/>
-     <SpanColorBox/>
-     <SpanColorBox/>
-     <SpanColorBox/>
-     <SpanColorBox/>
-     <SpanColorBox/>
-     <SpanColorBox/>
-     <SpanColorBox/>
-
-      </div>
-     
-
-    </div>}
+    {addColorPopup &&  <ChooseColorBox addColorPopupHAndler={addColorPopupHAndler} title="Add another color"/>}
    
     </div>
    

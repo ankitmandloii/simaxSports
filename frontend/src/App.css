@@ -98,7 +98,7 @@ h4{
   color: white;
   border: none;
   height: 27px;
-  width: 119px;
+  /* width: 119px; */
   padding: 10px;
   display: flex;
   justify-content: center;

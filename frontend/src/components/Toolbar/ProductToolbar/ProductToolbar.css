@@ -60,14 +60,14 @@
 }
 
 .add-color-btn-main-container {
-  position: relative;
+  /* position: relative; */
 }
 
 .choose-color-box {
   padding: 10px;
   position: absolute;
   background-color: #fff;
-  height: 8rem;
+  /* height: 8rem; */
   width: 15rem;
   z-index: 7;
 }

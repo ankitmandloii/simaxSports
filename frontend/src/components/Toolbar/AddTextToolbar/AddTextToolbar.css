@@ -137,5 +137,18 @@
 .toolbar-box-Font-Value-set-inner-actionheading {
     font-weight: 500;
     font-size: 12px;
+    /* position: relative; */
+    display: flex;
+    align-items: center;
+    gap: 7px;
 }
-
+.none-svg-icon{
+    width: 15px;
+    align-items: center;
+    height: 18px;
+    justify-content: center;
+    border: 2px solid #D2D5D9;
+    display: flex
+;
+    /* background-color: black; */
+}
