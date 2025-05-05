@@ -1,23 +1,184 @@
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-body{
-  width: 100%;
+
+body {
+  position: relative;
+  /* width: 100%; */
+  font-family: "Inter", sans-serif;
+  overflow-x: hidden;
 
 }
-.main-container{
-  width: 100%;
-  display: flex;
-  flex-direction: row;
+:root {
+  --red:#ED2224;
+  ;
 }
-.sidebar-container{
+
+h2{
+  font-size: 15px;
+  font-weight: 700;
+  
+
+}
+p{
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 15px;
+}
+
+a {
+  list-style: none;
+  text-decoration: none;
+}
+h4{
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+
+}
+.main-container {
+  width: 600PX;
+  display: flex;
+}
+
+.main-inner-container{
+  /* width: 100%; */
+  max-width: 1400px;
+  display: flex;
+  margin: 0 auto;
+}
+
+.sidebar-container {
+  /* max-width: 260px; */
   width: 15%;
 }
-.layout-container{
+
+.main-layout-container {
+  /* width: calc(100% - 270px); */
   width: 85%;
+
+  background-color: #f1f1f1;
+
 }
-.flex{
+
+.flex {
+  display:
+    flex;
+}
+
+.page-content {
   display: flex;
 }
+
+.layout-toolbar {
+  width: 30%;
+  /* background-color: aquamarine; */
+  /* height: 80vh; */
+  padding: 10px;
+
+}
+
+.layout-product {
+  width: 70%;
+  padding: 24px;
+  /* background-color: bisque; */
+
+}
+
+.layout-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.black-button {
+  background-color: #000000;
+  color: white;
+  border: none;
+  height: 27px;
+  /* width: 119px; */
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  border-radius: 4px;
+  align-items: center;
+  padding: 6px 10px;
+}
+
+/* common css of toolbar head */
+/* .toolbar-main-heading h3 {
+  font-size: 1rem;
+  font-weight: 700;
+
+} */
+.toolbar-main-heading .Toolbar-badge {
+  background-color: red;
+  font-size: 12px;
+  color: white;
+  width: fit-content;
+  /* width: 78px;s */
+  height: 21px;
+  border-radius: 4px;
+  padding: 2px 8px;
+  display: flex
+;
+  justify-content: center;
+  align-items: center;
+  text-transform: upperca
+ 
+
+}
+/* .toolbar-main-heading p {
+  font-size: small;
+} */
+.toolbar-main-heading{
+  line-height: 31px;
+}
+
+.cursor {
+  cursor: pointer;
+}
+
+
+input[type="range"] {
+  
+  -webkit-appearance: none;
+  /* width: 90%; */
+  height: 2px;
+  background: #B4B8C1; 
+  border-radius: 2px;
+  outline: none;
+  padding: 0;
+  margin: 0;
+}
+
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid red;
+  cursor: pointer;
+  margin-top: -3px; /* To align with the track */
+}
+
+.toolbar-box {
+  height: 22rem;
+  background-color: #ffffff;
+  padding: 10px 15px;
+  overflow-y: scroll;
+  
+  /* margin-top: 15px; */
+  border-radius: 10px;
+
+  
+}
+
+
+/* @media only screen and (max-width: 600px) and (min-width: 300px) */
+/* @media only screen and (max-width: 600px) and (min-width: 300px) */

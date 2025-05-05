@@ -1,0 +1,155 @@
+.toolbar-box {
+    gap: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.toolbar-box textarea {
+    width: 100%;
+    /* margin-bottom: 15px; */
+    /* height: 100px; */
+    resize: none;
+    /* border: none; */
+    outline: none;
+    font-size: 16px;
+    color: #555;
+    border-radius: 4px;
+    padding: 6px 6px 80px;
+    overflow-y: hidden;
+}
+
+.addText-first-toolbar-box-container {
+    display: flex;
+    justify-content: space-around;
+    /* gap: 10px; */
+}
+
+.toolbar-box-icons-and-heading-for-together {
+    display: flex;
+}
+
+.toolbar-box-icons-and-heading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 17px;
+}
+
+.toolbar-box-icons-container {
+
+    padding: 3px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #cccfd6;
+    border-radius: 4px;
+}
+
+.toolbar-box-icons-container-layering1 {
+
+    padding: 3px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #cccfd6;
+    border-bottom: 1px solid #cccfd6;
+    border-left: 1px solid #cccfd6;
+    border-right: 1px solid #cccfd6;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+
+}
+
+.toolbar-box-icons-container-layering2 {
+
+    padding: 3px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #cccfd6;
+    border-bottom: 1px solid #cccfd6;
+    border-right: 1px solid #cccfd6;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+
+
+}
+
+.toolbar-box-icons-container-flip1 {
+
+    padding: 3px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #cccfd6;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.toolbar-box-icons-container-flip2 {
+
+    padding: 3px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #cccfd6;
+    border-bottom: 1px solid #cccfd6;
+    border-left: 1px solid #cccfd6;
+    border-right: 1px solid #cccfd6;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+
+}
+
+
+/* secondtoolBartoolStyle */
+.toolbar-box-icons-container-for-together {
+    display: flex;
+}
+
+.toolbar-box-Font-Value-set-inner-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toolbar-box-Font-Value-set-inner-actionlogo {
+    font-size: 16px;
+    font-weight: 700;
+
+}
+
+.toolbar-box-Font-Value-set-inner-actionlogo span {
+    margin-left: 11px;
+
+}
+
+
+
+.toolbar-box-Font-Value-set-inner-actionheading {
+    font-weight: 500;
+    font-size: 12px;
+    cursor: pointer;
+    /* position: relative; */
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.none-svg-icon{
+    width: 15px;
+    align-items: center;
+    height: 18px;
+    justify-content: center;
+    border: 2px solid #D2D5D9;
+    display: flex
+;
+    /* background-color: black; */
+}

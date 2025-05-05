@@ -6,12 +6,14 @@ import ProductContainer from './ProductContainer';
 
 const Layout = () => {
   return (
-    <div className="main-container">
+    <div className="layout-main-container">
     
       <div className="layout-container">
   
         <div className="page-content">
+          <div className="layout-toolbar">
           <Outlet /> 
+          </div>
           <ProductContainer/>
         </div>
       </div>
