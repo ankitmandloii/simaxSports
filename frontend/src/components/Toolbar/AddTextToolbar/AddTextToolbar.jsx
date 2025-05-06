@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import camera from '../../images/camera.jpg';
 import { IoAdd } from "react-icons/io5";
 import '../AddTextToolbar/AddTextToolbar.css';
@@ -20,61 +20,102 @@ import FontCollectionList from './FontCollectionList';
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox';
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCenterState, setFlipXState, setFlipYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState,  setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
+import { setCenterState, setFlipXState, setFlipYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState, setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
 import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
+import { addTextState, setSelectedTextState, updateTextState } from '../../..//redux/FrontendDesign/TextFrontendDesignSlice.js';
 
 const AddTextToolbar = () => {
   const dispatch = useDispatch();
-  const text = useSelector((state) => state.canvas.text);
+  const [currentTextToolbarId, setCurrentTextToolbarId] = useState(String(Date.now()));  // current id of toolbar
+  const allTextInputData =  useSelector((state) => state.TextFrontendDesignSlice.texts);
+  const textContaintObject = allTextInputData.find((text) => text.id == currentTextToolbarId);
+  const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.selectedTextId);
 
   // const [SizeRangeValue, setRangeValue] = useState([20, 80]);
+
+
+
+
+  // console.log("text", text)
+  const [text,setText] = useState(textContaintObject?textContaintObject.content:"")
   const [textColorPopup, setTextColorPopup] = useState(false);
   const [outlineColorPopup, setOutlineColorPopup] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [showFontSelector, setShowFontSelector] = useState(false);
-  const [selectedFont, setSelectedFont] = useState('Interstate');
-
-  const [textColor, setTextColor] = useState("#FFFFFF");
-
-  const [outlineColor, setOutlineColor] = useState('#FFFFFF');
-  const [outlineSize, setOutlineSize] = useState(0);
-
-
-
+  const [selectedFont, setSelectedFont] = useState(textContaintObject?textContaintObject.fontFamily:"");
+  const [textColor, setTextColor] = useState(textContaintObject?textContaintObject.textColor:"");
+  const [outlineColor, setOutlineColor] = useState(textContaintObject?textContaintObject.outlineColor:"");
+  const [outlineSize, setOutlineSize] = useState(textContaintObject?textContaintObject.outlineSize:"");
   const rangeValues = useSelector(state => state.canvas);
 
 
+  useEffect(() => {
+     if(selectedTextId){
+      setCurrentTextToolbarId(selectedTextId);
+      console.log("is selected id ",selectedTextId);
+       setShowContent(true);
+      const currentInputData = allTextInputData.find((text) => text.id == selectedTextId);
+      setText(currentInputData.content);
+      setTextColor(currentInputData.textColor);
+      setOutlineColor(currentInputData.outlineColor);
+      setOutlineSize(currentInputData.outLineSize);
+      
+
+      // setText(currentInputData.content);
+      // setText(currentInputData.content);
+
+     }
+    return () => {
+       dispatch(setSelectedTextState(null));
+    }
+  }, [dispatch,selectedTextId ])
+  
 
   const handleRangeInputChange = (e, key) => {
     const { value } = e.target;
-
 
     dispatch(setRangeState({
       key,
       value: parseInt(value)
     }));
-
-
+    globalDispatch(key,parseInt(value));
   };
 
-  const handleShowContent = (e) => {
-    const { name, value } = e.target;
-    if (value.length > 0) {
-      setShowContent(true);
-      dispatch(setText(e.target.value));
-    } else {
-      setShowContent(false);
-      dispatch(setText(e.target.value));
-    }
+
+  const globalDispatch = (lable,value)=>{
+    dispatch(updateTextState({
+      id: String(currentTextToolbarId),
+      changes: { [lable] : value }
+    }));
   }
 
+  const handleShowContent = (e) => {
+    const { value } = e.target;
+    console.log("valueeeeeeeeeeeeeee", value);
+    setShowContent(value.length > 0);
+    setText(value);
+    console.log("textContaintObject", textContaintObject);
+    if (textContaintObject) {
+      // Text exists: update it
+      dispatch(updateTextState({
+        id: String(currentTextToolbarId),
+        changes: { content: value }
+      }));
+    } else {
+      // Text doesn't exist: add new
+      dispatch(addTextState({
+        value: value,
+        id: String(currentTextToolbarId)
+      }));
+    }
+  };
 
 
   const handleFontSelect = (fontFamilyName, fontFamily) => {
     setSelectedFont(fontFamilyName);
-  // Update font in Redux store
+    // Update font in Redux store
     setShowFontSelector(false);
-    dispatch(setFontFamilyState(fontFamily)); 
+    globalDispatch("fontFamily",selectedFont);
   };
 
   const handleClose = () => {
@@ -91,42 +132,56 @@ const AddTextToolbar = () => {
 
   const textColorChangedFunctionCalled = (color) => {
     setTextColor(color);
-    dispatch(setTextColorState(color)); // Update text color in Redux store
+    dispatch(updateTextState({
+      id: String(currentTextToolbarId),
+      changes: { textColor: color }
+    }));  // Update text color in Redux store
   }
 
   const textOutLineColorChangedFunctionCalled = (color) => {
     setOutlineColor(color);
-    dispatch(setOutLineColorState(color)); // Update text color in Redux store
+    dispatch(updateTextState({
+      id: String(currentTextToolbarId),
+      changes: { outlineColor: outlineColor }
+    })); // Update text color in Redux store
   }
 
   const textOutLineRangeChangedFunctionCalled = (size) => {
     setOutlineSize(size);
-    dispatch(setOutLineSizeState(size)); // Update text color in Redux store
+    dispatch(updateTextState({
+      id: String(currentTextToolbarId),
+      changes: { outLineSize: outlineSize }
+    }));  // Update text color in Redux store
   }
 
   const [flipXValue, setflipXValue] = useState(-1);
   const callForXFlip = useCallback(() => {
-   
-    setflipXValue((prevDirection) => prevDirection * -1); 
-    dispatch(setFlipXState(flipXValue));// Toggle between -1 and 1
+
+    setflipXValue((prevDirection) => prevDirection * -1);
+    globalDispatch("flipX",flipXValue);// Toggle between -1 and 1
   }, [dispatch, flipXValue, setFlipXState]);
 
+
   const colorClassName = flipXValue === -1 ? 'toolbar-box-icons-container-flip1' : 'toolbar-box-icons-container-clickStyle-flip1';
-  const icon =    flipXValue === -1  ?   <FlipFirstIcon/> : <FlipFirstWhiteColorIcon />  ;
+  const icon = flipXValue === -1 ? <FlipFirstIcon /> : <FlipFirstWhiteColorIcon />;
 
 
   //for FLipY
 
   const [flipYValue, setflipYValue] = useState(-1);
   const callForYFlip = useCallback(() => {
-    
-    setflipYValue((prevDirection) => prevDirection * -1); 
-    dispatch(setFlipYState(flipYValue)); 
+
+    setflipYValue((prevDirection) => prevDirection * -1);
+    globalDispatch("flipY",flipYValue);
   }, [dispatch, flipYValue, setFlipYState]);
-  
+
+  useEffect(() => {
+
+    console.log(currentTextToolbarId, "id =>");
+  }, [])
 
   const colorClassNameForY = flipYValue === -1 ? 'toolbar-box-icons-container-flip2' : 'toolbar-box-icons-container-clickStyle-flip2';
-  const iconY =    flipYValue === -1  ?   <FlipSecondIcon/> : <FlipSecondWhiteColorIcon />  ;
+  const iconY = flipYValue === -1 ? <FlipSecondIcon /> : <FlipSecondWhiteColorIcon />;
 
 
   return (
@@ -140,12 +195,17 @@ const AddTextToolbar = () => {
       <div className="toolbar-box">
         {!showFontSelector ? (
           <>
-            <textarea placeholder='Begin Typing....' value={text} onChange={handleShowContent}></textarea>
+            <textarea
+              placeholder="Begin Typing...."
+              onChange={handleShowContent}
+              value={text || ''}
+            />
+
             {showContent && (
               <>
                 <div className='addText-first-toolbar-box-container'>
                   <div className='toolbar-box-icons-and-heading-container'>
-                    <div className='toolbar-box-icons-container' onClick={()=>dispatch(setCenterState("center"))}><span><AlignCenterIcon /></span></div>
+                    <div className='toolbar-box-icons-container' onClick={() => globalDispatch("center","center")}><span><AlignCenterIcon /></span></div>
                     <div className='toolbar-box-heading-container'>Center</div>
                   </div>
 
@@ -159,13 +219,13 @@ const AddTextToolbar = () => {
 
                   <div className='toolbar-box-icons-and-heading-container'>
                     <div className='toolbar-box-icons-container-for-together'>
-                      <div className={colorClassName}   onClick={callForXFlip}><span>{icon}</span></div>
+                      <div className={colorClassName} onClick={callForXFlip}><span>{icon}</span></div>
                       <div className={colorClassNameForY} onClick={callForYFlip}><span>{iconY}</span></div>
                     </div>
                     Flip
                   </div>
 
-                  <div className='toolbar-box-icons-and-heading-container'>
+                  <div className='toolbar-box-icons-and-heading-container' onClick={() => globalDispatch("locked",false)}>
                     <div className='toolbar-box-icons-container'><span><LockIcon /></span></div>
                     <div className='toolbar-box-heading-container'>Lock</div>
                   </div>
@@ -223,7 +283,7 @@ const AddTextToolbar = () => {
                         button={true}
                         range={true}
                         outlineSize={outlineSize}
-                        
+
                       />
                     )}
                   </div>
@@ -271,7 +331,7 @@ const AddTextToolbar = () => {
                       onChange={(e) => handleRangeInputChange(e, 'arc')}
                     />
 
-                 <span><SpanValueBox valueShow={rangeValues.arc} /></span>
+                    <span><SpanValueBox valueShow={rangeValues.arc} /></span>
                   </div>
                 </div>
 
@@ -292,7 +352,7 @@ const AddTextToolbar = () => {
                       onChange={(e) => handleRangeInputChange(e, 'rotate')}
                     />
 
-                <span><SpanValueBox valueShow={rangeValues.rotate} /></span> 
+                    <span><SpanValueBox valueShow={rangeValues.rotate} /></span>
                   </div>
                 </div>
 
@@ -310,10 +370,10 @@ const AddTextToolbar = () => {
                       max="100"
                       value={rangeValues.spacing}
                       onChange={(e) => handleRangeInputChange(e, 'spacing')}
-                      
+
                     />
-                  <span><SpanValueBox valueShow={rangeValues.spacing} /></span>
-             
+                    <span><SpanValueBox valueShow={rangeValues.spacing} /></span>
+
                   </div>
                 </div>
 
