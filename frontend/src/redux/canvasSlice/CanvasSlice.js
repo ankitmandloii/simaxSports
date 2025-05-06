@@ -14,7 +14,8 @@ const canvasSlice = createSlice({
     outLineColor: "#000000",
     outLineSize: 1,
     center: "left",
-    flipXY: 1,
+    flipX: 1,
+    flipY: 1
     
   },
   reducers: {
@@ -40,8 +41,11 @@ const canvasSlice = createSlice({
     setCenterState: (state, action) => {
      state.center = action.payload;
     },
-    setFlipXYState: (state,action) => {
-      state.flipXY = action.payload;
+    setFlipXState: (state,action) => {
+      state.flipX = action.payload;
+    },
+    setFlipYState: (state, action) =>{
+      state.flipY = action.payload;
     }
     
 
@@ -49,5 +53,5 @@ const canvasSlice = createSlice({
   },
 });
 
-export const { setText , setTextColorState, setFontFamilyState, setRangeState, setOutLineColorState, setOutLineSizeState, setCenterState, setFlipXYState } = canvasSlice.actions;
+export const { setText , setTextColorState, setFontFamilyState, setRangeState, setOutLineColorState, setOutLineSizeState, setCenterState, setFlipXState, setFlipYState } = canvasSlice.actions;
 export default canvasSlice.reducer;

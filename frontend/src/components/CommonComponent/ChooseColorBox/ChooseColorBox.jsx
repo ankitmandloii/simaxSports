@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './ChooseColorBox.css';
 import { RxCross1 } from "react-icons/rx";
 import SpanColorBox from '../SpanColorBox/SpanColorBox';
+import SpanValueBox from '../SpanValueBox/SpanValueBox';
 
 const ChooseColorBox = ({
   addColorPopupHAndler,
@@ -11,9 +12,10 @@ const ChooseColorBox = ({
   defaultColor = '#FF0000',
   onColorChange = () => {},
   onRangeChange = () => {},
+  outlineSize
 }) => {
   const [selectedColor, setSelectedColor] = useState(defaultColor);
-  const [rangeValue, setRangeValue] = useState(10);
+  // const [rangeValue, setRangeValue] = useState(10);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,7 +23,7 @@ const ChooseColorBox = ({
 
    
 
-    setRangeValue(parseInt(value));
+    // setRangeValue(parseInt(value));
     onRangeChange(parseInt(value)); // Notify parent
   };
 
@@ -68,10 +70,11 @@ const ChooseColorBox = ({
               name="min"
               min="0"
               max="10"
-              value={rangeValue}
+              value={outlineSize}
               onChange={handleInputChange}
             />
           </div>
+          <span><SpanValueBox valueShow={outlineSize} /></span>
         </div>
       )}
       {button && <button className="black-button select-color-btn">Select Color</button>}

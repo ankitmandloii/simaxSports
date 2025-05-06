@@ -20,18 +20,164 @@ const MainDesignTool = ({ backgroundImage, mirrorCanvasRef }) => {
     const spacingState = useSelector((state) => state.canvas.spacing);
     const outLineColorState = useSelector((state) => state.canvas.outLineColor);
     const outLineSizeState = useSelector((state) => state.canvas.outLineSize);
-    const centerState = useSelector((state)=> state.canvas.center);
-    const flipXYState = useSelector((state)=> state.canvas.flipXY);
+    const centerState = useSelector((state) => state.canvas.center);
+    const flipXState = useSelector((state) => state.canvas.flipX);
+    const flipYState = useSelector((state) => state.canvas.flipY);
+
 
     const [selectedHeight, setSelectedHeight] = useState("");
     const mirrorFabricRef = useRef(null);
 
 
+    // useEffect(() => {
+    //     const canvas = fabricCanvasRef.current;
+    //     if (!canvas) return;
+
+    //     // 👉 ARC TEXT logic (early exit if arcState is true)
+    //     if (arcState) {
+    //         const string = textContentState || '';
+    //         const angle = Math.PI * 0.6;
+    //         const radius = 200;
+    //         const centerX = canvas.getWidth() / 2;
+    //         const centerY = canvas.getHeight() / 2;
+
+    //         // Remove existing active object if it's not arc
+    //         const current = canvas.getActiveObject();
+    //         if (current) canvas.remove(current);
+
+    //         const chars = [];
+    //         const startAngle = -angle / 2;
+    //         const anglePerChar = angle / string.length;
+
+    //         for (let i = 0; i < string.length; i++) {
+    //             const char = string[i];
+    //             const theta = startAngle + i * anglePerChar;
+    //             const x = centerX + radius * Math.cos(theta);
+    //             const y = centerY + radius * Math.sin(theta);
+
+    //             const charObj = new fabric.Text(char, {
+    //                 left: x,
+    //                 top: y,
+    //                 angle: fabric.util.radiansToDegrees(theta + Math.PI / 2),
+    //                 originX: 'center',
+    //                 originY: 'center',
+    //                 fontSize: sizeState,
+    //                 fontFamily: fontFamilyState,
+    //                 fill: textColorState,
+    //                 stroke: outLineColorState,
+    //                 strokeWidth: outLineSizeState,
+    //                 selectable: false,
+    //             });
+
+    //             chars.push(charObj);
+    //         }
+
+    //         const arcGroup = new fabric.Group(chars, {
+    //             left: centerX,
+    //             top: centerY,
+    //             selectable: true,
+    //             name: 'arcText',
+    //         });
+
+    //         canvas.add(arcGroup);
+    //         canvas.setActiveObject(arcGroup);
+    //         canvas.requestRenderAll();
+    //         syncMirrorCanvas();
+    //         return; 
+    //     }
+
+
+    //     const textbox = canvas.getActiveObject();
+    //     if (!textbox || textbox.type !== 'textbox') return;
+
+    //     let updated = false;
+
+    //     if (textContentState !== textbox.text) {
+    //         textbox.text = textContentState;
+    //         updated = true;
+    //     }
+
+    //     if (textbox.fill !== textColorState) {
+    //         textbox.fill = textColorState;
+    //         updated = true;
+    //     }
+
+    //     if (textbox.fontFamily !== fontFamilyState) {
+    //         textbox.fontFamily = fontFamilyState;
+    //         updated = true;
+    //     }
+
+    //     if (textbox.fontSize !== sizeState) {
+    //         textbox.fontSize = sizeState;
+    //         updated = true;
+    //     }
+
+    //     if (textbox.angle !== rotateState) {
+    //         textbox.angle = rotateState;
+    //         updated = true;
+    //     }
+
+    //     if (textbox.charSpacing !== spacingState) {
+    //         textbox.charSpacing = spacingState;
+    //         updated = true;
+    //     }
+
+    //     if (textbox.stroke !== outLineColorState) {
+    //         textbox.stroke = outLineColorState;
+    //         updated = true;
+    //     }
+
+    //     if (textbox.strokeWidth !== outLineSizeState) {
+    //         textbox.strokeWidth = outLineSizeState;
+    //         updated = true;
+    //     }
+
+    //     if (textbox.textAlign !== centerState) {
+    //         textbox.textAlign = centerState;
+    //         updated = true;
+    //     }
+
+    //     if (textbox.scaleX !== flipXState) {
+    //         textbox.scaleX = flipXState;
+    //         updated = true;
+    //     }
+
+    //     if (updated) {
+    //         canvas.requestRenderAll();
+    //         syncMirrorCanvas();
+    //     }
+    // }, [
+    //     textColorState,
+    //     textContentState,
+    //     fontFamilyState,
+    //     sizeState,
+    //     arcState,
+    //     rotateState,
+    //     spacingState,
+    //     outLineSizeState,
+    //     outLineColorState,
+    //     flipXState,
+    //     centerState,
+    // ]);
+
+
+
+
+
+
+
+
+
     useEffect(() => {
         const canvas = fabricCanvasRef.current;
+
+        // expose it globally
+
         if (!canvas) return;
-       
-       
+
+
+
+
         const textbox = canvas.getActiveObject();
 
         // const textbox = canvas.getObjects().find(obj => obj.type === "textbox");
@@ -45,7 +191,7 @@ const MainDesignTool = ({ backgroundImage, mirrorCanvasRef }) => {
             }
 
             if (textbox.fill !== textColorState) {
-                textbox.fill= textColorState; // Set text color
+                textbox.fill = textColorState; // Set text color
                 updated = true;
             }
 
@@ -58,6 +204,7 @@ const MainDesignTool = ({ backgroundImage, mirrorCanvasRef }) => {
                 textbox.fontSize = sizeState; // Set font size
                 updated = true;
             }
+
 
             // if (textbox.strokeWidth !== arcState) {
             //     textbox.set("strokeWidth", arcState); // Set stroke width
@@ -76,12 +223,12 @@ const MainDesignTool = ({ backgroundImage, mirrorCanvasRef }) => {
 
             if (textbox.stroke !== outLineColorState) {
                 textbox.stroke = outLineColorState;
-              
+
                 updated = true;
             }
             if (textbox.strokeWidth !== outLineSizeState) {
-               textbox.strokeWidth = outLineSizeState;
-              
+                textbox.strokeWidth = outLineSizeState;
+
                 updated = true;
             }
 
@@ -90,19 +237,35 @@ const MainDesignTool = ({ backgroundImage, mirrorCanvasRef }) => {
                 updated = true;
             }
 
-            if (textbox.scaleX !== flipXYState) {
-                textbox.scaleX =  flipXYState;
+            if (textbox.scaleX !== flipXState) {
+                textbox.scaleX = flipXState;
                 updated = true;
             }
+            
+            if (textbox.scaleY !== flipYState) {
+                textbox.scaleY = flipYState;
+                updated = true;
+              }
 
-        
+          
+
+
+
+            // if (textbox.arc != arcState) {
+            //     textbox.arc(100, 100, 50, (2 * Math.PI));
+            //     updated = true;
+            // }
+
+
 
             if (updated) {
                 canvas.requestRenderAll();
                 syncMirrorCanvas(); // reflect changes in mirror if needed
             }
+
+
         }
-    }, [textColorState, textContentState, fontFamilyState, sizeState, arcState, rotateState, spacingState, outLineSizeState, outLineColorState,flipXYState,centerState]);
+    }, [textColorState, textContentState, fontFamilyState, sizeState, arcState, rotateState, spacingState, outLineSizeState, outLineColorState, flipXState, flipYState, centerState]);
 
     const iconImages = useMemo(() => {
         const imgs = {};
@@ -369,7 +532,7 @@ const MainDesignTool = ({ backgroundImage, mirrorCanvasRef }) => {
             originX: "center",
             // textAlign: centerState,
             // fontSize: 24,
-            width: 100,
+            
             // fill: textColorState || "#000000",
             // fontFamily: "Segoe UI",
             objectCaching: false,

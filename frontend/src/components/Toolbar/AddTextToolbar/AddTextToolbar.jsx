@@ -12,14 +12,15 @@ import {
   DuplicateIcon,
   AngleActionIcon,
   NoneIcon,
-  FlipFirstWhiteColorIcon
+  FlipFirstWhiteColorIcon,
+  FlipSecondWhiteColorIcon
 } from '../../iconsSvg/CustomIcon';
 import MyCompo from '../../style/MyCompo';
 import FontCollectionList from './FontCollectionList';
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox';
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCenterState, setFlipXYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState,  setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
+import { setCenterState, setFlipXState, setFlipYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState,  setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
 import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
 
 const AddTextToolbar = () => {
@@ -71,8 +72,9 @@ const AddTextToolbar = () => {
 
   const handleFontSelect = (fontFamilyName, fontFamily) => {
     setSelectedFont(fontFamilyName);
-    dispatch(setFontFamilyState(fontFamily)); // Update font in Redux store
+  // Update font in Redux store
     setShowFontSelector(false);
+    dispatch(setFontFamilyState(fontFamily)); 
   };
 
   const handleClose = () => {
@@ -102,14 +104,31 @@ const AddTextToolbar = () => {
     dispatch(setOutLineSizeState(size)); // Update text color in Redux store
   }
 
-  const [flipValue, setflipValue] = useState(-1);
-  const callForFlip = useCallback(() => {
-    dispatch(setFlipXYState(flipValue));
-    setflipValue((prevDirection) => prevDirection * -1); // Toggle between -1 and 1
-  }, [dispatch, flipValue, setFlipXYState]);
+  const [flipXValue, setflipXValue] = useState(-1);
+  const callForXFlip = useCallback(() => {
+   
+    setflipXValue((prevDirection) => prevDirection * -1); 
+    dispatch(setFlipXState(flipXValue));// Toggle between -1 and 1
+  }, [dispatch, flipXValue, setFlipXState]);
 
-  const colorClassName = flipValue === -1 ? 'toolbar-box-icons-container-flip1' : 'toolbar-box-icons-container-clickStyle-flip1';
-  const icon =    flipValue === -1  ?   <FlipFirstIcon/> : <FlipFirstWhiteColorIcon />  ;
+  const colorClassName = flipXValue === -1 ? 'toolbar-box-icons-container-flip1' : 'toolbar-box-icons-container-clickStyle-flip1';
+  const icon =    flipXValue === -1  ?   <FlipFirstIcon/> : <FlipFirstWhiteColorIcon />  ;
+
+
+  //for FLipY
+
+  const [flipYValue, setflipYValue] = useState(-1);
+  const callForYFlip = useCallback(() => {
+    
+    setflipYValue((prevDirection) => prevDirection * -1); 
+    dispatch(setFlipYState(flipYValue)); 
+  }, [dispatch, flipYValue, setFlipYState]);
+  
+
+  const colorClassNameForY = flipYValue === -1 ? 'toolbar-box-icons-container-flip2' : 'toolbar-box-icons-container-clickStyle-flip2';
+  const iconY =    flipYValue === -1  ?   <FlipSecondIcon/> : <FlipSecondWhiteColorIcon />  ;
+
+
   return (
     <div className="toolbar-main-container">
       <div className='toolbar-main-heading'>
@@ -121,7 +140,7 @@ const AddTextToolbar = () => {
       <div className="toolbar-box">
         {!showFontSelector ? (
           <>
-            <textarea placeholder='Begain Typing....' value={text} onChange={handleShowContent}></textarea>
+            <textarea placeholder='Begin Typing....' value={text} onChange={handleShowContent}></textarea>
             {showContent && (
               <>
                 <div className='addText-first-toolbar-box-container'>
@@ -140,8 +159,8 @@ const AddTextToolbar = () => {
 
                   <div className='toolbar-box-icons-and-heading-container'>
                     <div className='toolbar-box-icons-container-for-together'>
-                      <div className={colorClassName}   onClick={callForFlip}><span>{icon}</span></div>
-                      <div className='toolbar-box-icons-container-flip2' ><span><FlipSecondIcon /></span></div>
+                      <div className={colorClassName}   onClick={callForXFlip}><span>{icon}</span></div>
+                      <div className={colorClassNameForY} onClick={callForYFlip}><span>{iconY}</span></div>
                     </div>
                     Flip
                   </div>
@@ -203,6 +222,8 @@ const AddTextToolbar = () => {
                         onRangeChange={textOutLineRangeChangedFunctionCalled} // Update outline size
                         button={true}
                         range={true}
+                        outlineSize={outlineSize}
+                        
                       />
                     )}
                   </div>
