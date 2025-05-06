@@ -47,9 +47,9 @@
   width: 20px;
   background-color: red;
 } */
-.toolbar-box {
+.product-toolbar .toolbar-box {
   background-color: #ffffff;
-  padding: 10px;
+  padding: 5px 5px;
   margin-top: 15px;
   border-radius: 10px;
   /* height: 28.56rem; */
@@ -172,6 +172,9 @@ Border
   justify-content: center;
   align-items: center;
   position: relative;
+  border: none;
+  outline: none;
+  cursor: pointer;
 }
 
 .toolbar-span::after {

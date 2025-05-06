@@ -1,18 +1,10 @@
-// import React from 'react'
-// import  './AddArtToolbar.css'
 
-// const AddArtToolbar = () => {
-//   return (
-//     <div>AddArtToolbar</div>
-//   )
-// }
-
-// export default AddArtToolbar
 import React, { useState } from 'react';
 import '../ProductToolbar/ProductToolbar.css';
 import { SearchIcon } from '../../iconsSvg/CustomIcon';
 import {aiContent} from '../../json/aiicontent';
 import SubArtBox from './SubArtBox';
+import { Link } from 'react-router-dom';
 import './AddArtToolbar.css'
 const AddArtToolbar = () => {
   const [subArt,setSubArt]=useState(false);
@@ -34,7 +26,7 @@ setSubArt(!subArt);
       </div>
 {subArt ? <SubArtBox category={category} goBack={() => setSubArt(false)}/> : <div className="toolbar-box">
         <div className="addArtToolbar-search-box">
-          <input type="text" placeholder="Search for Clipart and AI Generated Art" />
+          <input type="text" placeholder="Search for Clipart " />
           <SearchIcon />
         </div>
 
@@ -47,7 +39,7 @@ setSubArt(!subArt);
           ))}
         </div>
 
-        <button className="upload-button">Upload Your Own Image</button>
+       <Link to='/uploadArt'><button className="upload-button">Upload Your Own Image</button></Link> 
       </div>}
       
     </div>

@@ -29,30 +29,38 @@
 }
 
 .file-list {
-  margin-top: 20px;
+  /* margin-top: 20px; */
   background-color: #fdfdfd;
-  padding: 15px;
+  padding: 6px;
   border-radius: 8px;
-  border: 1px solid #eee;
+  /* border: 1px solid #eee; */
+  /* display: flex;
+  gap:10px */
 }
 
 .file-list h4 {
-  margin-bottom: 10px;
-  font-size: 16px;
-  color: #333;
+  /* margin-bottom: 10px; */
+  font-size: 12px;
+  color: black;
 }
 
 .file-list ul {
   list-style: none;
   padding: 0;
   margin: 0;
+  /* display: flex;
+  flex-wrap: wrap;
+  gap:10px */
 }
 
 .file-list li {
-  padding: 6px 0;
-  font-size: 14px;
+  border: 1px solid #eee; 
+  padding: 4px;
+  font-size: 12px;
+  width: 100%;
   color: #444;
   border-bottom: 1px solid #eee;
+  margin-bottom: 5px;
 }
 
 .file-list li:last-child {
@@ -78,6 +86,7 @@
 .upload-btn-flex-container{
   display: flex;
   justify-content: space-between;
+  gap: 10px;
   margin: 1rem 0;
 }
 .upload-option-btn{
@@ -101,4 +110,38 @@
   font-size: 12px;
   color:  #8A9099;
   ;
+}
+/* -- */
+.file-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border-radius: 6px;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+}
+
+.remove-icon {
+  cursor: pointer;
+  position: absolute;
+  top: -4px;
+  width: 13px;
+  height: 13px;
+  border-radius: 100%;
+  border: 1px solid #8D9095;
+  align-items: center;
+  justify-content: center;
+  display: inline-flex;
+  right: 0;
+  color: black;
+  background: #fff;
+  font-size: 7px;
+  margin-left: 6px;
+  transition: transform 0.2s ease;
+}
+
+.remove-icon:hover {
+  transform: scale(1.2);
 }

@@ -103,7 +103,10 @@ height: 26rem;
     margin-right: 10px;
 }
 
-
+.ProductContainerSmallImageZoomButton:hover{
+     background-color: #6c5ce710;
+     border: 1px solid var(--borderColor);
+}
 .ProductContainerBottoMListButttons {
     display: flex;
     margin: 10px 0;

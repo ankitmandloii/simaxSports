@@ -16,14 +16,14 @@ const ChangePopup = ({ onClose }) => {
   );
 
   return (
-    <div className="popup-overlay">
+    <div className="popup-overlay ">
       <div className="popup-container">
         <div className="popup-header">
           <h2>Change Your Products</h2>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
 
-        <div className="popup-content">
+        <div className="popup-content changProduct-popup">
           <div className="sidebar">
             {categories.map((cat, idx) => (
               <div
@@ -37,7 +37,8 @@ const ChangePopup = ({ onClose }) => {
           </div>
 
           <div className="product-grid">
-  {filteredProducts.length === 0 ? (
+            <div className="product-card-container">
+            {filteredProducts.length === 0 ? (
     <div className="no-products">No products found</div>
   ) : (
     <>
@@ -47,9 +48,13 @@ const ChangePopup = ({ onClose }) => {
           <p>{product.title}</p>
         </div>
       ))}
-      <button className="load-more">LOAD MORE</button>
+     
     </>
+    
   )}
+            </div>
+
+  <button className="load-more">LOAD MORE</button>
 </div>
 
         </div>

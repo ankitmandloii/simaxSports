@@ -11,7 +11,7 @@ import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox'
 const ProductToolbar = () => {
   const [changeProductPopup,setchangeProductPopup]=useState(false);
   const [addColorPopup,setaddColorPopup]=useState(false);
-
+  const [chngColorPopup,setChangeColorPopup]=useState(false);
   const changeProductPopupHandler=()=>{
     setchangeProductPopup(!changeProductPopup);
   }
@@ -21,9 +21,12 @@ const ProductToolbar = () => {
   const Onclose=()=>{
     setchangeProductPopup(false);
   }
+  const chngColorPopupHandler=()=>{
+    setChangeColorPopup(!chngColorPopup);
+  }
   const [showModal, setShowModal] = useState(false);
   return (
-    <div className="toolbar-main-container">
+    <div className="toolbar-main-container product-toolbar">
        {/* <AddProductContainer
         isOpen={showModal}
         onClose={() => setShowModal(false)}
@@ -43,7 +46,8 @@ const ProductToolbar = () => {
     </div>
     <div >
  <h4>Essential red tshirt for men and women</h4>
- <p className='toolbar-span'>Change</p>
+ <button className='toolbar-span' onClick={chngColorPopupHandler}>Change</button>
+ {chngColorPopup && <ChooseColorBox title="Choose Color" chngColorPopupHandler={chngColorPopupHandler}/>}
     </div>
   </div>
   <div className='toolbar-middle-button '>

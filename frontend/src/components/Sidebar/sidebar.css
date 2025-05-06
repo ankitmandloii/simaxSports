@@ -103,8 +103,17 @@ height: 1.375rem;
   transition: background-color 0.2s;
   height: 60px;
     padding: 0px 25px;
+    position: relative;
 }
-
+.spannAI {
+  position: absolute;
+  background-color: red;
+  color: #ffffff;
+  top: 12px;
+  font-size: 11px;
+  padding: 1px 4px;
+  right: 62px;
+}
 .sidebar-link:hover {
   background-color: #6c5ce710;
 }

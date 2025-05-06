@@ -43,7 +43,7 @@ const UploadArtToolbar = () => {
         {/* Option 1: Drag & Drop */}
         <div
           className="upload-option drop-zone"
-          onClick={handleClick}
+          // onClick={handleClick}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
         >
@@ -57,6 +57,25 @@ const UploadArtToolbar = () => {
           {/* <button className="upload-btn" >Upload Files</button> */}
         </div>
         </div>
+        {files.length > 0 && (
+  <div className="file-list">
+    <h4>Selected files:</h4>
+    <ul>
+      {files.map((file, idx) => (
+        <li key={idx} className="file-item">
+          {file.name}
+          <span className="remove-icon" onClick={() => {
+            const updatedFiles = [...files];
+            updatedFiles.splice(idx, 1);
+            setFiles(updatedFiles);
+          }}>
+            ✖
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
 
         {/* Option 2: Google Drive */}
         <div className="upload-btn-flex-container">
@@ -83,18 +102,11 @@ const UploadArtToolbar = () => {
           style={{ display: "none" }}
           onChange={(e) => handleFiles(e.target.files)}
         />
+
+
       </div>
 
-      {files.length > 0 && (
-        <div className="file-list">
-          <h4>Selected files:</h4>
-          <ul>
-            {files.map((file, idx) => (
-              <li key={idx}>{file.name}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      
     </div>
   );
 };

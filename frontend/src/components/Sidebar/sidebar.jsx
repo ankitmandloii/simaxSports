@@ -69,9 +69,10 @@ const AdminSidebar = () => {
               className={`sidebar-link ${
                 location.pathname === item.path ? "active" : ""
               }`}
-              onClick={() => setMobileOpen(false)} // close mobile sidebar on nav
+              onClick={() => setMobileOpen(false)} 
             >
               <span className="sidebar-icon">{item.icon}</span>
+              {item.path=='/addArt' && <span className="spannAI">AI</span>}
               {!collapsed && <span className="sidebar-label">{item.label}</span>}
             </Link>
           ))}
