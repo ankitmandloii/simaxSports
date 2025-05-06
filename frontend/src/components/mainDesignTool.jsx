@@ -1,15 +1,88 @@
 import React, { useEffect, useRef, useMemo, useState } from "react";
-import { fabric } from "fabric";
+import { fabric ,canvas} from "fabric";
 import icons from "../data/icons";
 import { TbArrowForwardUp } from "react-icons/tb";
 import { TbArrowBack } from "react-icons/tb";
 import { VscZoomIn } from "react-icons/vsc";
 import "./MainDesigntool.css"
-const MainDesignTool = ({ backgroundImage,mirrorCanvasRef }) => {
+const MainDesignTool = ({ backgroundImage, mirrorCanvasRef, isFront }) => {
 
     const canvasRef = useRef(null);
     const fabricCanvasRef = useRef(null);
+    const [redoStack, setRedoStack] = useState([]);
+    const [update,setUpdate] = useState(true);
+    const [isRestoring,setIsRestoring] = useState(false);
+    const [history, setHistory] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(-1);
+
     // const mirrorCanvasRef = useRef(null);
+
+    const recordState = () => {
+        const json = fabricCanvasRef.current.toJSON();
+        const lastJson = history[history.length - 1];
+
+        if (JSON.stringify(lastJson) !== JSON.stringify(json)) {
+          const updatedHistory = [...history.slice(0, currentIndex + 1), json];
+          // Limit history to last 50 states
+          if (updatedHistory.length > 50) {
+            updatedHistory.shift();
+          }
+          setHistory(updatedHistory);
+          console.log(updatedHistory);
+          
+          setCurrentIndex(updatedHistory.length - 1);
+        }
+      };
+
+
+    const applyCustomControlsToAllObjects = () => {
+        fabricCanvasRef.current.getObjects().forEach(obj => {
+          obj.setControlsVisibility({
+            mt: false, mb: false, ml: false, mr: false,
+            tl: false, tr: false, bl: false, br: false, mtr: false,
+          });
+          obj.controls = createControls();
+        });
+        fabricCanvasRef.current.requestRenderAll();
+      };    
+ 
+      
+      const saveHistory = () => {
+        if (isRestoring) return;
+        const json = fabricCanvasRef.current.toJSON(); // lighter and cleaner
+        setHistory(prev => [...prev, json]);
+        setRedoStack([]); // Clear redo on new action
+      };
+      
+      const undo = () => {
+        if (currentIndex > 0 && fabricCanvasRef.current) {
+          const newIndex = currentIndex - 1;
+          const json = history[newIndex];
+          console.log("caling undo with this data",json)
+          fabricCanvasRef.current.loadFromJSON(json, () => {
+            applyCustomControlsToAllObjects();
+            // fabricCanvasRef.current.renderAll();
+            syncMirrorCanvas(json);
+          });
+          setCurrentIndex(newIndex);
+        }
+      };
+    
+      // Redo operation
+      const redo = () => {
+        if (currentIndex < history.length - 1 && fabricCanvasRef.current) {
+          const newIndex = currentIndex + 1;
+          const json = history[newIndex];
+          fabricCanvasRef.current.loadFromJSON(json, () => {
+            applyCustomControlsToAllObjects();
+            syncMirrorCanvas(json);
+          });
+          setCurrentIndex(newIndex);
+        }
+      };
+      
+    
+
 
     const [selectedHeight, setSelectedHeight] = useState("");
 
@@ -22,13 +95,14 @@ const MainDesignTool = ({ backgroundImage,mirrorCanvasRef }) => {
         }
         return imgs;
     }, []);
+
     const syncMirrorCanvas = () => {
-        
+        if (!mirrorCanvasRef.current || !mirrorCanvasRef) return;
         const parent = document.querySelector(".corner-img-canva-container");
 
-        const w = parent.clientWidth ;
+        const w = parent.clientWidth;
         const h = parent.clientHeight - 30;
-      console.log(mirrorCanvasRef.current,"dafh")
+        console.log(mirrorCanvasRef.current, "dafh")
         const mirrorCanvas = mirrorCanvasRef.current;
         const mainCanvas = fabricCanvasRef.current;
 
@@ -37,6 +111,7 @@ const MainDesignTool = ({ backgroundImage,mirrorCanvasRef }) => {
         const json = mainCanvas.toJSON();
 
         mirrorCanvas.loadFromJSON(json, () => {
+            console.log(json, "yhl")
             const originalWidth = mainCanvas.getWidth();
             const originalHeight = mainCanvas.getHeight();
 
@@ -243,12 +318,12 @@ const MainDesignTool = ({ backgroundImage,mirrorCanvasRef }) => {
             width: 650,
             height: 410,
             // backgroundColor: "#f1f1f1",
-            backgroundColor: "gray",
+            backgroundColor: "white",
         });
         fabricCanvasRef.current = canvas;
 
-        mirrorCanvasRef.current = new fabric.StaticCanvas( mirrorCanvasRef.current);
-        // const mirrorEl = document.getElementById("mirrorCanvas");
+        const mirrorEl = document.getElementById(`${isFront ? "mirrorFrontCanvas" : "mirrorBackCanvas"}`);
+        mirrorCanvasRef.current = new fabric.StaticCanvas(mirrorEl);
         // if (mirrorCanvasRef.current) {
         // }
 
@@ -324,8 +399,8 @@ const MainDesignTool = ({ backgroundImage,mirrorCanvasRef }) => {
             fabric.Image.fromURL(
                 backgroundImage,
                 (img) => {
-                    const scaleX = 590 / img.width;
-                    const scaleY = 450 / img.height;
+                    const scaleX = 500 / img.width;
+                    const scaleY = 400 / img.height;
 
                     img.set({
                         left: canvas.width / 2,
@@ -365,19 +440,28 @@ const MainDesignTool = ({ backgroundImage,mirrorCanvasRef }) => {
         });
 
         canvas.on("object:modified", syncMirrorCanvas);
-        // canvas.on("object:added", syncMirrorCanvas);
-        // canvas.on("object:removed", syncMirrorCanvas);
-        // canvas.on("object:scaling", syncMirrorCanvas);
-        // canvas.on("object:moving", syncMirrorCanvas);
-        // canvas.on("object:rotating", syncMirrorCanvas);
+        canvas.on("object:added", syncMirrorCanvas);
+        canvas.on("object:removed", syncMirrorCanvas);
+        const record = () => recordState();
+        // canvas.on("object:scaling", record);
+        // canvas.on("object:moving", record);
+        // canvas.on("object:rotating", record);  
+
+
+        // Save history only after actual user interaction
+        // canvas.on("object:modified", record);
+        // canvas.on("object:added", record);
+        // canvas.on("object:removed", record);
 
         canvas.on("selection:cleared", () => setSelectedHeight(""));
 
-        return () => canvas.dispose();
-    }, [iconImages]);
+        return () => {
+            canvas.dispose();
+        }
+    }, [iconImages, isFront]);
 
     return (
-        <div style={{ position: "relative"}} id="">
+        <div style={{ position: "relative" }} id="">
             <canvas ref={canvasRef} />
 
             {/* <div
@@ -410,11 +494,19 @@ const MainDesignTool = ({ backgroundImage,mirrorCanvasRef }) => {
 
 
 
-            {/* <ul className='ProductContainerListButtton'>
-                <li><button className='ProductContainerButton'><span><TbArrowBack /></span>UNDO</button></li>
-                <li><button className='ProductContainerButton'><span><TbArrowForwardUp /></span>REDO</button></li>
-                <li><button className='ProductContainerButton'>START OVER</button></li>
-            </ul> */}
+            <ul className='ProductContainerListButtton'>
+                <li>
+                    <button className='ProductContainerButton' onClick={undo}>
+                        <span><TbArrowBack /></span>UNDO
+                    </button>
+                </li>
+                <li>
+                    <button className='ProductContainerButton' onClick={redo}>
+                        <span><TbArrowForwardUp /></span>REDO
+                    </button>
+                </li>
+            </ul>
+
         </div>
     );
 };

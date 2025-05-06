@@ -9,7 +9,12 @@ import icons from "../data/icons";
 import MainDesignTool from './mainDesignTool';
 
 function ProductContainer() {
-    const mirrorCanvasRef = useRef(null);
+    const mirrorFrontCanvasRef = useRef(null);
+    const mirrorBackCanvasRef = useRef(null);
+    const [isFront,setIsFront] = useState(true);
+    const frontImage = "https://cdn.legacy.images.rushordertees.com/TEuvShinBtMPVWF5k1KxdWaa9gU=/294x294/eztees-catalogrebuild.s3.amazonaws.com/modelImages/cj1611_2be0_fr.jpg";
+    const backImage = "https://cdn.legacy.images.rushordertees.com/HosCo29VM7F3Gtyr-e4swby14RY=/294x294/eztees-catalogrebuild.s3.amazonaws.com/modelImages/c1717_51_fr.jpg"
+
   return (
     <div className='ProductContainerMainDiv'>
       <ul className='ProductContainerListButtton'>
@@ -18,14 +23,15 @@ function ProductContainer() {
         <li><button className='ProductContainerButton'>START OVER</button></li>
       </ul>
       <div className='flex'>
-        <MainDesignTool mirrorCanvasRef = {mirrorCanvasRef} backgroundImage={"https://media-hosting.imagekit.io/93606a2d735f49ec/Rectangle%2011.png?Expires=1840689670&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=JeAcKhIyA8ISWsE9K0i4ZKhwXLNPO-OoxHmavGKAjV6hi6kkkBmUmzh4Y7wbGTN0fZSoUhcBFWetg1I6I8tJ~CwoVxEWhiZ5KuXTSWMALYdLYT-64tSyZcojA-UkGYdAJUIzsrhFFmsXfa4OqNMfsrtXYRjieINgEuYv9hQRqj1gdyVBYv0hi4SV0FydjtwA3tANpzlS1QnF0wnZTC7ZYSpwx7Jg84bQJIVjaW-zXxGXzNzOwxcPZTGHREl7gX4bqQlA0KpkmIc-A8AKvIUcX3TXxoD0yIkvcHZyIGs0QpAK7s6F8jTHX68Ar~sHpCf0CvmykpMXZDR~EWvmxwZzjQ__"} />
+        {/* <MainDesignTool isFront= {isFront} mirrorCanvasRef = {isFront?mirrorFrontCanvasRef:mirrorBackCanvasRef} backgroundImage={isFront?frontImage:backImage}  /> */}
+        <MainDesignTool isFront= {isFront} mirrorCanvasRef = {isFront?mirrorFrontCanvasRef:mirrorBackCanvasRef} backgroundImage={isFront?frontImage:backImage} />
       <div className='Prouduct-mirror-left-container'>
-      <div className="corner-img-canva-container" id="mirror-container">
-          <canvas id="mirrorCanvas" width="300" height="180" ref={mirrorCanvasRef} />
+      <div className="corner-img-canva-container" id="mirror-container" onClick={() => setIsFront(true)}>
+          <canvas id="mirrorFrontCanvas" width="300" height="180" ref={mirrorFrontCanvasRef} />
           <p>Front</p>
         </div>
-        <div className="corner-img-canva-container" id="mirror-container">
-          {/* <canvas id="mirrorCanvas" width="300" height="180" /> */}
+        <div className="corner-img-canva-container" id="mirror-container" onClick={() => setIsFront(false)}>
+          <canvas id="mirrorBackCanvas" width="300" height="180" ref={mirrorBackCanvasRef} />
           <p>Back</p>
         </div>
       </div>
