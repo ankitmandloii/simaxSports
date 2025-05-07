@@ -66,7 +66,7 @@ function FontCollectionList({ onSelect,onClose   }) {
       {
         key: "system_ui",
         name: "System UI",
-        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+        fontFamily: "-apple-system"
       }
     ];
     

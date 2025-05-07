@@ -6,221 +6,42 @@ import { TbArrowBack } from "react-icons/tb";
 import { VscZoomIn } from "react-icons/vsc";
 import "./MainDesigntool.css"
 import { useDispatch, useSelector } from "react-redux";
-import { setSelectedTextState } from "../redux/FrontendDesign/TextFrontendDesignSlice";
+import { deleteTextState, setSelectedTextState } from "../redux/FrontendDesign/TextFrontendDesignSlice";
 import { useNavigate } from "react-router-dom";
 
-const MainDesignTool = ({ backgroundImage, mirrorCanvasRef }) => {
+const MainDesignTool = ({id, backgroundImage, mirrorCanvasRef ,initialDesign }) => {
     const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.texts);
 
     const canvasRef = useRef(null);
     const fabricCanvasRef = useRef(null);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    // const mirrorCanvasRef = useRef(null);
-    const textContentState = useSelector((state) => state.canvas.text);
-    const textColorState = useSelector((state) => state.canvas.textColor);
-    const fontFamilyState = useSelector((state) => state.canvas.fontFamily);
-    const sizeState = useSelector((state) => state.canvas.size);
-
-    const arcState = useSelector((state) => state.canvas.arc);
-    const prevArcState = usePrevious(arcState);//new code
-
-    const rotateState = useSelector((state) => state.canvas.rotate);
-    const spacingState = useSelector((state) => state.canvas.spacing);
-    const outLineColorState = useSelector((state) => state.canvas.outLineColor);
-    const outLineSizeState = useSelector((state) => state.canvas.outLineSize);
-    const centerState = useSelector((state) => state.canvas.center);
-    const flipXState = useSelector((state) => state.canvas.flipX);
-    const flipYState = useSelector((state) => state.canvas.flipY);
+   
 
 
     const [selectedHeight, setSelectedHeight] = useState("");
     const mirrorFabricRef = useRef(null);
-
-    function usePrevious(value) {
-        const ref = useRef();
-        useEffect(() => {
-            ref.current = value;
-        }, [value]);
-        return ref.current;
-    }
-
 
 
 
 
 
     useEffect(() => {
-        const canvas = fabricCanvasRef.current;
-
-        // expose it globally
-
-        if (!canvas) return;
-
-
-
-
-        const textbox = canvas.getActiveObject();
-
-        // const textbox = canvas.getObjects().find(obj => obj.type === "textbox");
-        if (!textbox || textbox.type !== 'textbox') return;
-        if (textbox) {
-            let updated = false;
-
-            if (textContentState !== textbox.text) {
-                textbox.text = textContentState;
-                updated = true;
-            }
-
-            if (textbox.fill !== textColorState) {
-                textbox.fill = textColorState; // Set text color
-                updated = true;
-            }
-
-            if (textbox.fontFamily !== fontFamilyState) {
-                textbox.fontFamily = fontFamilyState; // Set font family
-                updated = true;
-            }
-
-            if (textbox.fontSize !== sizeState) {
-                textbox.fontSize = sizeState; // Set font size
-                updated = true;
-            }
-
-
-            // if (textbox.strokeWidth !== arcState) {
-            //     textbox.set("strokeWidth", arcState); // Set stroke width
-            //     updated = true;
-            // }
-
-            if (textbox.angle !== rotateState) {
-                textbox.angle = rotateState; // Set rotation angle
-                updated = true;
-            }
-
-            if (textbox.charSpacing !== spacingState) {
-                textbox.charSpacing = spacingState; // Set character spacing
-                updated = true;
-            }
-
-            if (textbox.stroke !== outLineColorState) {
-                textbox.stroke = outLineColorState;
-
-                updated = true;
-            }
-            if (textbox.strokeWidth !== outLineSizeState) {
-                textbox.strokeWidth = outLineSizeState;
-
-                updated = true;
-            }
-
-            if (textbox.textAlign !== centerState) {
-                textbox.textAlign = centerState; // Set character spacing
-                updated = true;
-            }
-
-            if (textbox.scaleX !== flipXState) {
-                textbox.scaleX = flipXState;
-                updated = true;
-            }
-
-            if (textbox.scaleY !== flipYState) {
-                textbox.scaleY = flipYState;
-                updated = true;
-            }
-
-
-            if (updated) {
-                canvas.requestRenderAll();
-                syncMirrorCanvas(); // reflect changes in mirror if needed
-            }
-
-            if (prevArcState !== arcState) {
-                // Remove old object
-                const current = canvas.getActiveObject();
-                if (current) canvas.remove(current);
-
-                if (arcState) {
-                    // ➕ ADD horizontal arc-like text logic
-                    const string = textContentState || '';
-                    const centerX = canvas.getWidth() / 2;
-                    const centerY = canvas.getHeight() / 2;
-
-                    const chars = [];
-                    const spacingX = sizeState + 5;
-                    const spacingY = sizeState + 10;
-
-                    const lines = string.split('\t');
-                    const totalHeight = spacingY * lines.length;
-                    const startY = centerY - totalHeight / 2;
-
-                    lines.forEach((line, rowIndex) => {
-                        const totalLineWidth = spacingX * line.length;
-                        const startX = centerX - totalLineWidth / 2;
-
-                        for (let i = 0; i < line.length; i++) {
-                            const char = line[i];
-                            const x = startX + i * spacingX;
-                            const y = startY + rowIndex * spacingY;
-
-                            const charObj = new fabric.Text(char, {
-                                left: x,
-                                top: y,
-                                originX: 'center',
-                                originY: 'center',
-                                fontSize: sizeState,
-                                fontFamily: fontFamilyState,
-                                fill: textColorState,
-                                stroke: outLineColorState,
-                                strokeWidth: outLineSizeState,
-                                selectable: false,
-                            });
-
-                            chars.push(charObj);
-                        }
-                    });
-
-                    const horizontalGroup = new fabric.Group(chars, {
-                        left: centerX,
-                        top: centerY,
-                        selectable: true,
-                        name: 'horizontalTextMultiLine',
-                    });
-
-                    horizontalGroup.setControlsVisibility({
-                        mt: false, mb: false, ml: false, mr: false,
-                        tl: false, tr: false, bl: false, br: false, mtr: false,
-                    });
-
-                    horizontalGroup.controls = createControls();
-
-                    canvas.add(horizontalGroup);
-                    canvas.setActiveObject(horizontalGroup);
-                    canvas.requestRenderAll();
-                    syncMirrorCanvas();
-                } else {
-                    // ➕ Restore standard textbox
-                    const textbox = new fabric.Textbox(textContentState, {
-                        left: canvas.getWidth() / 2,
-                        top: canvas.getHeight() / 2,
-                        originX: 'center',
-                        originY: 'center',
-                        fontSize: sizeState,
-                        fontFamily: fontFamilyState,
-                        fill: textColorState,
-                        stroke: outLineColorState,
-                        strokeWidth: outLineSizeState,
-                    });
-
-                    canvas.add(textbox);
-                    canvas.setActiveObject(textbox);
-                    canvas.requestRenderAll();
-                    syncMirrorCanvas();
-                }
-            }
-
+        const canvas = new fabric.StaticCanvas(canvasRef.current);
+        mirrorCanvasRef.current = canvas;
+      
+        // Load saved design if exists
+        if (initialDesign) {
+          canvas.loadFromJSON(initialDesign, () => {
+            canvas.renderAll();
+          });
         }
-    }, [textColorState, textContentState, fontFamilyState, sizeState, arcState, rotateState, spacingState, outLineSizeState, outLineColorState, flipXState, flipYState, centerState]);
+      
+        return () => {
+          mirrorCanvasRef.current = null;
+          canvas.dispose();
+        };
+      }, []);
 
     const iconImages = useMemo(() => {
         const imgs = {};
@@ -265,6 +86,7 @@ const MainDesignTool = ({ backgroundImage, mirrorCanvasRef }) => {
             mirrorCanvas.setHeight(mirrorHeight);
 
             // Scale and reposition each object
+           
             mirrorCanvas.getObjects().forEach(obj => {
                 obj.scaleX *= scale;
                 obj.scaleY *= scale;
@@ -396,7 +218,9 @@ const MainDesignTool = ({ backgroundImage, mirrorCanvasRef }) => {
 
 
     const deleteObject = (_eventData, transform) => {
+        console.log("delete object called",transform.target.id);
         const canvas = transform.target.canvas;
+        dispatch(deleteTextState(transform.target.id));
         canvas.remove(transform.target);
         canvas.requestRenderAll();
         setSelectedHeight("");
@@ -454,18 +278,26 @@ const MainDesignTool = ({ backgroundImage, mirrorCanvasRef }) => {
         if (Array.isArray(textContaintObject)) {
             textContaintObject.forEach((textInput) => {
                 // Check if the text object already exists by ID
+                if(canvas){
                 let existingTextbox = canvas.getObjects().find(obj => obj.id === textInput.id);
-
+               
                 if (existingTextbox) {
                     // Update the existing text object
                     existingTextbox.set({
                         text: textInput.content || "Default text",
                         top: textInput.position.y || 100,
-                        left: textInput.position.x || 100,
+                        left: textInput.position.x || 110,
                         fontSize: textInput.size || 50,
+                        angle: textInput.rotate|| 0,
+                        charSpacing: textInput.spacing || 0,
                         fill: textInput.textColor || '#000000',
                         fontFamily: textInput.fontFamily || 'Arial',
                         textAlign: textInput.center || 'center',
+                        stroke: textInput.outLineColor || "", //outline color
+                        strokeWidth: textInput.outLineSize || 0, //outline size
+                        scaleX: textInput.flipX,
+                        scaleY: textInput.flipY 
+                       
                     });
 
                     // Re-render the canvas to reflect changes
@@ -476,12 +308,18 @@ const MainDesignTool = ({ backgroundImage, mirrorCanvasRef }) => {
                     const textbox = new fabric.Textbox(textInput.content || "Default text", {
                         id: textInput.id,
                         top: textInput.position.y || 100, // Provide fallback values if position is undefined
-                        left: textInput.position.x || 100,
+                        left: textInput.position.x || 110,
                         originX: 'center',
                         textAlign: textInput.center || 'center',
                         fontSize: textInput.size || 20,  // Default font size if undefined
                         fill: textInput.textColor || 'blue',  // Default text color if undefined
                         fontFamily: textInput.fontFamily || 'Arial',  // Default font family if undefined
+                        textAlign: textInput.center || 'center',
+                        stroke: textInput.outLineColor || "", //outline color
+                        strokeWidth: textInput.outLineSize || 0, //outline size
+                        scaleX: textInput.flipX,
+                        scaleY: textInput.flipY ,
+                        
                         objectCaching: false,
                         borderColor: 'orange',
                         borderDashArray: [4, 4],
@@ -522,6 +360,7 @@ const MainDesignTool = ({ backgroundImage, mirrorCanvasRef }) => {
                     // Dispatch the action to add the new text object to Redux state
                     //   dispatch(addTextState(textInput));
                 }
+            }
             });
         }
     }, [textContaintObject, dispatch]);
@@ -537,7 +376,8 @@ const MainDesignTool = ({ backgroundImage, mirrorCanvasRef }) => {
         });
         fabricCanvasRef.current = canvas;
 
-        mirrorCanvasRef.current = new fabric.StaticCanvas(mirrorCanvasRef.current);
+        // const canvasEl = document.getElementById('mirrorCanvasRef');
+        mirrorCanvasRef.current = new fabric.StaticCanvas(id);
         // const mirrorEl = document.getElementById("mirrorCanvas");
         // if (mirrorCanvasRef.current) {
         // }

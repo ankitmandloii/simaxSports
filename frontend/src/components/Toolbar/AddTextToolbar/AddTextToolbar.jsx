@@ -20,9 +20,10 @@ import FontCollectionList from './FontCollectionList';
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox';
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCenterState, setFlipXState, setFlipYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState, setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
+// import { setCenterState, setFlipXState, setFlipYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState, setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
 import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
 import { addTextState, setSelectedTextState, updateTextState } from '../../..//redux/FrontendDesign/TextFrontendDesignSlice.js';
+// import { setSelectedBackTextState } from '../../../redux/BackendDesign/TextBackendDesignSlice.js';
 
 const AddTextToolbar = () => {
   const dispatch = useDispatch();
@@ -31,22 +32,33 @@ const AddTextToolbar = () => {
   const textContaintObject = allTextInputData.find((text) => text.id == currentTextToolbarId);
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.selectedTextId);
 
-  // const [SizeRangeValue, setRangeValue] = useState([20, 80]);
 
+
+  
+  // const allTextBackInputData =  useSelector((state) => state.TextBackendDesignSlice.texts); 
+  // const textBackContaintObject = allTextBackInputData.find((text) => text.id == currentTextToolbarId);
+  // const selectedBackTextId = useSelector((state) => state.TextBackendDesignSlice.selectedTextId); // current id of toolbar
 
 
 
   // console.log("text", text)
-  const [text,setText] = useState(textContaintObject?textContaintObject.content:"")
+
+  
+  const [text,setText] = useState(textContaintObject?textContaintObject.content: "" )
   const [textColorPopup, setTextColorPopup] = useState(false);
   const [outlineColorPopup, setOutlineColorPopup] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [showFontSelector, setShowFontSelector] = useState(false);
-  const [selectedFont, setSelectedFont] = useState(textContaintObject?textContaintObject.fontFamily:"");
-  const [textColor, setTextColor] = useState(textContaintObject?textContaintObject.textColor:"");
+  const [selectedFont, setSelectedFont] = useState(textContaintObject?textContaintObject.fontFamily: "Inter");
+  const [textColor, setTextColor] = useState(textContaintObject?textContaintObject.textColor:"#000000");
   const [outlineColor, setOutlineColor] = useState(textContaintObject?textContaintObject.outlineColor:"");
-  const [outlineSize, setOutlineSize] = useState(textContaintObject?textContaintObject.outlineSize:"");
-  const rangeValues = useSelector(state => state.canvas);
+  const [outlineSize, setOutlineSize] = useState(textContaintObject?textContaintObject.outlineSize: 0);
+  const [rangeValuesSize, setRangeValuesSize] = useState(textContaintObject?textContaintObject.size: 16);
+  const [rangeValuesRotate, setRangeValuesRotate] = useState(textContaintObject?textContaintObject.rotate: 0);
+  const [rangeValuesSpacing, setRangeValuesSpacing] = useState(textContaintObject?textContaintObject.Spacing: 0);
+  const [flipXValue, setflipXValue] = useState(textContaintObject?textContaintObject.flipX: 1);
+  const [flipYValue, setflipYValue] = useState(textContaintObject?textContaintObject.flipY: 1);
+  const [rangeValuesArc, setRangeValuesArc] = useState(textContaintObject?textContaintObject.arc: 0);
 
 
   useEffect(() => {
@@ -59,26 +71,76 @@ const AddTextToolbar = () => {
       setTextColor(currentInputData.textColor);
       setOutlineColor(currentInputData.outlineColor);
       setOutlineSize(currentInputData.outLineSize);
-      
-
+      setSelectedFont(currentInputData.fontFamily);
+      setOutlineColorPopup(false);
+      setShowFontSelector(false);
+      setRangeValuesSize(currentInputData.size);
+      setRangeValuesSpacing(currentInputData.spacing);
+      setRangeValuesArc(currentInputData.arc);
+      setRangeValuesRotate(currentInputData.rotate);
       // setText(currentInputData.content);
       // setText(currentInputData.content);
 
      }
+    //  else if(selectedBackTextId){
+    //   setCurrentTextToolbarId(selectedBackTextId);
+    //   console.log("is selected id ",selectedBackTextId);
+    //    setShowContent(true);
+    //   const currentInputData = allTextBackInputData.find((text) => text.id == selectedBackTextId);
+    //   setText(currentInputData.content);
+    //   setTextColor(currentInputData.textColor);
+    //   setOutlineColor(currentInputData.outlineColor);
+    //   setOutlineSize(currentInputData.outLineSize);
+    //   setSelectedFont(currentInputData.fontFamily);
+    //   setOutlineColorPopup(false);
+    //   setShowFontSelector(false);
+    //   setRangeValuesSize(currentInputData.size);
+    //   setRangeValuesSpacing(currentInputData.spacing);
+    //   setRangeValuesArc(currentInputData.arc);
+    //   setRangeValuesRotate(currentInputData.rotate);
+    //  }
+
     return () => {
        dispatch(setSelectedTextState(null));
+      //  dispatch(setSelectedBackTextState(null));
     }
-  }, [dispatch,selectedTextId ])
+  }, [dispatch,selectedTextId])
+  //  [dispatch,selectedTextId, selectedBackTextId ])
   
 
-  const handleRangeInputChange = (e, key) => {
+  const handleRangeInputSizeChange = (e) => {
     const { value } = e.target;
 
-    dispatch(setRangeState({
-      key,
-      value: parseInt(value)
-    }));
-    globalDispatch(key,parseInt(value));
+    // dispatch(setRangeState({
+    //   key,
+    //   value: parseInt(value)
+    // }));
+    setRangeValuesSize(value);
+    globalDispatch("size",parseInt(value));
+  };
+
+  const handleRangeInputArcChange = (e) => {
+    const { value } = e.target;
+
+   
+    setRangeValuesArc(value);
+    globalDispatch("arc",parseInt(value));
+  };
+
+  const handleRangeInputRotateChange = (e) => {
+    const { value } = e.target;
+
+   
+    setRangeValuesRotate(value);
+    globalDispatch("rotate",parseInt(value));
+  };
+
+  const handleRangeInputSpacingChange = (e) => {
+    const { value } = e.target;
+
+   
+    setRangeValuesSpacing(value);
+    globalDispatch("spacing",parseInt(value));
   };
 
 
@@ -91,7 +153,7 @@ const AddTextToolbar = () => {
 
   const handleShowContent = (e) => {
     const { value } = e.target;
-    console.log("valueeeeeeeeeeeeeee", value);
+
     setShowContent(value.length > 0);
     setText(value);
     console.log("textContaintObject", textContaintObject);
@@ -101,7 +163,15 @@ const AddTextToolbar = () => {
         id: String(currentTextToolbarId),
         changes: { content: value }
       }));
-    } else {
+    }
+    // else if(textBackContaintObject){
+    //   dispatch(updateTextState({
+    //     id: String(currentTextToolbarId),
+    //     changes: { content: value }
+    //   }));
+    // }
+    
+    else {
       // Text doesn't exist: add new
       dispatch(addTextState({
         value: value,
@@ -112,10 +182,10 @@ const AddTextToolbar = () => {
 
 
   const handleFontSelect = (fontFamilyName, fontFamily) => {
-    setSelectedFont(fontFamilyName);
+    setSelectedFont(fontFamily);
     // Update font in Redux store
     setShowFontSelector(false);
-    globalDispatch("fontFamily",selectedFont);
+    globalDispatch("fontFamily",fontFamily);
   };
 
   const handleClose = () => {
@@ -134,54 +204,60 @@ const AddTextToolbar = () => {
     setTextColor(color);
     dispatch(updateTextState({
       id: String(currentTextToolbarId),
-      changes: { textColor: color }
+      changes: { "textColor": color }
     }));  // Update text color in Redux store
   }
 
-  const textOutLineColorChangedFunctionCalled = (color) => {
-    setOutlineColor(color);
+  const textOutLineColorChangedFunctionCalled = (outlinecolor) => {
+
+    
+    setOutlineColor(outlinecolor);
     dispatch(updateTextState({
       id: String(currentTextToolbarId),
-      changes: { outlineColor: outlineColor }
+      changes: { "outLineColor": outlinecolor }
     })); // Update text color in Redux store
   }
 
-  const textOutLineRangeChangedFunctionCalled = (size) => {
-    setOutlineSize(size);
+  const textOutLineRangeChangedFunctionCalled = (outlinesize) => {
+    setOutlineSize(outlinesize);
     dispatch(updateTextState({
       id: String(currentTextToolbarId),
-      changes: { outLineSize: outlineSize }
+      changes: { "outLineSize": outlinesize }
     }));  // Update text color in Redux store
   }
 
-  const [flipXValue, setflipXValue] = useState(-1);
+
   const callForXFlip = useCallback(() => {
+    setflipXValue((prevDirection) => {
+      const newValue = prevDirection * -1;
+      globalDispatch("flipX", newValue);
+      return newValue;
+    });
+  }, [dispatch]);
 
-    setflipXValue((prevDirection) => prevDirection * -1);
-    globalDispatch("flipX",flipXValue);// Toggle between -1 and 1
-  }, [dispatch, flipXValue, setFlipXState]);
 
-
-  const colorClassName = flipXValue === -1 ? 'toolbar-box-icons-container-flip1' : 'toolbar-box-icons-container-clickStyle-flip1';
-  const icon = flipXValue === -1 ? <FlipFirstIcon /> : <FlipFirstWhiteColorIcon />;
+  const colorClassName = flipXValue === 1 ? 'toolbar-box-icons-container-flip1' : 'toolbar-box-icons-container-clickStyle-flip1';
+  const icon = flipXValue === 1 ? <FlipFirstIcon /> : <FlipFirstWhiteColorIcon />;
 
 
   //for FLipY
 
-  const [flipYValue, setflipYValue] = useState(-1);
-  const callForYFlip = useCallback(() => {
 
-    setflipYValue((prevDirection) => prevDirection * -1);
-    globalDispatch("flipY",flipYValue);
-  }, [dispatch, flipYValue, setFlipYState]);
+  const callForYFlip = useCallback(() => {
+    setflipYValue((prevDirection) => {
+      const newValue = prevDirection * -1;
+      globalDispatch("flipY", newValue);
+      return newValue;
+    });
+  }, [dispatch]);
 
   useEffect(() => {
 
     console.log(currentTextToolbarId, "id =>");
   }, [])
 
-  const colorClassNameForY = flipYValue === -1 ? 'toolbar-box-icons-container-flip2' : 'toolbar-box-icons-container-clickStyle-flip2';
-  const iconY = flipYValue === -1 ? <FlipSecondIcon /> : <FlipSecondWhiteColorIcon />;
+  const colorClassNameForY = flipYValue === 1 ? 'toolbar-box-icons-container-flip2' : 'toolbar-box-icons-container-clickStyle-flip2';
+  const iconY = flipYValue === 1 ? <FlipSecondIcon /> : <FlipSecondWhiteColorIcon />;
 
 
   return (
@@ -304,11 +380,11 @@ const AddTextToolbar = () => {
                       name="min"
                       min="0"
                       max="100"
-                      value={rangeValues.size}
-                      onChange={(e) => handleRangeInputChange(e, 'size')}
+                      value={rangeValuesSize}
+                      onChange={(e) => handleRangeInputSizeChange(e)}
                     />
 
-                    <span><SpanValueBox valueShow={rangeValues.size} /></span>
+                    <span><SpanValueBox valueShow={rangeValuesSize} /></span>
                   </div>
                 </div>
 
@@ -327,11 +403,11 @@ const AddTextToolbar = () => {
                       name="min"
                       min="0"
                       max="360"
-                      value={rangeValues.arc}
-                      onChange={(e) => handleRangeInputChange(e, 'arc')}
+                      value={rangeValuesArc}
+                       onChange={(e) => handleRangeInputArcChange(e)}
                     />
 
-                    <span><SpanValueBox valueShow={rangeValues.arc} /></span>
+                    <span><SpanValueBox valueShow={rangeValuesArc} /></span>
                   </div>
                 </div>
 
@@ -348,11 +424,11 @@ const AddTextToolbar = () => {
                       name="min"
                       min="0"
                       max="360"
-                      value={rangeValues.rotate}
-                      onChange={(e) => handleRangeInputChange(e, 'rotate')}
+                      value={rangeValuesRotate}
+                      onChange={(e) => handleRangeInputRotateChange(e)}
                     />
 
-                    <span><SpanValueBox valueShow={rangeValues.rotate} /></span>
+                    <span><SpanValueBox valueShow={rangeValuesRotate} /></span>
                   </div>
                 </div>
 
@@ -368,11 +444,11 @@ const AddTextToolbar = () => {
                       name="min"
                       min="0"
                       max="100"
-                      value={rangeValues.spacing}
-                      onChange={(e) => handleRangeInputChange(e, 'spacing')}
+                      value={rangeValuesSpacing}
+                       onChange={(e) => handleRangeInputSpacingChange(e)}
 
                     />
-                    <span><SpanValueBox valueShow={rangeValues.spacing} /></span>
+                    <span><SpanValueBox valueShow={rangeValuesSpacing} /></span>
 
                   </div>
                 </div>
