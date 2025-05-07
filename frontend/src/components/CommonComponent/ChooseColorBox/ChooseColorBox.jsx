@@ -17,6 +17,7 @@ const ChooseColorBox = ({
   outlineSize
 }) => {
   const [selectedColor, setSelectedColor] = useState(defaultColor);
+  const [hoveredColor, setHoveredColor] = useState(null);
   // const [rangeValue, setRangeValue] = useState(10);
 
   const handleInputChange = (e) => {
@@ -35,19 +36,26 @@ const ChooseColorBox = ({
     // showColorPopupHandler();
   };
 
-  const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#000000', '#FFFFFF'];
-
+  const colors = [
+    '#FFFFFF', '#C0C0C0', '#808080', '#800000', '#FF0000', '#800080', '#008080', '#000080',
+    '#FF6600', '#FF9900', '#993300', '#FF9999', '#CC3366', '#CC66FF', '#9999FF', '#3366FF',
+    '#0000FF', '#003366', '#339966', '#00FF00', '#66CC00', '#999900', '#FFFF00', '#FFCC00',
+    '#FFCC99', '#CC9966', '#996633', '#660000', '#CC0000', '#9900CC', '#6633CC', '#3366CC',
+    '#3399FF', '#66FFFF', '#66FF66', '#CCFF66', '#FFFF66', '#FF9966', '#FF6633', '#FF3300',
+    '#993366', '#FF66CC', '#FF99FF', '#FFCCCC', '#CC9999', '#996666', '#999966', '#CCCC99'
+  ];
+  
   return (
     <div className="choose-color-box">
       <div className="color-box-top">
         <h6>{title}</h6>
-        <span style={{ cursor: "pointer" }} onClick={addColorPopupHAndler || chngColorPopupHandler || showColorPopupHandler}><RxCross1 /></span>
+        <span  onClick={addColorPopupHAndler || chngColorPopupHandler || showColorPopupHandler}><RxCross1 /></span>
       </div>
 
       <div className="middle-color-pick">
         <span>Color:</span>
-        <SpanColorBox color={selectedColor} />
-        <span>{selectedColor}</span>
+        <SpanColorBox color={hoveredColor || selectedColor} />
+        <span>{hoveredColor || selectedColor}</span>
       </div>
 
       <div className="small-color-box">
@@ -56,6 +64,8 @@ const ChooseColorBox = ({
             key={index}
             color={color}
             onClick={() => handleColorSelect(color)}
+            onMouseEnter={() => setHoveredColor(color)}
+            onMouseLeave={() => setHoveredColor(null)}
           />
         ))}
       </div>

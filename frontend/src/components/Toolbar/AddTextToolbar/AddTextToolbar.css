@@ -162,8 +162,8 @@
 }
 
 .toolbar-box-Font-Value-set-inner-actionlogo span {
-    margin-left: 11px;
-
+    /* margin-left: 11px; */
+  padding: 0 5px;
 }
 
 

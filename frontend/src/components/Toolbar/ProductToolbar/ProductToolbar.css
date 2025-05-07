@@ -10,6 +10,7 @@
   /* width: 22.19rem;
   height: 9.44rem; */
   width: 100%;
+  border-radius: 5px;
 
 }
 
@@ -65,6 +66,7 @@
 }
 
 .choose-color-box {
+  border-radius: 10px;
   padding: 10px;
   position: absolute;
   background-color: #fff;
