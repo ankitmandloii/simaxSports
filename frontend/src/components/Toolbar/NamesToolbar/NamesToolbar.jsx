@@ -7,17 +7,27 @@ import LargeBtn from '../../images/Largebutton.png';
 import InterStatebutton from '../../images/InterStatebutton.png';
 import Collegiatebutton from '../../images/Collegiatebutton.png';
 import AddNamesPopup from '../../PopupComponent/AddNamesPopup/AddNamesPopup';
+import { AngleActionIcon } from '../../iconsSvg/CustomIcon';
+import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox.jsx'
+import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox.jsx'
 
 const NamesToolbar = () => {
   const [activeSide, setActiveSide] = useState(null);
   const [showAddnamesPopup,setshowAddnamesPopup]=useState(false);
+  const [showColorpopup,setshowcolorpopup]=useState(false);
   const showAddnamesPopupHAndler=()=>{
     setshowAddnamesPopup(!showAddnamesPopup)
   }
+  const showColorPopupHandler=()=>{
+    setshowcolorpopup(!showColorpopup)
+  }
+ 
   const [activeSize, setActiveSize] = useState(null);
   const [activeFont, setActiveFont] = useState(null);
-  const [activeColor, setActiveColor] = useState(null);
-
+  const [activeColor, setActiveColor] = useState("white");
+  const handleColorChange = (color) => {
+    setActiveColor(color); 
+  };
   return (
     <div className="toolbar-main-container">
       <div className='toolbar-main-heading'>
@@ -101,7 +111,14 @@ const NamesToolbar = () => {
         <div className="add-names-numberrs-row">
           <h5>Color</h5>
           <div className="names-button-main-container">
-            <button
+              <div className="color-names-box" onClick={showColorPopupHandler}>
+              <span>{activeColor}</span>
+              <SpanColorBox color={activeColor}/>
+                <AngleActionIcon/>
+              </div>
+              {showColorpopup && <ChooseColorBox showColorPopupHandler={showColorPopupHandler} onColorChange={handleColorChange}
+      defaultColor={activeColor}/>}
+            {/* <button
               className={`names-toolbar-button ${activeColor === 'frontColor' ? 'active' : ''}`}
               onClick={() => setActiveColor('frontColor')}
             >
@@ -112,7 +129,7 @@ const NamesToolbar = () => {
               onClick={() => setActiveColor('backColor')}
             >
               <img src={BackBtn} alt="Color2"/>
-            </button>
+            </button> */}
           </div>
         </div>
 

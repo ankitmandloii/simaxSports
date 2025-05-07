@@ -30,3 +30,9 @@ padding-bottom: 10px;
 .namescheckbox-div input[type='checkbox'] {
   accent-color: #0000; 
 }
+.names-button-main-container .color-names-box{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap:10px;
+}

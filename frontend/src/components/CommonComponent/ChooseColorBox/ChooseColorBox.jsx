@@ -5,6 +5,8 @@ import SpanColorBox from '../SpanColorBox/SpanColorBox';
 import SpanValueBox from '../SpanValueBox/SpanValueBox';
 
 const ChooseColorBox = ({
+  showColorPopupHandler,
+  chngColorPopupHandler,
   addColorPopupHAndler,
   title = "Choose Color",
   button = false,
@@ -30,6 +32,7 @@ const ChooseColorBox = ({
   const handleColorSelect = (color) => {
     setSelectedColor(color);
     onColorChange(color); // Notify parent
+    // showColorPopupHandler();
   };
 
   const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#000000', '#FFFFFF'];
@@ -38,7 +41,7 @@ const ChooseColorBox = ({
     <div className="choose-color-box">
       <div className="color-box-top">
         <h6>{title}</h6>
-        <span style={{ cursor: "pointer" }} onClick={addColorPopupHAndler}><RxCross1 /></span>
+        <span style={{ cursor: "pointer" }} onClick={addColorPopupHAndler || chngColorPopupHandler || showColorPopupHandler}><RxCross1 /></span>
       </div>
 
       <div className="middle-color-pick">

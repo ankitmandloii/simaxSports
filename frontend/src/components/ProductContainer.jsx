@@ -7,12 +7,13 @@ import { useMemo, useState } from "react";
 import { fabric } from "fabric";
 import icons from "../data/icons";
 import MainDesignTool from './mainDesignTool';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-
+import { undo,redo } from '../redux/FrontendDesign/TextFrontendDesignSlice';
 
 function ProductContainer() {
   //  const textContent = useSelector((state) => state.canvas.text);
+const dispatch=useDispatch()
   const mirrorCanvasRef = useRef(null);
   const mirrorCanvasRefForBackImage = useRef(null);
   const frontCanvasRef = useRef(null);
@@ -40,8 +41,8 @@ function ProductContainer() {
   return (
     <div className='ProductContainerMainDiv'>
       <ul className='ProductContainerListButtton'>
-        <li><button className='ProductContainerButton'><span><TbArrowBack /></span>UNDO</button></li>
-        <li><button className='ProductContainerButton'><span><TbArrowForwardUp /></span>REDO</button></li>
+        <li><button className='ProductContainerButton' onClick={() => dispatch(undo())}><span><TbArrowBack /></span>UNDO</button></li>
+        <li><button className='ProductContainerButton' onClick={() => dispatch(redo())}><span><TbArrowForwardUp /></span>REDO</button></li>
         <li><button className='ProductContainerButton'>START OVER</button></li>
       </ul>
       <div className='flex'>

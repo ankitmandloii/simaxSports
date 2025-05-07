@@ -28,9 +28,9 @@ import { addTextState, setSelectedTextState, updateTextState } from '../../..//r
 const AddTextToolbar = () => {
   const dispatch = useDispatch();
   const [currentTextToolbarId, setCurrentTextToolbarId] = useState(String(Date.now()));  // current id of toolbar
-  const allTextInputData =  useSelector((state) => state.TextFrontendDesignSlice.texts);
+  const allTextInputData =  useSelector((state) => state.TextFrontendDesignSlice.present.texts);
   const textContaintObject = allTextInputData.find((text) => text.id == currentTextToolbarId);
-  const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.selectedTextId);
+  const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present.selectedTextId);
 
 
 

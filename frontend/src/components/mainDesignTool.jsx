@@ -10,7 +10,7 @@ import { deleteTextState, setSelectedTextState } from "../redux/FrontendDesign/T
 import { useNavigate } from "react-router-dom";
 
 const MainDesignTool = ({id, backgroundImage, mirrorCanvasRef ,initialDesign }) => {
-    const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.texts);
+    const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present.texts);
 
     const canvasRef = useRef(null);
     const fabricCanvasRef = useRef(null);

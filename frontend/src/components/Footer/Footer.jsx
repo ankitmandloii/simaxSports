@@ -13,7 +13,8 @@ const Footer = () => {
     setSavedesignPopup(!savedesignpopup);
   }
   return (
-    <div className='footer-container'>
+    <>
+     <div className='footer-container'>
       <button className="footer-btn ">
         <IoShareSocialOutline />
         SHARE
@@ -37,9 +38,12 @@ const Footer = () => {
         </button>
       </div>
 
-{savedesignpopup && <SaveDesignPopup setSavedesignPopupHandler={setSavedesignPopupHandler}/>}
+
 
     </div>
+    {savedesignpopup && <SaveDesignPopup setSavedesignPopupHandler={setSavedesignPopupHandler}/>}
+    </>
+   
   )
 }
 
