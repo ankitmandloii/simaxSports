@@ -8,6 +8,7 @@ import "./MainDesigntool.css"
 import { useDispatch, useSelector } from "react-redux";
 import { deleteTextState, setSelectedTextState, updateTextState } from "../redux/FrontendDesign/TextFrontendDesignSlice";
 import { useNavigate } from "react-router-dom";
+import LayerModal from "./CommonComponent/layerComponent/layerComponent";
 
 
 const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign }) => {
@@ -157,68 +158,99 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
 
     const createControls = () => ({
         deleteControl: new fabric.Control({
-            x: 0.5,
-            y: -0.5,
-            offsetY: -16,
-            cursorStyle: "pointer",
-            offsetX: 15,
-            mouseUpHandler: deleteObject,
-            render: renderIcon("delete"),
-            cornerSize: 20,
+          x: 0.5,
+          y: -0.5,
+          offsetY: -16,
+          cursorStyle: "pointer",
+          offsetX: 15,
+          mouseUpHandler: deleteObject,
+          render: renderIcon("delete"),
+          cornerSize: 20,
         }),
         resizeControl: new fabric.Control({
-            x: 0.5,
-            y: 0.5,
-            offsetX: 16,
-            offsetY: 16,
-            cursorStyle: "nwse-resize",
-            actionHandler: scaleFromCenter,
-            actionName: "scale",
-            render: renderIcon("resize"),
-            cornerSize: 20,
+          x: 0.5,
+          y: 0.5,
+          offsetX: 16,
+          offsetY: 16,
+          cursorStyle: "nwse-resize",
+          actionHandler: scaleFromCenter,
+          actionName: "scale",
+          render: renderIcon("resize"),
+          cornerSize: 20,
         }),
         rotateControl: new fabric.Control({
-            x: -0.5,
-            y: -0.5,
-            offsetX: -16,
-            offsetY: -16,
-            cursorStyle: "crosshair",
-            actionHandler: rotateWithCenter,
-            actionName: "rotate",
-            render: renderIcon("rotate"),
-            cornerSize: 20,
+          x: -0.5,
+          y: -0.5,
+          offsetX: -16,
+          offsetY: -16,
+          cursorStyle: "crosshair",
+          actionHandler: rotateWithCenter,
+          actionName: "rotate",
+          render: renderIcon("rotate"),
+          cornerSize: 20,
         }),
-        layerControl: new fabric.Control({
-            x: -0.5,
-            y: 0.5,
-            offsetX: -16,
-            offsetY: 16,
-            cursorStyle: "pointer",
-            mouseUpHandler: bringForward,
-            render: renderIcon("layer"),
-            cornerSize: 20,
+        bringForwardControl: new fabric.Control({
+          x: -0.5,
+          y: 0.5,
+          offsetX: -16,
+          offsetY: 16,
+          cursorStyle: "pointer",
+          mouseUpHandler: bringForward,
+          render: renderIcon("layerUp"), // use appropriate icon
+          cornerSize: 20,
+        }),
+        sendBackwardControl: new fabric.Control({
+          x: -0.7,
+          y: 0.5,
+          offsetX: -32,
+          offsetY: 16,
+          cursorStyle: "pointer",
+          mouseUpHandler: sendBackward,
+          render: renderIcon("layerDown"), // use appropriate icon
+          cornerSize: 20,
+        }),
+        bringToFrontControl: new fabric.Control({
+          x: -0.5,
+          y: 0.7,
+          offsetX: -16,
+          offsetY: 32,
+          cursorStyle: "pointer",
+          mouseUpHandler: bringToFront,
+          render: renderIcon("layerTop"), // use appropriate icon
+          cornerSize: 20,
+        }),
+        sendToBackControl: new fabric.Control({
+          x: -0.7,
+          y: 0.7,
+          offsetX: -32,
+          offsetY: 32,
+          cursorStyle: "pointer",
+          mouseUpHandler: sendToBack,
+          render: renderIcon("layerBottom"), // use appropriate icon
+          cornerSize: 20,
         }),
         increaseHeight: new fabric.Control({
-            x: 0,
-            y: -0.5,
-            offsetY: -16,
-            cursorStyle: "n-resize",
-            actionHandler: scaleYFromCenter,
-            actionName: "scaleY",
-            render: renderIcon("height"),
-            cornerSize: 20,
+          x: 0,
+          y: -0.5,
+          offsetY: -16,
+          cursorStyle: "n-resize",
+          actionHandler: scaleYFromCenter,
+          actionName: "scaleY",
+          render: renderIcon("height"),
+          cornerSize: 20,
         }),
         increaseWidth: new fabric.Control({
-            x: 0.5,
-            y: 0,
-            offsetX: 16,
-            cursorStyle: "e-resize",
-            actionHandler: scaleXFromCenter,
-            actionName: "scaleX",
-            render: renderIcon("width"),
-            cornerSize: 20,
+          x: 0.5,
+          y: 0,
+          offsetX: 16,
+          cursorStyle: "e-resize",
+          actionHandler: scaleXFromCenter,
+          actionName: "scaleX",
+          render: renderIcon("width"),
+          cornerSize: 20,
         }),
-    });
+      });
+      
 
 
 
@@ -231,11 +263,43 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
         setSelectedHeight("");
         navigate("/product");
     };
+    const bringForward = (eventData, transform) => {
+        alert("bring to Farward")
+        const target = transform.target;
+        target.canvas.bringForward(target);
+        target.canvas.requestRenderAll();
+      };
+      
+      const sendBackward = (eventData, transform) => {
+        alert("send to back")
+        const target = transform.target;
+        target.canvas.sendBackwards(target);
+        target.canvas.requestRenderAll();
+      };
+      
+      const bringToFront = (eventData, transform) => {
+        alert("bring to front")
+        const target = transform.target;
+        target.canvas.bringToFront(target);
+        target.canvas.requestRenderAll();
+      };
+      
+      const sendToBack = (eventData, transform) => {
+        const target = transform.target;
+        const canvas = target.canvas;
+      
+        const beforeIndex = canvas.getObjects().indexOf(target);
+        console.log("Before index:", beforeIndex);
+      
+        canvas.sendToBack(target);
+        canvas.requestRenderAll();
+      
+        const afterIndex = canvas.getObjects().indexOf(target);
+        console.log("After index:", afterIndex);
+      };
+      
+      
 
-    const bringForward = (_eventData, transform) => {
-        transform.target.canvas.bringForward(transform.target);
-        transform.target.canvas.requestRenderAll();
-    };
 
     const scaleFromCenter = (eventData, transform, x, y) => {
         transform.target.set({ centeredScaling: true });
@@ -283,10 +347,12 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
 
         if (Array.isArray(textContaintObject)) {
             textContaintObject.forEach((textInput) => {
-                console.log(textInput,"input data")
+                console.log(textInput, "input data")
                 // Check if the text object already exists by ID
                 if (canvas) {
                     let existingTextbox = canvas.getObjects().find(obj => obj.id === textInput.id);
+
+                    setSelectedObject(existingTextbox);
 
 
                     if (existingTextbox) {
@@ -347,6 +413,9 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
 
                         textbox.controls = createControls();
 
+                        setSelectedObject(textbox);
+
+
                         // Ensure that the textbox width is calculated properly when the content changes
                         textbox.on('changed', (e) => {
                             console.log(e, "text data")
@@ -368,26 +437,25 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
                             )
                         });
 
-        
+
 
                         textbox.on("modified", (e) => {
                             const target = e.target;
-                        
+
                             // Dispatch final position
                             globalDispatch("position", { x: target.left, y: target.top }, textInput.id);
-                        
+
                             // Dispatch final rotation
                             globalDispatch("rotate", target.angle, textInput.id);
-                        
+
                             // Dispatch final font size (based on Y-scale applied during transform)
                             const originalFontSize = textInput.size;
                             const finalFontSize = Math.min(100, Math.round(originalFontSize * target.scaleY));
                             // globalDispatch("size", finalFontSize, textInput.id);
-                        
-                        
+
+
                             canvas.requestRenderAll();
                         });
-                        
 
                         // Set visibility of the controls (resize and rotate)
                         textbox.setControlsVisibility({
@@ -414,7 +482,9 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
             // backgroundColor: "#f1f1f1",
             // backgroundColor: "gray",
         });
+        canvas.preserveObjectStacking = true;
         fabricCanvasRef.current = canvas;
+
 
         // const canvasEl = document.getElementById('mirrorCanvasRef');
         mirrorCanvasRef.current = new fabric.StaticCanvas(id);
@@ -439,30 +509,31 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
             mt: false, mb: false, ml: false, mr: false,
             tl: false, tr: false, bl: false, br: false, mtr: false,
         });
+        
         rect.controls = createControls();
 
 
 
 
-        // fabric.Image.fromURL("https://www.k12digest.com/wp-content/uploads/2024/03/1-3-550x330.jpg", (img) => {
-        //     img.set({
-        //         left: 400,
-        //         top: 300,
-        //         scaleX: 0.5,
-        //         scaleY: 0.5,
-        //         objectCaching: false,
-        //         borderColor: "orange",
-        //         borderDashArray: [4, 4],
-        //         hasBorders: true,
-        //     });
-        //     img.setControlsVisibility({
-        //         mt: false, mb: false, ml: false, mr: false,
-        //         tl: false, tr: false, bl: false, br: false, mtr: false,
-        //     });
-        //     img.controls = createControls();
-        //     canvas.add(img);
-        //     syncMirrorCanvas();
-        // });
+        fabric.Image.fromURL("https://www.k12digest.com/wp-content/uploads/2024/03/1-3-550x330.jpg", (img) => {
+            img.set({
+                left: 400,
+                top: 300,
+                scaleX: 0.5,
+                scaleY: 0.5,
+                objectCaching: false,
+                borderColor: "orange",
+                borderDashArray: [4, 4],
+                hasBorders: true,
+            });
+            img.setControlsVisibility({
+                mt: false, mb: false, ml: false, mr: false,
+                tl: false, tr: false, bl: false, br: false, mtr: false,
+            });
+            img.controls = createControls();
+            canvas.add(img);
+            syncMirrorCanvas();
+        });
         if (backgroundImage) {
             fabric.Image.fromURL(
                 backgroundImage,
@@ -519,11 +590,39 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
 
         // return () => canvas.dispose();
     }, [iconImages]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedObject, setSelectedObject] = useState(null); 
+
+    const handleLayerAction = (action) => {
+        if (selectedObject) {
+            switch (action) {
+                case 'bringForward':
+                    selectedObject.bringForward();
+                    break;
+                case 'sendBackward':
+                    selectedObject.sendBackwards();
+                    break;
+                case 'bringToFront':
+                    selectedObject.bringToFront();
+                    break;
+                case 'sendToBack':
+                    selectedObject.sendToBack();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     return (
         <div style={{ position: "relative" }} id="">
             <canvas ref={canvasRef} />
-
+            <button onClick={() => setIsModalOpen(true)}>Layer</button>
+            <LayerModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onLayerAction={handleLayerAction}
+            />
             {/* <div
                 style={{
                     position: "absolute",

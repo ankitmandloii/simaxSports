@@ -6,6 +6,7 @@ import ProductContainer from './ProductContainer';
 
 const Layout = () => {
   return (
+    
     <div className="layout-main-container">
     
       <div className="layout-container">
