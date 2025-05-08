@@ -6,42 +6,47 @@ import { TbArrowBack } from "react-icons/tb";
 import { VscZoomIn } from "react-icons/vsc";
 import "./MainDesigntool.css"
 import { useDispatch, useSelector } from "react-redux";
-import { deleteTextState, setSelectedTextState } from "../redux/FrontendDesign/TextFrontendDesignSlice";
+import { deleteTextState, setSelectedTextState, updateTextState } from "../redux/FrontendDesign/TextFrontendDesignSlice";
 import { useNavigate } from "react-router-dom";
 
-const MainDesignTool = ({id, backgroundImage, mirrorCanvasRef ,initialDesign }) => {
+
+const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign }) => {
     const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present.texts);
 
     const canvasRef = useRef(null);
     const fabricCanvasRef = useRef(null);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-   
+
 
 
     const [selectedHeight, setSelectedHeight] = useState("");
     const mirrorFabricRef = useRef(null);
 
 
-
-
+    const globalDispatch = (lable, value, id) => {
+        dispatch(updateTextState({
+            ["id"]: id,
+            changes: { [lable]: value }
+        }));
+    }
 
     useEffect(() => {
         const canvas = new fabric.StaticCanvas(canvasRef.current);
         mirrorCanvasRef.current = canvas;
-      
+
         // Load saved design if exists
         if (initialDesign) {
-          canvas.loadFromJSON(initialDesign, () => {
-            canvas.renderAll();
-          });
+            canvas.loadFromJSON(initialDesign, () => {
+                canvas.renderAll();
+            });
         }
-      
+
         return () => {
-          mirrorCanvasRef.current = null;
-          canvas.dispose();
+            mirrorCanvasRef.current = null;
+            canvas.dispose();
         };
-      }, []);
+    }, []);
 
     const iconImages = useMemo(() => {
         const imgs = {};
@@ -86,7 +91,7 @@ const MainDesignTool = ({id, backgroundImage, mirrorCanvasRef ,initialDesign }) 
             mirrorCanvas.setHeight(mirrorHeight);
 
             // Scale and reposition each object
-           
+
             mirrorCanvas.getObjects().forEach(obj => {
                 obj.scaleX *= scale;
                 obj.scaleY *= scale;
@@ -218,12 +223,13 @@ const MainDesignTool = ({id, backgroundImage, mirrorCanvasRef ,initialDesign }) 
 
 
     const deleteObject = (_eventData, transform) => {
-        console.log("delete object called",transform.target.id);
+        console.log("delete object called", transform.target.id);
         const canvas = transform.target.canvas;
         dispatch(deleteTextState(transform.target.id));
         canvas.remove(transform.target);
         canvas.requestRenderAll();
         setSelectedHeight("");
+        navigate("/product");
     };
 
     const bringForward = (_eventData, transform) => {
@@ -277,90 +283,124 @@ const MainDesignTool = ({id, backgroundImage, mirrorCanvasRef ,initialDesign }) 
 
         if (Array.isArray(textContaintObject)) {
             textContaintObject.forEach((textInput) => {
+                console.log(textInput,"input data")
                 // Check if the text object already exists by ID
-                if(canvas){
-                let existingTextbox = canvas.getObjects().find(obj => obj.id === textInput.id);
-               
-                if (existingTextbox) {
-                    // Update the existing text object
-                    existingTextbox.set({
-                        text: textInput.content || "Default text",
-                        top: textInput.position.y || 100,
-                        left: textInput.position.x || 110,
-                        fontSize: textInput.size || 50,
-                        angle: textInput.rotate|| 0,
-                        charSpacing: textInput.spacing || 0,
-                        fill: textInput.textColor || '#000000',
-                        fontFamily: textInput.fontFamily || 'Arial',
-                        textAlign: textInput.center || 'center',
-                        stroke: textInput.outLineColor || "", //outline color
-                        strokeWidth: textInput.outLineSize || 0, //outline size
-                        scaleX: textInput.flipX,
-                        scaleY: textInput.flipY 
-                       
-                    });
+                if (canvas) {
+                    let existingTextbox = canvas.getObjects().find(obj => obj.id === textInput.id);
 
-                    // Re-render the canvas to reflect changes
-                    existingTextbox.setCoords(); // Updates the coordinates for the controls and bounding box
-                    canvas.requestRenderAll();
-                } else {
-                    // If the text object doesn't exist, create a new one
-                    const textbox = new fabric.Textbox(textInput.content || "Default text", {
-                        id: textInput.id,
-                        top: textInput.position.y || 100, // Provide fallback values if position is undefined
-                        left: textInput.position.x || 110,
-                        originX: 'center',
-                        textAlign: textInput.center || 'center',
-                        fontSize: textInput.size || 20,  // Default font size if undefined
-                        fill: textInput.textColor || 'blue',  // Default text color if undefined
-                        fontFamily: textInput.fontFamily || 'Arial',  // Default font family if undefined
-                        textAlign: textInput.center || 'center',
-                        stroke: textInput.outLineColor || "", //outline color
-                        strokeWidth: textInput.outLineSize || 0, //outline size
-                        scaleX: textInput.flipX,
-                        scaleY: textInput.flipY ,
-                        
-                        objectCaching: false,
-                        borderColor: 'orange',
-                        borderDashArray: [4, 4],
-                        hasBorders: true,
-                        editable: false,   // Ensures non-editable
-                    });
 
-                    textbox.controls = createControls();
+                    if (existingTextbox) {
+                        // Update the existing text object
+                        const context = canvas.getContext();
+                        context.font = `${existingTextbox.fontSize}px ${existingTextbox.fontFamily}`;
+                        const measuredWidth = context.measureText(textInput.content).width;
 
-                    // Ensure that the textbox width is calculated properly when the content changes
-                    textbox.on('changed', () => {
-                        const newWidth = textbox.calcTextWidth() + 20; // Calculate width based on text length
-                        textbox.set({ width: newWidth });
+                        existingTextbox.set({
+                            width: Math.min(measuredWidth + 20, 300) // add padding to avoid wrapping
+                        });
                         canvas.requestRenderAll();
-                    });
 
-                    textbox.on("mousedown", (e) => {
-                       dispatch(setSelectedTextState(textInput.id));
-                       navigate("/addText",
-                        {
-                            state:textInput
-                        }
-                       )
+                        existingTextbox.set({
+                            text: textInput.content.trim(),
+                            top: textInput.position.y || 100,
+                            left: textInput.position.x || 110,
+                            fontSize: textInput.size || 50,
+                            angle: textInput.rotate || 0,
+                            charSpacing: textInput.spacing || 0,
+                            fill: textInput.textColor || '#000000',
+                            fontFamily: textInput.fontFamily || 'Arial',
+                            textAlign: textInput.center || 'center',
+                            stroke: textInput.outLineColor || "", //outline color
+                            strokeWidth: textInput.outLineSize || 0, //outline size
+                            flipX: textInput.flipX,
+                            flipY: textInput.flipY,
+                            splitByGrapheme: true,
+                            minWidth: 100,
+                        });
 
-                    });
+                        // Re-render the canvas to reflect changes
+                        existingTextbox.setCoords(); // Updates the coordinates for the controls and bounding box
+                        canvas.requestRenderAll();
+                    } else {
+                        // If the text object doesn't exist, create a new one
+                        const textbox = new fabric.Textbox(textInput.content, {
+                            id: textInput.id,
+                            top: textInput.position.y || 100, // Provide fallback values if position is undefined
+                            left: textInput.position.x || 110,
+                            originX: 'center',
+                            textAlign: textInput.center || 'center',
+                            fontSize: textInput.size || 20,  // Default font size if undefined
+                            fill: textInput.textColor || 'blue',  // Default text color if undefined
+                            fontFamily: textInput.fontFamily || 'Arial',  // Default font family if undefined
+                            textAlign: textInput.center || 'center',
+                            stroke: textInput.outLineColor || "red", //outline color
+                            strokeWidth: textInput.outLineSize || 0, //outline size
+                            flipX: textInput.flipX,
+                            flipY: textInput.flipY,
+                            objectCaching: false,
+                            borderColor: 'orange',
+                            borderDashArray: [4, 4],
+                            hasBorders: true,
+                            wordWrap: false,  // Disable word wrapping
+                            editable: false,   // Ensures non-editable
+                        });
 
-                    // Set visibility of the controls (resize and rotate)
-                    textbox.setControlsVisibility({
-                        mt: false, mb: false, ml: false, mr: false,
-                        tl: false, tr: false, bl: false, br: false, mtr: false,
-                    });
+                        textbox.controls = createControls();
 
-                    // Add the textbox to the canvas
-                    canvas.add(textbox);
-                    canvas.setActiveObject(textbox);  // Set the new object as the active object on the canvas
-                    canvas.requestRenderAll();  // Re-render the canvas to reflect changes
+                        // Ensure that the textbox width is calculated properly when the content changes
+                        textbox.on('changed', (e) => {
+                            console.log(e, "text data")
+                            const textWidth = textbox.calcTextWidth();
+                            const padding = 30;
+                            const newWidth = Math.max(textWidth + padding, 150); // Minimum width
+                            textbox.set({ width: newWidth });
+                            canvas.requestRenderAll();
+                        });
 
-                    // Dispatch the action to add the new text object to Redux state
-                    //   dispatch(addTextState(textInput));
+
+                        textbox.on("mousedown", (e) => {
+
+                            dispatch(setSelectedTextState(textInput.id));
+                            navigate("/addText",
+                                {
+                                    state: textInput
+                                }
+                            )
+                        });
+
+        
+
+                        textbox.on("modified", (e) => {
+                            const target = e.target;
+                        
+                            // Dispatch final position
+                            globalDispatch("position", { x: target.left, y: target.top }, textInput.id);
+                        
+                            // Dispatch final rotation
+                            globalDispatch("rotate", target.angle, textInput.id);
+                        
+                            // Dispatch final font size (based on Y-scale applied during transform)
+                            const originalFontSize = textInput.size;
+                            const finalFontSize = Math.min(100, Math.round(originalFontSize * target.scaleY));
+                            // globalDispatch("size", finalFontSize, textInput.id);
+                        
+                        
+                            canvas.requestRenderAll();
+                        });
+                        
+
+                        // Set visibility of the controls (resize and rotate)
+                        textbox.setControlsVisibility({
+                            mt: false, mb: false, ml: false, mr: false,
+                            tl: false, tr: false, bl: false, br: false, mtr: false,
+                        });
+
+                        // Add the textbox to the canvas
+                        canvas.add(textbox);
+                        canvas.setActiveObject(textbox);  // Set the new object as the active object on the canvas
+                        canvas.requestRenderAll();  // Re-render the canvas to reflect changes
+                    }
                 }
-            }
             });
         }
     }, [textContaintObject, dispatch]);
@@ -404,24 +444,25 @@ const MainDesignTool = ({id, backgroundImage, mirrorCanvasRef ,initialDesign }) 
 
 
 
-        fabric.Image.fromURL("https://www.k12digest.com/wp-content/uploads/2024/03/1-3-550x330.jpg", (img) => {
-            img.set({
-                left: 400,
-                top: 300,
-                scaleX: 0.5,
-                scaleY: 0.5,
-                objectCaching: false,
-                borderColor: "orange",
-                borderDashArray: [4, 4],
-                hasBorders: true,
-            });
-            img.setControlsVisibility({
-                mt: false, mb: false, ml: false, mr: false,
-                tl: false, tr: false, bl: false, br: false, mtr: false,
-            });
-            img.controls = createControls();
-            canvas.add(img);
-        });
+        // fabric.Image.fromURL("https://www.k12digest.com/wp-content/uploads/2024/03/1-3-550x330.jpg", (img) => {
+        //     img.set({
+        //         left: 400,
+        //         top: 300,
+        //         scaleX: 0.5,
+        //         scaleY: 0.5,
+        //         objectCaching: false,
+        //         borderColor: "orange",
+        //         borderDashArray: [4, 4],
+        //         hasBorders: true,
+        //     });
+        //     img.setControlsVisibility({
+        //         mt: false, mb: false, ml: false, mr: false,
+        //         tl: false, tr: false, bl: false, br: false, mtr: false,
+        //     });
+        //     img.controls = createControls();
+        //     canvas.add(img);
+        //     syncMirrorCanvas();
+        // });
         if (backgroundImage) {
             fabric.Image.fromURL(
                 backgroundImage,
@@ -441,6 +482,7 @@ const MainDesignTool = ({id, backgroundImage, mirrorCanvasRef ,initialDesign }) 
                     });
 
                     canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+                    syncMirrorCanvas();
                 },
                 { crossOrigin: "anonymous" }
             );
@@ -448,6 +490,7 @@ const MainDesignTool = ({id, backgroundImage, mirrorCanvasRef ,initialDesign }) 
 
 
         // Disable transformer for multi-selection
+
         canvas.on("selection:created", (e) => {
             if (e.selected.length > 1) {
                 canvas.discardActiveObject();
@@ -474,7 +517,7 @@ const MainDesignTool = ({id, backgroundImage, mirrorCanvasRef ,initialDesign }) 
         // canvas.on("object:rotating", syncMirrorCanvas);
 
 
-        return () => canvas.dispose();
+        // return () => canvas.dispose();
     }, [iconImages]);
 
     return (
