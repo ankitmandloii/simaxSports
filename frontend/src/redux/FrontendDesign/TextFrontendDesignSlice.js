@@ -83,10 +83,10 @@ const createNewText = ({ value, id }, length) => ({
   spacing: 10,
   arc: 0,
   outLineColor: "",
-  outLineSize: 0,
-  center: "left",
-  flipX: 1,
-  flipY: 1,
+  outLineSize: 0.5,
+  center: "center",
+  flipX: false,
+  flipY: false,
   width: 200,
   height: 50,
   position: { x: 300, y: 100 },
@@ -101,7 +101,7 @@ const initialState = {
     selectedTextId: null,
     texts: []
   },
-  future: []
+  future: [],
 };
 
 const TextFrontendDesignSlice = createSlice({
@@ -116,11 +116,30 @@ const TextFrontendDesignSlice = createSlice({
       state.future = [];
     },
 
+    duplicateTextState: (state, action) => {
+      state.past.push(JSON.parse(JSON.stringify(state.present)));
+      const idToDuplicate = action.payload;
+      const textToDuplicate = state.present.texts.find(t => t.id === idToDuplicate);
+      if (textToDuplicate) {
+        const newText = {
+          ...JSON.parse(JSON.stringify(textToDuplicate)),
+          id: nanoid(),
+          position: {
+            x: textToDuplicate.position.x + 20, 
+            y: textToDuplicate.position.y + 20
+          },
+          layerIndex: state.present.texts.length // bring to top
+        };
+        state.present.texts.push(newText);
+        state.future = [];
+      }
+    },
+
     updateTextState: (state, action) => {
       state.past.push(JSON.parse(JSON.stringify(state.present)));
       const { id, changes } = action.payload;
       const text = state.present.texts.find(t => t.id === id);
-      if (text) Object.assign(text, changes);
+      if (text && !text.locked ) Object.assign(text, changes);
       state.future = [];
     },
 
@@ -191,7 +210,8 @@ export const {
   deleteTextState,
   undo,
   redo,
-  resetCanvasState
+  resetCanvasState,
+  duplicateTextState
 } = TextFrontendDesignSlice.actions;
 
 export default TextFrontendDesignSlice.reducer;
