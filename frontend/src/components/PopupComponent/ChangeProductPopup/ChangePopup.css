@@ -155,3 +155,52 @@
 .changProduct-popup .product-grid{
   width: 80%;
 }
+
+/* ================= */
+/* Product grid container with scrolling */
+.changProduct-popup .product-grid {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow-y: auto;
+  height: 100%;
+  position: relative;
+  background: #fff;
+}
+
+/* Scrollable product card container */
+.popup-overlay .product-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-bottom: 70px; /* Space for Load More button */
+}
+
+/* Load More button fixed at bottom */
+.load-more {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 33px;
+  width: 126px;
+  color: #fff;
+  background-color: black;
+  border: 1px solid rgb(34, 32, 32);
+  border-radius: 8px;
+  font-size: 11px;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* No product found styling */
+.no-products {
+  text-align: center;
+  font-size: 16px;
+  color: #999;
+  margin-top: 2rem;
+}
