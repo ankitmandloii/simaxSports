@@ -12,8 +12,11 @@ import LayerModal from "./CommonComponent/layerComponent/layerComponent";
 
 
 const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign }) => {
-    const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present.texts);
-
+    console.log("-------id",id)
+    const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+    console.log("active side",activeSide);
+    const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
+    const isRender = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].setRendering);
     const canvasRef = useRef(null);
     const fabricCanvasRef = useRef(null);
     const dispatch = useDispatch();
@@ -28,7 +31,7 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
     const globalDispatch = (lable, value, id) => {
         dispatch(updateTextState({
             ["id"]: id,
-            changes: { [lable]: value }
+            changes: { [lable]: value },
         }));
     }
 
@@ -64,7 +67,7 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
 
         const w = parent.clientWidth;
         const h = parent.clientHeight - 30;
-        console.log(mirrorCanvasRef.current, "dafh")
+        //console.log(mirrorCanvasRef.current, "dafh")
         const mirrorCanvas = mirrorCanvasRef.current;
         const mainCanvas = fabricCanvasRef.current;
 
@@ -158,104 +161,104 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
 
     const createControls = () => ({
         deleteControl: new fabric.Control({
-          x: 0.5,
-          y: -0.5,
-          offsetY: -16,
-          cursorStyle: "pointer",
-          offsetX: 15,
-          mouseUpHandler: deleteObject,
-          render: renderIcon("delete"),
-          cornerSize: 20,
+            x: 0.5,
+            y: -0.5,
+            offsetY: -16,
+            cursorStyle: "pointer",
+            offsetX: 15,
+            mouseUpHandler: deleteObject,
+            render: renderIcon("delete"),
+            cornerSize: 20,
         }),
         resizeControl: new fabric.Control({
-          x: 0.5,
-          y: 0.5,
-          offsetX: 16,
-          offsetY: 16,
-          cursorStyle: "nwse-resize",
-          actionHandler: scaleFromCenter,
-          actionName: "scale",
-          render: renderIcon("resize"),
-          cornerSize: 20,
+            x: 0.5,
+            y: 0.5,
+            offsetX: 16,
+            offsetY: 16,
+            cursorStyle: "nwse-resize",
+            actionHandler: scaleFromCenter,
+            actionName: "scale",
+            render: renderIcon("resize"),
+            cornerSize: 20,
         }),
         rotateControl: new fabric.Control({
-          x: -0.5,
-          y: -0.5,
-          offsetX: -16,
-          offsetY: -16,
-          cursorStyle: "crosshair",
-          actionHandler: rotateWithCenter,
-          actionName: "rotate",
-          render: renderIcon("rotate"),
-          cornerSize: 20,
+            x: -0.5,
+            y: -0.5,
+            offsetX: -16,
+            offsetY: -16,
+            cursorStyle: "crosshair",
+            actionHandler: rotateWithCenter,
+            actionName: "rotate",
+            render: renderIcon("rotate"),
+            cornerSize: 20,
         }),
         bringForwardControl: new fabric.Control({
-          x: -0.5,
-          y: 0.5,
-          offsetX: -16,
-          offsetY: 16,
-          cursorStyle: "pointer",
-          mouseUpHandler: bringForward,
-          render: renderIcon("layerUp"), // use appropriate icon
-          cornerSize: 20,
+            x: -0.5,
+            y: 0.5,
+            offsetX: -16,
+            offsetY: 16,
+            cursorStyle: "pointer",
+            mouseUpHandler: bringForward,
+            render: renderIcon("layerUp"), // use appropriate icon
+            cornerSize: 20,
         }),
         sendBackwardControl: new fabric.Control({
-          x: -0.7,
-          y: 0.5,
-          offsetX: -32,
-          offsetY: 16,
-          cursorStyle: "pointer",
-          mouseUpHandler: sendBackward,
-          render: renderIcon("layerDown"), // use appropriate icon
-          cornerSize: 20,
+            x: -0.7,
+            y: 0.5,
+            offsetX: -32,
+            offsetY: 16,
+            cursorStyle: "pointer",
+            mouseUpHandler: sendBackward,
+            render: renderIcon("layerDown"), // use appropriate icon
+            cornerSize: 20,
         }),
         bringToFrontControl: new fabric.Control({
-          x: -0.5,
-          y: 0.7,
-          offsetX: -16,
-          offsetY: 32,
-          cursorStyle: "pointer",
-          mouseUpHandler: bringToFront,
-          render: renderIcon("layerTop"), // use appropriate icon
-          cornerSize: 20,
+            x: -0.5,
+            y: 0.7,
+            offsetX: -16,
+            offsetY: 32,
+            cursorStyle: "pointer",
+            mouseUpHandler: bringToFront,
+            render: renderIcon("layerTop"), // use appropriate icon
+            cornerSize: 20,
         }),
         sendToBackControl: new fabric.Control({
-          x: -0.7,
-          y: 0.7,
-          offsetX: -32,
-          offsetY: 32,
-          cursorStyle: "pointer",
-          mouseUpHandler: sendToBack,
-          render: renderIcon("layerBottom"), // use appropriate icon
-          cornerSize: 20,
+            x: -0.7,
+            y: 0.7,
+            offsetX: -32,
+            offsetY: 32,
+            cursorStyle: "pointer",
+            mouseUpHandler: sendToBack,
+            render: renderIcon("layerBottom"), // use appropriate icon
+            cornerSize: 20,
         }),
         increaseHeight: new fabric.Control({
-          x: 0,
-          y: -0.5,
-          offsetY: -16,
-          cursorStyle: "n-resize",
-          actionHandler: scaleYFromCenter,
-          actionName: "scaleY",
-          render: renderIcon("height"),
-          cornerSize: 20,
+            x: 0,
+            y: -0.5,
+            offsetY: -16,
+            cursorStyle: "n-resize",
+            actionHandler: scaleYFromCenter,
+            actionName: "scaleY",
+            render: renderIcon("height"),
+            cornerSize: 20,
         }),
         increaseWidth: new fabric.Control({
-          x: 0.5,
-          y: 0,
-          offsetX: 16,
-          cursorStyle: "e-resize",
-          actionHandler: scaleXFromCenter,
-          actionName: "scaleX",
-          render: renderIcon("width"),
-          cornerSize: 20,
+            x: 0.5,
+            y: 0,
+            offsetX: 16,
+            cursorStyle: "e-resize",
+            actionHandler: scaleXFromCenter,
+            actionName: "scaleX",
+            render: renderIcon("width"),
+            cornerSize: 20,
         }),
-      });
-      
+    });
+
 
 
 
     const deleteObject = (_eventData, transform) => {
-        console.log("delete object called", transform.target.id);
+        //console.log("delete object called", transform.target.id);
         const canvas = transform.target.canvas;
         dispatch(deleteTextState(transform.target.id));
         canvas.remove(transform.target);
@@ -268,37 +271,37 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
         const target = transform.target;
         target.canvas.bringForward(target);
         target.canvas.requestRenderAll();
-      };
-      
-      const sendBackward = (eventData, transform) => {
+    };
+
+    const sendBackward = (eventData, transform) => {
         alert("send to back")
         const target = transform.target;
         target.canvas.sendBackwards(target);
         target.canvas.requestRenderAll();
-      };
-      
-      const bringToFront = (eventData, transform) => {
+    };
+
+    const bringToFront = (eventData, transform) => {
         alert("bring to front")
         const target = transform.target;
         target.canvas.bringToFront(target);
         target.canvas.requestRenderAll();
-      };
-      
-      const sendToBack = (eventData, transform) => {
+    };
+
+    const sendToBack = (eventData, transform) => {
         const target = transform.target;
         const canvas = target.canvas;
-      
+
         const beforeIndex = canvas.getObjects().indexOf(target);
-        console.log("Before index:", beforeIndex);
-      
+        //console.log("Before index:", beforeIndex);
+
         canvas.sendToBack(target);
         canvas.requestRenderAll();
-      
+
         const afterIndex = canvas.getObjects().indexOf(target);
-        console.log("After index:", afterIndex);
-      };
-      
-      
+        //console.log("After index:", afterIndex);
+    };
+
+
 
 
     const scaleFromCenter = (eventData, transform, x, y) => {
@@ -342,136 +345,7 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
     };
 
 
-    useEffect(() => {
-        const canvas = fabricCanvasRef.current;
-
-        if (Array.isArray(textContaintObject)) {
-            textContaintObject.forEach((textInput) => {
-                console.log(textInput, "input data")
-                // Check if the text object already exists by ID
-                if (canvas) {
-                    let existingTextbox = canvas.getObjects().find(obj => obj.id === textInput.id);
-
-                    setSelectedObject(existingTextbox);
-
-
-                    if (existingTextbox) {
-                        // Update the existing text object
-                        const context = canvas.getContext();
-                        context.font = `${existingTextbox.fontSize}px ${existingTextbox.fontFamily}`;
-                        const measuredWidth = context.measureText(textInput.content).width;
-
-                        existingTextbox.set({
-                            width: Math.min(measuredWidth + 20, 300) // add padding to avoid wrapping
-                        });
-                        canvas.requestRenderAll();
-
-                        existingTextbox.set({
-                            text: textInput.content.trim(),
-                            top: textInput.position.y || 100,
-                            left: textInput.position.x || 110,
-                            fontSize: textInput.size || 50,
-                            angle: textInput.rotate || 0,
-                            charSpacing: textInput.spacing || 0,
-                            fill: textInput.textColor || '#000000',
-                            fontFamily: textInput.fontFamily || 'Arial',
-                            textAlign: textInput.center || 'center',
-                            stroke: textInput.outLineColor || "", //outline color
-                            strokeWidth: textInput.outLineSize || 0, //outline size
-                            flipX: textInput.flipX,
-                            flipY: textInput.flipY,
-                            splitByGrapheme: true,
-                            minWidth: 100,
-                        });
-
-                        // Re-render the canvas to reflect changes
-                        existingTextbox.setCoords(); // Updates the coordinates for the controls and bounding box
-                        canvas.requestRenderAll();
-                    } else {
-                        // If the text object doesn't exist, create a new one
-                        const textbox = new fabric.Textbox(textInput.content, {
-                            id: textInput.id,
-                            top: textInput.position.y || 100, // Provide fallback values if position is undefined
-                            left: textInput.position.x || 110,
-                            originX: 'center',
-                            textAlign: textInput.center || 'center',
-                            fontSize: textInput.size || 20,  // Default font size if undefined
-                            fill: textInput.textColor || 'blue',  // Default text color if undefined
-                            fontFamily: textInput.fontFamily || 'Arial',  // Default font family if undefined
-                            textAlign: textInput.center || 'center',
-                            stroke: textInput.outLineColor || "red", //outline color
-                            strokeWidth: textInput.outLineSize || 0, //outline size
-                            flipX: textInput.flipX,
-                            flipY: textInput.flipY,
-                            objectCaching: false,
-                            borderColor: 'orange',
-                            borderDashArray: [4, 4],
-                            hasBorders: true,
-                            wordWrap: false,  // Disable word wrapping
-                            editable: false,   // Ensures non-editable
-                        });
-
-                        textbox.controls = createControls();
-
-                        setSelectedObject(textbox);
-
-
-                        // Ensure that the textbox width is calculated properly when the content changes
-                        textbox.on('changed', (e) => {
-                            console.log(e, "text data")
-                            const textWidth = textbox.calcTextWidth();
-                            const padding = 30;
-                            const newWidth = Math.max(textWidth + padding, 150); // Minimum width
-                            textbox.set({ width: newWidth });
-                            canvas.requestRenderAll();
-                        });
-
-
-                        textbox.on("mousedown", (e) => {
-
-                            dispatch(setSelectedTextState(textInput.id));
-                            navigate("/addText",
-                                {
-                                    state: textInput
-                                }
-                            )
-                        });
-
-
-
-                        textbox.on("modified", (e) => {
-                            const target = e.target;
-
-                            // Dispatch final position
-                            globalDispatch("position", { x: target.left, y: target.top }, textInput.id);
-
-                            // Dispatch final rotation
-                            globalDispatch("rotate", target.angle, textInput.id);
-
-                            // Dispatch final font size (based on Y-scale applied during transform)
-                            const originalFontSize = textInput.size;
-                            const finalFontSize = Math.min(100, Math.round(originalFontSize * target.scaleY));
-                            // globalDispatch("size", finalFontSize, textInput.id);
-
-
-                            canvas.requestRenderAll();
-                        });
-
-                        // Set visibility of the controls (resize and rotate)
-                        textbox.setControlsVisibility({
-                            mt: false, mb: false, ml: false, mr: false,
-                            tl: false, tr: false, bl: false, br: false, mtr: false,
-                        });
-
-                        // Add the textbox to the canvas
-                        canvas.add(textbox);
-                        canvas.setActiveObject(textbox);  // Set the new object as the active object on the canvas
-                        canvas.requestRenderAll();  // Re-render the canvas to reflect changes
-                    }
-                }
-            });
-        }
-    }, [textContaintObject, dispatch]);
+   
 
 
     useEffect(() => {
@@ -509,31 +383,31 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
             mt: false, mb: false, ml: false, mr: false,
             tl: false, tr: false, bl: false, br: false, mtr: false,
         });
-        
+
         rect.controls = createControls();
 
 
 
 
-        fabric.Image.fromURL("https://www.k12digest.com/wp-content/uploads/2024/03/1-3-550x330.jpg", (img) => {
-            img.set({
-                left: 400,
-                top: 300,
-                scaleX: 0.5,
-                scaleY: 0.5,
-                objectCaching: false,
-                borderColor: "orange",
-                borderDashArray: [4, 4],
-                hasBorders: true,
-            });
-            img.setControlsVisibility({
-                mt: false, mb: false, ml: false, mr: false,
-                tl: false, tr: false, bl: false, br: false, mtr: false,
-            });
-            img.controls = createControls();
-            canvas.add(img);
-            syncMirrorCanvas();
-        });
+        // fabric.Image.fromURL("https://www.k12digest.com/wp-content/uploads/2024/03/1-3-550x330.jpg", (img) => {
+        //     img.set({
+        //         left: 400,
+        //         top: 300,
+        //         scaleX: 0.5,
+        //         scaleY: 0.5,
+        //         objectCaching: false,
+        //         borderColor: "orange",
+        //         borderDashArray: [4, 4],
+        //         hasBorders: true,
+        //     });
+        //     img.setControlsVisibility({
+        //         mt: false, mb: false, ml: false, mr: false,
+        //         tl: false, tr: false, bl: false, br: false, mtr: false,
+        //     });
+        //     img.controls = createControls();
+        //     canvas.add(img);
+        //     syncMirrorCanvas();
+        // });
         if (backgroundImage) {
             fabric.Image.fromURL(
                 backgroundImage,
@@ -581,6 +455,44 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
         });
 
         canvas.on("object:modified", syncMirrorCanvas);
+
+
+        canvas.on('object:scaling', function (e) {
+            const obj = e.target;
+        
+            const MAX_WIDTH = 250;
+            const MAX_HEIGHT = 250;
+            const MIN_WIDTH = 20;
+            const MIN_HEIGHT = 20;
+        
+            const currentWidth = obj.width * obj.scaleX;
+            const currentHeight = obj.height * obj.scaleY;
+        
+            let newScaleX = obj.scaleX;
+            let newScaleY = obj.scaleY;
+        
+            if (currentWidth > MAX_WIDTH) {
+                newScaleX = MAX_WIDTH / obj.width;
+            } else if (currentWidth < MIN_WIDTH) {
+                newScaleX = MIN_WIDTH / obj.width;
+            }
+        
+            if (currentHeight > MAX_HEIGHT) {
+                newScaleY = MAX_HEIGHT / obj.height;
+            } else if (currentHeight < MIN_HEIGHT) {
+                newScaleY = MIN_HEIGHT / obj.height;
+            }
+        
+            // Only update if changed
+            if (newScaleX !== obj.scaleX || newScaleY !== obj.scaleY) {
+                const center = obj.getCenterPoint(); // store center before clamping
+                obj.scaleX = newScaleX;
+                obj.scaleY = newScaleY;
+                obj.setPositionByOrigin(center, 'center', 'center'); // restore center
+                obj.setCoords();
+            }
+        });
+        
         // canvas.on("object:added", syncMirrorCanvas);
         // canvas.on("object:removed", syncMirrorCanvas);
         // canvas.on("object:scaling", syncMirrorCanvas);
@@ -589,9 +501,171 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
 
 
         // return () => canvas.dispose();
-    }, [iconImages]);
+    }, [iconImages,id]);
+
+
+    useEffect(() => {
+        const canvas = fabricCanvasRef.current;
+
+        if (Array.isArray(textContaintObject)) {
+            textContaintObject.forEach((textInput) => {
+                console.log(textInput, "input data")
+                // Check if the text object already exists by ID
+                if (canvas) {
+                    let existingTextbox = canvas.getObjects().find(obj => obj.id === textInput.id);
+
+                    setSelectedObject(existingTextbox);
+
+
+                    if (existingTextbox) {
+                        // Update the existing text object
+                        const context = canvas.getContext();
+                        context.font = `${existingTextbox.fontSize}px ${existingTextbox.fontFamily}`;
+                        const measuredWidth = context.measureText(textInput.content).width;
+                        
+                        if(textInput.content == "" || textInput.content.trim() === ""){
+                            canvas.remove(existingTextbox);
+                            return
+                        }
+                        existingTextbox.set({
+                            width: Math.min(measuredWidth + 20, 300) // add padding to avoid wrapping
+                        });
+                        canvas.requestRenderAll();
+
+
+                        console.log("fontsize store in redux", textInput.size);
+                        existingTextbox.set({
+                            text: textInput.content.trim(),
+                            top: textInput.position.y || 100,
+                            left: textInput.position.x || 110,
+                            fontSize: textInput.size,
+                            angle: textInput.rotate || 0,
+                            charSpacing: textInput.spacing || 0,
+                            fill: textInput.textColor || '#000000',
+                            fontFamily: textInput.fontFamily || 'Arial',
+                            textAlign: textInput.center || 'center',
+                            stroke: textInput.outLineColor || "", //outline color
+                            strokeWidth: textInput.outLineSize || 0, //outline size
+                            flipX: textInput.flipX,
+                            flipY: textInput.flipY,
+                            splitByGrapheme: true,
+                            minWidth: 100,
+                        });
+
+                        // Re-render the canvas to reflect changes
+                        existingTextbox.setCoords(); // Updates the coordinates for the controls and bounding box
+                        canvas.requestRenderAll();
+                    } else {
+                        // If the text object doesn't exist, create a new one
+                        const textbox = new fabric.Textbox(textInput.content, {
+                            id: textInput.id,
+                            top: textInput.position.y || 100, // Provide fallback values if position is undefined
+                            left: textInput.position.x || 110,
+                            originX: 'center',
+                            textAlign: textInput.center || 'center',
+                            fontSize: textInput.size,  // Default font size if undefined
+                            fill: textInput.textColor ,  // Default text color if undefined
+                            fontFamily: textInput.fontFamily || 'Arial',  // Default font family if undefined
+                            textAlign: textInput.center ,
+                            stroke: textInput.outLineColor  , //outline color
+                            strokeWidth: textInput.outLineSize ||    0, //outline size
+                            flipX: textInput.flipX,
+                            flipY: textInput.flipY,
+                            angle: textInput.rotate || 0,
+                            objectCaching: false,
+                            borderColor: 'orange',
+                            borderDashArray: [4, 4],
+                            hasBorders: true,
+
+                            wordWrap: false,  // Disable word wrapping
+                            editable: false,   // Ensures non-editable
+                        });
+                       
+                        const context = canvas.getElement().getContext("2d");
+                        context.font = `${textbox.fontSize}px ${textbox.fontFamily}`;
+                        const measuredWidth = context.measureText(textInput.content).width;
+                        textbox.set({
+                          width: Math.min(measuredWidth + 20, 300) // add padding and cap
+                        });
+                        textbox.controls = createControls();
+                        canvas.add(textbox);
+
+                        setSelectedObject(textbox);
+
+
+                        // Ensure that the textbox width is calculated properly when the content changes
+                        textbox.on('changed', (e) => {
+                            //console.log(e, "text data")
+                            const textWidth = textbox.calcTextWidth();
+                            const padding = 30;
+                            const newWidth = Math.max(textWidth + padding, 150); // Minimum width
+                            textbox.set({ width: newWidth });
+                            canvas.requestRenderAll();
+                        });
+
+
+                        textbox.on("mousedown", (e) => {
+
+                            dispatch(setSelectedTextState(textInput.id));
+                            navigate("/addText",
+                                {
+                                    state: textInput
+                                }
+                            )
+                        });
+
+
+
+                        textbox.on("modified", (e) => {
+                            const target = e.target;
+                        
+                            // Dispatch final position
+                            globalDispatch("position", { x: target.left, y: target.top }, textInput.id);
+                        
+                            // Dispatch final rotation
+                            globalDispatch("rotate", target.angle, textInput.id);
+                        
+                            // Calculate final font size based on Y-scale applied during transform
+                            const originalFontSize = textInput.size;
+                            const finalFontSize = Math.min(50, Math.round(originalFontSize * target.scaleY));
+                        
+                            console.log("fontsize calculate in toolbar", finalFontSize);
+                        
+                            // Find the existing textbox
+                            let existingTextbox = canvas.getObjects().find(obj => obj.id === textInput.id);
+                        
+                            // Check if the textbox exists
+                            if (existingTextbox) {
+                                // existingTextbox.set({
+                                //     fontSize: finalFontSize
+                                // });
+                        
+                                // Dispatch the new font size
+                                // globalDispatch("size", finalFontSize, textInput.id);
+                        
+                                // Render canvas again to apply changes
+                                canvas.requestRenderAll();
+                            } else {
+                                console.warn("Textbox not found on canvas for id:", textInput.id);
+                            }
+                        });
+                        
+                        // Set visibility of the controls (resize and rotate)
+                        textbox.setControlsVisibility({
+                            mt: false, mb: false, ml: false, mr: false,
+                            tl: false, tr: false, bl: false, br: false, mtr: false,
+                        });
+
+                        // Add the textbox to the canvas
+                        canvas.setActiveObject(textbox);  // Set the new object as the active object on the canvas
+                        canvas.requestRenderAll();  // Re-render the canvas to reflect changes
+                    }
+                }
+            });
+        }
+    }, [activeSide,isRender, dispatch,id]);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedObject, setSelectedObject] = useState(null); 
+    const [selectedObject, setSelectedObject] = useState(null);
 
     const handleLayerAction = (action) => {
         if (selectedObject) {

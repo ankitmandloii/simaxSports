@@ -11,7 +11,7 @@
 //   reducers: {
 //     addTextState: (state, action) => {
 //       const {value,id} = action.payload;
-//       console.log(value,id,action.payload);
+//       //console.log(value,id,action.payload);
 //       state.texts.push({
 //         id: id,
 //         content: value || 'New Text',
@@ -37,7 +37,7 @@
 
 //     setSelectedBackTextState: (state, action) => {
 //       state.selectedTextId = action.payload;
-//       console.log(state.selectedTextId,"selected item id")
+//       //console.log(state.selectedTextId,"selected item id")
 //     },
 //     updateTextState: (state, action) => {
 //       const { id, changes } = action.payload;

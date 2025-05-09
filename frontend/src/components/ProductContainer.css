@@ -61,6 +61,9 @@ height: 26rem;
     display: flex;
     flex-direction: column;
     margin-left: 20px;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
 }
 .ProductContainerSmallImage {
     object-fit: contain;
@@ -133,7 +136,7 @@ height: 26rem;
 
 .corner-img-canva-container:hover{
   
-    box-shadow: 0 0 0 2px red;
+    box-shadow: 0 0 0 2px blue;
 }
 .corner-img-canva-container p{
     text-align: center;
@@ -144,3 +147,37 @@ height: 26rem;
     border-radius: 10px;
     
 }
+
+
+.design-side-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+  
+  .design-side-buttons button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #f0f0f0;
+    color: #333;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.25s, transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .design-side-buttons button:hover {
+    background-color: #ffa726; /* orange on hover */
+    color: white;
+    transform: translateY(-2px);
+  }
+  
+  .design-side-buttons button:active {
+    background-color: #0288d1; /* sky blue on click */
+    color: white;
+    transform: scale(0.97);
+  }
+  

@@ -27,10 +27,11 @@ import { duplicateTextState, addTextState, setSelectedTextState, updateTextState
 
 const AddTextToolbar = () => {
   const dispatch = useDispatch();
+  const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const [currentTextToolbarId, setCurrentTextToolbarId] = useState(String(Date.now()));  // current id of toolbar
-  const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present.texts);
+  const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   const textContaintObject = allTextInputData.find((text) => text.id == currentTextToolbarId);
-  const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present.selectedTextId);
+  const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
 
 
 
@@ -137,7 +138,8 @@ const AddTextToolbar = () => {
   const globalDispatch = (lable, value) => {
     dispatch(updateTextState({
       id: String(currentTextToolbarId),
-      changes: { [lable]: value }
+      changes: { [lable]: value },
+      isRenderOrNot:true,
     }));
   }
 
@@ -149,18 +151,9 @@ const AddTextToolbar = () => {
     console.log("textContaintObject", textContaintObject);
     if (textContaintObject) {
       // Text exists: update it
-      dispatch(updateTextState({
-        id: String(currentTextToolbarId),
-        changes: { content: value }
-      }));
+      globalDispatch("content",value);
     }
-    // else if(textBackContaintObject){
-    //   dispatch(updateTextState({
-    //     id: String(currentTextToolbarId),
-    //     changes: { content: value }
-    //   }));
-    // }
-
+    
     else {
       // Text doesn't exist: add new
       dispatch(addTextState({
@@ -192,28 +185,20 @@ const AddTextToolbar = () => {
 
   const textColorChangedFunctionCalled = (color) => {
     setTextColor(color);
-    dispatch(updateTextState({
-      id: String(currentTextToolbarId),
-      changes: { "textColor": color }
-    }));  // Update text color in Redux store
+   globalDispatch("textColor", color);
   }
 
   const textOutLineColorChangedFunctionCalled = (outlinecolor) => {
 
 
     setOutlineColor(outlinecolor);
-    dispatch(updateTextState({
-      id: String(currentTextToolbarId),
-      changes: { "outLineColor": outlinecolor }
-    })); // Update text color in Redux store
+    globalDispatch("outLineColor", outlinecolor);
   }
 
   const textOutLineRangeChangedFunctionCalled = (outlinesize) => {
     setOutlineSize(outlinesize);
-    dispatch(updateTextState({
-      id: String(currentTextToolbarId),
-      changes: { "outLineSize": outlinesize }
-    }));  // Update text color in Redux store
+   
+    globalDispatch("outLineSize", outlinesize);
   }
 
 
@@ -370,8 +355,8 @@ const AddTextToolbar = () => {
                       type="range"
                       id="min"
                       name="min"
-                      min="0"
-                      max="100"
+                      min="10"
+                      max="50"
                       value={rangeValuesSize}
                       onChange={(e) => handleRangeInputSizeChange(e)}
                     />

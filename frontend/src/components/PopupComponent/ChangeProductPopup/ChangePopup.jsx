@@ -27,7 +27,7 @@ const ChangePopup = ({ onClose, onProductSelect }) => {
       }
       setHasMore(data.products.length === PRODUCTS_PER_PAGE);
     } catch (err) {
-      console.error("Error fetching products:", err);
+      //console.error("Error fetching products:", err);
     } finally {
       setLoading(false);
     }

@@ -30,6 +30,6 @@ app.use("/api",routes);
 // app.use("/external/",routes);
 
 app.listen(PORT, function (err) {
-    if (err) console.log(err);
-    console.log("Server listening on PORT", PORT);
+    if (err) //console.log(err);
+    //console.log("Server listening on PORT", PORT);
 });
