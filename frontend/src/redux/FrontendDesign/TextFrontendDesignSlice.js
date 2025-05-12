@@ -148,6 +148,19 @@ const TextFrontendDesignSlice = createSlice({
     //   };
     //   state.future = [];
     // }
+      resetCanvasState: (state) => {
+  state.past.push(JSON.parse(JSON.stringify(state.present)));
+  state.present = {
+    front: { selectedTextId: null, texts: [], setRendering: false },
+    back: { selectedTextId: null, texts: [], setRendering: false },
+    leftSleeve: { selectedTextId: null, texts: [], setRendering: false },
+    rightSleeve: { selectedTextId: null, texts: [], setRendering: false }
+  };
+  state.future = [];
+  console.log("---state",state.present)
+}
+
+
   }
 });
 

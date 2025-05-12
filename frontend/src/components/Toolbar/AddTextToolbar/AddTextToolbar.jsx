@@ -264,7 +264,7 @@ const AddTextToolbar = () => {
 
                   <div className='toolbar-box-icons-and-heading-container'>
                     <div className='toolbar-box-icons-container-for-together'>
-                      <div className='toolbar-box-icons-container-layering1' onClick={() => globalDispatch("layerIndex",1000)}><span><LayeringFirstIcon /></span></div>
+                      <div className='toolbar-box-icons-container-layering1'   onClick={() => globalDispatch("layerIndex",1000)}><span><LayeringFirstIcon /></span></div>
                       <div className='toolbar-box-icons-container-layering2' onClick={() => globalDispatch("layerIndex",0)}><span><LayeringSecondIcon /></span></div>
                     </div>
                     Layering

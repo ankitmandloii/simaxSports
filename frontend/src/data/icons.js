@@ -11,14 +11,14 @@ const icons = {
         "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjkiIGhlaWdodD0iMjciIHZpZXdCb3g9IjAgMCAyOSAyNyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjkiIGhlaWdodD0iMjciIGZpbGw9IndoaXRlIi8+CiAgPHJlY3QgeD0iMSIgeT0iMSIgd2lkdGg9IjI3IiBoZWlnaHQ9IjI1IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxwb2x5Z29uIHBvaW50cz0iNSwxMy41IDExLDkgMTEsMTgiIGZpbGw9IiMzMzMiLz4KICA8cG9seWdvbiBwb2ludHM9IjI0LDEzLjUgMTgsOSAxOCwxOCIgc3Ryb2tlPSJub25lIiBmaWxsPSIjMzMzIi8+Cjwvc3ZnPg==",
     height: 
         "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjciIGhlaWdodD0iMjkiIHZpZXdCb3g9IjAgMCAyNyAyOSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjciIGhlaWdodD0iMjkiIGZpbGw9IndoaXRlIi8+CiAgPHJlY3QgeD0iMSIgeT0iMSIgd2lkdGg9IjI1IiBoZWlnaHQ9IjI3IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxwb2x5Z29uIHBvaW50cz0iMTMuNSw1IDksMTEgMTgsMTEiIGZpbGw9IiMzMzMiLz4KICA8cG9seWdvbiBwb2ludHM9IjEzLjUsMjQgOSwxOCAxOCwxOCIgc3Ryb2tlPSJub25lIiBmaWxsPSIjMzMzIi8+Cjwvc3ZnPg==",
-    layerUp: 
-        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjciIGhlaWdodD0iMjkiIHZpZXdCb3g9IjAgMCAyNyAyOSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjciIGhlaWdodD0iMjkiIGZpbGw9IndoaXRlIi8+CiAgPHJlY3QgeD0iMSIgeT0iMSIgd2lkdGg9IjI1IiBoZWlnaHQ9IjI3IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxwb2x5Z29uIHBvaW50cz0iMTMuNSw1IDksMTEgMTgsMTEiIGZpbGw9IiMzMzMiLz4KICA8cG9seWdvbiBwb2ludHM9IjEzLjUsMjQgOSwxOCAxOCwxOCIgc3Ryb2tlPSJub25lIiBmaWxsPSIjMzMzIi8+Cjwvc3ZnPg==",
-    layerDown: 
-        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjciIGhlaWdodD0iMjkiIHZpZXdCb3g9IjAgMCAyNyAyOSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjciIGhlaWdodD0iMjkiIGZpbGw9IndoaXRlIi8+CiAgPHJlY3QgeD0iMSIgeT0iMSIgd2lkdGg9IjI1IiBoZWlnaHQ9IjI3IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxwb2x5Z29uIHBvaW50cz0iMTMuNSw1IDksMTEgMTgsMTEiIGZpbGw9IiMzMzMiLz4KICA8cG9seWdvbiBwb2ludHM9IjEzLjUsMjQgOSwxOCAxOCwxOCIgc3Ryb2tlPSJub25lIiBmaWxsPSIjMzMzIi8+Cjwvc3ZnPg==",
-    layerTop: 
-        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjciIGhlaWdodD0iMjkiIHZpZXdCb3g9IjAgMCAyNyAyOSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjciIGhlaWdodD0iMjkiIGZpbGw9IndoaXRlIi8+CiAgPHJlY3QgeD0iMSIgeT0iMSIgd2lkdGg9IjI1IiBoZWlnaHQ9IjI3IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxwb2x5Z29uIHBvaW50cz0iMTMuNSw1IDksMTEgMTgsMTEiIGZpbGw9IiMzMzMiLz4KICA8cG9seWdvbiBwb2ludHM9IjEzLjUsMjQgOSwxOCAxOCwxOCIgc3Ryb2tlPSJub25lIiBmaWxsPSIjMzMzIi8+Cjwvc3ZnPg==",
-    layerBottom: 
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTxK-El1cTfP3hI5Jd71MaTAoH-ryKzZWVNw&s",
+    layerUp:
+    "data:image/svg+xml,%3Csvg width='27' height='29' viewBox='0 0 27 29' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='27' height='29' fill='white'/%3E%3Crect x='1' y='1' width='25' height='27' fill='none' stroke='%23999' stroke-width='1'/%3E%3Cpolygon points='13.5,5 9,11 18,11' fill='%23333'/%3E%3Cpolygon points='13.5,24 9,18 18,18' stroke='none' fill='%23333'/%3E%3C/svg%3E",
+  layerDown:
+    "data:image/svg+xml,%3Csvg width='27' height='29' viewBox='0 0 27 29' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='27' height='29' fill='white'/%3E%3Crect x='1' y='1' width='25' height='27' fill='none' stroke='%23999' stroke-width='1'/%3E%3Cpolygon points='13.5,5 9,11 18,11' fill='%23333'/%3E%3Cpolygon points='13.5,24 9,18 18,18' stroke='none' fill='%23333'/%3E%3C/svg%3E",
+  layerTop:
+    "data:image/svg+xml,%3Csvg width='27' height='29' viewBox='0 0 27 29' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='27' height='29' fill='white'/%3E%3Crect x='1' y='1' width='25' height='27' fill='none' stroke='%23999' stroke-width='1'/%3E%3Cpolygon points='13.5,5 9,11 18,11' fill='%23333'/%3E%3Cpolygon points='13.5,24 9,18 18,18' stroke='none' fill='%23333'/%3E%3C/svg%3E",
+  layerBottom:
+    "data:image/svg+xml,%3Csvg width='27' height='29' viewBox='0 0 27 29' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='27' height='29' fill='white'/%3E%3Crect x='1' y='1' width='25' height='27' fill='none' stroke='%23999' stroke-width='1'/%3E%3Cpolygon points='13.5,5 9,11 18,11' fill='%23333'/%3E%3Cpolygon points='13.5,24 9,18 18,18' stroke='none' fill='%23333'/%3E%3C/svg%3E",
 };
 
 export default icons;

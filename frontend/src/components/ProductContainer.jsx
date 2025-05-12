@@ -10,6 +10,7 @@ import MainDesignTool from './mainDesignTool';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { undo, redo, setActiveSide } from '../redux/FrontendDesign/TextFrontendDesignSlice';
+import StartOverConfirmationPopup from './PopupComponent/StartOverPopup/StartOverPopup';
 
 function ProductContainer() {
   //  const textContent = useSelector((state) => state.canvas.text);
@@ -18,7 +19,7 @@ function ProductContainer() {
   const [isDesignBack, setIsDesignBack] = useState(false);
   const [isDesignRightSleeve, seIsDesignRightSleeve] = useState(false);
   const [isDesignLeftSleeve, seIsDesignLeftSleeve] = useState(false);
-
+const [startOverPopup,setStartOverPopup]=useState(false);
   const mirrorCanvasRef = useRef(null);
   const mirrorCanvasRefForBackImage = useRef(null);
   const frontCanvasRef = useRef(null);
@@ -41,18 +42,22 @@ function ProductContainer() {
   const ShowBack = () => {
     dispatch(setActiveSide("back"));
     navigate("/product")
+    
     if (frontCanvasRef.current) {
       frontDesignRef.current = frontCanvasRef.current.toJSON();
     }
     setShowFrontImage(false); // Switch to back
   };
+  const closeStartOverPopup=()=>{
+    setStartOverPopup(!startOverPopup);
+  }
 
   return (
     <div className='ProductContainerMainDiv'>
       <ul className='ProductContainerListButtton'>
         <li><button className='ProductContainerButton' onClick={() => dispatch(undo())}><span><TbArrowBack /></span>UNDO</button></li>
         <li><button className='ProductContainerButton' onClick={() => dispatch(redo())}><span><TbArrowForwardUp /></span>REDO</button></li>
-        <li><button className='ProductContainerButton'>START OVER</button></li>
+        <li><button className='ProductContainerButton' onClick={()=>setStartOverPopup(!startOverPopup)}>START OVER</button></li>
       </ul>
       <div className='flex'>
         {ShowFrontImage ? (
@@ -106,6 +111,7 @@ function ProductContainer() {
           <Link to='/addNames'><li><button className='ProductContainerSmallImageZoomButton'>NAMES & NUMBERS</button></li></Link>
         </ul>
       </div>
+      {startOverPopup && <StartOverConfirmationPopup onCancel={closeStartOverPopup}/>}
     </div>
   )
 }

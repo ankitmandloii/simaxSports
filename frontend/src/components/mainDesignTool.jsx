@@ -12,7 +12,6 @@ import LayerModal from "./CommonComponent/layerComponent/layerComponent";
 
 
 const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign }) => {
-    console.log("-------id",id)
     const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
     console.log("active side",activeSide);
     const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
@@ -22,6 +21,8 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+ 
+    const [selectedpopup, setSelectedpopup] = useState(false);
 
 
     const [selectedHeight, setSelectedHeight] = useState("");
@@ -192,46 +193,58 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
             render: renderIcon("rotate"),
             cornerSize: 20,
         }),
-        bringForwardControl: new fabric.Control({
-            x: -0.5,
-            y: 0.5,
-            offsetX: -16,
-            offsetY: 16,
-            cursorStyle: "pointer",
-            mouseUpHandler: bringForward,
-            render: renderIcon("layerUp"), // use appropriate icon
-            cornerSize: 20,
-        }),
-        sendBackwardControl: new fabric.Control({
-            x: -0.7,
-            y: 0.5,
-            offsetX: -32,
-            offsetY: 16,
-            cursorStyle: "pointer",
-            mouseUpHandler: sendBackward,
-            render: renderIcon("layerDown"), // use appropriate icon
-            cornerSize: 20,
-        }),
         bringToFrontControl: new fabric.Control({
             x: -0.5,
             y: 0.7,
             offsetX: -16,
             offsetY: 32,
             cursorStyle: "pointer",
-            mouseUpHandler: bringToFront,
-            render: renderIcon("layerTop"), // use appropriate icon
+            mouseUpHandler: bringPopup,
+            render: renderIcon("layer"), // use appropriate icon
             cornerSize: 20,
         }),
-        sendToBackControl: new fabric.Control({
-            x: -0.7,
-            y: 0.7,
-            offsetX: -32,
-            offsetY: 32,
-            cursorStyle: "pointer",
-            mouseUpHandler: sendToBack,
-            render: renderIcon("layerBottom"), // use appropriate icon
-            cornerSize: 20,
-        }),
+        
+        // bringForwardControl: new fabric.Control({
+        //     x: -0.5,
+        //     y: 0.5,
+        //     offsetX: -16,
+        //     offsetY: 16,
+        //     cursorStyle: "pointer",
+        //     mouseUpHandler: bringForward,
+            
+        //     render: renderIcon("layerUp"), // use appropriate icon
+        //     cornerSize: 20,
+        // }),
+        // sendBackwardControl: new fabric.Control({
+        //     x: -0.7,
+        //     y: 0.5,
+        //     offsetX: -32,
+        //     offsetY: 16,
+        //     cursorStyle: "pointer",
+        //     mouseUpHandler: sendBackward,
+        //     render: renderIcon("layerDown"), // use appropriate icon
+        //     cornerSize: 20,
+        // }),
+        // bringToFrontControl: new fabric.Control({
+        //     x: -0.5,
+        //     y: 0.7,
+        //     offsetX: -16,
+        //     offsetY: 32,
+        //     cursorStyle: "pointer",
+        //     mouseUpHandler: bringToFront,
+        //     render: renderIcon("layerTop"), // use appropriate icon
+        //     cornerSize: 20,
+        // }),
+        // sendToBackControl: new fabric.Control({
+        //     x: -0.7,
+        //     y: 0.7,
+        //     offsetX: -32,
+        //     offsetY: 32,
+        //     cursorStyle: "pointer",
+        //     mouseUpHandler: sendToBack,
+        //     render: renderIcon("layerBottom"), // use appropriate icon
+        //     cornerSize: 20,
+        // }),
         increaseHeight: new fabric.Control({
             x: 0,
             y: -0.5,
@@ -268,10 +281,13 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
     };
     const bringForward = (eventData, transform) => {
         alert("bring to Farward")
+        setSelectedpopup(!selectedpopup)
         const target = transform.target;
         target.canvas.bringForward(target);
         target.canvas.requestRenderAll();
     };
+  
+
 
     const sendBackward = (eventData, transform) => {
         alert("send to back")
@@ -286,6 +302,14 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
         target.canvas.bringToFront(target);
         target.canvas.requestRenderAll();
     };
+    const bringPopup=()=>{
+        //  setSelectedpopup(!selectedpopup)
+         setIsModalOpen(true)
+    }
+const bringToFrontt = (object) => {
+    object.canvas.bringToFront(object);
+    object.canvas.requestRenderAll();
+};
 
     const sendToBack = (eventData, transform) => {
         const target = transform.target;
@@ -453,6 +477,14 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
                 handleObjectSelection(e);
             }
         });
+        canvas.on("selection:created", (e) => {
+    if (e.selected.length === 1) {
+        setSelectedObject(e.selected[0]);
+    }
+});
+canvas.on("selection:cleared", () => {
+    setSelectedObject(null);
+});
 
         canvas.on("object:modified", syncMirrorCanvas);
 
@@ -666,32 +698,60 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
     }, [activeSide,isRender, dispatch,id]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedObject, setSelectedObject] = useState(null);
+const handleLayerAction = (action) => {
+     if (selectedObject) {
+         switch (action) {
+             case 'bringForward':
+                 selectedObject.bringForward();
+                 selectedObject.canvas.requestRenderAll();  // Add this line
+                 setSelectedpopup(!selectedpopup);
+                 break;
+             case 'sendBackward':
+                 selectedObject.sendBackwards();
+                 selectedObject.canvas.requestRenderAll();  // Add this line
+                 break;
+             case 'bringToFront':
+                 selectedObject.bringToFront();
+                 selectedObject.canvas.requestRenderAll();  // Add this line
+                 break;
+             case 'sendToBack':
+                 selectedObject.sendToBack();
+                 selectedObject.canvas.requestRenderAll();  // Add this line
+                 break;
+             default:
+                 break;
+         }
+     }
+ };
 
-    const handleLayerAction = (action) => {
-        if (selectedObject) {
-            switch (action) {
-                case 'bringForward':
-                    selectedObject.bringForward();
-                    break;
-                case 'sendBackward':
-                    selectedObject.sendBackwards();
-                    break;
-                case 'bringToFront':
-                    selectedObject.bringToFront();
-                    break;
-                case 'sendToBack':
-                    selectedObject.sendToBack();
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
+    // const handleLayerAction = (action) => {
+    //     if (selectedObject) {
+    //         switch (action) {
+    //             case 'bringForward':
+    //                 selectedObject.bringForward();
+    //                 setSelectedpopup(!selectedpopup)
+    //                 break;
+    //             case 'sendBackward':
+    //                 selectedObject.sendBackwards();
+    //                 break;
+    //             case 'bringToFront':
+    //                 selectedObject.bringToFront();
+    //                 break;
+    //             case 'sendToBack':
+    //                 selectedObject.sendToBack();
+    //                 break;
+    //             default:
+    //                 break;
+    //         }
+    //     }
+    // };
+
 
     return (
         <div style={{ position: "relative" }} id="">
             <canvas ref={canvasRef} />
-            <button onClick={() => setIsModalOpen(true)}>Layer</button>
+       
+
             <LayerModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
