@@ -156,14 +156,18 @@
 }
 
 .toolbar-box-Font-Value-set-inner-actionlogo {
-    font-size: 16px;
-    font-weight: 700;
-
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .toolbar-box-Font-Value-set-inner-actionlogo span {
     /* margin-left: 11px; */
-  padding: 0 5px;
+  /* padding:5px; */
+  display: inline-block;
+  text-align: center;
+
 }
 
 

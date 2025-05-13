@@ -44,6 +44,35 @@ const LayeringSecondIcon = () => (
   </svg>
 );
 
+const LayeringFirstIconWithBlackBg = () => (
+  <div style={{ backgroundColor: 'black', padding: '4px', borderRadius: '4px', display: 'inline-block' }}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none">
+      <path
+        d="M15.9999 4.1485C15.9999 3.90327 15.8397 3.65804 15.5994 3.49455L8.31142 0.0613079C8.15125 -0.020436 7.91098 -0.020436 7.75081 0.0613079L0.382702 3.57629C0.0623496 3.73978 -0.0978266 4.1485 0.0623496 4.47548C0.142438 4.63896 0.222526 4.72071 0.382702 4.80245L2.70526 5.86512L0.382702 6.92779C0.0623496 7.09128 -0.0978266 7.5 0.0623496 7.82697C0.142438 7.99046 0.222526 8.07221 0.382702 8.15395L2.70526 9.21662L0.382702 10.2793C0.0623496 10.4428 -0.0978266 10.8515 0.0623496 11.1785C0.142438 11.342 0.222526 11.4237 0.382702 11.5054L7.67072 14.9387C7.83089 15.0204 8.07116 15.0204 8.23133 14.9387L15.5194 11.5054C15.8397 11.342 15.9999 10.9332 15.8397 10.6063C15.7596 10.4428 15.6795 10.361 15.5194 10.2793L13.1968 9.21662L15.5194 8.15395C15.8397 7.99046 15.9999 7.58174 15.8397 7.25477C15.7596 7.09128 15.6795 7.00954 15.5194 6.92779L13.1968 5.86512L15.5194 4.80245C15.8397 4.72071 15.9999 4.47548 15.9999 4.1485ZM13.6773 11.015L7.99107 13.6308L2.30482 11.015L4.30702 10.0341L7.67072 11.5872C7.83089 11.6689 8.07116 11.6689 8.23133 11.5872L11.595 10.0341L13.6773 11.015ZM13.6773 7.58174L7.99107 10.1975L2.30482 7.58174L4.38711 6.60082L7.75081 8.15395C7.91098 8.23569 8.15125 8.23569 8.31142 8.15395L11.6751 6.60082L13.6773 7.58174Z"
+        fill="white"
+      />
+    </svg>
+  </div>
+);
+const LayeringSecondIconWithBlackBg = () => (
+  <div style={{ backgroundColor: 'black', padding: '4px', borderRadius: '4px', display: 'inline-block' }}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none">
+      <g clipPath="url(#clip0_15736_1810)">
+        <path
+          d="M15.9999 4.1485C15.9999 3.90327 15.8397 3.65804 15.5994 3.49455L8.31142 0.0613079C8.15125 -0.020436 7.91098 -0.020436 7.75081 0.0613079L0.382702 3.57629C0.0623496 3.73978 -0.0978266 4.1485 0.0623496 4.47548C0.142438 4.63896 0.222526 4.72071 0.382702 4.80245L2.70526 5.86512L0.382702 6.92779C0.0623496 7.09128 -0.0978266 7.5 0.0623496 7.82697C0.142438 7.99046 0.222526 8.07221 0.382702 8.15395L2.70526 9.21662L0.382702 10.2793C0.0623496 10.4428 -0.0978266 10.8515 0.0623496 11.1785C0.142438 11.342 0.222526 11.4237 0.382702 11.5054L7.67072 14.9387C7.83089 15.0204 8.07116 15.0204 8.23133 14.9387L15.5194 11.5054C15.8397 11.342 15.9999 10.9332 15.8397 10.6063C15.7596 10.4428 15.6795 10.361 15.5194 10.2793L13.1968 9.21662L15.5194 8.15395C15.8397 7.99046 15.9999 7.58174 15.8397 7.25477C15.7596 7.09128 15.6795 7.00954 15.5194 6.92779L13.1968 5.86512L15.5194 4.80245C15.8397 4.72071 15.9999 4.47548 15.9999 4.1485ZM13.6773 7.58174L7.99107 10.1975L2.30482 7.58174L4.38711 6.60082L7.75081 8.15395C7.91098 8.23569 8.15125 8.23569 8.31142 8.15395L11.6751 6.60082L13.6773 7.58174ZM7.99107 6.84605L2.30482 4.1485L7.99107 1.5327L13.6773 4.1485L7.99107 6.84605Z"
+          fill="white"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_15736_1810">
+          <rect width="16" height="15" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  </div>
+);
+
+
 const FlagIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
     <g clip-path="url(#clip0_15984_15118)">
@@ -388,6 +417,6 @@ const ShapesIcon = () => (
     </defs>
     </svg>);
 
-export {SettingsIcon,UmbrellaIcon, ShapesIcon, ReligionIcon, BearIcon, DumbbellIcon, RestaurantIcon, MusieumIcon, BuildingIcon, PawIcon, VectorIcon, MusicIcon, MilitaryIcon, FlipSecondWhiteColorIcon, FlipFirstWhiteColorIcon, GoogleIcon, DeleteIcon, CrossIcon, ChooseFileIcon, SearchIcon, NatureSvg, FlagIcon, AddProductIcon, NumberIcon, AddArtIcon, AlignCenterIcon, LayeringFirstIcon, LayeringSecondIcon, FlipFirstIcon, FlipSecondIcon, LockIcon, DuplicateIcon, AngleActionIcon, NoneIcon };
+export {LayeringSecondIconWithBlackBg,LayeringFirstIconWithBlackBg,SettingsIcon,UmbrellaIcon, ShapesIcon, ReligionIcon, BearIcon, DumbbellIcon, RestaurantIcon, MusieumIcon, BuildingIcon, PawIcon, VectorIcon, MusicIcon, MilitaryIcon, FlipSecondWhiteColorIcon, FlipFirstWhiteColorIcon, GoogleIcon, DeleteIcon, CrossIcon, ChooseFileIcon, SearchIcon, NatureSvg, FlagIcon, AddProductIcon, NumberIcon, AddArtIcon, AlignCenterIcon, LayeringFirstIcon, LayeringSecondIcon, FlipFirstIcon, FlipSecondIcon, LockIcon, DuplicateIcon, AngleActionIcon, NoneIcon };
 
 

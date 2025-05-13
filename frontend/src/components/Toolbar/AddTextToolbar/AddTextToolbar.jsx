@@ -13,7 +13,9 @@ import {
   AngleActionIcon,
   NoneIcon,
   FlipFirstWhiteColorIcon,
-  FlipSecondWhiteColorIcon
+  FlipSecondWhiteColorIcon,
+  LayeringFirstIconWithBlackBg,
+  LayeringSecondIconWithBlackBg,
 } from '../../iconsSvg/CustomIcon';
 import MyCompo from '../../style/MyCompo';
 import FontCollectionList from './FontCollectionList';
@@ -22,15 +24,19 @@ import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox';
 import { useDispatch, useSelector } from 'react-redux';
 // import { setCenterState, setFlipXState, setFlipYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState, setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
 import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
-import { duplicateTextState, addTextState, setSelectedTextState, updateTextState, toggleLockState } from '../../..//redux/FrontendDesign/TextFrontendDesignSlice.js';
+import { duplicateTextState, addTextState, setSelectedTextState, updateTextState, toggleLockState, moveTextForwardState, moveTextBackwardState } from '../../..//redux/FrontendDesign/TextFrontendDesignSlice.js';
+import { useOutletContext } from 'react-router-dom';
+import { BsXOctagon } from 'react-icons/bs';
 // import { setSelectedBackTextState } from '../../../redux/BackendDesign/TextBackendDesignSlice.js';
 
 const AddTextToolbar = () => {
+
   const dispatch = useDispatch();
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const [currentTextToolbarId, setCurrentTextToolbarId] = useState(String(Date.now()));  // current id of toolbar
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   const textContaintObject = allTextInputData.find((text) => text.id == currentTextToolbarId);
+  console.log(allTextInputData, textContaintObject, "render data");
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
 
 
@@ -54,7 +60,7 @@ const AddTextToolbar = () => {
   const [textColor, setTextColor] = useState(textContaintObject ? textContaintObject.textColor : "#000000");
   const [outlineColor, setOutlineColor] = useState(textContaintObject ? textContaintObject.outlineColor : "");
   const [outlineSize, setOutlineSize] = useState(textContaintObject ? textContaintObject.outlineSize : 0);
-  const [rangeValuesSize, setRangeValuesSize] = useState(textContaintObject ? textContaintObject.size : 16);
+  const [rangeValuesSize, setRangeValuesSize] = useState(textContaintObject ? textContaintObject.scaledValue : 1);
   const [rangeValuesRotate, setRangeValuesRotate] = useState(textContaintObject ? textContaintObject.rotate : 0);
   const [rangeValuesSpacing, setRangeValuesSpacing] = useState(textContaintObject ? textContaintObject.Spacing : 0);
   const [flipXValue, setflipXValue] = useState(textContaintObject ? textContaintObject.flipX : false);
@@ -66,9 +72,9 @@ const AddTextToolbar = () => {
     if (selectedTextId) {
       setCurrentTextToolbarId(selectedTextId);
       console.log("is selected id ", selectedTextId);
-      setShowContent(true);
+      // setShowContent(true);
       const currentInputData = allTextInputData.find((text) => text.id == selectedTextId);
-      if(!currentInputData) return
+      if (!currentInputData) return
       setText(currentInputData.content);
       setTextColor(currentInputData.textColor);
       setOutlineColor(currentInputData.outlineColor);
@@ -103,17 +109,30 @@ const AddTextToolbar = () => {
     //  }
 
     return () => {
-      dispatch(setSelectedTextState(null));
+      // dispatch(setSelectedTextState(null));
       //  dispatch(setSelectedBackTextState(null));
     }
-  }, [dispatch, selectedTextId])
+  }, [dispatch, selectedTextId, allTextInputData, textContaintObject])
   //  [dispatch,selectedTextId, selectedBackTextId ])
 
 
   const handleRangeInputSizeChange = (e) => {
-    const { value } = e.target;
-    setRangeValuesSize(value);
-    globalDispatch("size", parseInt(value));
+    const value = parseFloat(e.target.value)
+    const originalX = textContaintObject.originalX;
+    const originalY = textContaintObject.originalY;
+    const scaleX = textContaintObject.scaleX;
+    const scaleY = textContaintObject.scaleY;
+
+    globalDispatch("scaleX",originalX);
+    globalDispatch("scaleY",originalY);
+
+ 
+     
+    globalDispatch("scaledValue",value);
+    globalDispatch("scaleX",value );
+    setRangeValuesSize(parseFloat(value));
+    globalDispatch("scaleY",value ); 
+    // globalDispatch("size", parseFloat(value));  
   };
 
   const handleRangeInputArcChange = (e) => {
@@ -139,7 +158,7 @@ const AddTextToolbar = () => {
     dispatch(updateTextState({
       id: String(currentTextToolbarId),
       changes: { [lable]: value },
-      isRenderOrNot:true,
+      isRenderOrNot: true,
     }));
   }
 
@@ -151,9 +170,9 @@ const AddTextToolbar = () => {
     console.log("textContaintObject", textContaintObject);
     if (textContaintObject) {
       // Text exists: update it
-      globalDispatch("content",value);
+      globalDispatch("content", value);
     }
-    
+
     else {
       // Text doesn't exist: add new
       dispatch(addTextState({
@@ -185,7 +204,7 @@ const AddTextToolbar = () => {
 
   const textColorChangedFunctionCalled = (color) => {
     setTextColor(color);
-   globalDispatch("textColor", color);
+    globalDispatch("textColor", color);
   }
 
   const textOutLineColorChangedFunctionCalled = (outlinecolor) => {
@@ -197,7 +216,7 @@ const AddTextToolbar = () => {
 
   const textOutLineRangeChangedFunctionCalled = (outlinesize) => {
     setOutlineSize(outlinesize);
-   
+
     globalDispatch("outLineSize", outlinesize);
   }
 
@@ -231,10 +250,48 @@ const AddTextToolbar = () => {
   const colorClassNameForY = flipYValue !== true ? 'toolbar-box-icons-container-flip2' : 'toolbar-box-icons-container-clickStyle-flip2';
   const iconY = flipYValue !== true ? <FlipSecondIcon /> : <FlipSecondWhiteColorIcon />;
 
-  const handleDuplcateTextInput = () =>{
+  const handleDuplcateTextInput = () => {
 
     dispatch(duplicateTextState(currentTextToolbarId));
 
+  }
+
+  const handleBringBackward = () => {
+    console.log("sending id ", selectedTextId)
+    dispatch(moveTextBackwardState(selectedTextId));
+  };
+  const handleBringForward = () => {
+    dispatch(moveTextForwardState(selectedTextId));
+  };
+
+  function getRenderIconForSendToTop() {
+    if(!textContaintObject || !allTextInputData) return;
+    console.log(textContaintObject.layerIndex + 1, allTextInputData.length, "both values");
+    const layerIndex = textContaintObject.layerIndex;
+    const ArraySize = allTextInputData.length - 1;
+
+
+    console.log(layerIndex, ArraySize, "layer data")
+
+    if (layerIndex > 0 && layerIndex < ArraySize) return false;
+
+    if (layerIndex < ArraySize) return false
+
+    return true;
+
+  }
+  function getRenderIconForSendToBack() {
+    if(!textContaintObject || !allTextInputData) return;
+    const layerIndex = textContaintObject.layerIndex;
+    const ArraySize = allTextInputData.length;
+
+    console.log(layerIndex, ArraySize, "layer data")
+
+    if (layerIndex > 0 && layerIndex < ArraySize) return false;
+
+    if (layerIndex > 0) return false
+
+    return true;
   }
 
   return (
@@ -261,11 +318,18 @@ const AddTextToolbar = () => {
                     <div className='toolbar-box-icons-container' onClick={() => globalDispatch("position", { x: 320, y: textContaintObject.position.y })}><span><AlignCenterIcon /></span></div>
                     <div className='toolbar-box-heading-container'>Center</div>
                   </div>
-
                   <div className='toolbar-box-icons-and-heading-container'>
                     <div className='toolbar-box-icons-container-for-together'>
-                      <div className='toolbar-box-icons-container-layering1'   onClick={() => globalDispatch("layerIndex",1000)}><span><LayeringFirstIcon /></span></div>
-                      <div className='toolbar-box-icons-container-layering2' onClick={() => globalDispatch("layerIndex",0)}><span><LayeringSecondIcon /></span></div>
+                      {/* <div className='toolbar-box-icons-container-layering1'   onClick={() => globalDispatch("layerIndex",1000)}><span><LayeringFirstIcon /></span></div>
+                      <div className='toolbar-box-icons-container-layering2' onClick={() => globalDispatch("layerIndex",0)}><span><LayeringSecondIcon /></span></div> */}
+
+                      {
+                        getRenderIconForSendToTop() ? <div className='toolbar-box-icons-container-layering1'  > <span><LayeringFirstIcon /></span> </div> : <div className='toolbar-box-icons-container-layering1' onClick={() => handleBringForward()} > <span><LayeringFirstIconWithBlackBg /></span></div>
+                      }
+
+                      {
+                        getRenderIconForSendToBack() ? <div className='toolbar-box-icons-container-layering2' > <span><LayeringSecondIcon /></span> </div> : <div className='toolbar-box-icons-container-layering2' onClick={() => handleBringBackward()}>  <span><LayeringSecondIconWithBlackBg /></span></div>
+                      }
                     </div>
                     Layering
                   </div>
@@ -355,13 +419,14 @@ const AddTextToolbar = () => {
                       type="range"
                       id="min"
                       name="min"
-                      min="10"
-                      max="50"
-                      value={rangeValuesSize}
+                      min="1"
+                      max="10"
+                      step="0.2"
+                      value={rangeValuesSize }
                       onChange={(e) => handleRangeInputSizeChange(e)}
                     />
 
-                    <span><SpanValueBox valueShow={rangeValuesSize} /></span>
+                    <span><SpanValueBox valueShow={rangeValuesSize } /></span>
                   </div>
                 </div>
 
