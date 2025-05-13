@@ -19,7 +19,7 @@ const Footer = () => {
         <IoShareSocialOutline />
         SHARE
       </button>
-      <div className="footer-btn-container ">
+
         <button className="footer-btn ">
         <IoPricetagOutline />
 
@@ -36,7 +36,6 @@ const Footer = () => {
           <FaArrowRightLong />
 
         </button>
-      </div>
 
 
 

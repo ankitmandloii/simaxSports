@@ -2,6 +2,8 @@ import React from 'react';
 import './Header.css';
 import { Link, useLocation } from 'react-router-dom';
 import { IoCartSharp, IoPersonCircleSharp } from "react-icons/io5";
+import logo from '../images/Logo.png'
+import { CartIcon, UserIcon } from '../iconsSvg/CustomIcon';
 
 const Header = () => {
   const location = useLocation();
@@ -12,7 +14,7 @@ const Header = () => {
   return (
     <header className="app-header">
       <div className="left-section">
-        {/* <img src={logo} alt="SIMAX" className="logo" /> */}
+        <img src={logo} alt="SIMAX" className="logo" />
         
         <nav className="nav-steps">
           <Link
@@ -40,11 +42,11 @@ const Header = () => {
 
       <div className="right-section">
         <button className="header-btn">
-          <IoCartSharp />
+          <CartIcon />
           Cart
         </button>
         <button className="header-btn">
-          <IoPersonCircleSharp />
+          <UserIcon />
           Login
         </button>
       </div>

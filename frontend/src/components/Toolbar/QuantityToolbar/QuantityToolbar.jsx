@@ -23,7 +23,7 @@ const QuantityToolbar = () => {
   };
 
   return (
-    <div className="toolbar-main-container">
+    <div className="toolbar-main-container quantity-toolbar">
       <div className='toolbar-main-heading'>
         <h5 className='Toolbar-badge'>Quantity And Sizes</h5>
         <h2>How Many Do You Need?</h2>
@@ -31,50 +31,52 @@ const QuantityToolbar = () => {
       </div>
 
       <div className="toolbar-box">
-        <div className="toolbar-box-top-content">
-          <div className="toolbar-head">
-            <div className="mini-prod-img-container">
-              <img src={miniProd} className='product-mini-img' />
-            </div>
-            <div>
-              <h4>Essential Red T-Shirt for Men & Women</h4>
-              <p className='toolbar-span'>Red</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="size-section">
-          <div className="size-group">
-            <h5>Adult Sizes</h5>
-            <div className="size-inputs">
-              {adultSizes.map(size => (
-                <div className="size-box" key={`adult-${size}`}>
-                  <label>{size}</label>
-                  <input
-                    type="text"
-                    min="0"
-                    value={quantities[`adult-${size}`] || ''}
-                    onChange={(e) => handleQuantityChange('adult', size, e.target.value)}
-                  />
-                </div>
-              ))}
+        <div className="main-top-container">
+          <div className="toolbar-box-top-content">
+            <div className="toolbar-head">
+              <div className="mini-prod-img-container">
+                <img src={miniProd} className='product-mini-img' />
+              </div>
+              <div>
+                <h4>Essential Red T-Shirt for Men & Women</h4>
+                <p className='toolbar-span'>Red</p>
+              </div>
             </div>
           </div>
 
-          <div className="size-group">
-            <h5>Womens Sizes</h5>
-            <div className="size-inputs">
-              {womenSizes.map(size => (
-                <div className="size-box" key={`women-${size}`}>
-                  <label>{size}</label>
-                  <input
-                    type="text"
-                    min="0"
-                    value={quantities[`women-${size}`] || ''}
-                    onChange={(e) => handleQuantityChange('women', size, e.target.value)}
-                  />
-                </div>
-              ))}
+          <div className="size-section">
+            <div className="size-group">
+              <h5>Adult Sizes</h5>
+              <div className="size-inputs">
+                {adultSizes.map(size => (
+                  <div className="size-box" key={`adult-${size}`}>
+                    <label>{size}</label>
+                    <input
+                      type="text"
+                      min="0"
+                      value={quantities[`adult-${size}`] || ''}
+                      onChange={(e) => handleQuantityChange('adult', size, e.target.value)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="size-group">
+              <h5>Womens Sizes</h5>
+              <div className="size-inputs">
+                {womenSizes.map(size => (
+                  <div className="size-box" key={`women-${size}`}>
+                    <label>{size}</label>
+                    <input
+                      type="text"
+                      min="0"
+                      value={quantities[`women-${size}`] || ''}
+                      onChange={(e) => handleQuantityChange('women', size, e.target.value)}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -83,7 +85,7 @@ const QuantityToolbar = () => {
           <label>
             <input
               type="checkbox"
-              style={{marginRight:"5px"}}
+              style={{ marginRight: "5px" }}
               checked={licenses.collegiate}
               onChange={() => setLicenses(prev => ({ ...prev, collegiate: !prev.collegiate }))}
             />
@@ -92,7 +94,7 @@ const QuantityToolbar = () => {
           <label>
             <input
               type="checkbox"
-              style={{marginRight:"5px"}}
+              style={{ marginRight: "5px" }}
               checked={licenses.greek}
               onChange={() => setLicenses(prev => ({ ...prev, greek: !prev.greek }))}
             />

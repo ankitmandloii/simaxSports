@@ -86,7 +86,6 @@ import colorwheel from '../../images/color-wheel.png';
 import ChangePopup from '../../PopupComponent/ChangeProductPopup/ChangePopup';
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
-import AddProductContainer from '../../PopupComponent/addProductContainer/AddProductContainer';
 
 const ProductToolbar = () => {
   const [changeProductPopup, setChangeProductPopup] = useState(false);
@@ -99,7 +98,7 @@ const ProductToolbar = () => {
   const [changeColorPopupIndex, setChangeColorPopupIndex] = useState(null);
 
   const openChangeProductPopup = (isAdd = false, index = null) => {
-    setIsAddingProduct(!isAddingProduct);
+    setIsAddingProduct(isAdd);
     setEditingProductIndex(index);
     setChangeProductPopup(true);
   };
@@ -195,10 +194,7 @@ const ProductToolbar = () => {
             <h4>Printing</h4>
             <p>No minimum</p>
           </div>
-          <div className="common-btn">
-            <h4>Embroidery</h4>
-            <p>No minimum</p>
-          </div>
+    
         </div>
       </div>
 
@@ -208,7 +204,6 @@ const ProductToolbar = () => {
           onProductSelect={handleProductSelect}
         />
       )}
-      {isAddingProduct && <AddProductContainer/>}
     </div>
   );
 };

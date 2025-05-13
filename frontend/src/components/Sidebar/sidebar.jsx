@@ -11,7 +11,7 @@ import { RiTShirt2Line } from "react-icons/ri";
 import { BsCloudUpload } from "react-icons/bs";
 import { MdAddchart } from "react-icons/md";
 import Logo from '../images/Logo.png'
-import { AddProductIcon,NumberIcon,AddArtIcon} from "../iconsSvg/CustomIcon";
+import { AddProductIcon,NumberIcon,AddArtIcon,SelectArtIcon, NumberArtIcon} from "../iconsSvg/CustomIcon";
 
 const AdminSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -39,10 +39,10 @@ const AdminSidebar = () => {
 
   const menuItems = [
     { path: "/product", icon: <RiTShirt2Line />, label: "Products" },
-    { path: "/addText", icon: <AddProductIcon/>, label: "Add Text" },
-    { path: "/uploadArt", icon: <AddArtIcon/>, label: "Upload Art" },
-    { path: "/addArt", icon: <MdAddchart />, label: "Add Art" },
-    { path: "/addNames", icon: <NumberIcon />, label: "Names And Numbers" },
+    { path: "/addText", icon: <AddProductIcon/>, label: "Text" },
+    { path: "/uploadArt", icon: <AddArtIcon/>, label: "Upload" },
+    { path: "/addArt", icon: <SelectArtIcon/>, label: "Add Art" },
+    { path: "/addNames", icon: <NumberArtIcon />, label: "Names & Numbers" },
   ];
 
   return (
@@ -56,10 +56,7 @@ const AdminSidebar = () => {
           mobileOpen ? "show" : ""
         }`}
       >
-        <div className="sidebar-header">
-          {/* <h1 className="sidebar-title">SIMAX</h1> */}
-          <img src={Logo} alt="SIMAX" className="logo" />
-        </div>
+        
 
         <nav className="sidebar-menu">
           {menuItems.map((item) => (
@@ -71,7 +68,7 @@ const AdminSidebar = () => {
               }`}
               onClick={() => setMobileOpen(false)} 
             >
-              <span className="sidebar-icon">{item.icon}</span>
+              <span className={ item.path=='/addArt'? "sidebar-icon sidebaricon-add-art":"sidebar-icon"}>{item.icon}</span>
               {item.path=='/addArt' && <span className="spannAI">AI</span>}
               {!collapsed && <span className="sidebar-label">{item.label}</span>}
             </Link>

@@ -58,7 +58,7 @@ const AddTextToolbar = () => {
   const [showFontSelector, setShowFontSelector] = useState(false);
   const [selectedFont, setSelectedFont] = useState(textContaintObject ? textContaintObject.fontFamily : "Inter");
   const [textColor, setTextColor] = useState(textContaintObject ? textContaintObject.textColor : "#000000");
-  const [outlineColor, setOutlineColor] = useState(textContaintObject ? textContaintObject.outlineColor : "");
+  const [outlineColor, setOutlineColor] = useState(textContaintObject ? textContaintObject.outLineColor : "white");
   const [outlineSize, setOutlineSize] = useState(textContaintObject ? textContaintObject.outlineSize : 0);
   const [rangeValuesSize, setRangeValuesSize] = useState(textContaintObject ? textContaintObject.scaledValue : 1);
   const [rangeValuesRotate, setRangeValuesRotate] = useState(textContaintObject ? textContaintObject.rotate : 0);
@@ -72,12 +72,12 @@ const AddTextToolbar = () => {
     if (selectedTextId) {
       setCurrentTextToolbarId(selectedTextId);
       console.log("is selected id ", selectedTextId);
-      // setShowContent(true);
+      setShowContent(true);
       const currentInputData = allTextInputData.find((text) => text.id == selectedTextId);
       if (!currentInputData) return
       setText(currentInputData.content);
       setTextColor(currentInputData.textColor);
-      setOutlineColor(currentInputData.outlineColor);
+      setOutlineColor(currentInputData.outLineColor);
       setOutlineSize(currentInputData.outLineSize);
       setSelectedFont(currentInputData.fontFamily);
       setOutlineColorPopup(false);
@@ -148,9 +148,9 @@ const AddTextToolbar = () => {
   };
 
   const handleRangeInputSpacingChange = (e) => {
-    const { value } = e.target;
-    setRangeValuesSpacing(value);
-    globalDispatch("spacing", parseInt(value));
+     const value =  parseInt(e.target.value) ;
+     globalDispatch("spacing", parseInt(value));
+     setRangeValuesSpacing(value);
   };
 
 
@@ -485,7 +485,8 @@ const AddTextToolbar = () => {
                       id="min"
                       name="min"
                       min="0"
-                      max="100"
+                      step={"25"}
+                      max="500"
                       value={rangeValuesSpacing}
                       onChange={(e) => handleRangeInputSpacingChange(e)}
 

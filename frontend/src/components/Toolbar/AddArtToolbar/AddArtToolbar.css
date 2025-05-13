@@ -65,15 +65,16 @@
   position: relative;
 }
 .ai-spannn {
-  position: absolute;
-  top: 27px;
-  left: 68px;
-  background-color: red;
-  color: #fff;
-  font-size: 10px;
-  height: .8rem;
-  width: 1.2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    position: absolute;
+    top: 30px;
+    left: 100px;
+    background-color: #005BFF;
+    color: #fff;
+    font-size: 10px;
+    height: .8rem;
+    width: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
 }

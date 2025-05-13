@@ -21,14 +21,14 @@ function App() {
     <div className='app-main-container'>
 
     <div className='main-inner-container'>
-    {!isQuantityPage && (
+    {/* {!isQuantityPage && (
           <div className="sidebar-container">
             <AdminSidebar />
           </div>
-        )}
-  
+        )} */}
+  <Header />
   <div className={`main-layout-container ${isQuantityPage ? 'quantity-page' : ''}`}>
-      <Header />
+      
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<ProductToolbar  />} />
@@ -39,14 +39,11 @@ function App() {
           <Route path='addArt' element={<AddArtToolbar/>}/>
           <Route path='addNames' element={<NamesToolbar/>}/>
           <Route path='quantity' element={<QuantityToolbar/>}/>
-
-
-
         </Route>
         <Route path="review" element={<Review />} />
         {/* <Route path="design" element={<Design />} /> */}
       </Routes>
-     {!isQuantityPage &&<Footer/> } 
+     {<Footer/> } 
 
       </div>
       

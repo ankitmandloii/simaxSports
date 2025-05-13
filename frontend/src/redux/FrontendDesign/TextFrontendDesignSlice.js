@@ -23,7 +23,7 @@ const createNewText = ({ value, id }, length) => ({
   flipY: false,
   width: 150,
   height: 50,
-  position: { x: 320, y: 100 },
+  position: { x: 325, y: 300 },
   locked: false,
   layerIndex: length
 });
@@ -191,6 +191,7 @@ const TextFrontendDesignSlice = createSlice({
         leftSleeve: [],
         rightSleeve: []
       };
+       state.present[side].setRendering = !(state.present[side].setRendering);
     }
   }
 });
