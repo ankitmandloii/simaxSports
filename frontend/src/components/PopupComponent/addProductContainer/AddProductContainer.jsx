@@ -1,8 +1,10 @@
 import React from "react";
 import "./AddProductContainer.css";
-import colorwheel1 from "../images/color-wheel1.png";
+import products from "../../product";
+import colorwheel1 from '../../images/color-wheel1.png'
 
-const AddProductContainer = ({ isOpen, onClose, products }) => {
+// const AddProductContainer = ({ isOpen, onClose, products }) => {
+  const AddProductContainer = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (

@@ -1,0 +1,90 @@
+.Save-design-popup .popup-container {
+  width: 30%;
+  height: 54%;
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  line-height: 40px;
+  font-family: Arial, sans-serif;
+}
+
+
+
+.Save-design-popup .popup-input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.Save-design-popup .popup-error {
+  color: red;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.popup-headerr{
+  display: flex;
+  justify-content: space-between;
+}
+.Save-design-popup .popup-button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.Save-design-popup .email-button {
+  background-color: #000;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.Save-design-popup .google-button {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.Save-design-popup .google-icon {
+  font-size: 18px;
+}
+
+.Save-design-popup .popup-or {
+  text-align: center;
+  color: #aaa;
+  font-size: 13px;
+  /* margin-bottom: 12px; */
+}
+
+.Save-design-popup .popup-footer {
+  text-align: center;
+  font-size: 11px;
+  color: #888;
+  margin-top: 16px;
+}
+
+.Save-design-popup .popup-footer a {
+  text-decoration: underline;
+  color: inherit;
+}
+.Save-design-popup .popup-title h2{
+  font-size: 1rem;
+}
+
+.Save-design-popup .popup-title p{
+  font-size: .8rem;
+  color:#8A9099;
+
+}
+.Save-design-popup label{
+  font-size: .9rem;
+}

@@ -52,8 +52,8 @@
 }
 
 /* Sidebar styling */
-.popup-overlay .sidebar {
-  width: 220px;
+.changProduct-popup .sidebar {
+  width: 20%;
   background: #f9f9f9;
   padding: 1rem;
   overflow-y: auto;
@@ -77,7 +77,7 @@
 }
 
 /* Main product grid */
-.popup-overlay .product-grid {
+/* .popup-overlay .product-grid {
   flex: 1;
   padding: 1.2rem;
   gap:1rem;
@@ -85,7 +85,15 @@
   grid-template-columns: repeat(7, 1fr); 
   overflow-y: auto;
   background: #fff;
-}
+} */
+ .popup-overlay .product-card-container{
+  /* width: 80%; */
+  display: flex;
+  padding: 1rem;
+  background: #fff;
+  flex-wrap: wrap;
+  gap:20px;
+ }
 
 /* Individual product card */
 .popup-overlay .product-card {
@@ -129,7 +137,7 @@
   justify-content: center;
   border-radius: 8px;
   font-size: 11px;
-  display: inline-flex;
+  display: block;
   gap: 10px;
   align-items: center;
   padding: 6px 10px;
@@ -139,6 +147,58 @@
 }
 .no-products {
   grid-column: span 5;
+  text-align: center;
+  font-size: 16px;
+  color: #999;
+  margin-top: 2rem;
+}
+.changProduct-popup .product-grid{
+  width: 80%;
+}
+
+/* ================= */
+/* Product grid container with scrolling */
+.changProduct-popup .product-grid {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow-y: auto;
+  height: 100%;
+  position: relative;
+  background: #fff;
+}
+
+/* Scrollable product card container */
+.popup-overlay .product-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-bottom: 70px; /* Space for Load More button */
+}
+
+/* Load More button fixed at bottom */
+.load-more {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 33px;
+  width: 126px;
+  color: #fff;
+  background-color: black;
+  border: 1px solid rgb(34, 32, 32);
+  border-radius: 8px;
+  font-size: 11px;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* No product found styling */
+.no-products {
   text-align: center;
   font-size: 16px;
   color: #999;

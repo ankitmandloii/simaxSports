@@ -1,0 +1,38 @@
+.add-names-numberrs-row{
+display: flex;
+justify-content: space-between;
+border-bottom: 2px solid #D2D5D9;
+align-items: center;
+padding-bottom: 10px;
+}
+.namescheckbox-div span{
+  font-size: 14px;
+}
+.namescheckbox-div{
+  display: flex;
+  gap: 4px;
+}
+.names-toolbar-button{
+  background: transparent;
+  border: 1px solid #D2D5D9;
+  padding: 2px 4px;
+}
+.names-toolbar-button.active{
+  border: 1px solid var(--red);
+}
+.names-toolbar-button img{
+  height: 25px;
+} 
+.names-button-main-container{
+  display: flex;
+  gap:10px;
+}
+.namescheckbox-div input[type='checkbox'] {
+  accent-color: #0000; 
+}
+.names-button-main-container .color-names-box{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap:10px;
+}

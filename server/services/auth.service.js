@@ -22,11 +22,11 @@ const bcrypt = require('bcrypt');
 //     };
 
 //     const userCreated = await User.create(newUser);
-//     console.log("created USerData--> ", userCreated);
+//     //console.log("created USerData--> ", userCreated);
 //     return userCreated;
 //   } catch (error) {
 //     // Handle errors (e.g., duplicate email)
-//     console.error('Error creating user:', error);
+//     //console.error('Error creating user:', error);
 //     return false;
 //   }
 
@@ -42,15 +42,15 @@ const bcrypt = require('bcrypt');
 
 //     // Find the user in the database
 //     const user = await User.findOne({ email });
-//     console.log("user--->", user);
+//     //console.log("user--->", user);
 //     // If user not found, return 401 Unauthorized
 //     if (!user) {
-//       console.log("user--->1", user);
+//       //console.log("user--->1", user);
 //       return false;
 //     }
 
-//     console.log("hashedPassword",hashedPassword);
-//     console.log("user.password",user.password);
+//     //console.log("hashedPassword",hashedPassword);
+//     //console.log("user.password",user.password);
 
 //     if (await bcrypt.compare(hashedPassword, user.password)) {
 //       return user;
@@ -59,7 +59,7 @@ const bcrypt = require('bcrypt');
 //     }
 
 //   } catch (error) {
-//     console.error(error);
+//     //console.error(error);
 //     return false;
 //   }
 
@@ -87,7 +87,7 @@ exports.login = async (email, password) => {
     return user;
 
   } catch (error) {
-    console.error('Login error:', error);
+    //console.error('Login error:', error);
     return false;
   }
 };
@@ -110,7 +110,7 @@ exports.signUp = async (userName, email, phoneNumber, password,role) => {
     const userCreated = await User.create(newUser);
     return userCreated;
   } catch (error) {
-    console.error('Error creating user:', error);
+    //console.error('Error creating user:', error);
     return false;
   }
 };

@@ -17,20 +17,20 @@ exports.signUp = async (req, res) => {
         const role = req.body.role;
         
     
-        console.log("userName",userName);
-        console.log("email",email);
-        console.log("phoneNumber",phoneNumber);
-        console.log("password",password);
-        console.log("role",role);
+        //console.log("userName",userName);
+        //console.log("email",email);
+        //console.log("phoneNumber",phoneNumber);
+        //console.log("password",password);
+        //console.log("role",role);
        
         const result = await services.signUp(userName, email, phoneNumber, password, role);
         if (!result) {
-            console.log(result, "INTERNAL_SERVER_ERROR")
+            //console.log(result, "INTERNAL_SERVER_ERROR")
             return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.USER_ALREADY_EXIST);
         }
         return sendResponse(res, statusCode.OK, true, SuccessMessage.SIGNUP_SUCCESS, result);
     } catch (error) {
-        console.log(error, "errrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
+        //console.log(error, "errrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
         return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
     }
 };
@@ -51,7 +51,7 @@ exports.login = async (req, res) => {
         }
         return sendResponse(res, statusCode.OK, true, SuccessMessage.LOGIN_SUCCESS, result);
     } catch (error) {
-        console.log(error)
+        //console.log(error)
         return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
     }
 };

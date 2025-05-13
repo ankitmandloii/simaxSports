@@ -2,3 +2,8 @@
   margin-top: 20px;
   width: 100%;
 }
+
+.color-box-top span {
+  cursor: pointer;
+}
+

@@ -1,5 +1,5 @@
 // productsData.js
-import { FlagIcon } from "../iconsSvg/CustomIcon";
+import { BearIcon, BuildingIcon, DumbbellIcon, FlagIcon, MilitaryIcon, MusicIcon, MusieumIcon, PawIcon, ReligionIcon, RestaurantIcon, SettingsIcon, ShapesIcon, UmbrellaIcon, VectorIcon } from "../iconsSvg/CustomIcon";
 import { NatureSvg } from "../iconsSvg/CustomIcon";
 import FlagImage from '../images/FlagImage.png'
 import NatureImage from '../images/flagimg2.png'
@@ -16,68 +16,68 @@ const aiContent = [
   },
   {
     id: 3,
-    title: "Flags",
-    svg: <FlagIcon />
+    title: "Music",
+    svg: <MusicIcon />
   },
   {
     id: 4,
-    title: "Flags",
-    svg: <FlagIcon />
+    title: "Military",
+    svg: <MilitaryIcon />
   },
   {
     id: 5,
-    title: "Flags",
-    svg: <FlagIcon />
+    title: "Designs",
+    svg: <VectorIcon />
   },
   {
     id: 6,
-    title: "Flags",
-    svg: <FlagIcon />
+    title: "Animals",
+    svg: <PawIcon />
   },
   {
     id: 7,
-    title: "Flags",
-    svg: <FlagIcon />
+    title: "Office",
+    svg: <BuildingIcon />
   },
   {
     id: 8,
-    title: "Flags",
-    svg: <FlagIcon />
+    title: "Food",
+    svg: <RestaurantIcon />
   },
   {
     id: 9,
-    title: "Flags",
-    svg: <FlagIcon />
+    title: "Greek",
+    svg: <MusieumIcon />
   },
   {
     id: 10,
-    title: "Flags",
-    svg: <FlagIcon />
+    title: "Sports",
+    svg: <DumbbellIcon/>
   },
   {
     id: 11,
-    title: "Flags",
-    svg: <FlagIcon />
+    title: "Mascots",
+    svg: <BearIcon />
   },
   {
     id: 12,
-    title: "Flags",
-    svg: <FlagIcon />
+    title: "Jobs",
+    svg: <SettingsIcon />
   },
   {
     id: 13,
-    title: "Flags",
-    svg: <FlagIcon />
+    title: "Holidays",
+    svg: <UmbrellaIcon />
   },
   {
     id: 14,
-    title: "Flags",
-    svg: <FlagIcon />
+    title: "Shapes",
+    svg: <ShapesIcon />
   },
   {
     id: 15,
-    title: "Flags",
-    svg: <FlagIcon />
+    title: "Religion",
+    svg: <ReligionIcon />
   }
 
 

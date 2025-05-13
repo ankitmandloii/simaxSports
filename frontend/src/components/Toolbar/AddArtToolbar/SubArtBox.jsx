@@ -3,6 +3,7 @@ import { SearchIcon } from '../../iconsSvg/CustomIcon';
 import { RxCross1 } from 'react-icons/rx'; // Cross icon
 import { categoryImages } from '../../json/aiicontent';
 import './SubArt.css';
+import { Link } from 'react-router-dom';
 
 const SubArtBox = ({ category, goBack }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,7 +22,7 @@ const SubArtBox = ({ category, goBack }) => {
   return (
     <div className="toolbar-main-container">
       <div className="toolbar-box">
-        <button className="upload-button margin-bottom">Upload Your Own Image</button>
+        <Link to='/uploadArt'><button className="upload-button margin-bottom">Upload Your Own Image</button></Link>
 
         <div className="addArtToolbar-search-box with-cross">
           <input

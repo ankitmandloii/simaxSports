@@ -11,3 +11,6 @@
 .margin-bottom{
   margin-bottom: 8px;
 }
+.addArtToolbar-search-box svg{
+  cursor: pointer;
+}

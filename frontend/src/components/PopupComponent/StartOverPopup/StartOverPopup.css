@@ -1,0 +1,77 @@
+.startOverPopup .popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.startOverPopup .popup-container {
+  background-color: #fff;
+  width: 40%;
+  height: 30%;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+  position: relative;
+}
+
+.popup-headerrr h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.popup-headerrr p {
+  margin: 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+.popup-headerrr svg {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 1rem;
+}
+
+.popup-button {
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.confirm-button {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.cancel-button {
+  background-color: #e0e0e0;
+  color: #333;
+}
+.close-icon-button {
+  background: transparent;
+  border: none;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+}
+
