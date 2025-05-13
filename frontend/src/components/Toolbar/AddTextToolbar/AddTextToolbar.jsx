@@ -123,15 +123,15 @@ const AddTextToolbar = () => {
     const scaleX = textContaintObject.scaleX;
     const scaleY = textContaintObject.scaleY;
 
-    globalDispatch("scaleX",originalX);
-    globalDispatch("scaleY",originalY);
+    globalDispatch("scaleX", originalX);
+    globalDispatch("scaleY", originalY);
 
- 
-     
-    globalDispatch("scaledValue",value);
-    globalDispatch("scaleX",value );
+
+
+    globalDispatch("scaledValue", value);
+    globalDispatch("scaleX", value);
     setRangeValuesSize(parseFloat(value));
-    globalDispatch("scaleY",value ); 
+    globalDispatch("scaleY", value);
     // globalDispatch("size", parseFloat(value));  
   };
 
@@ -148,9 +148,9 @@ const AddTextToolbar = () => {
   };
 
   const handleRangeInputSpacingChange = (e) => {
-     const value =  parseInt(e.target.value) ;
-     globalDispatch("spacing", parseInt(value));
-     setRangeValuesSpacing(value);
+    const value = parseInt(e.target.value);
+    globalDispatch("spacing", parseInt(value));
+    setRangeValuesSpacing(value);
   };
 
 
@@ -166,11 +166,21 @@ const AddTextToolbar = () => {
     const { value } = e.target;
 
     setShowContent(value.length > 0);
-    setText(value);
+
+    const newValue = value.split(" ");
+    const len = newValue.length;
+
+    if (newValue[len - 1].length > 22) {
+      newValue[len - 1] = `${newValue[len - 1] + " "}`;
+    }
+
+    const newString = newValue.join(" ");
+
+    setText(newString);
     console.log("textContaintObject", textContaintObject);
     if (textContaintObject) {
       // Text exists: update it
-      globalDispatch("content", value);
+      globalDispatch("content", newString);
     }
 
     else {
@@ -265,7 +275,7 @@ const AddTextToolbar = () => {
   };
 
   function getRenderIconForSendToTop() {
-    if(!textContaintObject || !allTextInputData) return;
+    if (!textContaintObject || !allTextInputData) return;
     console.log(textContaintObject.layerIndex + 1, allTextInputData.length, "both values");
     const layerIndex = textContaintObject.layerIndex;
     const ArraySize = allTextInputData.length - 1;
@@ -281,7 +291,7 @@ const AddTextToolbar = () => {
 
   }
   function getRenderIconForSendToBack() {
-    if(!textContaintObject || !allTextInputData) return;
+    if (!textContaintObject || !allTextInputData) return;
     const layerIndex = textContaintObject.layerIndex;
     const ArraySize = allTextInputData.length;
 
@@ -307,7 +317,7 @@ const AddTextToolbar = () => {
           <>
             <textarea
               placeholder="Begin Typing...."
-              onChange={handleShowContent}
+              onInput={handleShowContent}
               value={text || ''}
             />
 
@@ -422,11 +432,11 @@ const AddTextToolbar = () => {
                       min="1"
                       max="10"
                       step="0.2"
-                      value={rangeValuesSize }
+                      value={rangeValuesSize}
                       onChange={(e) => handleRangeInputSizeChange(e)}
                     />
 
-                    <span><SpanValueBox valueShow={rangeValuesSize } /></span>
+                    <span><SpanValueBox valueShow={rangeValuesSize} /></span>
                   </div>
                 </div>
 

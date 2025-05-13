@@ -34,7 +34,7 @@ function ProductContainer() {
 
   const ShowFront = () => {
     dispatch(setActiveSide("front"));
-    navigate("/product")
+    // navigate("/product")
     if (backCanvasRef.current) {
 
       backDesignRef.current = backCanvasRef.current.toJSON();
@@ -44,7 +44,7 @@ function ProductContainer() {
 
   const ShowBack = () => {
     dispatch(setActiveSide("back"));
-    navigate("/product")
+    // navigate("/product")
 
     if (frontCanvasRef.current) {
       frontDesignRef.current = frontCanvasRef.current.toJSON();

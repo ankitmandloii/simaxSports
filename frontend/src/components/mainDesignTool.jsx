@@ -279,7 +279,6 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
         canvas.remove(transform.target);
         canvas.requestRenderAll();
         setSelectedHeight("");
-        navigate("/product");
     };
     const bringForward = (eventData, transform) => {
         alert("bring to Farward")
@@ -612,11 +611,11 @@ const bringToFrontt = (object) => {
                     wordWrap: false,
                     editable: false,
                     charSpacing: charSpacing,
-                    layerIndex: textInput.layerIndex
+                    layerIndex: textInput.layerIndex,
                 });
 
                 textbox.set({
-                    width: Math.min(measuredWidth + 20, 300)
+                    width: Math.min(measuredWidth + 20, 200)
                 });
 
                 textbox.controls = createControls();
