@@ -90,6 +90,11 @@ const [prevValue, setPrevValue] = useState("");
       // setText(currentInputData.content);
 
     }
+
+    if(!textContaintObject){
+      setShowContent(false)
+      setText("")
+    }
     //  else if(selectedBackTextId){
     //   setCurrentTextToolbarId(selectedBackTextId);
     //   console.log("is selected id ",selectedBackTextId);
@@ -454,8 +459,9 @@ const [prevValue, setPrevValue] = useState("");
                       type="range"
                       id="min"
                       name="min"
-                      min="0"
+                      min="-360"
                       max="360"
+                      defaultValue={0}
                       value={rangeValuesArc}
                       onChange={(e) => handleRangeInputArcChange(e)}
                     />

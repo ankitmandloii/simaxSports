@@ -13,7 +13,7 @@ const StartOverConfirmationPopup = ({  onCancel }) => {
 dispatch(resetCanvasState())
 
 onCancel()
-// navigate(0);
+navigate(0);
   }
   return (
     <div className="startOverPopup">
