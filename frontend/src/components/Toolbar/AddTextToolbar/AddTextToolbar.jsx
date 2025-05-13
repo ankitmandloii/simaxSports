@@ -66,7 +66,7 @@ const AddTextToolbar = () => {
   const [flipXValue, setflipXValue] = useState(textContaintObject ? textContaintObject.flipX : false);
   const [flipYValue, setflipYValue] = useState(textContaintObject ? textContaintObject.flipY : false);
   const [rangeValuesArc, setRangeValuesArc] = useState(textContaintObject ? textContaintObject.arc : 0);
-
+const [prevValue, setPrevValue] = useState("");
 
   useEffect(() => {
     if (selectedTextId) {
@@ -163,34 +163,35 @@ const AddTextToolbar = () => {
   }
 
   const handleShowContent = (e) => {
-    const { value } = e.target;
+  const { value } = e.target;
 
-    setShowContent(value.length > 0);
+  setShowContent(value.length > 0);
 
-    const newValue = value.split(" ");
-    const len = newValue.length;
+  const newValue = value.split(" ");
+  const len = newValue.length;
 
-    if (newValue[len - 1].length > 22) {
-      newValue[len - 1] = `${newValue[len - 1] + " "}`;
-    }
+  // Only append a space if user is typing and last word is too long
+  const lastWord = newValue[len - 1];
+  const isTyping = value.length > prevValue.length;
 
-    const newString = newValue.join(" ");
+  if (isTyping && lastWord.length > 22 && !lastWord.endsWith(" ")) {
+    newValue[len - 1] = `${lastWord} `;
+  }
 
-    setText(newString);
-    console.log("textContaintObject", textContaintObject);
-    if (textContaintObject) {
-      // Text exists: update it
-      globalDispatch("content", newString);
-    }
+  const newString = newValue.join(" ");
 
-    else {
-      // Text doesn't exist: add new
-      dispatch(addTextState({
-        value: value,
-        id: String(currentTextToolbarId)
-      }));
-    }
-  };
+  setText(newString);
+  setPrevValue(value); // Update prevValue for next comparison
+
+  if (textContaintObject) {
+    globalDispatch("content", newString);
+  } else {
+    dispatch(addTextState({
+      value: value,
+      id: String(currentTextToolbarId)
+    }));
+  }
+};
 
 
   const handleFontSelect = (fontFamilyName, fontFamily) => {

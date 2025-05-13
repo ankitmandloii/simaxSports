@@ -21,8 +21,8 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
     const canvasRef = useRef(null);
     const fabricCanvasRef = useRef(null);
     const dispatch = useDispatch();
+    
     const navigate = useNavigate();
-
  
     const [selectedpopup, setSelectedpopup] = useState(false);
 
@@ -199,7 +199,7 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
             x: -0.5,
             y: 0.7,
             offsetX: -16,
-            offsetY: 32,
+            offsetY: 10,
             cursorStyle: "pointer",
             mouseUpHandler: bringPopup,
             render: renderIcon("layer"), // use appropriate icon
@@ -279,6 +279,7 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
         canvas.remove(transform.target);
         canvas.requestRenderAll();
         setSelectedHeight("");
+        navigate("/product");
     };
     const bringForward = (eventData, transform) => {
         alert("bring to Farward")
@@ -379,8 +380,6 @@ const bringToFrontt = (object) => {
         const canvas = new fabric.Canvas(canvasRef.current, {
             width: 650,
             height: 700,
-            // backgroundColor: "#f1f1f1",
-            // backgroundColor: "gray",
         });
 
         canvas.preserveObjectStacking = true;
@@ -400,7 +399,7 @@ const bringToFrontt = (object) => {
             visible: false, // initially hidden
         });
         const warningText = new fabric.Text("Please keep your design inside the box", {
-            left: boundaryBox.left - 15,
+            left: boundaryBox.left - 10,
             top: boundaryBox.top - 25,
             fontSize: 16,
             fill: "white",
@@ -495,10 +494,10 @@ const bringToFrontt = (object) => {
             }
         });
         canvas.on("selection:created", (e) => {
-            if (e.selected.length === 1) {
-                setSelectedObject(e.selected[0]);
-            }
-        });
+    if (e.selected.length === 1) {
+        setSelectedObject(e.selected[0]);
+    }
+});
         canvas.on("selection:cleared", () => {
             setSelectedObject(null);
         });
@@ -507,7 +506,7 @@ const bringToFrontt = (object) => {
 
         const handleSelectionCleared = () => {
             dispatch(setSelectedTextState(null));
-            navigate("/product");
+            // navigate("/product");
         };
 
         canvas.on("selection:cleared", handleSelectionCleared);
@@ -523,172 +522,201 @@ const bringToFrontt = (object) => {
 
         console.log("renderiing on layer index changed")
         const canvas = fabricCanvasRef.current;
-    if(textContaintObject && textContaintObject.length == 0){
-        let existingTextbox = canvas.getObjects();
-        existingTextbox.forEach((obj) => canvas.remove(obj) );
-        return;
-    }
-     if (Array.isArray(textContaintObject)) {
 
-    textContaintObject.forEach((textInput) => {
-        console.log(textInput, "input data");
+        if (Array.isArray(textContaintObject)) {
+            textContaintObject.forEach((textInput) => {
+                console.log(textInput, "input data");
+                if (canvas) {
+                    let existingTextbox = canvas.getObjects().find(obj => obj.id === textInput.id);
+                    setSelectedObject(existingTextbox);
 
-        if (canvas) {
-            let existingTextbox = canvas.getObjects().find(obj => obj.id === textInput.id);
-            setSelectedObject(existingTextbox);
+                    if (existingTextbox) {
+                        const context = canvas.getContext();
+                        context.font = `${existingTextbox.fontSize}px ${existingTextbox.fontFamily}`;
+                        const measuredWidth = context.measureText(textInput.content).width;
 
-            const text = textInput.content || "";
-            const charSpacing = textInput.spacing || 0;
-            const fontSize = 16;
+                        if (textInput.content.trim() === "") {
+                            canvas.remove(existingTextbox);
+                            return;
+                        }
 
-            // Get canvas context for width calculation
-            const context = canvas.getElement().getContext("2d");
-            context.font = `${fontSize}px ${textInput.fontFamily || 'Arial'}`;
-            const baseWidth = context.measureText(text).width;
-            const extraSpacing = (text.length - 1) * (charSpacing / 1000) * fontSize;
-            const measuredWidth = baseWidth + extraSpacing;
+                        existingTextbox.set({
+                            width: Math.min(measuredWidth + 20, 200)
+                        });
 
-            if (existingTextbox) {
-                if (text.trim() === "") {
-                    canvas.remove(existingTextbox);
-                    return;
-                }
+                        console.log("existingTextbox", existingTextbox);
 
-                existingTextbox.set({
-                    width: Math.min(measuredWidth + 20, 200)
-                });
+                        if (existingTextbox.layerIndex > textInput.layerIndex) {
+                            // alert("you have to call bring backword  function")
+                            canvas.sendBackwards(existingTextbox);
+                            canvas.renderAll();
+                        }
+                        else if (existingTextbox.layerIndex < textInput.layerIndex) {
+                            // alert("you have to call bring forward  function")
+                            canvas.bringForward(existingTextbox);
+                            canvas.renderAll();
+                        }
 
-                if (existingTextbox.layerIndex > textInput.layerIndex) {
-                    canvas.sendBackwards(existingTextbox);
-                } else if (existingTextbox.layerIndex < textInput.layerIndex) {
-                    canvas.bringForward(existingTextbox);
-                }
+                        existingTextbox.set({
+                            text: textInput.content.trim(),
+                            top: textInput.position.y || 100,
+                            left: textInput.position.x || 110,
+                            fontSize: 16,
+                            angle: textInput.rotate || 0,
+                            charSpacing: textInput.spacing || 0,
+                            fill: textInput.textColor || '#000000',
+                            fontFamily: textInput.fontFamily || 'Arial',
+                            textAlign: textInput.center || 'center',
+                            stroke: textInput.outLineColor || "",
+                            strokeWidth: textInput.outLineSize || 0,
+                            flipX: textInput.flipX,
+                            flipY: textInput.flipY,
+                            splitByGrapheme: true,
+                            scaleX: textInput.scaleX,   
+                            scaleY: textInput.scaleY,
+                            height:300,
+                            layerIndex: textInput.layerIndex,
+                            minWidth: 100,
+                              scaleX: textInput.scaleX,   
+                            scaleY: textInput.scaleY,
+                        });
 
-                existingTextbox.set({
-                    text: text.trim(),
-                    top: textInput.position.y || 100,
-                    left: textInput.position.x || 110,
-                    fontSize: fontSize,
-                    angle: textInput.rotate || 0,
-                    charSpacing: charSpacing,
-                    fill: textInput.textColor || '#000000',
-                    fontFamily: textInput.fontFamily || 'Arial',
-                    textAlign: textInput.center || 'center',
-                    stroke: textInput.outLineColor || "",
-                    strokeWidth: textInput.outLineSize || 0,
-                    flipX: textInput.flipX,
-                    flipY: textInput.flipY,
-                    splitByGrapheme: true,
-                    scaleX: textInput.scaleX,
-                    scaleY: textInput.scaleY,
-                    layerIndex: textInput.layerIndex,
-                });
+                        existingTextbox.setCoords();
+                        canvas.requestRenderAll();
+                    } else {
+                        const textbox = new fabric.Textbox(textInput.content, {
+                            id: textInput.id,
+                            top: textInput.position.y || 100,
+                            left: textInput.position.x || 110,
+                            originX: 'center',
+                            textAlign: textInput.center || 'center',
+                            fontSize: 16,
+                            fill: textInput.textColor,
+                            fontFamily: textInput.fontFamily || 'Arial',
+                            stroke: textInput.outLineColor,
+                            strokeWidth: textInput.outLineSize || 0,
+                            flipX: textInput.flipX,
+                            flipY: textInput.flipY,
+                            angle: textInput.rotate || 0,
+                            objectCaching: false,
+                            borderColor: 'orange',
+                            borderDashArray: [4, 4],
+                            hasBorders: true,
+                            scaleX: textInput.scaleX,   
+                            scaleY: textInput.scaleY,
+                      
+                            wordWrap: false,
+                            editable: false,
+                            layerIndex: textInput.layerIndex
+                        });
 
-                existingTextbox.setCoords();
-                canvas.requestRenderAll();
+                        const context = canvas.getElement().getContext("2d");
+                        context.font = `${textbox.fontSize}px ${textbox.fontFamily}`;
+                        const measuredWidth = context.measureText(textInput.content).width;
+                        textbox.set({
+                            width: Math.min(measuredWidth + 20, 300)
+                        });
 
-            } else {
-                const textbox = new fabric.Textbox(text, {
-                    id: textInput.id,
-                    top: textInput.position.y || 100,
-                    left: textInput.position.x || 110,
-                    originX: 'center',
-                    textAlign: textInput.center || 'center',
-                    fontSize: fontSize,
-                    fill: textInput.textColor,
-                    fontFamily: textInput.fontFamily || 'Arial',
-                    stroke: textInput.outLineColor,
-                    strokeWidth: textInput.outLineSize || 0,
-                    flipX: textInput.flipX,
-                    flipY: textInput.flipY,
-                    angle: textInput.rotate || 0,
-                    objectCaching: false,
-                    borderColor: 'orange',
-                    borderDashArray: [4, 4],
-                    hasBorders: true,
-                    scaleX: textInput.scaleX,
-                    scaleY: textInput.scaleY,
-                    wordWrap: false,
-                    editable: false,
-                    charSpacing: charSpacing,
-                    layerIndex: textInput.layerIndex,
-                });
+                        textbox.controls = createControls();
+                        canvas.add(textbox);
+                        setSelectedObject(textbox);
 
-                textbox.set({
-                    width: Math.min(measuredWidth + 20, 200)
-                });
+                        textbox.on('changed', () => {
+                            const textWidth = textbox.calcTextWidth();
+                            const newWidth = Math.max(textWidth + 30, 150);
+                            textbox.set({ width: newWidth });
+                            canvas.requestRenderAll();
+                        });
 
-                textbox.controls = createControls();
-                canvas.add(textbox);
-                setSelectedObject(textbox);
+                        textbox.on("mousedown", (e) => {
+                            dispatch(setSelectedTextState(textInput.id));
+                            navigate("/addText", { state: textInput });
+                        });
 
-                textbox.on('changed', () => {
-                    const textWidth = textbox.calcTextWidth();
-                    const newWidth = Math.max(textWidth + 30, 150);
-                    textbox.set({ width: newWidth });
-                    canvas.requestRenderAll();
-                });
+                        textbox.on("modified", (e) => {
 
-                textbox.on("mousedown", (e) => {
-                    dispatch(setSelectedTextState(textInput.id));
-                    navigate("/addText", { state: textInput });
-                });
 
-                textbox.on("modified", (e) => {
-                    dispatch(setSelectedTextState(textInput.id));
-                    const obj = e.target;
-                    if (!obj) return;
+                            console.log("event datafadsssssssssssssssss",e)
+                            dispatch(setSelectedTextState(textInput.id));
+                            const obj = e.target;
+                            if (!obj) return;
 
-                    const MAX_SCALE = 10;
-                    const MIN_SCALE = 1;
-                    let newScaleX = obj.scaleX;
-                    let newScaleY = obj.scaleY;
+                            const MAX_SCALE = 10;
+                            const MIN_SCALE = 1;
 
-                    if (newScaleX > newScaleY || newScaleX < newScaleY || newScaleX === newScaleY) {
-                        newScaleX = Math.min(Math.max(newScaleX, MIN_SCALE), MAX_SCALE);
-                        newScaleY = Math.min(Math.max(newScaleY, MIN_SCALE), MAX_SCALE);
-                        const center = obj.getCenterPoint();
-                        obj.scaleX = newScaleX;
-                        obj.scaleY = newScaleY;
-                        obj.setPositionByOrigin(center, 'center', 'center');
-                        obj.setCoords();
+                            let newScaleX = obj.scaleX;
+                            let newScaleY = obj.scaleY;
 
-                        const newFontSize = parseFloat(newScaleX.toFixed(1));
-                        globalDispatch("scaleX", newFontSize, textInput.id);
-                        globalDispatch("scaleY", newFontSize, textInput.id);
-                        globalDispatch("size", newFontSize, textInput.id);
+        
+                            if (newScaleX > newScaleY) {
+                                newScaleX = Math.min(Math.max(newScaleX, MIN_SCALE), MAX_SCALE);
+                                newScaleY = Math.min(Math.max(newScaleY, MIN_SCALE), MAX_SCALE);
+
+                                const center = obj.getCenterPoint();
+                                obj.scaleX = newScaleX;
+                                obj.scaleY = newScaleY;
+                                obj.setPositionByOrigin(center, 'center', 'center');
+                                obj.setCoords();
+                                const newFontSize = parseFloat(obj.scaleX.toFixed(1));
+                                globalDispatch("scaleX", newFontSize, textInput.id);
+                                // globalDispatch("size", newFontSize, textInput.id);
+                            }
+                            else if (newScaleX < newScaleY) {
+                                newScaleX = Math.min(Math.max(newScaleX, MIN_SCALE), MAX_SCALE);
+                                newScaleY = Math.min(Math.max(newScaleY, MIN_SCALE), MAX_SCALE);
+
+                                const center = obj.getCenterPoint();
+                                obj.scaleX = newScaleX;
+                                obj.scaleY = newScaleY;
+                                obj.setPositionByOrigin(center, 'center', 'center');
+                                obj.setCoords();
+                                const newFontSize = parseFloat(obj.scaleY.toFixed(1));
+                                globalDispatch("scaleY", newFontSize, textInput.id);
+                            }
+                            else if (newScaleX === newScaleY) {
+                                newScaleX = Math.min(Math.max(newScaleX, MIN_SCALE), MAX_SCALE);
+                                newScaleY = Math.min(Math.max(newScaleY, MIN_SCALE), MAX_SCALE);
+
+                                const center = obj.getCenterPoint();
+                                obj.scaleX = newScaleX;
+                                obj.scaleY = newScaleY;
+                                obj.setPositionByOrigin(center, 'center', 'center');
+                                obj.setCoords();
+                                const newFontSize = parseFloat(obj.scaleY.toFixed(1));
+                                globalDispatch("scaleX", newFontSize, textInput.id);
+                                globalDispatch("scaleY", newFontSize, textInput.id);
+                            }
+
+                            globalDispatch("position", { x: obj.left, y: obj.top }, textInput.id);
+                            globalDispatch("rotate", obj.angle, textInput.id);
+
+                            canvas.renderAll();
+                            setSelectedObject(obj);
+                        });
+
+                        textbox.setControlsVisibility({
+                            mt: false, mb: false, ml: false, mr: false,
+                            tl: false, tr: false, bl: false, br: false, mtr: false,
+                        });
+
+                        canvas.setActiveObject(textbox);
+                        canvas.requestRenderAll();
                     }
+                }
+            });
 
-                    globalDispatch("position", { x: obj.left, y: obj.top }, textInput.id);
-                    globalDispatch("rotate", obj.angle, textInput.id);
+            // ✅ Layering Logic: Sort and reorder by layerIndex
+            const sorted = [...textContaintObject].sort((a, b) => a.layerIndex - b.layerIndex);
 
-                    canvas.renderAll();
-                    setSelectedObject(obj);
-                });
+            sorted.forEach((text) => {
+                const obj = canvas.getObjects().find(o => o.id === text.id);
+                if (obj) {
+                    canvas.bringToFront(obj); // Ensure it exists first
+                }
+            });
 
-                textbox.setControlsVisibility({
-                    mt: false, mb: false, ml: false, mr: false,
-                    tl: false, tr: false, bl: false, br: false, mtr: false,
-                });
-
-                canvas.setActiveObject(textbox);
-                canvas.requestRenderAll();
-            }
+            canvas.renderAll();
         }
-    });
-
-    // ✅ Layering Logic
-    const sorted = [...textContaintObject].sort((a, b) => a.layerIndex - b.layerIndex);
-    sorted.forEach((text) => {
-        const obj = canvas.getObjects().find(o => o.id === text.id);
-        if (obj) {
-            canvas.bringToFront(obj);
-        }
-    });
-
-    canvas.renderAll();
-}
-
     }, [activeSide, isRender, dispatch, id]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -719,28 +747,7 @@ const handleLayerAction = (action) => {
      }
  };
 
-    // const handleLayerAction = (action) => {
-    //     if (selectedObject) {
-    //         switch (action) {
-    //             case 'bringForward':
-    //                 selectedObject.bringForward();
-    //                 setSelectedpopup(!selectedpopup)
-    //                 break;
-    //             case 'sendBackward':
-    //                 selectedObject.sendBackwards();
-    //                 break;
-    //             case 'bringToFront':
-    //                 selectedObject.bringToFront();
-    //                 break;
-    //             case 'sendToBack':
-    //                 selectedObject.sendToBack();
-    //                 break;
-    //             default:
-    //                 break;
-    //         }
-    //     }
-    // };
-
+    
 
     return (
         <div style={{ position: "relative" }} id="">
@@ -752,56 +759,9 @@ const handleLayerAction = (action) => {
                 onClose={() => setIsModalOpen(false)}
                 onLayerAction={handleLayerAction}
             />
-            {/* <div
-                style={{
-                    position: "absolute",
-                    top: "35%",
-                    left: "90%",
-                    transform: "translate(-50%, -50%)",
-                    display: "flex",
-                    gap: "15px",
-                    zIndex: 10,
-                    display: "flex",
-                    flexDirection: "column"
-                }}
-            >
-             
-                <div className="corner-img-canva-container" id="mirror-container">
-                    <canvas id="mirrorCanvas" width="300" height="180" />
-                    <p>Front</p>
-                </div>
-
-
-                <div className="corner-img-canva-container">
-                    <img src="https://media-hosting.imagekit.io/4570272ec5ff4b32/print-area-preview%20(1).png?Expires=1840690543&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=txGxSmU8hBTVjLgZQ6OsGAMdjOBRGS7COHqW5X7j055QDA3grzJnuybisR4jMv05WsNwewxRb4CWNr0ECd~rbT4VO~Yob42Pv5WaZkmvBpN-AmiXvNHWFZeEvApifCNCzt2P1A0yXocN9YbupjHIP7Q7RHDjLRS-YFIUOS0sxnrURrTfZ4lm7XolO1QLYYf1NDfYfIYyG1-NhduQ4~t5gJP6LaSAChQpFBfFHArat3SAENipDBhtIzzxH7P5Nc5G0uSmp4rlSKMzyaUL~ZGD~LEHO5QEaDJzetoEU6bl3m0tnsJrQ~FyCXWbrIy9Fj1i8TN0Z7kw-SUQkcWG24QZLA__"></img>
-                    <p>Back</p>
-                </div>
-
-                <div className='ProductContainerSmallImageZoomButton'><span><VscZoomIn /></span>ZOOM</div>
-            </div> */}
-
-
-
-            {/* <ul className='ProductContainerListButtton'>
-                <li><button className='ProductContainerButton'><span><TbArrowBack /></span>UNDO</button></li>
-                <li><button className='ProductContainerButton'><span><TbArrowForwardUp /></span>REDO</button></li>
-                <li><button className='ProductContainerButton'>START OVER</button></li>
-            </ul> */}
 
         </div>
     );
-};
-
-const buttonStyle = {
-    padding: "10px 20px",
-    backgroundColor: "white",
-    color: "black",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "bold",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-    transition: "all 0.2s ease-in-out",
 };
 
 export default MainDesignTool;  
@@ -1682,4 +1642,3 @@ export default MainDesignTool;
 // };
 
 // export default MainDesignTool;
-
