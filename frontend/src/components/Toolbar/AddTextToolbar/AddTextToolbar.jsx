@@ -66,9 +66,10 @@ const AddTextToolbar = () => {
   const [flipXValue, setflipXValue] = useState(textContaintObject ? textContaintObject.flipX : false);
   const [flipYValue, setflipYValue] = useState(textContaintObject ? textContaintObject.flipY : false);
   const [rangeValuesArc, setRangeValuesArc] = useState(textContaintObject ? textContaintObject.arc : 0);
-const [prevValue, setPrevValue] = useState("");
-
+  const [prevValue, setPrevValue] = useState("");
+  const [duplicateActive, setDuplicateActive] = useState(false);
   useEffect(() => {
+    // setText(textContaintObject.content);
     if (selectedTextId) {
       setCurrentTextToolbarId(selectedTextId);
       console.log("is selected id ", selectedTextId);
@@ -91,7 +92,7 @@ const [prevValue, setPrevValue] = useState("");
 
     }
 
-    if(!textContaintObject){
+    if (!textContaintObject) {
       setShowContent(false)
       setText("")
     }
@@ -168,35 +169,35 @@ const [prevValue, setPrevValue] = useState("");
   }
 
   const handleShowContent = (e) => {
-  const { value } = e.target;
+    const { value } = e.target;
 
-  setShowContent(value.length > 0);
+    setShowContent(value.length > 0);
 
-  const newValue = value.split(" ");
-  const len = newValue.length;
+    const newValue = value.split(" ");
+    const len = newValue.length;
 
-  // Only append a space if user is typing and last word is too long
-  const lastWord = newValue[len - 1];
-  const isTyping = value.length > prevValue.length;
+    // Only append a space if user is typing and last word is too long
+    const lastWord = newValue[len - 1];
+    const isTyping = value.length > prevValue.length;
 
-  if (isTyping && lastWord.length > 22 && !lastWord.endsWith(" ")) {
-    newValue[len - 1] = `${lastWord} `;
-  }
+    if (isTyping && lastWord.length > 22 && !lastWord.endsWith(" ")) {
+      newValue[len - 1] = `${lastWord} `;
+    }
 
-  const newString = newValue.join(" ");
+    const newString = newValue.join(" ");
 
-  setText(newString);
-  setPrevValue(value); // Update prevValue for next comparison
+    setText(newString);
+    setPrevValue(value); // Update prevValue for next comparison
 
-  if (textContaintObject) {
-    globalDispatch("content", newString);
-  } else {
-    dispatch(addTextState({
-      value: value,
-      id: String(currentTextToolbarId)
-    }));
-  }
-};
+    if (textContaintObject) {
+      globalDispatch("content", newString);
+    } else {
+      dispatch(addTextState({
+        value: value,
+        id: String(currentTextToolbarId)
+      }));
+    }
+  };
 
 
   const handleFontSelect = (fontFamilyName, fontFamily) => {
@@ -267,7 +268,7 @@ const [prevValue, setPrevValue] = useState("");
   const iconY = flipYValue !== true ? <FlipSecondIcon /> : <FlipSecondWhiteColorIcon />;
 
   const handleDuplcateTextInput = () => {
-
+    setDuplicateActive(prev => !prev);
     dispatch(duplicateTextState(currentTextToolbarId));
 
   }
@@ -363,10 +364,16 @@ const [prevValue, setPrevValue] = useState("");
                     <div className='toolbar-box-heading-container'>Lock</div>
                   </div>
 
-                  <div className='toolbar-box-icons-and-heading-container' onClick={() => handleDuplcateTextInput()}>
-                    <div className='toolbar-box-icons-container' ><span><DuplicateIcon /></span></div>
+                  <div
+                    className="toolbar-box-icons-and-heading-container "
+                    onClick={() => handleDuplcateTextInput()}
+                  >
+                    <div className={`toolbar-box-icons-container ${duplicateActive ? 'active' : ''}`}>
+                      <span><DuplicateIcon /></span>
+                    </div>
                     <div className='toolbar-box-heading-container'>Duplicate</div>
                   </div>
+
                 </div>
 
                 <hr />

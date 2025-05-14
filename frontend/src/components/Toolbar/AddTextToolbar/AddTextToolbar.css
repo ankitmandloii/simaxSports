@@ -125,7 +125,10 @@
     border-bottom-right-radius: 4px;
     cursor: pointer;
 }
-
+.toolbar-box-icons-container.active {
+ color: white;
+    background-color: black;
+}
 .toolbar-box-icons-container-flip2 {
 
     padding: 3px 8px;
