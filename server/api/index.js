@@ -3,7 +3,7 @@ const app = express();
 const PORT = 4000;
 const bodyParser = require("body-parser");
 const cors = require('cors');
-const routes = require("./routes/index");
+const routes = require("../routes/index.js");
 const { dbConnection } = require('./config/db');
 const dotenv = require('dotenv');
 
@@ -34,7 +34,7 @@ app.use(cors());
 //add route for maintenance api without authentication
 // app.use("/public/",maintenanceRoutes);
 // app.use("/api/*",shopify.validateAuthenticatedSession(), authenticateUser);
-// app.use("/", routes);
+app.use("/api", routes);
 
 app.get("/",(req,res)=>{
 res.send("yes Now you hit APis");
