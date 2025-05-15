@@ -6,11 +6,11 @@ const cors = require('cors');
 const routes = require("./routes/index");
 const { dbConnection } = require('./config/db');
 const dotenv = require('dotenv');
-const path = require('path');
+
 dotenv.config();
 
 
-app.use(express.static(path.join(__dirname, '../frontend/build')));
+
 
 
 
