@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const PORT = 3000;
+const PORT = 4000;
 const bodyParser = require("body-parser");
 const cors = require('cors');
 const routes = require("./routes/index");
@@ -42,7 +42,7 @@ res.send("yes Now you hit APis");
 // app.use("/external/*",authenticateUser);
 // app.use("/external/",routes);
 
-app.listen(PORT, function (err) {
+app.listen(PORT, (err)=> {
     if (err) //console.log(err);
     {
         console.log(`SomeThing went wrong", ${err}`);
