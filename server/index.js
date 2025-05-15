@@ -2,21 +2,30 @@ const express = require('express');
 const app = express();
 const PORT = 3000;
 const bodyParser = require("body-parser");
-const cors =  require('cors');
+const cors = require('cors');
 const routes = require("./routes/index");
 const { dbConnection } = require('./config/db');
 const dotenv = require('dotenv');
+const path = require('path');
+dotenv.config();
+
+
+app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+
+
 
 app.use(express.json());
 
 
 
 
-dotenv.config();
+
+
 dbConnection();
 app.use(express.json());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
 
@@ -25,11 +34,16 @@ app.use(cors());
 //add route for maintenance api without authentication
 // app.use("/public/",maintenanceRoutes);
 // app.use("/api/*",shopify.validateAuthenticatedSession(), authenticateUser);
-app.use("/api",routes);
+app.use("/api", routes);
 // app.use("/external/*",authenticateUser);
 // app.use("/external/",routes);
 
 app.listen(PORT, function (err) {
     if (err) //console.log(err);
-    //console.log("Server listening on PORT", PORT);
+    {
+        console.log(`SomeThing went wrong", ${err}`);
+    } else {
+        console.log("Server listening on PORT", PORT);
+
+    }
 });
