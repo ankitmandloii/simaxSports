@@ -20,7 +20,6 @@ function App() {
   return (
     <>
     <div className='app-main-container'>
-    <Header />
     <div className='main-inner-container'>
     {/* {!isQuantityPage && (
           <div className="sidebar-container">

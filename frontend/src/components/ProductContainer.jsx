@@ -66,11 +66,7 @@ function ProductContainer() {
   }
   return (
     <div className='ProductContainerMainDiv'>
-      <ul className='ProductContainerListButtton'>
-        <li><button className='ProductContainerButton' onClick={() => dispatch(undo())}><span><TbArrowBack /></span>UNDO</button></li>
-        <li><button className='ProductContainerButton' onClick={() => dispatch(redo())}><span><TbArrowForwardUp /></span>REDO</button></li>
-        <li><button className='ProductContainerButton' onClick={()=>setShowPopup(!showPopup)}>START OVER</button></li>
-      </ul>
+      
       <div className='flex'>
         <MainDesignTool
           id="mirrorCanvasFront"
