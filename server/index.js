@@ -35,6 +35,10 @@ app.use(cors());
 // app.use("/public/",maintenanceRoutes);
 // app.use("/api/*",shopify.validateAuthenticatedSession(), authenticateUser);
 app.use("/api", routes);
+
+app.get("/",(req,res)=>{
+res.send("yes Now you hit APis");
+})
 // app.use("/external/*",authenticateUser);
 // app.use("/external/",routes);
 
