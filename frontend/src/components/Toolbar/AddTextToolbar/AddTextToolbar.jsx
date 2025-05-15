@@ -53,7 +53,7 @@ const AddTextToolbar = () => {
 
 
 
-  
+
   // //console.log("text", text)
 
 
@@ -392,7 +392,7 @@ const AddTextToolbar = () => {
                   </div>
 
                   <div
-                    className="toolbar-box-icons-and-heading-container1"
+                    className="toolbar-box-icons-and-heading-container"
                     onClick={() => dispatch(toggleLockState(currentTextToolbarId))}
                   >
                     <div className={`toolbar-box-icons-container ${isLocked ? 'active' : ''}`}>
@@ -453,17 +453,17 @@ const AddTextToolbar = () => {
                       {outlineColorPopup && (
                         // <div ref={outlineBoxRef}>
 
-                          <ChooseColorBox
-                            addColorPopupHAndler={toggleOutlineColorPopup}
-                            title="Outline Color"
-                            defaultColor={outlineColor}
-                            onColorChange={textOutLineColorChangedFunctionCalled} // Update outline color
-                            onRangeChange={textOutLineRangeChangedFunctionCalled} // Update outline size
-                            button={true}
-                            range={true}
-                            outlineSize={outlineSize}
+                        <ChooseColorBox
+                          addColorPopupHAndler={toggleOutlineColorPopup}
+                          title="Outline Color"
+                          defaultColor={outlineColor}
+                          onColorChange={textOutLineColorChangedFunctionCalled} // Update outline color
+                          onRangeChange={textOutLineRangeChangedFunctionCalled} // Update outline size
+                          button={true}
+                          range={true}
+                          outlineSize={outlineSize}
 
-                          />
+                        />
                         // </div>
                       )}
                     </div>

@@ -21,10 +21,17 @@
     /* margin: 20px 5px; */
     cursor: pointer;
 }
- .ProductContainerButton:hover{
+
+.ProductContainerButton:hover {
+    background-color: #5f5757;
+    color: #fff;
+
+}
+
+.ProductContainerButton:active {
     background-color: #888;
-    color:#fff;
-    
+    color: #fff;
+
 }
 
 .ProductContainerButton span {
@@ -72,8 +79,8 @@
     background: white;
     height: max-content;
     border-radius: 10px;
-    gap:17.86px;
-        width: 104px;
+    gap: 17.86px;
+    width: 104px;
     align-items: center;
 }
 
@@ -149,22 +156,25 @@
     flex-direction: column;
     align-items: center;
 }
+
 canvas#mirrorCanvasFront {
     width: 86px !important;
     height: 90px !important;
     border: 2px solid #005BFF;
     border-radius: 10px;
     margin: 9px 5px 10px 5px;
-        padding: 7px;
+    padding: 7px;
 }
-canvas#mirrorCanvasBack{
+
+canvas#mirrorCanvasBack {
     width: 86px !important;
     height: 90px !important;
     border: 1px solid #D2D5D9;
     border-radius: 10px;
     margin: 0px 5px 5px 5px;
-        padding: 9px;
+    padding: 9px;
 }
+
 /* .corner-img-canva-container:hover {
 
     box-shadow: 0 0 0 2px red;
@@ -183,6 +193,7 @@ canvas#mirrorCanvasBack{
 .flex {
     margin-top: 18px;
 }
+
 .main-sleve-container {
     padding: 8px 31px;
     background: white;
@@ -191,7 +202,9 @@ canvas#mirrorCanvasBack{
     margin-left: 20px;
     cursor: pointer;
 }
-.main-sleve-container p,.zoom-container p {
+
+.main-sleve-container p,
+.zoom-container p {
     text-align: center;
     font-weight: bold;
     font-size: 12p;
@@ -203,6 +216,7 @@ canvas#mirrorCanvasBack{
     vertical-align: middle;
     white-space: normal;
 }
+
 .product-images-details-container {
     display: flex;
     flex-direction: column;
@@ -210,6 +224,7 @@ canvas#mirrorCanvasBack{
     gap: 10px;
     margin-right: 20px;
 }
+
 .zoom-container {
     display: flex;
     align-items: center;
@@ -221,7 +236,8 @@ canvas#mirrorCanvasBack{
     margin-left: 20px;
     cursor: pointer;
 }
-.zoom-container svg{
+
+.zoom-container svg {
     min-width: 18px;
     min-height: 18px;
 }
