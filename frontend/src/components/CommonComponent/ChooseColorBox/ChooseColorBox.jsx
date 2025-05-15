@@ -104,8 +104,8 @@ import 'react-color-palette/css';
 
 import './ChooseColorBox.css';
 import { RxCross1 } from "react-icons/rx";
-import SpanColorBox from '../SpanColorBox/SpanColorBox';
-import SpanValueBox from '../SpanValueBox/SpanValueBox';
+import SpanColorBox from "../SpanColorBox/SpanColorBox";
+import SpanValueBox from "../SpanValueBox/SpanValueBox";
 
 const ChooseColorBox = ({
   showColorPopupHandler,
@@ -114,10 +114,10 @@ const ChooseColorBox = ({
   title = "Choose Color",
   button = false,
   range = false,
-  defaultColor = '#FF0000',
+  defaultColor = "#FF0000",
   onColorChange = () => {},
   onRangeChange = () => {},
-  outlineSize
+  outlineSize,
 }) => {
   const [color, setColor] = useColor("hex", defaultColor);
 
@@ -172,7 +172,9 @@ const ChooseColorBox = ({
               onChange={handleInputChange}
             />
           </div>
-          <span><SpanValueBox valueShow={outlineSize} /></span>
+          <span>
+            <SpanValueBox valueShow={outlineSize} />
+          </span>
         </div>
       )}
 

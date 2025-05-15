@@ -35,7 +35,7 @@ const AddTextToolbar = () => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const [currentTextToolbarId, setCurrentTextToolbarId] = useState(String(Date.now()));  // current id of toolbar
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
-  const textContaintObject = allTextInputData.find((text) => text.id == currentTextToolbarId);
+    let textContaintObject = allTextInputData.find((text) => text.id == currentTextToolbarId);
   console.log(allTextInputData, textContaintObject, "render data");
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
 
@@ -79,48 +79,38 @@ const AddTextToolbar = () => {
     // setText(textContaintObject.content);
     if (selectedTextId) {
       setCurrentTextToolbarId(selectedTextId);
-      //console.log("is selected id ", selectedTextId);
-      setShowContent(true);
+      console.log("is selected id ", selectedTextId);
+      // setShowContent(true);
       const currentInputData = allTextInputData.find((text) => text.id == selectedTextId);
-      if (!currentInputData) return
+      textContaintObject = currentInputData;
+      // if (!currentInputData) return
+      // setText(currentInputData.content);
+      // setTextColor(currentInputData.textColor);
+      // setOutlineColor(currentInputData.outLineColor);
+      // setOutlineSize(currentInputData.outLineSize);
+      // setSelectedFont(currentInputData.fontFamily);
+      // setOutlineColorPopup(false);
+      // setShowFontSelector(false);
+      // setRangeValuesSize(currentInputData.size);
+      // setRangeValuesSpacing(currentInputData.spacing);
+      // setRangeValuesArc(currentInputData.arc);
+      // setRangeValuesRotate(currentInputData.rotate);
+      // setText(currentInputData.content);
+      // setText(currentInputData.content);
 
-      setText(currentInputData.content);
-      setTextColor(currentInputData.textColor);
-      setOutlineColor(currentInputData.outLineColor);
-      setOutlineSize(currentInputData.outLineSize);
-      setSelectedFont(currentInputData.fontFamily);
+    }
+     setShowContent(textContaintObject?.content.length > 0);
+      setText(textContaintObject?.content);
+      setTextColor(textContaintObject?.textColor);
+      setOutlineColor(textContaintObject?.outLineColor);
+      setOutlineSize(textContaintObject?.outLineSize);
+      setSelectedFont(textContaintObject?.fontFamily);
       setOutlineColorPopup(false);
       setShowFontSelector(false);
-      setRangeValuesSize(currentInputData.size);
-      setRangeValuesSpacing(currentInputData.spacing);
-      setRangeValuesArc(currentInputData.arc);
-      setRangeValuesRotate(currentInputData.rotate);
-      // setText(currentInputData.content);
-      // setText(currentInputData.content);
-
-    }
-
-    if (!textContaintObject) {
-      setShowContent(false)
-      setText("")
-    }
-    //  else if(selectedBackTextId){
-    //   setCurrentTextToolbarId(selectedBackTextId);
-    //   //console.log("is selected id ",selectedBackTextId);
-    //    setShowContent(true);
-    //   const currentInputData = allTextBackInputData.find((text) => text.id == selectedBackTextId);
-    //   setText(currentInputData.content);
-    //   setTextColor(currentInputData.textColor);
-    //   setOutlineColor(currentInputData.outlineColor);
-    //   setOutlineSize(currentInputData.outLineSize);
-    //   setSelectedFont(currentInputData.fontFamily);
-    //   setOutlineColorPopup(false);
-    //   setShowFontSelector(false);
-    //   setRangeValuesSize(currentInputData.size);
-    //   setRangeValuesSpacing(currentInputData.spacing);
-    //   setRangeValuesArc(currentInputData.arc);
-    //   setRangeValuesRotate(currentInputData.rotate);
-    //  }
+      setRangeValuesSize(textContaintObject?.scaledValue);
+      setRangeValuesSpacing(textContaintObject?.spacing);
+      setRangeValuesArc(textContaintObject?.arc);
+      setRangeValuesRotate(textContaintObject?.rotate);
 
     return () => {
       // dispatch(setSelectedTextState(null));
@@ -239,7 +229,7 @@ const AddTextToolbar = () => {
   };
 
   const toggleOutlineColorPopup = () => {
-    setOutlineColorPopup(!outlineColorPopup);
+    // setOutlineColorPopup(!outlineColorPopup);
   };
 
   const textColorChangedFunctionCalled = (color) => {
@@ -256,7 +246,6 @@ const AddTextToolbar = () => {
 
   const textOutLineRangeChangedFunctionCalled = (outlinesize) => {
     setOutlineSize(outlinesize);
-
     globalDispatch("outLineSize", outlinesize);
   }
 
@@ -342,7 +331,7 @@ const AddTextToolbar = () => {
         <p>You can select multiple products and colors</p>
       </div>
 
-      <div className="toolbar-box">
+      <div className="toolbar-box"> 
         {!showFontSelector ? (
           <>
             <textarea
@@ -369,9 +358,7 @@ const AddTextToolbar = () => {
 
                   <div className='toolbar-box-icons-and-heading-container'>
                     <div className='toolbar-box-icons-container-for-together'>
-                      {/* <div className='toolbar-box-icons-container-layering1'   onClick={() => globalDispatch("layerIndex",1000)}><span><LayeringFirstIcon /></span></div>
-                      <div className='toolbar-box-icons-container-layering2' onClick={() => globalDispatch("layerIndex",0)}><span><LayeringSecondIcon /></span></div> */}
-
+                      
                       {
                         getRenderIconForSendToTop() ? <div className='toolbar-box-icons-container-layering1'  > <span><LayeringFirstIcon /></span> </div> : <div className='toolbar-box-icons-container-layering1' onClick={() => handleBringForward()} > <span><LayeringFirstIconWithBlackBg /></span></div>
                       }
@@ -497,21 +484,20 @@ const AddTextToolbar = () => {
                   <hr></hr>
 
 
-                  <div className='toolbar-box-Font-Value-set-inner-container'>
-                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>
-                      Arc
-                    </div>
-                    <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
-                      <input
-                        type="range"
-                        id="min"
-                        name="min"
-                        min="-360"
-                        max="360"
-                        defaultValue={0}
-                        value={rangeValuesArc}
-                        onChange={(e) => handleRangeInputArcChange(e)}
-                      />
+                <div className='toolbar-box-Font-Value-set-inner-container'>
+                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>
+                    Arc
+                  </div>
+                  <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+                    <input
+                      type="range"
+                      id="min"
+                      name="min"
+                      min="-100" max="100" step="1"
+                      defaultValue={"0"}
+                      value={rangeValuesArc}
+                      onChange={(e) => handleRangeInputArcChange(e)}
+                    />
 
                       <span><SpanValueBox valueShow={rangeValuesArc} /></span>
                     </div>
@@ -538,21 +524,21 @@ const AddTextToolbar = () => {
                     </div>
                   </div>
 
-                  <hr></hr>
-                  <div className='toolbar-box-Font-Value-set-inner-container'>
-                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>
-                      Spacing
-                    </div>
-                    <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
-                      <input
-                        type="range"
-                        id="min"
-                        name="min"
-                        min="0"
-                        step={"25"}
-                        max="500"
-                        value={rangeValuesSpacing}
-                        onChange={(e) => handleRangeInputSpacingChange(e)}
+                <hr></hr>
+                <div className='toolbar-box-Font-Value-set-inner-container'>
+                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>
+                    Spacing
+                  </div>
+                  <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+                    <input
+                      type="range"
+                      id="min"
+                      name="min"
+                      min="0"
+                      step={"1"}
+                      max="50"
+                      value={rangeValuesSpacing}
+                      onChange={(e) => handleRangeInputSpacingChange(e)}
 
                       />
                       <span><SpanValueBox valueShow={rangeValuesSpacing} /></span>

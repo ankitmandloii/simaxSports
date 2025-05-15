@@ -14,7 +14,7 @@ const createNewText = ({ value, id }, length) => ({
   originalScaleY: 1,
   scaledValue: 1,
   rotate: 0,
-  spacing: 10,
+  spacing: 1,
   arc: 0,
   outLineColor: "",
   outLineSize: 0.5,
@@ -86,6 +86,7 @@ const TextFrontendDesignSlice = createSlice({
           },
           layerIndex: state.present[side].texts.length
         };
+        state.present[side].selectedTextId = newText.id;
         state.present[side].texts.push(newText);
         state.future[side] = [];
       }

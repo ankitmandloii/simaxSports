@@ -32,7 +32,6 @@
   width: 100%;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  
   border-radius: 4px;
 }
 
@@ -40,7 +39,7 @@
 .font-Category-option-heading {
   margin-top: 10px;
   display: flex;
-  font-size: 10px;
+  font-size: 20px;
   font-weight: 600;
   justify-content: center;
   align-items: center;
@@ -50,13 +49,33 @@
   border-radius: 4px;
   /* transition: background-color 0.3s ease; */
 }
+.font-Category-option-heading-top-container{
+  display: flex;
+  align-items: center;
+  justify-content:space-around;
+  gap: 5px;
+  
+}
+.font-Category-option-heading-top{
+  /* margin-top: 10px; */
+  display: flex;
+  font-size: 15px;
+  justify-content: center;
+  align-items: center;
+  /* max-width: 90%; */
+  width: 100%;
+  padding: 8px 40px;
+  cursor: pointer;
+  border: 1px solid #D2D5D9;
+  border-radius: 20px;
+}
 .font-Category-option {
   
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 8px 18px;
- 
+  width: 100%;
   cursor: pointer;
   border: 1px solid #D2D5D9;
   border-radius: 4px;
@@ -74,4 +93,13 @@
 .font-Category-option:hover {
   background-color: #F0F0F0; /* Light gray background on hover */
   
+}
+.subcategory-block{
+  display: flex;
+  flex-direction:column ;
+  align-items: center;
+  justify-content: start;
+  width: 100%;
+  /* flex-wrap: wrap; */
+  gap: 10px;
 }
