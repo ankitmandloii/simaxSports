@@ -1,3 +1,4 @@
+
 const icons = {
     delete:
         "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='31' fill='%23fff' stroke='%23ccc' stroke-width='2'/%3E%3Cpath fill='%23666' d='M24 20v-2a2 2 0 012-2h12a2 2 0 012 2v2h8v4H16v-4h8zm2 0h12v-2H26v2zm-4 6h20l-2 24H24l-2-24z'/%3E%3C/svg%3E",

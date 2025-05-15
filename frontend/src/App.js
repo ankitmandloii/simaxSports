@@ -13,13 +13,14 @@ import UploadArtToolbar from './components/Toolbar/UploadArtToolbar/UploadArtToo
 import AddArtToolbar from './components/Toolbar/AddArtToolbar/AddArtToolbar';
 import NamesToolbar from './components/Toolbar/NamesToolbar/NamesToolbar';
 import QuantityToolbar from './components/Toolbar/QuantityToolbar/QuantityToolbar';
+
 function App() {
   const location = useLocation();
   const isQuantityPage = location.pathname === "/quantity";
   return (
     <>
     <div className='app-main-container'>
-
+    <Header />
     <div className='main-inner-container'>
     {/* {!isQuantityPage && (
           <div className="sidebar-container">
@@ -28,7 +29,7 @@ function App() {
         )} */}
   <Header />
   <div className={`main-layout-container ${isQuantityPage ? 'quantity-page' : ''}`}>
-      
+     
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<ProductToolbar  />} />

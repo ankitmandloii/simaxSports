@@ -30,7 +30,6 @@ const MainDesignTool = ({ id, backgroundImage, mirrorCanvasRef, initialDesign })
     const [selectedHeight, setSelectedHeight] = useState("");
     const mirrorFabricRef = useRef(null);
 
-
     const globalDispatch = (lable, value, id) => {
         dispatch(updateTextState({
             ["id"]: id,
@@ -371,6 +370,7 @@ const bringToFrontt = (object) => {
             setSelectedHeight(actualHeight.toFixed(0));
         }
     };
+
 
 
 

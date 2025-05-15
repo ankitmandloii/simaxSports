@@ -52,7 +52,9 @@ const AddTextToolbar = () => {
 
 
 
-  // console.log("text", text)
+
+  
+  // //console.log("text", text)
 
 
   const [text, setText] = useState(textContaintObject ? textContaintObject.content : "")
@@ -77,7 +79,7 @@ const AddTextToolbar = () => {
     // setText(textContaintObject.content);
     if (selectedTextId) {
       setCurrentTextToolbarId(selectedTextId);
-      console.log("is selected id ", selectedTextId);
+      //console.log("is selected id ", selectedTextId);
       setShowContent(true);
       const currentInputData = allTextInputData.find((text) => text.id == selectedTextId);
       if (!currentInputData) return
@@ -104,7 +106,7 @@ const AddTextToolbar = () => {
     }
     //  else if(selectedBackTextId){
     //   setCurrentTextToolbarId(selectedBackTextId);
-    //   console.log("is selected id ",selectedBackTextId);
+    //   //console.log("is selected id ",selectedBackTextId);
     //    setShowContent(true);
     //   const currentInputData = allTextBackInputData.find((text) => text.id == selectedBackTextId);
     //   setText(currentInputData.content);
@@ -263,7 +265,7 @@ const AddTextToolbar = () => {
     const value = !(textContaintObject.flipX);
     setflipXValue(value);
     globalDispatch("flipX", value);
-    console.log("clicked", value);
+    //console.log("clicked", value);
   }
 
 
@@ -277,12 +279,12 @@ const AddTextToolbar = () => {
   const callForYFlip = () => {
     const value = !(textContaintObject.flipY);
     setflipYValue(value);
-    console.log("y value ", value);
+    //console.log("y value ", value);
     globalDispatch("flipY", value);
   }
 
   useEffect(() => {
-    console.log(currentTextToolbarId, "id =>");
+    //console.log(currentTextToolbarId, "id =>");
   }, [flipXValue, flipYValue])
 
   const colorClassNameForY = flipYValue !== true ? 'toolbar-box-icons-container-flip2' : 'toolbar-box-icons-container-clickStyle-flip2';

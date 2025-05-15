@@ -29,6 +29,16 @@ function ProductContainer() {
   const backCanvasRef = useRef(null);
   const frontDesignRef = useRef(null);
   const backDesignRef = useRef(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const handleConfirm = () => {
+    console.log("User confirmed start over.");
+    setShowPopup(false);
+    // Your start-over logic here
+  };
+  
+  const handleCancel = () => {
+    setShowPopup(false);
+  };
 
   const [ShowFrontImage, setShowFrontImage] = useState(true);
 
@@ -56,7 +66,11 @@ function ProductContainer() {
   }
   return (
     <div className='ProductContainerMainDiv'>
-
+      <ul className='ProductContainerListButtton'>
+        <li><button className='ProductContainerButton' onClick={() => dispatch(undo())}><span><TbArrowBack /></span>UNDO</button></li>
+        <li><button className='ProductContainerButton' onClick={() => dispatch(redo())}><span><TbArrowForwardUp /></span>REDO</button></li>
+        <li><button className='ProductContainerButton' onClick={()=>setShowPopup(!showPopup)}>START OVER</button></li>
+      </ul>
       <div className='flex'>
         <MainDesignTool
           id="mirrorCanvasFront"
@@ -110,7 +124,8 @@ function ProductContainer() {
           <Link to='/addArt'> <li><button className='ProductContainerSmallImageZoomButton'>ADD ART</button></li></Link>
           <Link to='/addNames'><li><button className='ProductContainerSmallImageZoomButton'>NAMES & NUMBERS</button></li></Link>
         </ul>
-      </div> */}
+      </div>
+      {/* {showPopup && <StartOverConfirmationPopup onConfirm={handleConfirm} onCancel={handleCancel} />} */}
     </div>
   )
 }
