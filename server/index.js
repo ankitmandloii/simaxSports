@@ -42,12 +42,15 @@ res.send("yes Now you hit APis");
 // app.use("/external/*",authenticateUser);
 // app.use("/external/",routes);
 
-app.listen(PORT, (err)=> {
-    if (err) //console.log(err);
-    {
-        console.log(`SomeThing went wrong", ${err}`);
-    } else {
-        console.log("Server listening on PORT", PORT);
 
-    }
-});
+module.exports = app; 
+// app.listen(PORT, (err)=> {
+//     if (err) //console.log(err);
+//     {
+//         console.log(`SomeThing went wrong", ${err}`);
+//     } else {
+//         console.log("Server listening on PORT", PORT);
+
+//     }
+// });
+
