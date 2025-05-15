@@ -34,7 +34,7 @@ app.use(cors());
 //add route for maintenance api without authentication
 // app.use("/public/",maintenanceRoutes);
 // app.use("/api/*",shopify.validateAuthenticatedSession(), authenticateUser);
-app.use("/api", routes);
+// app.use("/", routes);
 
 app.get("/",(req,res)=>{
 res.send("yes Now you hit APis");
