@@ -2,6 +2,7 @@
     gap: 12px;
     display: flex;
     flex-direction: column;
+    
 }
 
 .toolbar-box textarea {
@@ -17,7 +18,9 @@
     padding: 6px 6px 80px;
     overflow-y: hidden;
 }
-
+.AddTextToolbar-main-container{
+    position: relative;
+}
 .addText-first-toolbar-box-container {
     display: flex;
     justify-content: space-around;
@@ -156,8 +159,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 10px;
 }
-
 .toolbar-box-Font-Value-set-inner-actionlogo {
     position: relative;
     display: flex;
@@ -194,3 +197,18 @@
 ;
     /* background-color: black; */
 }
+.addText-inner-main-containerr{
+    gap: 12px;
+    display: flex
+;
+    flex-direction: column;
+    overflow-y: auto;
+}
+.addText-inner-main-containerr::-webkit-scrollbar{
+    /* color: red; */
+    background-color: #888;
+    color:#fff;
+    width: 5px;
+    height: 3px;
+}
+

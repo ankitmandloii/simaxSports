@@ -1,5 +1,5 @@
 /* Overlay for modal background */
-.popup-overlay {
+.changeProdcutPopup-mainContainer .popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,10 +13,11 @@
 }
 
 /* Modal container */
-.popup-container {
+.changeProdcutPopup-mainContainer .popup-container {
   background: #fff;
   width: 95%;
   height: 85%;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   border-radius: 8px;
@@ -24,7 +25,7 @@
 }
 
 /* Header with close button */
-.popup-header {
+.changeProdcutPopup-mainContainer .popup-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -32,12 +33,12 @@
   border-bottom: 1px solid #ddd;
 }
 
-.popup-header h3 {
+.changeProdcutPopup-mainContainer .popup-header h3 {
   font-size: 1.5rem;
   font-weight: 600;
 }
 
-.close-btn {
+.changeProdcutPopup-mainContainer .close-btn {
   font-size: 24px;
   background: none;
   border: none;
@@ -45,14 +46,14 @@
 }
 
 /* Content layout with sidebar and main */
-.popup-content {
+.changeProdcutPopup-mainContainer .popup-content {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
 /* Sidebar styling */
-.changProduct-popup .sidebar {
+.changeProdcutPopup-mainContainer .changProduct-popup .sidebarr {
   width: 20%;
   background: #f9f9f9;
   padding: 1rem;
@@ -60,7 +61,7 @@
   border-right: 1px solid #ddd;
 }
 
-.popup-overlay .sidebar-item {
+.changeProdcutPopup-mainContainer .popup-overlay .sidebar-item {
   padding: 12px;
   margin-bottom: 8px;
   cursor: pointer;
@@ -86,7 +87,7 @@
   overflow-y: auto;
   background: #fff;
 } */
- .popup-overlay .product-card-container{
+ .changeProdcutPopup-mainContainer .popup-overlay .product-card-container{
   /* width: 80%; */
   display: flex;
   padding: 1rem;
@@ -96,7 +97,7 @@
  }
 
 /* Individual product card */
-.popup-overlay .product-card {
+.changeProdcutPopup-mainContainer .popup-overlay .product-card {
   width: 10rem;    /* 264px */
   height: 13rem; /* 246px */
   background: #fff;
@@ -111,23 +112,23 @@
   justify-content: space-between;
 }
 
-.popup-overlay .product-card:hover {
+.changeProdcutPopup-mainContainer .popup-overlay .product-card:hover {
   transform: scale(1.02);
 }
 
-.popup-overlay .product-card img {
+.changeProdcutPopup-mainContainer .popup-overlay .product-card img {
   width: 100%;
   height: 130px;
   object-fit: contain;
 }
 
-.popup-overlay .product-card p {
+.changeProdcutPopup-mainContainer .popup-overlay .product-card p {
   font-size: 14px;
   margin-top: 0.5rem;
 }
 
 /* Load more button */
-.load-more {
+.changeProdcutPopup-mainContainer .load-more {
   text-align: center;
   height: 33px;
   width: 126px;
@@ -143,22 +144,22 @@
   padding: 6px 10px;
   cursor: pointer;
   grid-column: span 5;
-  margin: 0 auto;
+  margin: 1rem auto;
 }
-.no-products {
+.changeProdcutPopup-mainContainer .no-products {
   grid-column: span 5;
   text-align: center;
   font-size: 16px;
   color: #999;
   margin-top: 2rem;
 }
-.changProduct-popup .product-grid{
+.changeProdcutPopup-mainContainer .changProduct-popup .product-grid{
   width: 80%;
 }
 
 /* ================= */
 /* Product grid container with scrolling */
-.changProduct-popup .product-grid {
+.changeProdcutPopup-mainContainer .changProduct-popup .product-grid {
   width: 80%;
   display: flex;
   flex-direction: column;
@@ -170,7 +171,7 @@
 }
 
 /* Scrollable product card container */
-.popup-overlay .product-card-container {
+.changeProdcutPopup-mainContainer .popup-overlay .product-card-container {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -178,7 +179,7 @@
 }
 
 /* Load More button fixed at bottom */
-.load-more {
+/* .changeProdcutPopup-mainContainer .load-more {
   position: absolute;
   bottom: 10px;
   left: 50%;
@@ -195,12 +196,39 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
+} */
 
 /* No product found styling */
-.no-products {
+.changeProdcutPopup-mainContainer .no-products {
   text-align: center;
   font-size: 16px;
   color: #999;
   margin-top: 2rem;
+}
+
+.changeProdcutPopup-mainContainer .popup-body-layout{
+  display: flex;
+  flex: 1;
+  height: 100%;
+  min-height: 0
+}
+.changeProdcutPopup-mainContainer .popup-sidebar{
+  width: 20%;
+  overflow-y: auto;
+   height: 100%;
+  min-height: 0;
+}
+.changeProdcutPopup-mainContainer .popup-products{
+  width: 80%;
+  padding: 1rem;
+  overflow-y: auto;
+  height: 100%;
+  min-height: 0;
+  position: relative;
+  
+}
+.product-list-collection{
+  display: flex;
+  flex-wrap: wrap;
+  gap:1rem;
 }

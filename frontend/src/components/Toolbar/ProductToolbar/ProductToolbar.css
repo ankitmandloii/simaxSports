@@ -75,22 +75,7 @@
   /* position: relative; */
 }
 
-.choose-color-box {
-  border-radius: 10px;
-  padding: 10px;
-  position: absolute;
-  background-color: #fff;
-  /* height: 8rem; */
-  width: 15rem;
-  z-index: 7;
-}
-
-.color-box-top {
-  display: flex;
-  justify-content: space-between;
-  padding: 4px;
-  border-bottom: 2px solid red;
-}
+/*  */
 
 /* .toolbar-head h3 {
   font-size: 12.5px;

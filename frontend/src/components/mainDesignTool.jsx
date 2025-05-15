@@ -522,7 +522,7 @@ const bringToFrontt = (object) => {
 
             const handleSelectionCleared = () => {
                 dispatch(setSelectedTextState(null));
-                navigate("/product");
+                // navigate("/product");
             };
 
             canvas.on("selection:cleared", handleSelectionCleared);

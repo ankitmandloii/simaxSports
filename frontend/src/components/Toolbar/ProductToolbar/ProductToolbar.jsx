@@ -86,13 +86,14 @@ import colorwheel from '../../images/color-wheel.png';
 import ChangePopup from '../../PopupComponent/ChangeProductPopup/ChangePopup';
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
+import AddProductContainer from '../../PopupComponent/addProductContainer/AddProductContainer';
 
 const ProductToolbar = () => {
   const [changeProductPopup, setChangeProductPopup] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [editingProductIndex, setEditingProductIndex] = useState(null);
-
+const [addProduct,setAddProduct]=useState(false);
   // For individual popups
   const [colorPopupIndex, setColorPopupIndex] = useState(null);
   const [changeColorPopupIndex, setChangeColorPopupIndex] = useState(null);
@@ -103,15 +104,24 @@ const ProductToolbar = () => {
     setChangeProductPopup(true);
   };
 
+  const addProductPopup=()=>{
+    setAddProduct(!addProduct);
+    console.log("---aaa",addProduct)
+
+  }
   const handleProductSelect = (product) => {
-    if (isAddingProduct) {
-      setSelectedProducts((prev) => [...prev, product]);
-    } else if (editingProductIndex !== null) {
-      const updatedProducts = [...selectedProducts];
-      updatedProducts[editingProductIndex] = product;
-      setSelectedProducts(updatedProducts);
-    }
-    setChangeProductPopup(false);
+    console.log("-------------prrrrr",product)
+     setSelectedProducts((prev) => [...prev, product]);
+    // if (isAddingProduct) {
+     
+    //     console.log("------ghgh",selectedProducts)}
+    // } else if (editingProductIndex !== null) {
+    //   const updatedProducts = [...selectedProducts];
+    //   updatedProducts[editingProductIndex] = product;
+    //   setSelectedProducts(updatedProducts);
+    // }
+    // setChangeProductPopup(false);
+    console.log("------",selectedProducts)
   };
 
   const handleDeleteProduct = (indexToDelete) => {
@@ -131,10 +141,10 @@ const ProductToolbar = () => {
           <div className="toolbar-product-head" key={index}>
             <div className="toolbar-head">
               <div className="mini-prod-img-container">
-                <img src={product.thumbnail} className="product-mini-img" alt="product" />
+                <img src={product.imgurl} className="product-mini-img" alt="product" />
               </div>
               <div>
-                <h4>{product.title}</h4>
+                <h4>{product.name}</h4>
                 <button
                   className="toolbar-span"
                   onClick={() =>
@@ -183,7 +193,7 @@ const ProductToolbar = () => {
           </div>
         ))}
 
-        <button className="add-product-btn" onClick={() => openChangeProductPopup(true)}>
+        <button className="add-product-btn" onClick={() => addProductPopup()}>
           <IoAdd /> Add Products
         </button>
 
@@ -204,6 +214,12 @@ const ProductToolbar = () => {
           onProductSelect={handleProductSelect}
         />
       )}
+   
+      {addProduct && ( <AddProductContainer
+    isOpen={addProduct}
+    onClose={() => setAddProduct(false)}
+    onProductSelect={handleProductSelect}
+  />)}
     </div>
   );
 };

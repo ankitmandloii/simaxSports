@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import camera from '../../images/camera.jpg';
 import { IoAdd } from "react-icons/io5";
 import '../AddTextToolbar/AddTextToolbar.css';
@@ -30,7 +30,7 @@ import { BsXOctagon } from 'react-icons/bs';
 // import { setSelectedBackTextState } from '../../../redux/BackendDesign/TextBackendDesignSlice.js';
 
 const AddTextToolbar = () => {
-
+  const outlineBoxRef = useRef(null);
   const dispatch = useDispatch();
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const [currentTextToolbarId, setCurrentTextToolbarId] = useState(String(Date.now()));  // current id of toolbar
@@ -38,6 +38,10 @@ const AddTextToolbar = () => {
   const textContaintObject = allTextInputData.find((text) => text.id == currentTextToolbarId);
   console.log(allTextInputData, textContaintObject, "render data");
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
+
+  const isLocked = textContaintObject?.locked;
+  console.log("-------lock", isLocked, "---", textContaintObject?.locked)
+
 
 
 
@@ -68,6 +72,7 @@ const AddTextToolbar = () => {
   const [rangeValuesArc, setRangeValuesArc] = useState(textContaintObject ? textContaintObject.arc : 0);
   const [prevValue, setPrevValue] = useState("");
   const [duplicateActive, setDuplicateActive] = useState(false);
+  const [centerActive, setCenterActive] = useState(false);
   useEffect(() => {
     // setText(textContaintObject.content);
     if (selectedTextId) {
@@ -76,6 +81,7 @@ const AddTextToolbar = () => {
       setShowContent(true);
       const currentInputData = allTextInputData.find((text) => text.id == selectedTextId);
       if (!currentInputData) return
+
       setText(currentInputData.content);
       setTextColor(currentInputData.textColor);
       setOutlineColor(currentInputData.outLineColor);
@@ -120,6 +126,21 @@ const AddTextToolbar = () => {
     }
   }, [dispatch, selectedTextId, allTextInputData, textContaintObject])
   //  [dispatch,selectedTextId, selectedBackTextId ])
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (outlineBoxRef.current && !outlineBoxRef.current.contains(event.target)) {
+        setOutlineColorPopup(false);
+      }
+    }
+
+    if (outlineColorPopup) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [outlineColorPopup]);
 
 
   const handleRangeInputSizeChange = (e) => {
@@ -312,7 +333,7 @@ const AddTextToolbar = () => {
   }
 
   return (
-    <div className="toolbar-main-container">
+    <div className="toolbar-main-container AddTextToolbar-main-container">
       <div className='toolbar-main-heading'>
         <h5 className='Toolbar-badge'>Text Editor</h5>
         <h3>Add new Text</h3>
@@ -332,9 +353,18 @@ const AddTextToolbar = () => {
               <>
                 <div className='addText-first-toolbar-box-container'>
                   <div className='toolbar-box-icons-and-heading-container'>
-                    <div className='toolbar-box-icons-container' onClick={() => globalDispatch("position", { x: 320, y: textContaintObject.position.y })}><span><AlignCenterIcon /></span></div>
+                    <div
+                      className={`toolbar-box-icons-container ${centerActive ? 'active' : ''}`}
+                      onClick={() => {
+                        globalDispatch("position", { x: 320, y: textContaintObject.position.y });
+                        setCenterActive(!centerActive);
+                      }}
+                    >
+                      <span><AlignCenterIcon /></span>
+                    </div>
                     <div className='toolbar-box-heading-container'>Center</div>
                   </div>
+
                   <div className='toolbar-box-icons-and-heading-container'>
                     <div className='toolbar-box-icons-container-for-together'>
                       {/* <div className='toolbar-box-icons-container-layering1'   onClick={() => globalDispatch("layerIndex",1000)}><span><LayeringFirstIcon /></span></div>
@@ -359,9 +389,14 @@ const AddTextToolbar = () => {
                     Flip
                   </div>
 
-                  <div className='toolbar-box-icons-and-heading-container' onClick={() => dispatch(toggleLockState(currentTextToolbarId))}>
-                    <div className='toolbar-box-icons-container'><span><LockIcon /></span></div>
-                    <div className='toolbar-box-heading-container'>Lock</div>
+                  <div
+                    className="toolbar-box-icons-and-heading-container1"
+                    onClick={() => dispatch(toggleLockState(currentTextToolbarId))}
+                  >
+                    <div className={`toolbar-box-icons-container ${isLocked ? 'active' : ''}`}>
+                      <span><LockIcon /></span>
+                    </div>
+                    <div className="toolbar-box-heading-container">Lock</div>
                   </div>
 
                   <div
@@ -377,150 +412,153 @@ const AddTextToolbar = () => {
                 </div>
 
                 <hr />
-
-                <div className='toolbar-box-Font-Value-set-inner-container'>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>Font</div>
-                  <div className='toolbar-box-Font-Value-set-inner-actionlogo cursor' onClick={() => setShowFontSelector(true)}>
-                    {selectedFont} <span><AngleActionIcon /></span>
+                <div className="addText-inner-main-containerr">
+                  <div className='toolbar-box-Font-Value-set-inner-container'>
+                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>Font</div>
+                    <div className='toolbar-box-Font-Value-set-inner-actionlogo cursor' onClick={() => setShowFontSelector(true)}>
+                      {selectedFont} <span><AngleActionIcon /></span>
+                    </div>
                   </div>
-                </div>
 
-                <hr />
+                  <hr />
 
-                <div className='toolbar-box-Font-Value-set-inner-container'>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>Color</div>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleTextColorPopup}>
-                    {textColor}
-                    <SpanColorBox color={textColor} />
-                    <span><AngleActionIcon /></span>
-                    {textColorPopup && (
-                      <ChooseColorBox
-                        addColorPopupHAndler={toggleTextColorPopup}
-                        title="Text Color"
-                        defaultColor={textColor}
-                        onColorChange={textColorChangedFunctionCalled}  // Update text color
-                        button={true}
+                  <div className='toolbar-box-Font-Value-set-inner-container'>
+                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>Color</div>
+                    <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleTextColorPopup}>
+                      {textColor}
+                      <SpanColorBox color={textColor} />
+                      <span><AngleActionIcon /></span>
+                      {textColorPopup && (
+                        <ChooseColorBox
+                          addColorPopupHAndler={toggleTextColorPopup}
+                          title="Text Color"
+                          defaultColor={textColor}
+                          onColorChange={textColorChangedFunctionCalled}  // Update text color
+                          button={true}
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <div className='toolbar-box-Font-Value-set-inner-container'>
+                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>Outline</div>
+                    <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleOutlineColorPopup}>
+                      {outlineColor ? outlineColor : 'None'}
+                      <span > <SpanColorBox color={outlineColor} /></span>
+                      <span><AngleActionIcon /></span>
+                      {outlineColorPopup && (
+                        // <div ref={outlineBoxRef}>
+
+                          <ChooseColorBox
+                            addColorPopupHAndler={toggleOutlineColorPopup}
+                            title="Outline Color"
+                            defaultColor={outlineColor}
+                            onColorChange={textOutLineColorChangedFunctionCalled} // Update outline color
+                            onRangeChange={textOutLineRangeChangedFunctionCalled} // Update outline size
+                            button={true}
+                            range={true}
+                            outlineSize={outlineSize}
+
+                          />
+                        // </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <hr />
+
+
+
+                  <div className='toolbar-box-Font-Value-set-inner-container'>
+                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>
+                      Size
+                    </div>
+                    <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+                      <input
+                        type="range"
+                        id="min"
+                        name="min"
+                        min="1"
+                        max="10"
+                        step="0.2"
+                        value={rangeValuesSize}
+                        onChange={(e) => handleRangeInputSizeChange(e)}
                       />
-                    )}
+
+                      <span><SpanValueBox valueShow={rangeValuesSize} /></span>
+                    </div>
                   </div>
-                </div>
 
-                <hr />
 
-                <div className='toolbar-box-Font-Value-set-inner-container'>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>Outline</div>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleOutlineColorPopup}>
-                    {outlineColor ? outlineColor : 'None'}
-                    <span > <SpanColorBox color={outlineColor} /></span>
-                    <span><AngleActionIcon /></span>
-                    {outlineColorPopup && (
-                      <ChooseColorBox
-                        addColorPopupHAndler={toggleOutlineColorPopup}
-                        title="Outline Color"
-                        defaultColor={outlineColor}
-                        onColorChange={textOutLineColorChangedFunctionCalled} // Update outline color
-                        onRangeChange={textOutLineRangeChangedFunctionCalled} // Update outline size
-                        button={true}
-                        range={true}
-                        outlineSize={outlineSize}
+                  <hr></hr>
+
+
+                  <div className='toolbar-box-Font-Value-set-inner-container'>
+                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>
+                      Arc
+                    </div>
+                    <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+                      <input
+                        type="range"
+                        id="min"
+                        name="min"
+                        min="-360"
+                        max="360"
+                        defaultValue={0}
+                        value={rangeValuesArc}
+                        onChange={(e) => handleRangeInputArcChange(e)}
+                      />
+
+                      <span><SpanValueBox valueShow={rangeValuesArc} /></span>
+                    </div>
+                  </div>
+
+                  <hr></hr>
+
+                  <div className='toolbar-box-Font-Value-set-inner-container'>
+                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>
+                      Rotate
+                    </div>
+                    <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+                      <input
+                        type="range"
+                        id="min"
+                        name="min"
+                        min="0"
+                        max="360"
+                        value={rangeValuesRotate}
+                        onChange={(e) => handleRangeInputRotateChange(e)}
+                      />
+
+                      <span><SpanValueBox valueShow={rangeValuesRotate} /></span>
+                    </div>
+                  </div>
+
+                  <hr></hr>
+                  <div className='toolbar-box-Font-Value-set-inner-container'>
+                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>
+                      Spacing
+                    </div>
+                    <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+                      <input
+                        type="range"
+                        id="min"
+                        name="min"
+                        min="0"
+                        step={"25"}
+                        max="500"
+                        value={rangeValuesSpacing}
+                        onChange={(e) => handleRangeInputSpacingChange(e)}
 
                       />
-                    )}
+                      <span><SpanValueBox valueShow={rangeValuesSpacing} /></span>
+
+                    </div>
                   </div>
+
                 </div>
-
-                <hr />
-
-
-
-                <div className='toolbar-box-Font-Value-set-inner-container'>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>
-                    Size
-                  </div>
-                  <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
-                    <input
-                      type="range"
-                      id="min"
-                      name="min"
-                      min="1"
-                      max="10"
-                      step="0.2"
-                      value={rangeValuesSize}
-                      onChange={(e) => handleRangeInputSizeChange(e)}
-                    />
-
-                    <span><SpanValueBox valueShow={rangeValuesSize} /></span>
-                  </div>
-                </div>
-
-
-                <hr></hr>
-
-
-                <div className='toolbar-box-Font-Value-set-inner-container'>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>
-                    Arc
-                  </div>
-                  <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
-                    <input
-                      type="range"
-                      id="min"
-                      name="min"
-                      min="-360"
-                      max="360"
-                      defaultValue={0}
-                      value={rangeValuesArc}
-                      onChange={(e) => handleRangeInputArcChange(e)}
-                    />
-
-                    <span><SpanValueBox valueShow={rangeValuesArc} /></span>
-                  </div>
-                </div>
-
-                <hr></hr>
-
-                <div className='toolbar-box-Font-Value-set-inner-container'>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>
-                    Rotate
-                  </div>
-                  <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
-                    <input
-                      type="range"
-                      id="min"
-                      name="min"
-                      min="0"
-                      max="360"
-                      value={rangeValuesRotate}
-                      onChange={(e) => handleRangeInputRotateChange(e)}
-                    />
-
-                    <span><SpanValueBox valueShow={rangeValuesRotate} /></span>
-                  </div>
-                </div>
-
-                <hr></hr>
-                <div className='toolbar-box-Font-Value-set-inner-container'>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>
-                    Spacing
-                  </div>
-                  <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
-                    <input
-                      type="range"
-                      id="min"
-                      name="min"
-                      min="0"
-                      step={"25"}
-                      max="500"
-                      value={rangeValuesSpacing}
-                      onChange={(e) => handleRangeInputSpacingChange(e)}
-
-                    />
-                    <span><SpanValueBox valueShow={rangeValuesSpacing} /></span>
-
-                  </div>
-                </div>
-
-
 
               </>
             )}
