@@ -170,24 +170,24 @@ const AddTextToolbar = () => {
 
     setShowContent(value.length > 0);
 
-    const newValue = value.split(" ");
-    const len = newValue.length;
+    // const newValue = value.split(" ");
+    // const len = newValue.length;
 
-    // Only append a space if user is typing and last word is too long
-    const lastWord = newValue[len - 1];
-    const isTyping = value.length > prevValue.length;
+    // // Only append a space if user is typing and last word is too long
+    // const lastWord = newValue[len - 1];
+    // const isTyping = value.length > prevValue.length;
 
-    if (isTyping && lastWord.length > 22 && !lastWord.endsWith(" ")) {
-      newValue[len - 1] = `${lastWord} `;
-    }
+    // if (isTyping && lastWord.length > 22 && !lastWord.endsWith(" ")) {
+    //   newValue[len - 1] = `${lastWord} `;
+    // }
 
-    const newString = newValue.join(" ");
+    // const newString = newValue.join(" ");
 
-    setText(newString);
+    setText(value);
     setPrevValue(value); // Update prevValue for next comparison
 
     if (textContaintObject) {
-      globalDispatch("content", newString);
+      globalDispatch("content", value);
     } else {
       dispatch(addTextState({
         value: value,

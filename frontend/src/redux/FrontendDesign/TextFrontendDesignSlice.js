@@ -66,6 +66,7 @@ const TextFrontendDesignSlice = createSlice({
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       const newText = createNewText({ value, id }, state.present[side].texts.length);
       state.present[side].texts.push(newText);
+      state.present[side].selectedTextId = newText.id;
       state.future[side] = [];
       state.present[side].setRendering = !state.present[side].setRendering;
     },
@@ -73,25 +74,29 @@ const TextFrontendDesignSlice = createSlice({
     // Duplicate an existing text object
     duplicateTextState: (state, action) => {
       const side = state.activeSide;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       const idToDuplicate = action.payload;
       const textToDuplicate = state.present[side].texts.find(t => t.id === idToDuplicate);
-      if (textToDuplicate) {
-        const newText = {
-          ...JSON.parse(JSON.stringify(textToDuplicate)),
-          id: nanoid(),
-          position: {
-            x: textToDuplicate.position.x + 20,
-            y: textToDuplicate.position.y + 20
-          },
-          layerIndex: state.present[side].texts.length
-        };
-        state.present[side].selectedTextId = newText.id;
-        state.present[side].texts.push(newText);
-        state.future[side] = [];
-      }
+
+      if (!textToDuplicate) return; // Exit early if text doesn't exist
+
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+      const newText = {
+        ...JSON.parse(JSON.stringify(textToDuplicate)),
+        id: nanoid(),
+        position: {
+          x: textToDuplicate.position.x + 20,
+          y: textToDuplicate.position.y + 20
+        },
+        layerIndex: state.present[side].texts.length
+      };
+
+      state.present[side].texts.push(newText);
+      state.present[side].selectedTextId = newText.id;
+      state.future[side] = [];
       state.present[side].setRendering = !state.present[side].setRendering;
-    },
+    },  
+
 
     // Update a text object
     updateTextState: (state, action) => {
@@ -164,6 +169,7 @@ const TextFrontendDesignSlice = createSlice({
       const previous = state.past[side].pop();
       state.future[side].unshift(JSON.parse(JSON.stringify(state.present[side])));
       state.present[side] = previous;
+
       state.present[side].setRendering = !state.present[side].setRendering;
     },
 
@@ -192,7 +198,7 @@ const TextFrontendDesignSlice = createSlice({
         leftSleeve: [],
         rightSleeve: []
       };
-       state.present[side].setRendering = !(state.present[side].setRendering);
+      state.present[side].setRendering = !(state.present[side].setRendering);
     }
   }
 });
