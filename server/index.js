@@ -38,8 +38,8 @@ app.use(cors());
 // app.use("/api/*",shopify.validateAuthenticatedSession(), authenticateUser);
 // app.use("/api", routes);
 
-app.get("/",(req,res)=>{
-res.end("yes Now you hit APis");
+app.use("/",(req,res)=>{
+res.send("yes Now you hit APis");
 });
 
 
@@ -47,8 +47,8 @@ res.end("yes Now you hit APis");
 // app.use("/external/",routes);
 
 
+app.listen(PORT, console.log("server is on port 3000"));
 
-module.exports = app;
 
 // app.listen(PORT, (err)=> {
 //     if (err) //console.log(err);
