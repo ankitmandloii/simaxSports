@@ -36,10 +36,10 @@ app.use(cors());
 //add route for maintenance api without authentication
 // app.use("/public/",maintenanceRoutes);
 // app.use("/api/*",shopify.validateAuthenticatedSession(), authenticateUser);
-app.use("/api", routes);
+// app.use("/api", routes);
 
 app.get("/",(req,res)=>{
-res.send("yes Now you hit APis");
+res.end("yes Now you hit APis");
 });
 
 
@@ -48,13 +48,15 @@ res.send("yes Now you hit APis");
 
 
 
-app.listen(PORT, (err)=> {
-    if (err) //console.log(err);
-    {
-        console.log(`SomeThing went wrong", ${err}`);
-    } else {
-        console.log("Server listening on PORT", PORT);
+module.exports = app;
 
-    }
-});
+// app.listen(PORT, (err)=> {
+//     if (err) //console.log(err);
+//     {
+//         console.log(`SomeThing went wrong", ${err}`);
+//     } else {
+//         console.log("Server listening on PORT", PORT);
+
+//     }
+// });
 
