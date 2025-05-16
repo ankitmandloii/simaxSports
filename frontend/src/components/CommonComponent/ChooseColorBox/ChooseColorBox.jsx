@@ -16,13 +16,8 @@ const ChooseColorBox = ({
   button = false,
   range = false,
   defaultColor = "#FF0000",
-<<<<<<< Updated upstream
-  onColorChange = () => {},
-  onRangeChange = () => {},
-=======
   onColorChange = () => { },
   onRangeChange = () => { },
->>>>>>> Stashed changes
   outlineSize,
 }) => {
   const [color, setColor] = useColor("hex", defaultColor);
