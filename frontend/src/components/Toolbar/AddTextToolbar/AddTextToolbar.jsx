@@ -306,7 +306,6 @@ const AddTextToolbar = () => {
 
     return true;
   }
-  console.log("----Base-Url", BASE_URL)
   return (
     <div className="toolbar-main-container AddTextToolbar-main-container">
       <div className='toolbar-main-heading'>
