@@ -4,8 +4,8 @@ const multer = require('multer');
 const router = express.Router();
 
 
-
-const upload = multer({ dest: 'uploads/' });
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 router.post("/convertToPng",  upload.single('image'),controllers.convertToPng);
 
 
