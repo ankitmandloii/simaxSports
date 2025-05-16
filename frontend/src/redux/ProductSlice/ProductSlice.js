@@ -40,6 +40,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // Use environment variable for base URL
+// REACT_APP_BASE_URL='http://localhost:3000/'
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 // Async thunk to fetch products using fetch
@@ -47,7 +48,7 @@ export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async (_, thunkAPI) => {
     try {
-      const response = await fetch(`https://f9f2-49-249-2-6.ngrok-free.app/api/products/list`, {
+      const response = await fetch(`${BASE_URL}products/list`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

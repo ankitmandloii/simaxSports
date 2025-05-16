@@ -112,6 +112,7 @@ import './CollectionProductPopup.css';
 import ColorWheel from '../../images/color-wheel1.png';
 
 const CollectionProductPopup = ({ collectionId }) => {
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   const [products, setProducts] = useState([]);
   const [cursor, setCursor] = useState('');
   const [hasNextPage, setHasNextPage] = useState(false);
@@ -137,7 +138,7 @@ const CollectionProductPopup = ({ collectionId }) => {
     setLoading(true);
     try {
       const res = await fetch(
-        `https://f9f2-49-249-2-6.ngrok-free.app/api/products/collection/${numericId}`,
+        ` ${BASE_URL}products/collection/${numericId}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

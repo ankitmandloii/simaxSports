@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 // Async thunk to fetch collections with pagination
 export const fetchCollections = createAsyncThunk(
   'collections/fetchCollections',
-  async ({ cursor, limit = 50}) => {
-    const response = await fetch('https://f9f2-49-249-2-6.ngrok-free.app/api/products/collectionList', {
+  async ({ cursor, limit = 50 }) => {
+    const response = await fetch(`${BASE_URL}products/collectionList`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -40,11 +40,11 @@ export const collectionSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchCollections.fulfilled, (state, action) => {
-  state.loading = false;
-  state.collections = [...state.collections, ...action.payload.collections];
-  state.cursor = action.payload.pageInfo.endCursor;
-  state.hasNextPage = action.payload.pageInfo.hasNextPage;
-})
+        state.loading = false;
+        state.collections = [...state.collections, ...action.payload.collections];
+        state.cursor = action.payload.pageInfo.endCursor;
+        state.hasNextPage = action.payload.pageInfo.hasNextPage;
+      })
 
       .addCase(fetchCollections.rejected, (state) => {
         state.loading = false;
