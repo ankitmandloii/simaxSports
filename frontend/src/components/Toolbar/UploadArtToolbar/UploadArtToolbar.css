@@ -54,7 +54,7 @@
 }
 
 .file-list li {
-  border: 1px solid #eee; 
+  border: 1px solid #eee;
   padding: 4px;
   font-size: 12px;
   width: 100%;
@@ -83,34 +83,42 @@
   cursor: pointer;
   /* transition: background-color 0.3s ease, transform 0.2s ease; */
 }
-.upload-btn-flex-container{
+
+.upload-btn-flex-container {
   display: flex;
   justify-content: space-between;
   gap: 10px;
   margin: 1rem 0;
 }
-.upload-option-btn{
+
+.upload-option-btn {
   cursor: pointer;
   font-size: 12px;
   justify-content: center;
-  gap:10px;
+  gap: 10px;
   align-items: center;
   border: 1px solid #8D9095;
   display: flex;
   height: 2.5rem;
   /* background-color: aquamarine; */
-  width: 9rem;
-  border-radius: 5px;
+  width: 10rem;
+  border-radius: 30px;
 }
-.upload-option-btn img{
+
+.upload-option-btn img {
   height: 15px;
 }
 
-.upload-para{
+.upload-option-btn p {
+  font-size: 14px;
+}
+
+.upload-para {
   font-size: 12px;
-  color:  #8A9099;
+  color: #8A9099;
   ;
 }
+
 /* -- */
 .file-item {
   position: relative;
