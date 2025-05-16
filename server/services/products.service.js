@@ -13,299 +13,226 @@ const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/grap
 
 
 
-
-export const getProductsList = async (limit) => {
-  let query = `{
-  products(first: ${limit}) {
-  pageInfo {
-  startCursor
-  endCursor
-  hasNextPage
-  hasPreviousPage
-}
-edges {
-cursor
-node {
-  title
-  options(first: 50) {
-    id
-    name
-    values
-  }
-
-  variants(first: 250) {
-    edges {
-      node {
-        id
-        title
-        image {
-          altText
-          id
-          originalSrc
-        }
-       
-        
-        sku
-        
-        selectedOptions {
-          name
-          value
-        }
-      }
-    }
-    pageInfo {
-      hasNextPage
-    }
-  }
-  collections(first: 250) {
-    edges {
-      node {
-        description
-        descriptionHtml
-        id
-        handle
-        updatedAt
-        title
-      }
-    }
-  }
-  
-  description
- 
-  handle
-  id
-  onlineStoreUrl
-  productType
-  publishedAt
-  tags
-  title
-  updatedAt
-  vendor
-  sellingPlanGroups(first:1){
-nodes{
-   
-    name
-    options
-    
-}
-}
-  images(first: 250) {
-    edges {
-      node {
-        altText
-        id
-        originalSrc
-      }
-    }
-  }
-}
-}
-}
-    }`;
-
-
-//for fast and small dataset
-// let query = `{
+//using AXIOS
+// export const getProductsList = async (limit) => {
+//   let query = `{
 //   products(first: ${limit}) {
+//   pageInfo {
+//   startCursor
+//   endCursor
+//   hasNextPage
+//   hasPreviousPage
+// }
+// edges {
+// cursor
+// node {
+//   title
+//   options(first: 50) {
+//     id
+//     name
+//     values
+//   }
+
+//   variants(first: 250) {
 //     edges {
 //       node {
 //         id
 //         title
+//         image {
+//           altText
+//           id
+//           originalSrc
+//         }
+       
+        
+//         sku
+        
+//         selectedOptions {
+//           name
+//           value
+//         }
+//       }
+//     }
+//     pageInfo {
+//       hasNextPage
+//     }
+//   }
+//   collections(first: 250) {
+//     edges {
+//       node {
+//         description
+//         descriptionHtml
+//         id
 //         handle
-//         images(first: 1) {
-//           edges {
-//             node {
-//               originalSrc
-//               altText
-//             }
-//           }
-//         }
-//         variants(first: 1) {
-//           edges {
-//             node {
-//               id
-//               title
-//               sku
-//             }
-//           }
-//         }
+//         updatedAt
+//         title
+//       }
+//     }
+//   }
+  
+//   description
+ 
+//   handle
+//   id
+//   onlineStoreUrl
+//   productType
+//   publishedAt
+//   tags
+//   title
+//   updatedAt
+//   vendor
+//   sellingPlanGroups(first:1){
+// nodes{
+   
+//     name
+//     options
+    
+// }
+// }
+//   images(first: 250) {
+//     edges {
+//       node {
+//         altText
+//         id
+//         originalSrc
 //       }
 //     }
 //   }
 // }
-// `
+// }
+// }
+//     }`;
 
 
-  //   if (filterQuery) {
-  //     query = `{
-  //     products(first: ${limit}) {
-  // pageInfo {
-  //   startCursor
-  //   endCursor
-  //   hasNextPage
-  //   hasPreviousPage
-  // }
-  // edges {
-  // cursor
-  // node {
-  //   options(first: 50) {
-  //     id
-  //     name
-  //     values
-  //   }
-  //   availableForSale
-  //   variants(first: 250) {
-  //     edges {
-  //       node {
-  //         id
-  //         title
-  //         image {
-  //           altText
-  //           id
-  //           originalSrc
-  //         }
-  //         priceV2 {
-  //           amount
-  //           currencyCode
-  //         }
-  //         compareAtPriceV2 {
-  //           amount
-  //           currencyCode
-  //         }
-  //         availableForSale
-  //         quantityAvailable
-  //         sku
-  //         requiresShipping
-  //         selectedOptions {
-  //           name
-  //           value
-  //         }
-  //       }
-  //     }
-  //     pageInfo {
-  //       hasNextPage
-  //     }
-  //   }
-  //   collections(first: 250) {
-  //     edges {
-  //       node {
-  //         description
-  //         descriptionHtml
-  //         id
-  //         handle
-  //         updatedAt
-  //         title
-  //       }
-  //     }
-  //   }
-  //   createdAt
-  //   description
-  //   descriptionHtml
-  //   handle
-  //   id
-  //   onlineStoreUrl
-  //   productType
-  //   publishedAt
-  //   tags
-  //   title
-  //   updatedAt
-  //   vendor
-  //   sellingPlanGroups(first:1){
-  // nodes{
-  //     appName
-  //     name
-  //     options{
-  //         name
-  //         values
-  //     }
-  //     sellingPlans(first:100){
-  //         nodes{
-  //             checkoutCharge{
-  //                 type
-  //                 value{
-  //                     __typename
-  //                     ... on SellingPlanCheckoutChargePercentageValue{
-  //                         percentage
-  //                     }
-  //                 }
-  //             }
-  //             description
-  //             id
-  //             name
-  //             options{
-  //                 name
-  //                 value
-  //             }
-  //             priceAdjustments{
+//   try {
+//     const response = await axios.post(
+//       SHOPIFY_API_URL,
+//       { query },
+//       {
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'X-Shopify-Access-Token': A_TOKEN,
+//         },
+//       }
+//     );
+//     // console.log("Dataaaaaaaaaaaaaaa",response);
+//     // console.log("_------------------------------------------------_");
 
-  //                 adjustmentValue{
-  //                     __typename
-  //                     ...on SellingPlanFixedPriceAdjustment
-  //                     {
-  //                         price
-  //                         {
+//     // console.log("Dataaaaaaaaaaaaaaa22222222222",response.data);
+//     // const products = response.data.data.products.edges.map((edge: any) => edge.node);
+//     // const products = response.data.products.edges.map(edge => edge.node);
+//     return response.data;
+//   } catch (error) {
+//     console.error('Failed to fetch  products:', error);
+//     throw new Error('Error fetching products from Shopify');
+//   }
+// };
 
-  //                             amount
-  //                             currencyCode
-  //                         }
-  //                     }
-  //                     ...on SellingPlanPercentagePriceAdjustment{
-  //                         adjustmentPercentage
-  //                     }
-  //                     ...on SellingPlanFixedAmountPriceAdjustment{
-  //                         adjustmentAmount
-  //                         {
-  //                             amount
-  //                             currencyCode
-  //                         }
-
-  //                     }
-  //                 }
-  //                 orderCount
-  //             }
-  //             recurringDeliveries
-  //         }
-  //     }
-  // }
-  // }
-  //   images(first: 250) {
-  //     edges {
-  //       node {
-  //         altText
-  //         id
-  //         originalSrc
-  //       }
-  //     }
-  //   }
-  // }
-  // }
-  // }
-  //     }`
-  //   }
+//using Fetch
+export const getProductsList = async (limit) => {
+  const query = `{
+    products(first: ${limit}) {
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+      edges {
+        cursor
+        node {
+          title
+          options(first: 50) {
+            id
+            name
+            values
+          }
+          variants(first: 250) {
+            edges {
+              node {
+                id
+                title
+                image {
+                  altText
+                  id
+                  originalSrc
+                }
+                sku
+                selectedOptions {
+                  name
+                  value
+                }
+              }
+            }
+            pageInfo {
+              hasNextPage
+            }
+          }
+          collections(first: 250) {
+            edges {
+              node {
+                description
+                descriptionHtml
+                id
+                handle
+                updatedAt
+                title
+              }
+            }
+          }
+          description
+          handle
+          id
+          onlineStoreUrl
+          productType
+          publishedAt
+          tags
+          title
+          updatedAt
+          vendor
+          sellingPlanGroups(first: 1) {
+            nodes {
+              name
+              options
+            }
+          }
+          images(first: 250) {
+            edges {
+              node {
+                altText
+                id
+                originalSrc
+              }
+            }
+          }
+        }
+      }
+    }
+  }`;
 
   try {
-    const response = await axios.post(
-      SHOPIFY_API_URL,
-      { query },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Access-Token': A_TOKEN,
-        },
-      }
-    );
-    // console.log("Dataaaaaaaaaaaaaaa",response);
-    // console.log("_------------------------------------------------_");
+    const response = await fetch(SHOPIFY_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': A_TOKEN,
+      },
+      body: JSON.stringify({ query }),
+    });
 
-    // console.log("Dataaaaaaaaaaaaaaa22222222222",response.data);
-    // const products = response.data.data.products.edges.map((edge: any) => edge.node);
-    // const products = response.data.products.edges.map(edge => edge.node);
-    return response.data;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error('Failed to fetch  products:', error);
+    console.error('Failed to fetch products:', error);
     throw new Error('Error fetching products from Shopify');
   }
 };
+
+
 
 export const getProductFilter = async (title, limit, isCursor) => {
   try {
@@ -474,6 +401,65 @@ export const getProductFilter = async (title, limit, isCursor) => {
 // }
 // };
 
+
+//using axios
+// export const getAllCollectionList = async (limit = 50, cursor = null) => {
+//   try {
+//     const afterCursor = cursor ? `, after: "${cursor}"` : "";
+
+//     const query = `{
+//       collections(first: ${limit}${afterCursor}) {
+//         pageInfo {
+//           startCursor
+//           endCursor
+//           hasNextPage
+//           hasPreviousPage
+//         }
+//         edges {
+//           cursor
+//           node {
+//             title
+//             description
+//             descriptionHtml
+//             handle
+//             id
+//             updatedAt
+//             image {
+//               altText
+//               id
+//               originalSrc
+//             }
+//           }
+//         }
+//       }
+//     }`;
+
+//     const response = await axios.post(
+//       SHOPIFY_API_URL,
+//       { query },
+//       {
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'X-Shopify-Access-Token': A_TOKEN,
+//         },
+//       }
+//     );
+
+//     const data = response.data.data.collections;
+
+//     // Return both collections and pagination info
+//     return {
+//       collections: data.edges.map(edge => edge.node),
+//       pageInfo: data.pageInfo,
+//       cursors: data.edges.map(edge => edge.cursor),
+//     };
+//   } catch (error) {
+//     console.error("Failed to fetch collections:", error?.response?.data || error.message);
+//     throw new Error("Error fetching collections");
+//   }
+// };
+
+//using fetch 
 export const getAllCollectionList = async (limit = 50, cursor = null) => {
   try {
     const afterCursor = cursor ? `, after: "${cursor}"` : "";
@@ -505,27 +491,29 @@ export const getAllCollectionList = async (limit = 50, cursor = null) => {
       }
     }`;
 
-    const response = await axios.post(
-      SHOPIFY_API_URL,
-      { query },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Access-Token': A_TOKEN,
-        },
-      }
-    );
+    const response = await fetch(SHOPIFY_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': A_TOKEN,
+      },
+      body: JSON.stringify({ query }),
+    });
 
-    const data = response.data.data.collections;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-    // Return both collections and pagination info
+    const json = await response.json();
+    const data = json.data.collections;
+
     return {
       collections: data.edges.map(edge => edge.node),
       pageInfo: data.pageInfo,
       cursors: data.edges.map(edge => edge.cursor),
     };
   } catch (error) {
-    console.error("Failed to fetch collections:", error?.response?.data || error.message);
+    console.error("Failed to fetch collections:", error.message || error);
     throw new Error("Error fetching collections");
   }
 };
@@ -534,10 +522,84 @@ export const getAllCollectionList = async (limit = 50, cursor = null) => {
 
 //product by collcetionId--------
 
+//using AXIOS
+// export const getProductsByCollectionId = async (limit, collectionId, cursor) => {
+//   // console.log("collectionId:", collectionId);
 
+//   try {
+//     const isCursor = cursor ? `, after: "${cursor}"` : "";
+
+//     const query = `{
+//       node(id: "gid://shopify/Collection/${collectionId}") {
+//         ... on Collection {
+//           id
+//           title
+//           products(first: ${limit}${isCursor}) {
+//             pageInfo {
+//               hasNextPage
+//               endCursor
+//               startCursor
+//               hasPreviousPage
+//             }
+//             edges {
+//               cursor
+//               node {
+//                 id
+//                 title
+//                 handle
+//                 tags
+//                variants(first: 250) {
+//                   edges {
+//                    node {
+//                      id
+//                      title
+//                      image {
+//                        altText
+//                        id
+//                        originalSrc
+//                      }
+//                     selectedOptions {
+//                        name
+//                        value
+//                      }
+//                    }
+//                 }
+//                pageInfo {
+//                hasNextPage
+//                  }
+//                }
+//               }
+   
+//             }
+//           }
+//         }
+//       }
+//     }`;
+
+//     const response = await axios.post(
+//       SHOPIFY_API_URL,
+//       { query },
+//       {
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'X-Shopify-Access-Token': A_TOKEN,
+//         },
+//       }
+//     );
+
+//     const { data } = response;
+//     // console.log("GraphQL response data:", data);
+//     return data.data;
+
+//   } catch (error) {
+//     console.error("Failed to fetch Products:", error?.response?.data || error.message);
+//     return null;
+//   }
+// };
+
+
+//using fetch 
 export const getProductsByCollectionId = async (limit, collectionId, cursor) => {
-  // console.log("collectionId:", collectionId);
-
   try {
     const isCursor = cursor ? `, after: "${cursor}"` : "";
 
@@ -560,52 +622,51 @@ export const getProductsByCollectionId = async (limit, collectionId, cursor) => 
                 title
                 handle
                 tags
-               variants(first: 250) {
+                variants(first: 250) {
                   edges {
-                   node {
-                     id
-                     title
-                     image {
-                       altText
-                       id
-                       originalSrc
-                     }
-                    selectedOptions {
-                       name
-                       value
-                     }
-                   }
+                    node {
+                      id
+                      title
+                      image {
+                        altText
+                        id
+                        originalSrc
+                      }
+                      selectedOptions {
+                        name
+                        value
+                      }
+                    }
+                  }
+                  pageInfo {
+                    hasNextPage
+                  }
                 }
-               pageInfo {
-               hasNextPage
-                 }
-               }
               }
-   
             }
           }
         }
       }
     }`;
 
-    const response = await axios.post(
-      SHOPIFY_API_URL,
-      { query },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Access-Token': A_TOKEN,
-        },
-      }
-    );
+    const response = await fetch(SHOPIFY_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': A_TOKEN,
+      },
+      body: JSON.stringify({ query }),
+    });
 
-    const { data } = response;
-    // console.log("GraphQL response data:", data);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
     return data.data;
 
   } catch (error) {
-    console.error("Failed to fetch Products:", error?.response?.data || error.message);
+    console.error("Failed to fetch Products:", error.message || error);
     return null;
   }
 };
-
