@@ -98,6 +98,7 @@ const AddTextToolbar = () => {
       // setText(currentInputData.content);
       // setText(currentInputData.content);
 
+<<<<<<< Updated upstream
     }
      setShowContent(textContaintObject?.content.length > 0);
       setText(textContaintObject?.content);
@@ -106,6 +107,13 @@ const AddTextToolbar = () => {
       setOutlineSize(textContaintObject?.outLineSize);
       setSelectedFont(textContaintObject?.fontFamily);
       setOutlineColorPopup(false);
+=======
+      setText(currentInputData.content);
+      setTextColor(currentInputData.textColor);
+      setOutlineColor(currentInputData.outLineColor);
+      setOutlineSize(currentInputData.outLineSize);
+      setSelectedFont(currentInputData.fontFamily);
+>>>>>>> Stashed changes
       setShowFontSelector(false);
       setRangeValuesSize(textContaintObject?.scaledValue);
       setRangeValuesSpacing(textContaintObject?.spacing);
@@ -118,21 +126,7 @@ const AddTextToolbar = () => {
     }
   }, [dispatch, selectedTextId, allTextInputData, textContaintObject])
   //  [dispatch,selectedTextId, selectedBackTextId ])
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (outlineBoxRef.current && !outlineBoxRef.current.contains(event.target)) {
-        setOutlineColorPopup(false);
-      }
-    }
 
-    if (outlineColorPopup) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [outlineColorPopup]);
 
 
   const handleRangeInputSizeChange = (e) => {
@@ -237,11 +231,11 @@ const AddTextToolbar = () => {
     globalDispatch("textColor", color);
   }
 
-  const textOutLineColorChangedFunctionCalled = (outlinecolor) => {
+  const textOutLineColorChangedFunctionCalled = (outLineColor) => {
 
 
-    setOutlineColor(outlinecolor);
-    globalDispatch("outLineColor", outlinecolor);
+    setOutlineColor(outLineColor);
+    globalDispatch("outLineColor", outLineColor);
   }
 
   const textOutLineRangeChangedFunctionCalled = (outlinesize) => {
@@ -425,36 +419,35 @@ const AddTextToolbar = () => {
                           onColorChange={textColorChangedFunctionCalled}  // Update text color
                           button={true}
                         />
+
                       )}
                     </div>
                   </div>
 
                   <hr />
-
                   <div className='toolbar-box-Font-Value-set-inner-container'>
                     <div className='toolbar-box-Font-Value-set-inner-actionheading'>Outline</div>
                     <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleOutlineColorPopup}>
-                      {outlineColor ? outlineColor : 'None'}
-                      <span > <SpanColorBox color={outlineColor} /></span>
+                      {outlineColor}
+                      <SpanColorBox color={outlineColor} />
                       <span><AngleActionIcon /></span>
                       {outlineColorPopup && (
-                        // <div ref={outlineBoxRef}>
-
                         <ChooseColorBox
                           addColorPopupHAndler={toggleOutlineColorPopup}
                           title="Outline Color"
                           defaultColor={outlineColor}
-                          onColorChange={textOutLineColorChangedFunctionCalled} // Update outline color
-                          onRangeChange={textOutLineRangeChangedFunctionCalled} // Update outline size
+                          onColorChange={textOutLineColorChangedFunctionCalled}
+                          onRangeChange={textOutLineRangeChangedFunctionCalled}
                           button={true}
                           range={true}
                           outlineSize={outlineSize}
-
                         />
-                        // </div>
+
                       )}
                     </div>
                   </div>
+
+
 
                   <hr />
 

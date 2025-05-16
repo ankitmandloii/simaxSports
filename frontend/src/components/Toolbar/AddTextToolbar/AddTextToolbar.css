@@ -2,7 +2,7 @@
     gap: 12px;
     display: flex;
     flex-direction: column;
-    
+
 }
 
 .toolbar-box textarea {
@@ -20,13 +20,18 @@
     overflow-y: hidden;
 }
 
+<<<<<<< Updated upstream
 .toolbar-box textarea::placeholder{
     font-weight: 500;
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;    
 }
 .AddTextToolbar-main-container{
+=======
+.AddTextToolbar-main-container {
+>>>>>>> Stashed changes
     position: relative;
 }
+
 .addText-first-toolbar-box-container {
     display: flex;
     justify-content: space-around;
@@ -106,7 +111,7 @@
     cursor: pointer;
 }
 
-.toolbar-box-icons-container-clickStyle-flip1 span{
+.toolbar-box-icons-container-clickStyle-flip1 span {
 
     padding: 6px 8px;
     margin-bottom: 4px;
@@ -120,7 +125,8 @@
     border-bottom-left-radius: 4px;
     cursor: pointer;
 }
-.toolbar-box-icons-container-clickStyle-flip2 span{
+
+.toolbar-box-icons-container-clickStyle-flip2 span {
 
     padding: 6px 8px;
     margin-bottom: 4px;
@@ -134,10 +140,12 @@
     border-bottom-right-radius: 4px;
     cursor: pointer;
 }
+
 .toolbar-box-icons-container.active {
- color: white;
+    color: white;
     background-color: black;
 }
+
 .toolbar-box-icons-container-flip2 {
 
     padding: 3px 8px;
@@ -167,6 +175,7 @@
     align-items: center;
     padding: 0 10px;
 }
+
 .toolbar-box-Font-Value-set-inner-actionlogo {
     position: relative;
     display: flex;
@@ -176,9 +185,9 @@
 
 .toolbar-box-Font-Value-set-inner-actionlogo span {
     /* margin-left: 11px; */
-  /* padding:5px; */
-  display: inline-block;
-  text-align: center;
+    /* padding:5px; */
+    display: inline-block;
+    text-align: center;
 
 }
 
@@ -193,27 +202,40 @@
     align-items: center;
     gap: 7px;
 }
-.none-svg-icon{
+
+.none-svg-icon {
     width: 15px;
     align-items: center;
     height: 18px;
     justify-content: center;
     border: 2px solid #D2D5D9;
-    display: flex
-;
+    display: flex;
     /* background-color: black; */
 }
-.addText-inner-main-containerr{
+
+.addText-inner-main-containerr {
     gap: 12px;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
 }
-.addText-inner-main-containerr::-webkit-scrollbar{
+
+.addText-inner-main-containerr::-webkit-scrollbar {
     /* color: red; */
     background-color: #888;
-    color:#fff;
+    color: #fff;
     width: 5px;
     height: 3px;
 }
 
+.colorrrrr {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.colorr2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
