@@ -21,7 +21,7 @@ const ProductAvailableColor = ({ product, onClose, onAddColor, availableColors }
           ))}
         </div>
       ) : (
-        <p style={{ textAlign: 'center', fontStyle: 'italic', marginTop: '20px' }}>
+        <p style={{ textAlign: 'center', fontStyle: 'italic', marginTop: '20px', color: 'red', fontSize: '1rem' }}>
           No colors available
         </p>
       )}

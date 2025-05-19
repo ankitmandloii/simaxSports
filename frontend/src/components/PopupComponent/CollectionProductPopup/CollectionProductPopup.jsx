@@ -113,6 +113,7 @@ import ColorWheel from '../../images/color-wheel1.png';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
 
 const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
+  console.log("collectionId", collectionId)
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const [products, setProducts] = useState([]);
   const [selectedVariantImage, setSelectedVariantImage] = useState({});
@@ -125,7 +126,11 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   const [hoverImage, setHoverImage] = useState({});
   const popupRef = useRef(null);
 
-  const numericId = collectionId?.split('/').pop();
+  // const numericId = collectionId?.split('/').pop();
+  const defaultCollectionId = 'gid://shopify/Collection/450005106927';
+  const effectiveCollectionId = collectionId || defaultCollectionId;
+  const numericId = effectiveCollectionId.split('/').pop();
+
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -138,7 +143,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   }, []);
 
   const fetchProducts = async (isLoadMore = false) => {
-    if (!collectionId) return;
+    if (!effectiveCollectionId) return;
     setLoading(true);
     try {
       const res = await fetch(
@@ -189,8 +194,8 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
 
   return (
     <div className="product-panel">
-      {!collectionId ? (
-        <p>Select a collection to view products.</p>
+      {!effectiveCollectionId ? (
+        <p className='default-collection-para'>Select a collection to view products.</p>
       ) : loading && products.length === 0 ? (
         <div className="loader" />
       ) : products.length === 0 ? (

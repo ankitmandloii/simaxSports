@@ -6,6 +6,8 @@
 
 .collection-sidebar {
   padding: 1rem;
+  height: 500px;
+  overflow-y: auto;
 }
 
 .collection-sidebar li {
@@ -17,10 +19,11 @@
 
 .collection-sidebar li:hover {
   transition: .2s ease;
-  /* color: red;
-  background-color: aliceblue; */
+
   border-bottom: 2px solid black;
 }
+
+
 
 .collection-li {
   display: flex;

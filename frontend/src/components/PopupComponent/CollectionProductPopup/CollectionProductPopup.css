@@ -146,4 +146,24 @@
   position: absolute;
   right: 0;
   top: 0;
+  background: transparent;
+}
+
+.default-collection-para {
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #b63b3b;
+  font-weight: 500;
+}
+
+.popup-actions {
+  margin: auto;
+}
+
+.color-swatch-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
 }

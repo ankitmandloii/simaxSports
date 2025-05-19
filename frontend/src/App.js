@@ -19,37 +19,37 @@ function App() {
   const isQuantityPage = location.pathname === "/quantity";
   return (
     <>
-    <div className='app-main-container'>
-    <div className='main-inner-container'>
-    {/* {!isQuantityPage && (
+      <div className='app-main-container'>
+        <div className='main-inner-container'>
+          {/* {!isQuantityPage && (
           <div className="sidebar-container">
             <AdminSidebar />
           </div>
         )} */}
-  <Header />
-  <div className={`main-layout-container ${isQuantityPage ? 'quantity-page' : ''}`}>
-     
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<ProductToolbar  />} />
-          <Route path='product' element={<ProductToolbar />} />
-          <Route path="addText" element={<AddTextToolbar />} />
-          <Route path="products" element={<ProductContainer />} />
-          <Route path='uploadArt' element={<UploadArtToolbar/>}/>
-          <Route path='addArt' element={<AddArtToolbar/>}/>
-          <Route path='addNames' element={<NamesToolbar/>}/>
-          <Route path='quantity' element={<QuantityToolbar/>}/>
-        </Route>
-        <Route path="review" element={<Review />} />
-        {/* <Route path="design" element={<Design />} /> */}
-      </Routes>
-     {<Footer/> } 
+          <Header />
+          <div className={`main-layout-container ${isQuantityPage ? 'quantity-page' : ''}`}>
 
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<ProductToolbar />} />
+                <Route path='product' element={<ProductToolbar />} />
+                <Route path="addText" element={<AddTextToolbar />} />
+                <Route path="products" element={<ProductContainer />} />
+                <Route path='uploadArt' element={<UploadArtToolbar />} />
+                <Route path='addArt' element={<AddArtToolbar />} />
+                <Route path='addNames' element={<NamesToolbar />} />
+                <Route path='quantity' element={<QuantityToolbar />} />
+              </Route>
+              <Route path="review" element={<Review />} />
+              {/* <Route path="design" element={<Design />} /> */}
+            </Routes>
+            {<Footer />}
+
+          </div>
+
+        </div>
       </div>
-      
-    </div>
-      </div>
-      </>
+    </>
   );
 }
 

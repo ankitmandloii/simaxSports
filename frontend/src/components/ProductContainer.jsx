@@ -35,7 +35,7 @@ function ProductContainer() {
     setShowPopup(false);
     // Your start-over logic here
   };
-  
+
   const handleCancel = () => {
     setShowPopup(false);
   };
@@ -66,7 +66,7 @@ function ProductContainer() {
   }
   return (
     <div className='ProductContainerMainDiv'>
-      
+
       <div className='flex'>
         <MainDesignTool
           id="mirrorCanvasFront"
@@ -84,7 +84,7 @@ function ProductContainer() {
             {/* <div className="design-side-buttons" onClick={ShowBack}> */}
 
 
-              {/* {
+            {/* {
                 isDesignBack ?
                   <div className="corner-img-canva-container" id="mirror-container" onClick={ShowBack}>
                     <canvas id="mirrorCanvasBack" width="300" height="180" ref={mirrorCanvasRefForBackImage} />

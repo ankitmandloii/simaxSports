@@ -108,7 +108,7 @@ const AddTextToolbar = () => {
     setRangeValuesSize(textContaintObject?.scaledValue);
     setRangeValuesSpacing(textContaintObject?.spacing);
     setRangeValuesArc(textContaintObject?.arc);
-    setRangeValuesRotate(textContaintObject?.rotate);
+    setRangeValuesRotate(parseInt(textContaintObject?.rotate));
 
     return () => {
       // dispatch(setSelectedTextState(null));

@@ -1,13 +1,15 @@
 .color-popup-container-span_box {
   position: absolute;
-  top: 20%;
-  right: -30%;
+  top: 46%;
+  right: 2%;
   background: #fff;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
   max-width: 400px;
+  width: 16rem;
   margin: auto;
+  z-index: 200;
 }
 
 .color-popup-container-span_box .color-options-grid {
@@ -21,7 +23,7 @@
   cursor: pointer;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 10px;
+  padding: 5px;
   text-align: center;
   /* width: 30px; */
 }
