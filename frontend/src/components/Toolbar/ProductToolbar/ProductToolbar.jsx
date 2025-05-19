@@ -270,12 +270,12 @@ const ProductToolbar = () => {
 
           <p className="center">Customize Method Example</p>
 
-          <div className="no-minimum-butn-container">
+          {/* <div className="no-minimum-butn-container">
             <div className="common-btn active">
               <h4>Printing</h4>
               <p>No minimum</p>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {changeProductPopup && (
