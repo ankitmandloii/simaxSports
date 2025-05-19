@@ -486,6 +486,13 @@ export const getAllCollectionList = async (limit = 50, cursor = null) => {
               id
               originalSrc
             }
+            products(first: 1) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
           }
         }
       }
@@ -507,8 +514,13 @@ export const getAllCollectionList = async (limit = 50, cursor = null) => {
     const json = await response.json();
     const data = json.data.collections;
 
+    // Filter out collections that have 0 products
+    const collections = data.edges
+      .filter(edge => edge.node.products.edges.length > 0)
+      .map(edge => edge.node);
+
     return {
-      collections: data.edges.map(edge => edge.node),
+      collections,
       pageInfo: data.pageInfo,
       cursors: data.edges.map(edge => edge.cursor),
     };
@@ -517,6 +529,7 @@ export const getAllCollectionList = async (limit = 50, cursor = null) => {
     throw new Error("Error fetching collections");
   }
 };
+
 
 
 
