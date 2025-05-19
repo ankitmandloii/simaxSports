@@ -63,12 +63,27 @@ export const fetchProducts = createAsyncThunk(
       const data = await response.json();
 
       const edges = data.result.data.products.edges;
-      const products = edges.map((edge) => {
-        const variant = edge.node.variants.edges[0]?.node;
+      const products = edges.map(({ node }) => {
+        const variants = node.variants.edges.map((v) => v.node);
+
+        // Build color → image mapping
+        const colorMap = {};
+        variants.forEach((variant) => {
+          const color = variant.selectedOptions.find((opt) => opt.name === "Color")?.value;
+          if (color && !colorMap[color]) {
+            colorMap[color] = {
+              name: color,
+              img: variant.image?.originalSrc || "", // fallback to empty
+              variant, // store full variant if needed
+            };
+          }
+        });
+
         return {
-          name: edge.node.title || variant?.title,
-          imgurl: variant?.image?.originalSrc,
-          colors: edge.node.options.find(opt => opt.name === "Color")?.values || [],
+          name: node.title,
+          imgurl: variants[0]?.image?.originalSrc,
+          colors: Object.values(colorMap), // [{ name, img, variant }]
+          allVariants: variants,
         };
       });
 

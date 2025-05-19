@@ -110,10 +110,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './CollectionProductPopup.css';
 import ColorWheel from '../../images/color-wheel1.png';
+import { CrossIcon } from '../../iconsSvg/CustomIcon';
 
-const CollectionProductPopup = ({ collectionId }) => {
+const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const [products, setProducts] = useState([]);
+  const [selectedVariantImage, setSelectedVariantImage] = useState({});
+  const [selectedColorByProduct, setSelectedColorByProduct] = useState({});
+
   const [cursor, setCursor] = useState('');
   const [hasNextPage, setHasNextPage] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -188,14 +192,18 @@ const CollectionProductPopup = ({ collectionId }) => {
       {!collectionId ? (
         <p>Select a collection to view products.</p>
       ) : loading && products.length === 0 ? (
-        <p>Loading products...</p>
+        <div className="loader" />
       ) : products.length === 0 ? (
         <p>No products found.</p>
       ) : (
         <>
           <div className="product-list-collection">
             {products?.map((product) => (
-              <div key={product.id} className="modal-product">
+              <div key={product.id} className="modal-product" onClick={() =>
+                setSelectedProductColors(
+                  selectedProductColors === product.id ? null : product.id
+                )
+              }>
                 <div className="img-pro-container">
                   <img
                     src={hoverImage[product.id] || getFirstVariantImage(product)}
@@ -211,41 +219,83 @@ const CollectionProductPopup = ({ collectionId }) => {
                     src={ColorWheel}
                     alt="colors"
                     className="modal-productcolor-img"
-                    onClick={() =>
-                      setSelectedProductColors(
-                        selectedProductColors === product.id ? null : product.id
-                      )
-                    }
+                    // onClick={() =>
+                    //   setSelectedProductColors(
+                    //     selectedProductColors === product.id ? null : product.id
+                    //   )
+                    // }
                     style={{ cursor: 'pointer' }}
                   />
                   <p>{getUniqueColors(product).length} Colors</p>
 
                   {selectedProductColors === product.id && (
                     <div className="color-popup" ref={popupRef}>
-                      {getUniqueColors(product).map((color, index) => {
-                        const variant = product.variants.edges.find(v =>
-                          v.node.selectedOptions.some(
-                            o => o.name === 'Color' && o.value === color
-                          )
-                        );
-                        const image = variant?.node?.image?.originalSrc;
-                        return (
-                          <span
-                            key={index}
-                            className="color-swatch"
-                            style={{ backgroundColor: color }}
-                            title={color}
-                            onMouseEnter={() =>
-                              setHoverImage(prev => ({ ...prev, [product.id]: image }))
-                            }
-                            onMouseLeave={() =>
-                              setHoverImage(prev => ({ ...prev, [product.id]: '' }))
-                            }
-                          />
-                        );
-                      })}
+                      <div className="color-popup-header">
+                        <button
+                          className="close-popup-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedProductColors(null);
+                          }}
+                        >
+                          <CrossIcon />
+                        </button>
+                      </div>
+
+                      <div className="color-swatch-list">
+                        {getUniqueColors(product).map((color, index) => {
+                          const variant = product.variants.edges.find(v =>
+                            v.node.selectedOptions.some(
+                              o => o.name === 'Color' && o.value === color
+                            )
+                          );
+                          const image = variant?.node?.image?.originalSrc;
+                          return (
+                            <span
+                              key={index}
+                              className={`color-swatch ${selectedColorByProduct[product.id] === color ? 'selected' : ''}`}
+                              style={{ backgroundColor: color }}
+                              title={color}
+                              onMouseEnter={() =>
+                                setHoverImage(prev => ({ ...prev, [product.id]: image }))
+                              }
+                              onMouseLeave={() =>
+                                setHoverImage(prev => ({ ...prev, [product.id]: '' }))
+                              }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedColorByProduct(prev => ({ ...prev, [product.id]: color }));
+                                setSelectedVariantImage(prev => ({ ...prev, [product.id]: image }));
+                              }}
+                            />
+
+                          );
+                        })}
+                      </div>
+
+                      <div className="popup-actions">
+                        <button
+                          className="add-product-btn-popup"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const selectedColor = selectedColorByProduct[product.id];
+                            const selectedImage = selectedVariantImage[product.id];
+
+                            onProductSelect({
+                              ...product,
+                              selectedColor,
+                              selectedImage
+                            });
+                            onClose();
+                          }}
+                        >
+                          Add Product
+                        </button>
+
+                      </div>
                     </div>
                   )}
+
 
                 </div>
               </div>

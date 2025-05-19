@@ -1,0 +1,43 @@
+.color-popup-container-span_box {
+  position: absolute;
+  top: 20%;
+  right: -30%;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  margin: auto;
+}
+
+.color-popup-container-span_box .color-options-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.color-popup-container-span_box .color-option-card {
+  cursor: pointer;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  /* width: 30px; */
+}
+
+/* .color-popup-container-span_box .color-option-card img {
+  width: 10px;
+  height: 10px;
+  object-fit: cover;
+} */
+
+.color-popup-container-span_box .cancel-color-btn {
+  margin-top: 20px;
+  padding: 8px 16px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

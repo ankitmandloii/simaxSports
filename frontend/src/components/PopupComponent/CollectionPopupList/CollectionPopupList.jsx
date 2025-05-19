@@ -34,7 +34,7 @@ const CollectionPopupList = ({ onCollectionSelect }) => {
   return (
     <div className="collection-sidebar" onScroll={handleScroll}>
       {loading && collections.length === 0 ? (
-        <p>Loading...</p>
+        <div className="loader" />
       ) : (
         <ul className='collection-ul'>
           {collections?.map((collection) => (
@@ -44,7 +44,7 @@ const CollectionPopupList = ({ onCollectionSelect }) => {
               onClick={() => onCollectionSelect(collection.id)}
             >
               <span>{collection.title}</span>
-              <span><AngleActionIconBlack/></span>
+              <span><AngleActionIconBlack /></span>
             </li>
           ))}
         </ul>

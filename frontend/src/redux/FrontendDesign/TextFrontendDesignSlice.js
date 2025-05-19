@@ -95,7 +95,7 @@ const TextFrontendDesignSlice = createSlice({
       state.present[side].selectedTextId = newText.id;
       state.future[side] = [];
       state.present[side].setRendering = !state.present[side].setRendering;
-    },  
+    },
 
 
     // Update a text object
@@ -202,6 +202,17 @@ const TextFrontendDesignSlice = createSlice({
     }
   }
 });
+export const selectActiveSide = (state) => state.TextFrontendDesignSlice.activeSide;
+
+export const selectCanUndo = (state) => {
+  const side = state.TextFrontendDesignSlice.activeSide;
+  return state.TextFrontendDesignSlice.past[side]?.length > 0;
+};
+
+export const selectCanRedo = (state) => {
+  const side = state.TextFrontendDesignSlice.activeSide;
+  return state.TextFrontendDesignSlice.future[side]?.length > 0;
+};
 
 export const {
   addTextState,
