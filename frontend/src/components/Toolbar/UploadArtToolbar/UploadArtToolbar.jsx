@@ -7,15 +7,15 @@
 
 
 //   const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
- 
+
 //   const DEVELOPER_KEY = process.env.REACT_APP_DEVELOPER_KEY;
-   
 
 
- 
+
+
 
 // const UploadArtToolbar = () => {
-  
+
 
 //   const [files, setFiles] = useState([]);
 //   const [driveFiles, setDriveFiles] = useState([]);
@@ -276,6 +276,16 @@ const UploadArtToolbar = () => {
                   <a href={file.url} target="_blank" rel="noopener noreferrer">
                     {file.name}
                   </a>
+                  <span
+                    className="remove-icon"
+                    onClick={() => {
+                      const updated = [...driveFiles];
+                      updated.splice(idx, 1);
+                      setDriveFiles(updated);
+                    }}
+                  >
+                    ✖
+                  </span>
                 </li>
               ))}
             </ul>
@@ -292,7 +302,18 @@ const UploadArtToolbar = () => {
                   <a href={file.link} target="_blank" rel="noopener noreferrer">
                     {file.name}
                   </a>
+                  <span
+                    className="remove-icon"
+                    onClick={() => {
+                      const updated = [...dropboxFiles];
+                      updated.splice(idx, 1);
+                      setDropboxFiles(updated);
+                    }}
+                  >
+                    ✖
+                  </span>
                 </li>
+
               ))}
             </ul>
           </div>
