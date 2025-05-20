@@ -1,6 +1,5 @@
 // store.js
 import { configureStore } from '@reduxjs/toolkit';
-import canvasReducer from './canvasSlice/CanvasSlice.js';
 import TextFrontendDesignSlice from "./FrontendDesign/TextFrontendDesignSlice.js"
 import ProductReducer from './ProductSlice/ProductSlice.js'
 import collectionReducer from './ProductSlice/CollectionSlice.js'

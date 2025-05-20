@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  FaUsers,
-  FaStore,
-  FaMoneyCheckAlt,
+
   FaBars,
 } from "react-icons/fa";
 import "./sidebar.css";
 import { RiTShirt2Line } from "react-icons/ri";
-import { BsCloudUpload } from "react-icons/bs";
-import { MdAddchart } from "react-icons/md";
-import Logo from '../images/Logo.png'
-import { AddProductIcon, NumberIcon, AddArtIcon, SelectArtIcon, NumberArtIcon } from "../iconsSvg/CustomIcon";
+import { AddProductIcon, AddArtIcon, SelectArtIcon, NumberArtIcon } from "../iconsSvg/CustomIcon";
 
 const AdminSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -69,8 +64,8 @@ const AdminSidebar = () => {
                 }`}
               onClick={() => setMobileOpen(false)}
             >
-              <span className={item.path == '/addArt' ? "sidebar-icon sidebaricon-add-art" : "sidebar-icon"}>{item.icon}</span>
-              {item.path == '/addArt' && <span className="spannAI">AI</span>}
+              <span className={item.path === '/addArt' ? "sidebar-icon sidebaricon-add-art" : "sidebar-icon"}>{item.icon}</span>
+              {item.path === '/addArt' && <span className="spannAI">AI</span>}
               {!collapsed && <span className="sidebar-label">{item.label}</span>}
             </Link>
           ))}

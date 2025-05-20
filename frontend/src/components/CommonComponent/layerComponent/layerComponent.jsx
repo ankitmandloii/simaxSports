@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import './layerComponent.css';
 import icons from '../../../data/icons';
 

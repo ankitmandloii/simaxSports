@@ -95,7 +95,7 @@
 /* ----- */
 .color-popup {
   position: absolute;
-  top: 20px;
+  top: 2 0px;
   /* adjust as needed, positive value for below */
   left: 0;
   z-index: 1000;
@@ -165,5 +165,5 @@
 .color-swatch-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 1px;
+  gap: 4px;
 }

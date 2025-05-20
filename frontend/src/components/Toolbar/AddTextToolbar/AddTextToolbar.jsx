@@ -1,6 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import camera from '../../images/camera.jpg';
-import { IoAdd } from "react-icons/io5";
+import React, { useEffect, useState } from 'react';
 import '../AddTextToolbar/AddTextToolbar.css';
 import {
   AlignCenterIcon,
@@ -11,31 +9,27 @@ import {
   LockIcon,
   DuplicateIcon,
   AngleActionIcon,
-  NoneIcon,
   FlipFirstWhiteColorIcon,
   FlipSecondWhiteColorIcon,
   LayeringFirstIconWithBlackBg,
   LayeringSecondIconWithBlackBg,
 } from '../../iconsSvg/CustomIcon';
-import MyCompo from '../../style/MyCompo';
 import FontCollectionList from './FontCollectionList';
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox';
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox';
 import { useDispatch, useSelector } from 'react-redux';
 // import { setCenterState, setFlipXState, setFlipYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState, setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
 import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
-import { duplicateTextState, addTextState, setSelectedTextState, updateTextState, toggleLockState, moveTextForwardState, moveTextBackwardState } from '../../..//redux/FrontendDesign/TextFrontendDesignSlice.js';
-import { useOutletContext } from 'react-router-dom';
-import { BsXOctagon } from 'react-icons/bs';
+import { duplicateTextState, addTextState, updateTextState, toggleLockState, moveTextForwardState, moveTextBackwardState } from '../../..//redux/FrontendDesign/TextFrontendDesignSlice.js';
 // import { setSelectedBackTextState } from '../../../redux/BackendDesign/TextBackendDesignSlice.js';
 
 const AddTextToolbar = () => {
-  const outlineBoxRef = useRef(null);
+  // const outlineBoxRef = useRef(null);
   const dispatch = useDispatch();
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const [currentTextToolbarId, setCurrentTextToolbarId] = useState(String(Date.now()));  // current id of toolbar
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
-  let textContaintObject = allTextInputData.find((text) => text.id == currentTextToolbarId);
+  let textContaintObject = allTextInputData.find((text) => text.id === currentTextToolbarId);
   console.log(allTextInputData, textContaintObject, "render data");
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
 
@@ -72,7 +66,7 @@ const AddTextToolbar = () => {
   const [flipXValue, setflipXValue] = useState(textContaintObject ? textContaintObject.flipX : false);
   const [flipYValue, setflipYValue] = useState(textContaintObject ? textContaintObject.flipY : false);
   const [rangeValuesArc, setRangeValuesArc] = useState(textContaintObject ? textContaintObject.arc : 0);
-  const [prevValue, setPrevValue] = useState("");
+  // const [prevValue, setPrevValue] = useState("");
   const [duplicateActive, setDuplicateActive] = useState(false);
   const [centerActive, setCenterActive] = useState(false);
   useEffect(() => {
@@ -81,7 +75,7 @@ const AddTextToolbar = () => {
       setCurrentTextToolbarId(selectedTextId);
       console.log("is selected id ", selectedTextId);
       // setShowContent(true);
-      const currentInputData = allTextInputData.find((text) => text.id == selectedTextId);
+      const currentInputData = allTextInputData.find((text) => text.id === selectedTextId);
       if (!currentInputData) return
 
       setText(currentInputData.content);
@@ -123,8 +117,8 @@ const AddTextToolbar = () => {
     const value = parseFloat(e.target.value)
     const originalX = textContaintObject.originalX;
     const originalY = textContaintObject.originalY;
-    const scaleX = textContaintObject.scaleX;
-    const scaleY = textContaintObject.scaleY;
+    // const scaleX = textContaintObject.scaleX;
+    // const scaleY = textContaintObject.scaleY;
 
     globalDispatch("scaleX", originalX);
     globalDispatch("scaleY", originalY);
@@ -184,7 +178,7 @@ const AddTextToolbar = () => {
     // const newString = newValue.join(" ");
 
     setText(value);
-    setPrevValue(value); // Update prevValue for next comparison
+    // setPrevValue(value); // Update prevValue for next comparison
 
     if (textContaintObject) {
       globalDispatch("content", value);

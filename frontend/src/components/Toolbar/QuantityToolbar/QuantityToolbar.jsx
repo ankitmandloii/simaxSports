@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
 import './QuantityToolbar.css'
-import { IoAdd } from "react-icons/io5"
-import { RxCross1 } from "react-icons/rx"
 import miniProd from '../../images/mini-prod.png'
 
 const adultSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"];
@@ -35,7 +33,7 @@ const QuantityToolbar = () => {
           <div className="toolbar-box-top-content">
             <div className="toolbar-head">
               <div className="mini-prod-img-container">
-                <img src={miniProd} className='product-mini-img' />
+                <img src={miniProd} className='product-mini-img' alt='product' />
               </div>
               <div>
                 <h4>Essential Red T-Shirt for Men & Women</h4>

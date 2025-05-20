@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { ColorPicker, useColor } from 'react-color-palette';
 import 'react-color-palette/css';
 
