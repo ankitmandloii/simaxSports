@@ -6,9 +6,11 @@ import { redo, selectCanRedo, selectCanUndo, undo } from "../../redux/FrontendDe
 import './redoundo.css'
 import { StartOverIcon } from "../iconsSvg/CustomIcon";
 import StartOverConfirmationPopup from "../PopupComponent/StartOverPopup/StartOverPopup";
+import { useLocation } from "react-router-dom";
 
 
 function RedoundoComponent() {
+  const location = useLocation();
   const canUndo = useSelector(selectCanUndo);
   const canRedo = useSelector(selectCanRedo);
 

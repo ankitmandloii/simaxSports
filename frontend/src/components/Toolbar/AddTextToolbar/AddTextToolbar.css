@@ -183,6 +183,17 @@
 
 }
 
+.SpanValueBox-input{
+    /* padding: 0px 5px; */
+    border: 1px solid #cccfd6;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #555;
+    width: 40px;
+}
+
+
 
 
 .toolbar-box-Font-Value-set-inner-actionheading {

@@ -72,9 +72,25 @@ const ChooseColorBox = ({
               onChange={handleInputChange}
             />
           </div>
-          <span>
+          <input
+            type="number"
+            min="0"
+            max={10}
+
+            value={outlineSize}
+            onChange={handleInputChange}
+            //   (e) => {
+            //   const value = parseFloat(e.target.value);
+            //   setOutlineSize(value); // Let user type freely
+            //   if (!isNaN(value) && value >= 0 && value <= 10) {
+            //     handleInputChange(e);
+            //   }
+            // }}
+            className="SpanValueBox-input"
+          />
+          {/* <span>
             <SpanValueBox valueShow={outlineSize} />
-          </span>
+          </span> */}
         </div>
       )}
 

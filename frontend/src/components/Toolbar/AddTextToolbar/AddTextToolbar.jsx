@@ -223,8 +223,11 @@ const AddTextToolbar = () => {
   }
 
   const textOutLineRangeChangedFunctionCalled = (outlinesize) => {
+
     setOutlineSize(outlinesize);
-    globalDispatch("outLineSize", outlinesize);
+    if (!isNaN(outlinesize) && outlinesize >= 0 && outlinesize <= 10) {
+      globalDispatch("outLineSize", outlinesize);
+    }
   }
 
 
@@ -452,7 +455,26 @@ const AddTextToolbar = () => {
                         onChange={(e) => handleRangeInputSizeChange(e)}
                       />
 
-                      <span><SpanValueBox valueShow={rangeValuesSize} /></span>
+                      {/* <span><SpanValueBox valueShow={rangeValuesSize} /></span> */}
+                      <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        step="0.2"
+                        value={rangeValuesSize}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value);
+                          setRangeValuesSize(value);
+                          if (!isNaN(value) && value <= 10) {
+
+                            globalDispatch("scaledValue", value);
+                            globalDispatch("scaleX", value);
+                            globalDispatch("scaleY", value);
+                          }
+                        }}
+                        className="SpanValueBox-input"
+                      />
+
                     </div>
                   </div>
 
@@ -474,8 +496,21 @@ const AddTextToolbar = () => {
                         value={rangeValuesArc}
                         onChange={(e) => handleRangeInputArcChange(e)}
                       />
+                      <input
+                        type="number"
+                        min="-100" max="100" step="1"
+                        value={rangeValuesArc}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value);
+                          setRangeValuesArc(value);
 
-                      <span><SpanValueBox valueShow={rangeValuesArc} /></span>
+                          if (!isNaN(value) && value >= -100 && value <= 100) {
+                            handleRangeInputArcChange(e);
+                          }
+                        }}
+                        className="SpanValueBox-input"
+                      />
+                      {/* <span><SpanValueBox valueShow={rangeValuesArc} /></span> */}
                     </div>
                   </div>
 
@@ -495,8 +530,22 @@ const AddTextToolbar = () => {
                         value={rangeValuesRotate}
                         onChange={(e) => handleRangeInputRotateChange(e)}
                       />
+                      <input
+                        type="number"
+                        min="0"
+                        max="360"
+                        value={rangeValuesRotate}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value);
+                          setRangeValuesRotate(value); // Allows user to type freely
 
-                      <span><SpanValueBox valueShow={rangeValuesRotate} /></span>
+                          if (!isNaN(value) && value >= 0 && value <= 360) {
+                            handleRangeInputRotateChange(e);
+                          }
+                        }}
+                        className="SpanValueBox-input"
+                      />
+                      {/* <span><SpanValueBox valueShow={rangeValuesRotate} /></span> */}
                     </div>
                   </div>
 
@@ -517,7 +566,23 @@ const AddTextToolbar = () => {
                         onChange={(e) => handleRangeInputSpacingChange(e)}
 
                       />
-                      <span><SpanValueBox valueShow={rangeValuesSpacing} /></span>
+
+                      <input
+                        type="number"
+                        max={50}
+                        min={0}
+                        value={rangeValuesSpacing}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value);
+                          setRangeValuesSpacing(value); // let user type freely
+
+                          if (!isNaN(value) && value >= 0 && value <= 50) {
+                            handleRangeInputSpacingChange(e);
+                          }
+                        }}
+                        className="SpanValueBox-input"
+                      />
+                      {/* <span><SpanValueBox valueShow={rangeValuesSpacing} /></span> */}
 
                     </div>
                   </div>

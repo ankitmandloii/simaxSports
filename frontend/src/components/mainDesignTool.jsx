@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useMemo, useState } from "react";
+import React, { useEffect, useRef, useMemo, useState, useCallback } from "react";
 import { fabric } from "fabric";
 import icons from "../data/icons";
-import { TbArrowForwardUp } from "react-icons/tb";
-import { TbArrowBack } from "react-icons/tb";
-import { VscZoomIn } from "react-icons/vsc";
+// import { TbArrowForwardUp } from "react-icons/tb";
+// import { TbArrowBack } from "react-icons/tb";
+// import { VscZoomIn } from "react-icons/vsc";
 import "./MainDesigntool.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -20,13 +20,14 @@ const MainDesignTool = ({
   backgroundImage,
   mirrorCanvasRef,
   initialDesign,
+  zoomLevel
 }) => {
-  console.log("-------id", id);
+ 
   const activeSide = useSelector(
     (state) => state.TextFrontendDesignSlice.activeSide
   );
   console.log("active side", activeSide);
-  const [lastTranform, setLastTranform] = useState(null);
+  // const [lastTranform, setLastTranform] = useState(null);
   const textContaintObject = useSelector(
     (state) => state.TextFrontendDesignSlice.present[activeSide].texts
   );
@@ -45,6 +46,22 @@ const MainDesignTool = ({
 
   const [selectedHeight, setSelectedHeight] = useState("");
   const mirrorFabricRef = useRef(null);
+  
+
+
+
+useEffect(() => {
+  const canvas = fabricCanvasRef.current;
+  if (canvas && canvas.setZoom) {
+    const zoom = zoomLevel;
+    
+    // Get canvas center point (in pixels)
+    const center = new fabric.Point(canvas.width / 2, canvas.height / 2);
+    
+    // Zoom relative to center point
+    canvas.zoomToPoint(center, zoom);
+  }
+}, [zoomLevel]);
 
   const globalDispatch = (lable, value, id) => {
     dispatch(
@@ -54,6 +71,43 @@ const MainDesignTool = ({
       })
     );
   };
+const updateBoundaryVisibility = useCallback(() => {
+  const canvas = fabricCanvasRef.current;
+  if (!canvas) return;
+
+  const boundaryBox = canvas.getObjects().find(obj => obj.type === "rect" && !obj.selectable); // identify your boundary box
+  const warningText = canvas.getObjects().find(obj => obj.type === "text" && obj.text === "Please keep design inside the box");
+
+  if (!boundaryBox || !warningText) return;
+
+  const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text");
+
+  textObjects.forEach((obj) => obj.setCoords());
+
+  const allInside = textObjects.every((obj) => {
+    const objBounds = obj.getBoundingRect(true);
+    const boxBounds = boundaryBox.getBoundingRect(true);
+    return (
+      objBounds.left >= boxBounds.left &&
+      objBounds.top >= boxBounds.top &&
+      objBounds.left + objBounds.width <= boxBounds.left + boxBounds.width &&
+      objBounds.top + objBounds.height <= boxBounds.top + boxBounds.height
+    );
+  });
+
+  boundaryBox.visible = !allInside;
+  warningText.visible = !allInside;
+
+  canvas.bringToFront(boundaryBox);
+  canvas.bringToFront(warningText);
+  canvas.requestRenderAll();
+}, []);
+
+
+useEffect(() => {
+  updateBoundaryVisibility();
+}, [textContaintObject, updateBoundaryVisibility]);
+
 
   useEffect(() => {
     const canvas = new fabric.StaticCanvas(canvasRef.current);
@@ -209,7 +263,7 @@ const MainDesignTool = ({
     canvas.sendToBack(target);
     canvas.requestRenderAll();
 
-    const afterIndex = canvas.getObjects().indexOf(target);
+   // const afterIndex = canvas.getObjects().indexOf(target);
     //console.log("After index:", afterIndex);
   };
 
@@ -352,56 +406,49 @@ const MainDesignTool = ({
     });
   };
 
+useEffect(() => {
+  const canvas = new fabric.Canvas(canvasRef.current, {
+    width: 650,
+    height: 700,
+  });
 
+  canvas.preserveObjectStacking = true;
+  fabricCanvasRef.current = canvas;
+  mirrorCanvasRef.current = new fabric.StaticCanvas(id);
 
-  useEffect(() => {
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      width: 650,
-      height: 700,
-      // backgroundColor: "#f1f1f1",
-      // backgroundColor: "gray",
-    });
+  const boundaryBox = new fabric.Rect({
+    left: 215,
+    top: 170,
+    width: 220,
+    height: 355,
+    fill: "transparent",
+    stroke: "skyblue",
+    strokeWidth: 2,
+    selectable: false,
+    evented: false,
+    visible: false,
+  });
 
-    canvas.preserveObjectStacking = true;
-    fabricCanvasRef.current = canvas;
-    // fabricCanvasRef.current
+  const warningText = new fabric.Text("Please keep design inside the box", {
+    left: boundaryBox.left + 2,
+    top: boundaryBox.top,
+    fontSize: 16,
+    fill: "white",
+    selectable: false,
+    evented: false,
+    visible: false,
+  });
 
-    mirrorCanvasRef.current = new fabric.StaticCanvas(id);
-    const boundaryBox = new fabric.Rect({
-      left: 215,
-      top: 170,
-      width: 220,
-      height: 355,
-      fill: "transparent",
-      stroke: "skyblue",
-      strokeWidth: 2,
-      selectable: false,
-      evented: false,
-      visible: false, // initially hidden
-    });
-    const warningText = new fabric.Text(
-      "Please keep design inside the box",
-      {
-        left: boundaryBox.left + 2,
-        top: boundaryBox.top,
-        fontSize: 16,
-        fill: "white",
-        selectable: false,
-        evented: false,
-        visible: false,
-      }
-    );
+  canvas.add(boundaryBox);
+  canvas.add(warningText);
 
-    canvas.add(warningText);
+  function updateBoundaryVisibility() {
+    const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text");
+    textObjects.forEach((obj) => obj.setCoords());
 
-    // Boundary Box (initially hidden)
-
-    canvas.add(boundaryBox);
-
-    // Utility: check if object is fully inside boundaryBox
-    function isInsideBoundary(obj, boundary) {
-      const objBounds = obj.getBoundingRect();
-      const boxBounds = boundary.getBoundingRect();
+    const allInside = textObjects.every((obj) => {
+      const objBounds = obj.getBoundingRect(true);
+      const boxBounds = boundaryBox.getBoundingRect(true);
 
       return (
         objBounds.left >= boxBounds.left &&
@@ -409,110 +456,81 @@ const MainDesignTool = ({
         objBounds.left + objBounds.width <= boxBounds.left + boxBounds.width &&
         objBounds.top + objBounds.height <= boxBounds.top + boxBounds.height
       );
-    }
-
-    // Toggle visibility based on text objects inside boundary
-    function updateBoundaryVisibility() {
-      const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text"); // future me add karna hai obj.type == image
-      console.log(textObjects, "textObjects")
-
-      textObjects.forEach((obj) => obj.setCoords()); // ensure up-to-date bounds
-
-      const allInside = textObjects.every((obj) => {
-        const objBounds = obj.getBoundingRect(true); // consider transformations
-        const boxBounds = boundaryBox.getBoundingRect(true);
-
-        return (
-          objBounds.left >= boxBounds.left &&
-          objBounds.top >= boxBounds.top &&
-          objBounds.left + objBounds.width <=
-          boxBounds.left + boxBounds.width &&
-          objBounds.top + objBounds.height <= boxBounds.top + boxBounds.height
-        );
-      });
-
-      boundaryBox.visible = !allInside;
-      warningText.visible = !allInside;
-
-      canvas.bringToFront(boundaryBox);
-      canvas.bringToFront(warningText);
-      canvas.requestRenderAll();
-    }
-
-    // Attach to relevant events
-    canvas.on("object:added", updateBoundaryVisibility);
-    canvas.on("object:modified", updateBoundaryVisibility);
-    canvas.on("object:moving", updateBoundaryVisibility);
-    canvas.on("object:scaling", updateBoundaryVisibility);
-
-    // Load background image if present
-    if (backgroundImage) {
-      fabric.Image.fromURL(
-        backgroundImage,
-        (img) => {
-          const scaleX = 590 / img.width;
-          const scaleY = 450 / img.height;
-
-          img.set({
-            left: canvas.width / 2,
-            top: canvas.height / 2,
-            originX: "center",
-            originY: "center",
-            scaleX,
-            scaleY,
-            selectable: false,
-            evented: false,
-          });
-
-          canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-          syncMirrorCanvas();
-        },
-        { crossOrigin: "anonymous" }
-      );
-    }
-
-    canvas.on("selection:created", (e) => {
-      if (e.selected.length > 1) {
-        canvas.discardActiveObject();
-        canvas.requestRenderAll();
-      } else {
-        handleObjectSelection(e);
-      }
     });
 
-    canvas.on("selection:updated", (e) => {
-      if (e.selected.length > 1) {
-        canvas.discardActiveObject();
-        canvas.requestRenderAll();
-      } else {
-        handleObjectSelection(e);
-      }
-    });
-    canvas.on("selection:created", (e) => {
-      if (e.selected.length === 1) {
-        setSelectedObject(e.selected[0]);
-      }
-    });
-    canvas.on("selection:cleared", () => {
-      setSelectedObject(null);
-    });
+    boundaryBox.visible = !allInside;
+    warningText.visible = !allInside;
+    canvas.bringToFront(boundaryBox);
+    canvas.bringToFront(warningText);
+    canvas.requestRenderAll();
+  }
 
-    canvas.on("object:modified", syncMirrorCanvas);
+  const handleSelection = (e) => {
+    // if (e.selected.length > 1) {
+    //   canvas.discardActiveObject();
+    //   canvas.requestRenderAll();
+    // } else {
+    //   handleObjectSelection(e);
+    //   setSelectedObject(e.selected[0]);
+    // }
+  };
 
-    const handleSelectionCleared = () => {
-      dispatch(setSelectedTextState(null));
-      // navigate("/product");
-    };
+  const handleSelectionCleared = () => {
+    // setSelectedObject(null);
+    // dispatch(setSelectedTextState(null));
+  };
 
-    canvas.on("selection:cleared", handleSelectionCleared);
+  const events = [
+    ["object:added", updateBoundaryVisibility],
+    ["object:modified", updateBoundaryVisibility],
+    ["object:moving", updateBoundaryVisibility],
+    ["object:scaling", updateBoundaryVisibility],
+    ["selection:created", handleSelection],
+    ["selection:updated", handleSelection],
+    ["selection:cleared", handleSelectionCleared],
+    ["object:modified", syncMirrorCanvas],
+  ];
 
+  events.forEach(([event, handler]) => canvas.on(event, handler));
 
+  if (backgroundImage) {
+    fabric.Image.fromURL(
+      backgroundImage,
+      (img) => {
+        const scaleX = 590 / img.width;
+        const scaleY = 450 / img.height;
+
+        img.set({
+          left: canvas.width / 2,
+          top: canvas.height / 2,
+          originX: "center",
+          originY: "center",
+          scaleX,
+          scaleY,
+          selectable: false,
+          evented: false,
+        });
+
+        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+        syncMirrorCanvas();
+      },
+      { crossOrigin: "anonymous" }
+    );
+  }
+
+  return () => {
+    // Remove all listeners
+    events.forEach(([event, handler]) => canvas.off(event, handler));
     
+    // Dispose of the canvas to prevent memory leaks
+    canvas.dispose();
+    fabricCanvasRef.current = null;
+    // mirrorCanvasRef.current.dispose();
+    mirrorCanvasRef.current = null;
+  };
+}, [iconImages, id, backgroundImage]);
 
-    return () => {
-      // canvas.dispose();
-    };
-  }, [iconImages, id, backgroundImage]);
+
 
   useEffect(() => {
     console.log("renderiing on layer index changed");
@@ -527,7 +545,7 @@ const MainDesignTool = ({
     if (Array.isArray(textContaintObject)) {
       textContaintObject.forEach((textInput) => {
         console.log("text input daata", textInput);
-        const isCurved = textInput.arc > 0;
+        // const isCurved = textInput.arc > 0;
         const canvas = fabricCanvasRef.current;
         const existingObj = canvas
           .getObjects()
@@ -621,10 +639,7 @@ const MainDesignTool = ({
 
             const center = obj.getCenterPoint();
 
-            const MAX_SCALE = 10;
-            const MIN_SCALE = 1;
-
-            // Use textInput as base scale
+          
             const baseScaleX = Number(textInput.scaleX) || 1;
             const baseScaleY = Number(textInput.scaleY) || 1;
 
@@ -641,11 +656,11 @@ const MainDesignTool = ({
               finalScaleX = clampScale(baseScaleX + (additiveScale - 1));
               finalScaleY = clampScale(baseScaleY + (additiveScale - 1));
             } else {
-              // Non-uniform: preserve individual axis scaling
+            
               finalScaleX = clampScale(deltaScaleX);
-              // obj.height = (obj*finalScaleY);
+             
               finalScaleY = clampScale(deltaScaleY);
-              // obj.width = (obj*finalScaleX);
+          
             }
 
             obj.scaleX = finalScaleX;
@@ -657,7 +672,7 @@ const MainDesignTool = ({
             // Dispatch based on whether it was uniform or not
             globalDispatch("scaleX", parseFloat(finalScaleX.toFixed(1)), textInput.id);
             globalDispatch("scaleY", parseFloat(finalScaleY.toFixed(1)), textInput.id);
-            // globalDispatch("originalScaleY", parseFloat(finalScaleY.toFixed(1)), textInput.id);
+            globalDispatch("originalScaleY", parseFloat(finalScaleY.toFixed(1)), textInput.id);
             // globalDispatch("originalScaleX", parseFloat(finalScaleX.toFixed(1)), textInput.id);
 
             globalDispatch("scaledValue", parseFloat(finalScaleX.toFixed(1)), textInput.id);

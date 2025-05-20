@@ -6,6 +6,7 @@ import ChangePopup from '../../PopupComponent/ChangeProductPopup/ChangePopup';
 import AddProductContainer from '../../PopupComponent/addProductContainer/AddProductContainer';
 import ProductAvailableColor from '../../PopupComponent/ProductAvailableColor/ProductAvailableColor';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
+
 import { useSelector, useDispatch } from 'react-redux';
 import {
   addProduct as addProductAction,
@@ -13,11 +14,12 @@ import {
   deleteProduct as deleteProductAction,
   setSelectedProducts as setSelectedProductsAction,
 } from '../../../redux/ProductSlice/SelectedProductSlice';
+import { useOutletContext } from 'react-router-dom';
 
 const ProductToolbar = () => {
   const dispatch = useDispatch();
   const selectedProducts = useSelector((state) => state.slectedProducts.selectedProducts);
-
+  const { setActiveProduct } = useOutletContext();
   const [changeProductPopup, setChangeProductPopup] = useState(false);
   const [editingProductIndex, setEditingProductIndex] = useState(null);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
@@ -159,7 +161,7 @@ const ProductToolbar = () => {
                     <CrossIcon />
                   </span>
                 </div>
-                <div className="product-toolbar-image-with-btn">
+              <div className="product-toolbar-image-with-btn">
                   {[
                     {
                       img: product?.imgurl || product?.selectedImage,
@@ -170,13 +172,34 @@ const ProductToolbar = () => {
                     <div
                       key={i}
                       className="mini-prod-img-container"
-                      onClick={() =>
+                      // onClick={() =>
+                      //   setActiveThumbnail((prev) =>
+                      //     prev.productIndex === index && prev.colorIndex === i
+                      //       ? { productIndex: null, colorIndex: null }
+                      //       : { productIndex: index, colorIndex: i }
+                      //   )
+                      // }
+                      onClick={() => {
+                        const clickedColor =
+                          i === 0
+                            ? product.selectedColor
+                            : product.addedColors?.[i - 1];
+ 
+                        const updatedActiveProduct = {
+                          ...product,
+                          selectedColor: clickedColor,
+                          imgurl: clickedColor?.img || product.imgurl,
+                        };
+ 
+                        setActiveProduct(updatedActiveProduct);
+ 
                         setActiveThumbnail((prev) =>
                           prev.productIndex === index && prev.colorIndex === i
                             ? { productIndex: null, colorIndex: null }
                             : { productIndex: index, colorIndex: i }
-                        )
-                      }
+                        );
+                      }}
+ 
                     >
                       {activeThumbnail.productIndex === index && activeThumbnail.colorIndex === i && (
                         <div className="thumbnail-actions">
@@ -189,7 +212,7 @@ const ProductToolbar = () => {
                           >
                             <CrossIcon />
                           </span>
-
+ 
                           <button
                             className="toolbar-span"
                             onClick={(e) => {

@@ -229,6 +229,7 @@ canvas#mirrorCanvasBack {
     display: flex;
     align-items: center;
     gap: 10px;
+    border: 1px solid #D2D5D9;
     background: #fff;
     padding: 8px 19.5px;
     border-radius: 10px;

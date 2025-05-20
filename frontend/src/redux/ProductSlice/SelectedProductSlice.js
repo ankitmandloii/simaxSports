@@ -2,7 +2,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const selectedProductSlice = createSlice({
-  name: 'products',
+  name: 'selectedProducts',
   initialState: {
     selectedProducts: [],
   },
@@ -22,8 +22,11 @@ const selectedProductSlice = createSlice({
         (_, idx) => idx !== action.payload
       );
     },
+    setActiveProduct(state, action) {
+      state.activeProduct = action.payload;
+    },
   },
 });
 
-export const { setSelectedProducts, addProduct, updateProduct, deleteProduct } = selectedProductSlice.actions;
+export const { setSelectedProducts, addProduct, updateProduct, deleteProduct , setActiveProduct} = selectedProductSlice.actions;
 export default selectedProductSlice.reducer;

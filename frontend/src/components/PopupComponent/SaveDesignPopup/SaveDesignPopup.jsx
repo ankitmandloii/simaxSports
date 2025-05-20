@@ -8,7 +8,7 @@ const SaveDesignPopup = ({setSavedesignPopupHandler}) => {
 
 
   const [designName, setDesignName] = useState("");
-  const [email, setEmail] = useState("");
+  // const [email, setEmail] = useState("");
   const [error, setError] = useState("");
 
   const validateName = (name) => /^[a-zA-Z0-9\- ]{1,25}$/.test(name);
@@ -18,7 +18,7 @@ const SaveDesignPopup = ({setSavedesignPopupHandler}) => {
       setError("Max 25 characters. No symbols except dashes.");
       return;
     }
-    alert(`Continue with email: ${email}`);
+    // alert(`Continue with email: ${email}`);
   };
 
   const handleGoogleLogin = () => {
