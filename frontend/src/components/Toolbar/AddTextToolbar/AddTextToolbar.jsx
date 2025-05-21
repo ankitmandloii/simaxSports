@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import '../AddTextToolbar/AddTextToolbar.css';
 import {
   AlignCenterIcon,
@@ -34,6 +34,7 @@ const AddTextToolbar = () => {
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
   const isLocked = textContaintObject?.locked;
   const [prevSize, setPrevSize] = useState(1);
+  const textareaRef = useRef(null)
   // console.log("-------lock", isLocked, "---", textContaintObject?.locked)
 
 
@@ -58,7 +59,7 @@ const AddTextToolbar = () => {
   const [showFontSelector, setShowFontSelector] = useState(false);
   const [selectedFont, setSelectedFont] = useState(textContaintObject ? textContaintObject.fontFamily : "Inter");
   const [textColor, setTextColor] = useState(textContaintObject ? textContaintObject.textColor : "#000000");
-  const [outlineColor, setOutlineColor] = useState(textContaintObject ? textContaintObject.outLineColor : "white");
+  const [outlineColor, setOutlineColor] = useState(textContaintObject ? textContaintObject.outLineColor : '');
   const [outlineSize, setOutlineSize] = useState(textContaintObject ? textContaintObject.outlineSize : 0);
   const [rangeValuesSize, setRangeValuesSize] = useState(textContaintObject ? textContaintObject.scaledValue : 1);
   const [rangeValuesRotate, setRangeValuesRotate] = useState(textContaintObject ? textContaintObject.rotate : 0);
@@ -72,6 +73,7 @@ const AddTextToolbar = () => {
   useEffect(() => {
     // setText(textContaintObject.content);
     if (selectedTextId) {
+
       setCurrentTextToolbarId(selectedTextId);
       // console.log("is selected id ", selectedTextId);
       // setShowContent(true);
@@ -154,20 +156,20 @@ const AddTextToolbar = () => {
   }
 
   const handleShowContent = (e) => {
-   const { value } = e.target;
-  setShowContent(value.length > 0);
- 
-  // Remove only leading spaces
-  setText(value.replace(/^\s+/, ''));
- 
-  if (textContaintObject) {
-    globalDispatch("content", value.replace(/^\s+/, ''));
-  } else {
-    dispatch(addTextState({
-      value: value,
-      id: String(currentTextToolbarId)
-    }));
-  }
+    const { value } = e.target;
+    setShowContent(value.length > 0);
+
+    // Remove only leading spaces
+    setText(value.replace(/^\s+/, ''));
+
+    if (textContaintObject) {
+      globalDispatch("content", value.replace(/^\s+/, ''));
+    } else {
+      dispatch(addTextState({
+        value: value,
+        id: String(currentTextToolbarId)
+      }));
+    }
   };
 
 
@@ -283,9 +285,11 @@ const AddTextToolbar = () => {
 
     return true;
   }
-
-
-  
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, []);
   return (
     <div className="toolbar-main-container AddTextToolbar-main-container">
       <div className='toolbar-main-heading'>
@@ -298,6 +302,7 @@ const AddTextToolbar = () => {
         {!showFontSelector ? (
           <>
             <textarea
+              ref={textareaRef}
               placeholder="Begin Typing...."
               onInput={handleShowContent}
               value={text || ''}
@@ -397,7 +402,7 @@ const AddTextToolbar = () => {
                   <div className='toolbar-box-Font-Value-set-inner-container'>
                     <div className='toolbar-box-Font-Value-set-inner-actionheading'>Outline</div>
                     <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleOutlineColorPopup}>
-                      {outlineColor}
+                      {outlineColor === '' ? 'None' : outlineColor}
                       <SpanColorBox color={outlineColor} />
                       <span><AngleActionIcon /></span>
                       {outlineColorPopup && (

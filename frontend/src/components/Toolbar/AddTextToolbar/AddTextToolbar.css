@@ -183,7 +183,7 @@
 
 }
 
-.SpanValueBox-input{
+.SpanValueBox-input {
     /* padding: 0px 5px; */
     border: 1px solid #cccfd6;
     border-radius: 4px;
@@ -191,6 +191,7 @@
     font-weight: 500;
     color: #555;
     width: 40px;
+    text-align: center;
 }
 
 
@@ -223,10 +224,13 @@
     flex-direction: column;
     overflow-y: auto;
 }
+
 .locked-toolbar {
-  opacity: 0.4;
-  pointer-events: none; /* Prevent interaction */
-  user-select: none;     /* Prevent text selection */
+    opacity: 0.4;
+    pointer-events: none;
+    /* Prevent interaction */
+    user-select: none;
+    /* Prevent text selection */
 }
 
 

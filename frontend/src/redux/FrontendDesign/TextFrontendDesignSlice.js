@@ -23,7 +23,7 @@ const createNewText = ({ value, id }, length) => ({
   flipY: false,
   width: 150,
   height: 50,
-  fontSize:20,
+  fontSize: 20,
   position: { x: 320, y: 300 },
   locked: false,
   layerIndex: length

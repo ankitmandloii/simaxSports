@@ -1,41 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AddNamesPopup.css';
-import miniProd from '../../images/mini-prod.png';
-import Redimg from '../../images/red-img.png'
 import { CrossIcon, DeleteIcon } from '../../iconsSvg/CustomIcon';
 import { useSelector } from 'react-redux';
 
-import CanvasPreview from '../../fabric/CanvasPreview';
-// import tshirtPreview from '../../images/tshirt-preview.png';
-
 const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
-  const [rows, setRows] = useState([{ id: Date.now(), size: '', name: '', number: '' }]);
+  const selectedProducts = useSelector((state) => state.slectedProducts.selectedProducts);
+
+  const [rowsByProduct, setRowsByProduct] = useState({});
   const [activeRowId, setActiveRowId] = useState(null);
-  const frontImageforMiniImageShow = useSelector(state => state?.slectedProducts?.activeProduct?.imgurl || 'https://i.postimg.cc/vHZM9108/Rectangle-11.png');
-  const allVariants = useSelector(state => state?.slectedProducts?.activeProduct?.allVariants || []);
-  console.log(allVariants, "allVariants");
 
+  useEffect(() => {
+    const initialRows = {};
+    selectedProducts.forEach((_, idx) => {
+      initialRows[idx] = [{ id: Date.now() + idx, size: '', name: '', number: '' }];
+    });
+    setRowsByProduct(initialRows);
+  }, [selectedProducts]);
 
-  const sizeOptions = Array.from(new Set(
-    allVariants
-      .flatMap(variant =>
-        variant.selectedOptions
-          .filter(option => option.name === 'Size')
-          .map(option => option.value)
+  const getSizeOptions = (product) => {
+    if (!product?.allVariants) return [];
+    return Array.from(new Set(
+      product.allVariants
+        .flatMap(variant =>
+          variant.selectedOptions
+            .filter(option => option.name === 'Size')
+            .map(option => option.value)
+        )
+    ));
+  };
+
+  const addRow = (productIndex) => {
+    setRowsByProduct(prev => ({
+      ...prev,
+      [productIndex]: [
+        ...(prev[productIndex] || []),
+        { id: Date.now(), size: '', name: '', number: '' }
+      ]
+    }));
+  };
+
+  const removeRow = (productIndex, rowId) => {
+    setRowsByProduct(prev => ({
+      ...prev,
+      [productIndex]: prev[productIndex].filter(row => row.id !== rowId)
+    }));
+  };
+
+  const updateRow = (productIndex, rowId, field, value) => {
+    setRowsByProduct(prev => ({
+      ...prev,
+      [productIndex]: prev[productIndex].map(row =>
+        row.id === rowId ? { ...row, [field]: value } : row
       )
-  ));
-
-  console.log(sizeOptions, "sizeOptions");
-  const addRow = () => {
-    setRows([...rows, { id: Date.now(), size: '', name: '', number: '' }]);
-  };
-
-  const removeRow = (id) => {
-    setRows(rows.filter((row) => row.id !== id));
-  };
-
-  const updateRow = (id, field, value) => {
-    setRows(rows.map(row => row.id === id ? { ...row, [field]: value } : row));
+    }));
   };
 
   return (
@@ -50,89 +67,90 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
             <button className="close-btn" onClick={showAddnamesPopupHAndler}><CrossIcon /></button>
           </div>
 
-          <div className="popup-body">
+          <div className="popup-body names-popup-body">
             <div className="popup-left">
-              <div className="product-details ">
-                <div className='mini-prod-img-container'>
-                  <img src={frontImageforMiniImageShow} className="product-mini-img" alt="mini" />
-                </div>
-
-                <div>
-                  <h4>Essential Red T-Shirt for Men & Women</h4>
-                  <p className='toolbar-span'>Red</p>
-                </div>
-              </div>
-
-              <div className="names-list">
-                <div className="table-header">
-                  <span>Size</span>
-                  <span>Name</span>
-                  <span>Number</span>
-                  <span></span>
-                </div>
-                {rows.map((row) => (
-                  <div className="table-row" key={row.id}>
-                    <select value={row.size} onChange={(e) => updateRow(row.id, 'size', e.target.value)}>
-                      {sizeOptions.map(size => (
-                        <option key={size} value={size}>{size}</option>
-                      ))}
-                    </select>
-                    {/* <select value={row.size} onChange={(e) => updateRow(row.id, 'size', e.target.value)}>
-                    <option value="">--</option>
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                  </select> */}
-                    <input
-                      type="text"
-                      placeholder="Name"
-                      maxLength={11}
-                      value={row.name}
-                      onFocus={() => setActiveRowId(row.id)}
-                      onChange={(e) => updateRow(row.id, 'name', e.target.value.toUpperCase())}
-                    />
-
-                    <input
-                      type="text"
-                      placeholder="Number"
-                      maxLength={4}
-                      value={row.number}
-                      onFocus={() => setActiveRowId(row.id)}
-                      onChange={(e) => updateRow(row.id, 'number', e.target.value.toUpperCase())}
-                    />
-
-                    <button className="trash-btn" onClick={() => removeRow(row.id)}><DeleteIcon /></button>
+              {selectedProducts.map((product, index) => (
+                <div key={index} className="product-block">
+                  <div className="product-details">
+                    <div className='mini-prod-img-container'>
+                      <img src={product.imgurl} className="product-mini-img" alt="mini" />
+                    </div>
+                    <div>
+                      <h4>{product.name}</h4>
+                      <p className='toolbar-span'>{product.colors.map(color => color.name).join(', ')}</p>
+                    </div>
                   </div>
-                ))}
-                <p className="add-another" onClick={addRow}>+ Add Another</p>
-              </div>
+
+                  <div className="names-list">
+                    <div className="table-header">
+                      <span>Size</span>
+                      <span>Name</span>
+                      <span>Number</span>
+                      <span></span>
+                    </div>
+                    {(rowsByProduct[index] || []).map((row) => (
+                      <div className="table-row" key={row.id}>
+                        <select
+                          value={row.size}
+                          onChange={(e) => updateRow(index, row.id, 'size', e.target.value)}
+                          disabled={getSizeOptions(product).length === 0}
+                        >
+                          {getSizeOptions(product).length === 0 ? (
+                            <option value="">Not Available</option>
+                          ) : (
+                            <>
+                              <option value="" disabled>Select Size</option>
+                              {getSizeOptions(product).map(size => (
+                                <option key={size} value={size}>{size}</option>
+                              ))}
+                            </>
+                          )}
+                        </select>
+
+                        <input
+                          type="text"
+                          placeholder="Name"
+                          maxLength={11}
+                          value={row.name}
+                          onFocus={() => setActiveRowId(row.id)}
+                          onChange={(e) => updateRow(index, row.id, 'name', e.target.value.toUpperCase())}
+                        />
+
+                        <input
+                          type="text"
+                          placeholder="Number"
+                          maxLength={4}
+                          value={row.number}
+                          onFocus={() => setActiveRowId(row.id)}
+                          onChange={(e) => updateRow(index, row.id, 'number', e.target.value.toUpperCase())}
+                        />
+
+                        <button className="trash-btn" onClick={() => removeRow(index, row.id)}><DeleteIcon /></button>
+                      </div>
+                    ))}
+                    <p className="add-another" onClick={() => addRow(index)}>+ Add Another</p>
+                    <p className='total-show-box'>Totals: {rowsByProduct[index]?.filter(r => r.name).length || 0} with Names | {rowsByProduct[index]?.filter(r => r.number).length || 0} with Numbers</p>
+                    <hr className='hr-underline' />
+                  </div>
+                </div>
+              ))}
             </div>
 
             <div className="popup-right">
-              {/* have to limit 25 char and 4 digits only  */}
-              {/* want to impliement the design of canvas and render the bg-color as the selected product color */}
-              {/* <img src={Redimg} alt="T-Shirt" /> */}
               <div className="render-box">
                 <div className='canvas-bg'>
-
-
-                  {/* <img src={Redimg} alt="T-Shirt" className="canvas-bg" /> */}
                   {!activeRowId ? (
                     <div className="text-row">
                       <div className="name-text">Edit a row to preview</div>
                     </div>
                   ) : (
-                    rows
-                      .filter((row) => row.id === activeRowId)
-                      .map((row) => (
-                        <div key={row.id} className="text-row">
-                          {row.name && <div className="name-text">{row.name}</div>}
-                          {row.number && <div className="number-text">{row.number}</div>}
-                        </div>
-                      ))
+                    Object.values(rowsByProduct).flat().filter(row => row.id === activeRowId).map(row => (
+                      <div key={row.id} className="text-row">
+                        {row.name && <div className="name-text">{row.name}</div>}
+                        {row.number && <div className="number-text">{row.number}</div>}
+                      </div>
+                    ))
                   )}
-
-
                 </div>
               </div>
               <div className="popup-footer">
@@ -140,12 +158,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
                 <button className="link-btn" onClick={showAddnamesPopupHAndler}>Exit Without Saving</button>
               </div>
             </div>
-
-
-
           </div>
-
-
         </div>
       </div>
     </div>
