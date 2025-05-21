@@ -163,6 +163,10 @@ const TextFrontendDesignSlice = createSlice({
       state.present[side].selectedTextId = action.payload;
     },
 
+     setRendering:(state,action) =>{
+        const side = state.activeSide;
+        state.present[side].setRendering = !(state.present[side].setRendering);
+    },
     // ----------- Undo / Redo per side ------------
     undo: (state) => {
       const side = state.activeSide;
@@ -182,6 +186,8 @@ const TextFrontendDesignSlice = createSlice({
       state.present[side] = next;
       state.present[side].setRendering = !state.present[side].setRendering;
     },
+
+    
 
     // Reset canvas state for all sides
     resetCanvasState: (state) => {
@@ -227,7 +233,8 @@ export const {
   redo,
   resetCanvasState,
   duplicateTextState,
-  setActiveSide
+  setActiveSide,
+  setRendering
 } = TextFrontendDesignSlice.actions;
 
 export default TextFrontendDesignSlice.reducer;

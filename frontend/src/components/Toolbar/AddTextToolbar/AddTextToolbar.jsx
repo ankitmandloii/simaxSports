@@ -154,20 +154,20 @@ const AddTextToolbar = () => {
   }
 
   const handleShowContent = (e) => {
-    const { value } = e.target;
-
-    setShowContent(value.length > 0);
-
-    setText(value);
-
-    if (textContaintObject) {
-      globalDispatch("content", value);
-    } else {
-      dispatch(addTextState({
-        value: value,
-        id: String(currentTextToolbarId)
-      }));
-    }
+   const { value } = e.target;
+  setShowContent(value.length > 0);
+ 
+  // Remove only leading spaces
+  setText(value.replace(/^\s+/, ''));
+ 
+  if (textContaintObject) {
+    globalDispatch("content", value.replace(/^\s+/, ''));
+  } else {
+    dispatch(addTextState({
+      value: value,
+      id: String(currentTextToolbarId)
+    }));
+  }
   };
 
 
@@ -283,6 +283,9 @@ const AddTextToolbar = () => {
 
     return true;
   }
+
+
+  
   return (
     <div className="toolbar-main-container AddTextToolbar-main-container">
       <div className='toolbar-main-heading'>

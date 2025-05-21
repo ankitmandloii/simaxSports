@@ -15,6 +15,7 @@ import {
   setSelectedProducts as setSelectedProductsAction,
 } from '../../../redux/ProductSlice/SelectedProductSlice';
 import { useOutletContext } from 'react-router-dom';
+import { setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 
 const ProductToolbar = () => {
   const dispatch = useDispatch();
@@ -28,7 +29,7 @@ const ProductToolbar = () => {
   const [activeThumbnail, setActiveThumbnail] = useState({ productIndex: null, colorIndex: null });
   const [colorChangeTarget, setColorChangeTarget] = useState({ productIndex: null, colorIndex: null });
   const [hoveredThumbnail, setHoveredThumbnail] = useState({ productIndex: null, colorIndex: null, color: null });
-
+  const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const cloneColor = (color) => ({ ...color });
 
   const openChangeProductPopup = (isAdd = false, index = null) => {
@@ -196,7 +197,7 @@ const ProductToolbar = () => {
                           };
 
                           setActiveProduct(updatedActiveProduct);
-
+                          setTimeout(() => dispatch(setRendering()), 10);
                           setActiveThumbnail((prev) =>
                             prev.productIndex === index && prev.colorIndex === i
                               ? { productIndex: null, colorIndex: null }
