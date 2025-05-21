@@ -217,11 +217,19 @@
 }
 
 .addText-inner-main-containerr {
+    color: #000;
     gap: 12px;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
 }
+.locked-toolbar {
+  opacity: 0.4;
+  pointer-events: none; /* Prevent interaction */
+  user-select: none;     /* Prevent text selection */
+}
+
+
 
 .addText-inner-main-containerr::-webkit-scrollbar {
     /* color: red; */

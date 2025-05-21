@@ -361,7 +361,7 @@ const AddTextToolbar = () => {
                 </div>
 
                 <hr />
-                <div className="addText-inner-main-containerr">
+                <div className={`addText-inner-main-containerr ${isLocked ? 'locked-toolbar' : ''}`}>
                   <div className='toolbar-box-Font-Value-set-inner-container'>
                     <div className='toolbar-box-Font-Value-set-inner-actionheading'>Font</div>
                     <div className='toolbar-box-Font-Value-set-inner-actionlogo cursor' onClick={() => setShowFontSelector(true)}>
