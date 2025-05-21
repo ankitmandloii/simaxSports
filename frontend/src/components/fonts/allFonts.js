@@ -52,6 +52,14 @@ const categorizedFonts = [
     ],
   },
   {
+    category: "Tech",
+    fonts: [
+      { name: "Audiowide", fontFamily: "Audiowide, cursive" },
+      { name: "Share Tech Mono", fontFamily: "Share Tech Mono, monospace" },
+      { name: "Chakra Petch", fontFamily: "Chakra Petch, sans-serif" }, // ✅ New font
+    ],
+  },
+  {
     category: "Youthful",
     fonts: [
       { name: "Fredoka", fontFamily: "Fredoka, sans-serif" },
@@ -131,6 +139,12 @@ const categorizedFonts = [
       { name: "Dawning of a New Day", fontFamily: "'Dawning of a New Day', cursive" },
     ],
   },
+
+
+
+
+
+
 ];
 
 export default categorizedFonts;

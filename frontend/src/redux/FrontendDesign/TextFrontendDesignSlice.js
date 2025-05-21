@@ -4,7 +4,7 @@ import { createSlice, nanoid } from '@reduxjs/toolkit';
 const createNewText = ({ value, id }, length) => ({
   id: id,
   content: value || 'New Text',
-  fontFamily: 'Arial',
+  fontFamily: 'Montserrat',
   textColor: '#000000',
   outline: 'none',
   size: 1,
