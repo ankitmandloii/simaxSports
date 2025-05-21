@@ -20,7 +20,7 @@ const SubArtBox = ({ category, goBack }) => {
   };
 
   return (
-    <div className="toolbar-main-container">
+    <div className="toolbar-main-container-ClipArt">
       <div className="toolbar-box">
         <Link to='/uploadArt'><button className="upload-button margin-bottom">Upload Your Own Image</button></Link>
 
@@ -36,7 +36,7 @@ const SubArtBox = ({ category, goBack }) => {
           <SearchIcon />
           <RxCross1 className="cross-icon" onClick={handleClear} />
         </div>
-       <h4 className='margin-bottom'>Clipart Results</h4>
+        <h4 className='margin-bottom'>Clipart Results</h4>
         <div className="clipart-grid">
           {filteredImages.map((img) => (
             <img

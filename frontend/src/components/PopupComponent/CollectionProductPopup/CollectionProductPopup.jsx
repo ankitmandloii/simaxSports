@@ -4,24 +4,21 @@ import ColorWheel from '../../images/color-wheel1.png';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
 
 const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
-  console.log("collectionId", collectionId)
   const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const popupRef = useRef(null);
+
   const [products, setProducts] = useState([]);
   const [selectedVariantImage, setSelectedVariantImage] = useState({});
   const [selectedColorByProduct, setSelectedColorByProduct] = useState({});
-
+  const [hoverImage, setHoverImage] = useState({});
+  const [selectedProductColors, setSelectedProductColors] = useState(null);
   const [cursor, setCursor] = useState('');
   const [hasNextPage, setHasNextPage] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [selectedProductColors, setSelectedProductColors] = useState(null);
-  const [hoverImage, setHoverImage] = useState({});
-  const popupRef = useRef(null);
 
-  // const numericId = collectionId?.split('/').pop();
   const defaultCollectionId = 'gid://shopify/Collection/450005106927';
   const effectiveCollectionId = collectionId || defaultCollectionId;
   const numericId = effectiveCollectionId.split('/').pop();
-
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -33,60 +30,94 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    resetState();
+    fetchProducts(false);
+  }, [collectionId]);
+
+  const resetState = () => {
+    setProducts([]);
+    setCursor('');
+    setHasNextPage(false);
+    setSelectedProductColors(null);
+    setSelectedVariantImage({});
+    setSelectedColorByProduct({});
+    setHoverImage({});
+  };
+
   const fetchProducts = async (isLoadMore = false) => {
     if (!effectiveCollectionId) return;
     setLoading(true);
     try {
-      const res = await fetch(
-        ` ${BASE_URL}products/collection/${numericId}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            limit: 10,
-            cursor: isLoadMore ? cursor : '',
-          }),
-        }
-      );
+      const res = await fetch(`${BASE_URL}products/collection/${numericId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          limit: 10,
+          cursor: isLoadMore ? cursor : '',
+        }),
+      });
       const data = await res.json();
-      if (data?.status && data?.result?.node?.products?.edges) {
-        const newProducts = data.result.node.products.edges.map(edge => edge.node);
-        const pageInfo = data.result.node.products.pageInfo;
+      const edges = data?.result?.node?.products?.edges || [];
+      const pageInfo = data?.result?.node?.products?.pageInfo;
 
-        setProducts(prev => isLoadMore ? [...prev, ...newProducts] : newProducts);
-        setCursor(pageInfo.endCursor);
-        setHasNextPage(pageInfo.hasNextPage);
-      }
-    } catch (error) {
-      console.error('Failed to fetch products:', error);
+      const newProducts = edges.map(edge => edge.node);
+      setProducts(prev => isLoadMore ? [...prev, ...newProducts] : newProducts);
+      setCursor(pageInfo?.endCursor || '');
+      setHasNextPage(pageInfo?.hasNextPage || false);
+    } catch (err) {
+      console.error('Error fetching products:', err);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    setProducts([]);
-    setCursor('');
-    setHasNextPage(false);
-    fetchProducts(false);
-  }, [collectionId]);
 
   const getFirstVariantImage = (product) =>
     product?.variants?.edges?.[0]?.node?.image?.originalSrc || '';
 
   const getUniqueColors = (product) => {
     const colorSet = new Set();
-    product?.variants?.edges?.forEach(variant => {
-      const colorOption = variant.node.selectedOptions.find(opt => opt.name === 'Color');
-      if (colorOption) colorSet.add(colorOption.value);
+    product?.variants?.edges?.forEach(({ node }) => {
+      const color = node.selectedOptions.find(opt => opt.name === 'Color')?.value;
+      if (color) colorSet.add(color);
     });
     return [...colorSet];
+  };
+
+  const getVariantImageByColor = (product, color) => {
+    const variant = product.variants.edges.find(({ node }) =>
+      node.selectedOptions.some(opt => opt.name === 'Color' && opt.value === color)
+    );
+    return variant?.node?.image?.originalSrc || '';
+  };
+
+  const renderColorSwatches = (product) => {
+    return getUniqueColors(product).map((color, idx) => {
+      const image = getVariantImageByColor(product, color);
+      const isSelected = selectedColorByProduct[product.id] === color;
+
+      return (
+        <span
+          key={idx}
+          className={`color-swatch ${isSelected ? 'selected' : ''}`}
+          style={{ backgroundColor: color }}
+          title={color}
+          onMouseEnter={() => setHoverImage(prev => ({ ...prev, [product.id]: image }))}
+          onMouseLeave={() => setHoverImage(prev => ({ ...prev, [product.id]: '' }))}
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectedColorByProduct(prev => ({ ...prev, [product.id]: color }));
+            setSelectedVariantImage(prev => ({ ...prev, [product.id]: image }));
+          }}
+        />
+      );
+    });
   };
 
   return (
     <div className="product-panel">
       {!effectiveCollectionId ? (
-        <p className='default-collection-para'>Select a collection to view products.</p>
+        <p className="default-collection-para">Select a collection to view products.</p>
       ) : loading && products.length === 0 ? (
         <div className="loader" />
       ) : products.length === 0 ? (
@@ -94,12 +125,16 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
       ) : (
         <>
           <div className="product-list-collection">
-            {products?.map((product) => (
-              <div key={product.id} className="modal-product" onClick={() =>
-                setSelectedProductColors(
-                  selectedProductColors === product.id ? null : product.id
-                )
-              }>
+            {products.map((product) => (
+              <div
+                key={product.id}
+                className="modal-product"
+                onClick={() =>
+                  setSelectedProductColors(
+                    selectedProductColors === product.id ? null : product.id
+                  )
+                }
+              >
                 <div className="img-pro-container">
                   <img
                     src={hoverImage[product.id] || getFirstVariantImage(product)}
@@ -107,19 +142,12 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
                     className="modal-productimg"
                   />
                 </div>
-
                 <p>{product.title}</p>
-                <br />
                 <div className="modal-productcolor-container">
                   <img
                     src={ColorWheel}
                     alt="colors"
                     className="modal-productcolor-img"
-                    // onClick={() =>
-                    //   setSelectedProductColors(
-                    //     selectedProductColors === product.id ? null : product.id
-                    //   )
-                    // }
                     style={{ cursor: 'pointer' }}
                   />
                   <p>{getUniqueColors(product).length} Colors</p>
@@ -138,36 +166,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
                         </button>
                       </div>
 
-                      <div className="color-swatch-list">
-                        {getUniqueColors(product).map((color, index) => {
-                          const variant = product.variants.edges.find(v =>
-                            v.node.selectedOptions.some(
-                              o => o.name === 'Color' && o.value === color
-                            )
-                          );
-                          const image = variant?.node?.image?.originalSrc;
-                          return (
-                            <span
-                              key={index}
-                              className={`color-swatch ${selectedColorByProduct[product.id] === color ? 'selected' : ''}`}
-                              style={{ backgroundColor: color }}
-                              title={color}
-                              onMouseEnter={() =>
-                                setHoverImage(prev => ({ ...prev, [product.id]: image }))
-                              }
-                              onMouseLeave={() =>
-                                setHoverImage(prev => ({ ...prev, [product.id]: '' }))
-                              }
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedColorByProduct(prev => ({ ...prev, [product.id]: color }));
-                                setSelectedVariantImage(prev => ({ ...prev, [product.id]: image }));
-                              }}
-                            />
-
-                          );
-                        })}
-                      </div>
+                      <div className="color-swatch-list">{renderColorSwatches(product)}</div>
 
                       <div className="popup-actions">
                         <button
@@ -176,23 +175,15 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
                             e.stopPropagation();
                             const selectedColor = selectedColorByProduct[product.id];
                             const selectedImage = selectedVariantImage[product.id];
-
-                            onProductSelect({
-                              ...product,
-                              selectedColor,
-                              selectedImage
-                            });
+                            onProductSelect({ ...product, selectedColor, selectedImage });
                             onClose();
                           }}
                         >
                           Add Product
                         </button>
-
                       </div>
                     </div>
                   )}
-
-
                 </div>
               </div>
             ))}

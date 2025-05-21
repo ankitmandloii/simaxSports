@@ -1,7 +1,8 @@
 import React from 'react';
 import './ProductAvailableColor.css';
 
-const ProductAvailableColor = ({ product, onClose, onAddColor, availableColors }) => {
+// Add these props to the component signature:
+const ProductAvailableColor = ({ product, onClose, onAddColor, availableColors, onHoverColor, onLeaveColor }) => {
   const colorsToShow = availableColors || product.colors || [];
 
   return (
@@ -14,6 +15,8 @@ const ProductAvailableColor = ({ product, onClose, onAddColor, availableColors }
               key={idx}
               className="color-option-card"
               onClick={() => onAddColor(product, color)}
+              onMouseEnter={() => onHoverColor && onHoverColor(color)}  // <-- Add this
+              onMouseLeave={() => onLeaveColor && onLeaveColor()}        // <-- And this
             >
               {/* <img src={color.img} alt={color.name} /> */}
               <p>{color.name}</p>
@@ -29,5 +32,6 @@ const ProductAvailableColor = ({ product, onClose, onAddColor, availableColors }
     </div>
   );
 };
+
 
 export default ProductAvailableColor;

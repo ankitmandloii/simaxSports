@@ -1,5 +1,3 @@
-
-
 .addArtToolbar-search-box {
   display: flex;
   align-items: center;
@@ -9,7 +7,8 @@
   border-radius: 6px;
   border: 1px solid #ccc;
 }
-.addArtToolbar-search-box svg{
+
+.addArtToolbar-search-box svg {
   height: 14px;
   cursor: pointer;
 }
@@ -37,12 +36,12 @@
   justify-content: center;
   background: white;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 100px;
   cursor: pointer;
   gap: 2px;
 }
 
-.art-button svg{
+.art-button svg {
   /* font-size: 4px; */
   height: 15px;
 }
@@ -53,28 +52,95 @@
 
 .upload-button {
   width: 100%;
-  padding: 4px;
+  padding: 6px;
   background: black;
   color: white;
-  border-radius: 4px;
+  border-radius: 100px;
   font-weight: bold;
   font-size: .7rem;
 }
 
-.ai-relative{
+.ai-relative {
   position: relative;
 }
+
 .ai-spannn {
-    position: absolute;
-    top: 30px;
-    left: 100px;
-    background-color: #005BFF;
-    color: #fff;
-    font-size: 10px;
-    height: .8rem;
-    width: 1.2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5px;
+  position: absolute;
+  top: 30px;
+  left: 100px;
+  background-color: #005BFF;
+  color: #fff;
+  font-size: 10px;
+  height: .8rem;
+  width: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
 }
+
+/* -------------- */
+/* SearchBar.css */
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+  /* Adjust padding as needed */
+  background-color: #f6f6f6;
+
+}
+
+.search-wrapper {
+  position: relative;
+  /* For positioning the search icon */
+  width: 100%;
+
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 45px 12px 20px;
+  /* Adjust padding for text and icon */
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  /* Rounded corners */
+  font-size: 12px;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow */
+  transition: all 0.3s ease;
+  outline: none;
+  /* Remove default focus outline */
+}
+
+.search-input::placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+.search-input:focus {
+  border-color: #007bff;
+  /* Highlight on focus */
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+}
+
+.search-icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  cursor: pointer;
+  font-size: 20px;
+  /* If you're using an SVG or an icon font, adjust accordingly */
+  /* For a simple magnifying glass, you could use an SVG or a unicode character if not using an icon library */
+}
+
+/* Example of how you might include a simple SVG for the icon */
+/* .search-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+} */

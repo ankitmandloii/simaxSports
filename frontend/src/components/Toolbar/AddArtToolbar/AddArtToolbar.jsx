@@ -25,9 +25,22 @@ const AddArtToolbar = () => {
         <p>Add your own artwork or choose from our library to personalize your design.</p>
       </div>
       {subArt ? <SubArtBox category={category} goBack={() => setSubArt(false)} /> : <div className="toolbar-box">
-        <div className="addArtToolbar-search-box">
+        {/* <div className="addArtToolbar-search-box">
           <input type="text" placeholder="Search for Clipart " />
           <SearchIcon />
+        </div> */}
+        <div className="search-container">
+          <div className="search-wrapper">
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search for Clipart and AI Generated Art"
+            />
+            <span className="search-icon">
+
+              <SearchIcon />
+            </span>
+          </div>
         </div>
 
         <div className="addArtToolbarBoxContent">

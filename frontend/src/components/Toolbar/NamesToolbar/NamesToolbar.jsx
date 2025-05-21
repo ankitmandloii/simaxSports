@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import './NamesToolbar.css';
 import FrontBtn from '../../images/Frontbutton.png';
 import BackBtn from '../../images/Backbuton.png';
-import SmallBtn from '../../images/Smallbutton.png';
+import SmallBtn from '../../images/sm-btn.png';
+
 import LargeBtn from '../../images/Largebutton.png';
 import InterStatebutton from '../../images/InterStatebutton.png';
 import Collegiatebutton from '../../images/Collegiatebutton.png';
@@ -13,20 +14,20 @@ import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox.
 
 const NamesToolbar = () => {
   const [activeSide, setActiveSide] = useState(null);
-  const [showAddnamesPopup,setshowAddnamesPopup]=useState(false);
-  const [showColorpopup,setshowcolorpopup]=useState(false);
-  const showAddnamesPopupHAndler=()=>{
+  const [showAddnamesPopup, setshowAddnamesPopup] = useState(false);
+  const [showColorpopup, setshowcolorpopup] = useState(false);
+  const showAddnamesPopupHAndler = () => {
     setshowAddnamesPopup(!showAddnamesPopup)
   }
-  const showColorPopupHandler=()=>{
+  const showColorPopupHandler = () => {
     setshowcolorpopup(!showColorpopup)
   }
- 
+
   const [activeSize, setActiveSize] = useState(null);
   const [activeFont, setActiveFont] = useState(null);
   const [activeColor, setActiveColor] = useState("white");
   const handleColorChange = (color) => {
-    setActiveColor(color); 
+    setActiveColor(color);
   };
   return (
     <div className="toolbar-main-container">
@@ -41,11 +42,11 @@ const NamesToolbar = () => {
         <div className="add-names-numberrs-row">
           <h5>Step1</h5>
           <label className="namescheckbox-div">
-            <input type='checkbox' defaultChecked/>
+            <input type='checkbox' defaultChecked />
             <span>Add Names</span>
           </label>
           <label className="namescheckbox-div">
-            <input type='checkbox' defaultChecked/>
+            <input type='checkbox' defaultChecked />
             <span>Add Numbers</span>
           </label>
         </div>
@@ -58,13 +59,13 @@ const NamesToolbar = () => {
               className={`names-toolbar-button ${activeSide === 'front' ? 'active' : ''}`}
               onClick={() => setActiveSide('front')}
             >
-              <img src={FrontBtn} alt="Front"/>
+              <img src={FrontBtn} alt="Front" />
             </button>
             <button
               className={`names-toolbar-button ${activeSide === 'back' ? 'active' : ''}`}
               onClick={() => setActiveSide('back')}
             >
-              <img src={BackBtn} alt="Back"/>
+              <img src={BackBtn} alt="Back" />
             </button>
           </div>
         </div>
@@ -77,13 +78,13 @@ const NamesToolbar = () => {
               className={`names-toolbar-button ${activeSize === 'small' ? 'active' : ''}`}
               onClick={() => setActiveSize('small')}
             >
-              <img src={SmallBtn} alt="Small"/>
+              <img src={SmallBtn} alt="Small" />
             </button>
             <button
               className={`names-toolbar-button ${activeSize === 'large' ? 'active' : ''}`}
               onClick={() => setActiveSize('large')}
             >
-              <img src={LargeBtn} alt="Large"/>
+              <img src={LargeBtn} alt="Large" />
             </button>
           </div>
         </div>
@@ -96,13 +97,13 @@ const NamesToolbar = () => {
               className={`names-toolbar-button ${activeFont === 'interstate' ? 'active' : ''}`}
               onClick={() => setActiveFont('interstate')}
             >
-              <img src={InterStatebutton} alt="Interstate"/>
+              <img src={InterStatebutton} alt="Interstate" />
             </button>
             <button
               className={`names-toolbar-button ${activeFont === 'collegiate' ? 'active' : ''}`}
               onClick={() => setActiveFont('collegiate')}
             >
-              <img src={Collegiatebutton} alt="Collegiate"/>
+              <img src={Collegiatebutton} alt="Collegiate" />
             </button>
           </div>
         </div>
@@ -111,13 +112,13 @@ const NamesToolbar = () => {
         <div className="add-names-numberrs-row">
           <h5>Color</h5>
           <div className="names-button-main-container">
-              <div className="color-names-box" onClick={showColorPopupHandler}>
+            <div className="color-names-box" onClick={showColorPopupHandler}>
               <span>{activeColor}</span>
-              <SpanColorBox color={activeColor}/>
-                <AngleActionIcon/>
-              </div>
-              {showColorpopup && <ChooseColorBox showColorPopupHandler={showColorPopupHandler} onColorChange={handleColorChange}
-      defaultColor={activeColor}/>}
+              <SpanColorBox color={activeColor} />
+              <AngleActionIcon />
+            </div>
+            {showColorpopup && <ChooseColorBox showColorPopupHandler={showColorPopupHandler} onColorChange={handleColorChange}
+              defaultColor={activeColor} />}
             {/* <button
               className={`names-toolbar-button ${activeColor === 'frontColor' ? 'active' : ''}`}
               onClick={() => setActiveColor('frontColor')}
@@ -135,7 +136,7 @@ const NamesToolbar = () => {
 
         <button className='black-button' onClick={showAddnamesPopupHAndler}>Add Names/Numbers</button>
       </div>
-      {showAddnamesPopup && <AddNamesPopup showAddnamesPopupHAndler={showAddnamesPopupHAndler}/>}
+      {showAddnamesPopup && <AddNamesPopup showAddnamesPopupHAndler={showAddnamesPopupHAndler} />}
     </div>
   );
 };
