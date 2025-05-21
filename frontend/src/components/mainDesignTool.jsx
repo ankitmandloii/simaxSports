@@ -22,11 +22,11 @@ const MainDesignTool = ({
   initialDesign,
   zoomLevel
 }) => {
- 
+
   const activeSide = useSelector(
     (state) => state.TextFrontendDesignSlice.activeSide
   );
-  console.log("active side", activeSide);
+  // console.log("active side", activeSide);
   // const [lastTranform, setLastTranform] = useState(null);
   const textContaintObject = useSelector(
     (state) => state.TextFrontendDesignSlice.present[activeSide].texts
@@ -37,6 +37,8 @@ const MainDesignTool = ({
   console.log("textContaintObject", textContaintObject);
 
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId)
+  // const isLocked = selectedTextId && textContaintObject.find((obj) => obj.id === selectedTextId).locked;
+  // console.log("locked value", isLocked);
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null);
   const dispatch = useDispatch();
@@ -46,22 +48,22 @@ const MainDesignTool = ({
 
   const [selectedHeight, setSelectedHeight] = useState("");
   const mirrorFabricRef = useRef(null);
-  
 
 
 
-useEffect(() => {
-  const canvas = fabricCanvasRef.current;
-  if (canvas && canvas.setZoom) {
-    const zoom = zoomLevel;
-    
-    // Get canvas center point (in pixels)
-    const center = new fabric.Point(canvas.width / 2, canvas.height / 2);
-    
-    // Zoom relative to center point
-    canvas.zoomToPoint(center, zoom);
-  }
-}, [zoomLevel]);
+
+  useEffect(() => {
+    const canvas = fabricCanvasRef.current;
+    if (canvas && canvas.setZoom) {
+      const zoom = zoomLevel;
+
+      // Get canvas center point (in pixels)
+      const center = new fabric.Point(canvas.width / 2, canvas.height / 2);
+
+      // Zoom relative to center point
+      canvas.zoomToPoint(center, zoom);
+    }
+  }, [zoomLevel]);
 
   const globalDispatch = (lable, value, id) => {
     dispatch(
@@ -71,42 +73,42 @@ useEffect(() => {
       })
     );
   };
-const updateBoundaryVisibility = useCallback(() => {
-  const canvas = fabricCanvasRef.current;
-  if (!canvas) return;
+  const updateBoundaryVisibility = useCallback(() => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
 
-  const boundaryBox = canvas.getObjects().find(obj => obj.type === "rect" && !obj.selectable); // identify your boundary box
-  const warningText = canvas.getObjects().find(obj => obj.type === "text" && obj.text === "Please keep design inside the box");
+    const boundaryBox = canvas.getObjects().find(obj => obj.type === "rect" && !obj.selectable); // identify your boundary box
+    const warningText = canvas.getObjects().find(obj => obj.type === "text" && obj.text === "Please keep design inside the box");
 
-  if (!boundaryBox || !warningText) return;
+    if (!boundaryBox || !warningText) return;
 
-  const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text");
+    const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text");
 
-  textObjects.forEach((obj) => obj.setCoords());
+    textObjects.forEach((obj) => obj.setCoords());
 
-  const allInside = textObjects.every((obj) => {
-    const objBounds = obj.getBoundingRect(true);
-    const boxBounds = boundaryBox.getBoundingRect(true);
-    return (
-      objBounds.left >= boxBounds.left &&
-      objBounds.top >= boxBounds.top &&
-      objBounds.left + objBounds.width <= boxBounds.left + boxBounds.width &&
-      objBounds.top + objBounds.height <= boxBounds.top + boxBounds.height
-    );
-  });
+    const allInside = textObjects.every((obj) => {
+      const objBounds = obj.getBoundingRect(true);
+      const boxBounds = boundaryBox.getBoundingRect(true);
+      return (
+        objBounds.left >= boxBounds.left &&
+        objBounds.top >= boxBounds.top &&
+        objBounds.left + objBounds.width <= boxBounds.left + boxBounds.width &&
+        objBounds.top + objBounds.height <= boxBounds.top + boxBounds.height
+      );
+    });
 
-  boundaryBox.visible = !allInside;
-  warningText.visible = !allInside;
+    boundaryBox.visible = !allInside;
+    warningText.visible = !allInside;
 
-  canvas.bringToFront(boundaryBox);
-  canvas.bringToFront(warningText);
-  canvas.requestRenderAll();
-}, []);
+    canvas.bringToFront(boundaryBox);
+    canvas.bringToFront(warningText);
+    canvas.requestRenderAll();
+  }, []);
 
 
-useEffect(() => {
-  updateBoundaryVisibility();
-}, [textContaintObject, updateBoundaryVisibility]);
+  useEffect(() => {
+    updateBoundaryVisibility();
+  }, [textContaintObject, updateBoundaryVisibility]);
 
 
   useEffect(() => {
@@ -135,7 +137,7 @@ useEffect(() => {
     }
     return imgs;
   }, []);
- 
+
 
   const renderIcon = (key) => {
     return function (ctx, left, top, _styleOverride, fabricObject) {
@@ -147,6 +149,13 @@ useEffect(() => {
       ctx.restore();
     };
   };
+
+  const isLocked = (_eventData, transform) => {
+    const id = transform.target.id;
+    const foundObject = textContaintObject?.find((obj) => obj.id == id);
+    const isLocked = foundObject?.locked ?? false;
+    return isLocked;
+  }
 
   const createControls = () => ({
     deleteControl: new fabric.Control({
@@ -214,41 +223,50 @@ useEffect(() => {
   });
 
   const deleteObject = (_eventData, transform) => {
-    //console.log("delete object called", transform.target.id);
-    const canvas = transform.target.canvas;
-    dispatch(deleteTextState(transform.target.id));
-    canvas.remove(transform.target);
-    canvas.requestRenderAll();
-    setSelectedHeight("");
-    navigate("/product");
+
+    if (!isLocked(_eventData, transform)) {
+      const canvas = transform.target.canvas;
+      dispatch(deleteTextState(transform.target.id));
+      canvas.remove(transform.target);
+      canvas.requestRenderAll();
+      setSelectedHeight("");
+      navigate("/product");
+    }
   };
+
   const bringForward = (eventData, transform) => {
     alert("bring to Farward");
-    setSelectedpopup(!selectedpopup);
-    const target = transform.target;
-    target.canvas.bringForward(target);
-    target.canvas.requestRenderAll();
+    if (!isLocked(eventData, transform)) {
+      setSelectedpopup(!selectedpopup);
+      const target = transform.target;
+      target.canvas.bringForward(target);
+      target.canvas.requestRenderAll();
+    }
   };
 
   const sendBackward = (eventData, transform) => {
     alert("send to back");
-    const target = transform.target;
-    target.canvas.sendBackwards(target);
-    target.canvas.requestRenderAll();
+    if (!isLocked(eventData, transform)) {
+      const target = transform.target;
+      target.canvas.sendBackwards(target);
+      target.canvas.requestRenderAll();
+    }
   };
 
   const bringToFront = (eventData, transform) => {
     alert("bring to front");
-    const target = transform.target;
-    target.canvas.bringToFront(target);
-
-    target.canvas.requestRenderAll();
+    if (!isLocked(eventData, transform)) {
+      const target = transform.target;
+      target.canvas.bringToFront(target);
+      target.canvas.requestRenderAll();
+    }
   };
   const bringPopup = () => {
     //  setSelectedpopup(!selectedpopup)
     setIsModalOpen(true);
   };
   const bringToFrontt = (object) => {
+
     object.canvas.bringToFront(object);
     object.canvas.requestRenderAll();
   };
@@ -263,33 +281,44 @@ useEffect(() => {
     canvas.sendToBack(target);
     canvas.requestRenderAll();
 
-   // const afterIndex = canvas.getObjects().indexOf(target);
+    // const afterIndex = canvas.getObjects().indexOf(target);
     //console.log("After index:", afterIndex);
   };
 
   const scaleFromCenter = (eventData, transform, x, y) => {
-    transform.target.set({ centeredScaling: true });
-    return fabric.controlsUtils.scalingEqually(eventData, transform, x, y);
+
+    if (!isLocked(eventData, transform)) {
+      transform.target.set({ centeredScaling: true });
+      return fabric.controlsUtils.scalingEqually(eventData, transform, x, y);
+    }
   };
 
   const scaleXFromCenter = (eventData, transform, x, y) => {
-    transform.target.set({ centeredScaling: true });
-    return fabric.controlsUtils.scalingX(eventData, transform, x, y);
+    if (!isLocked(eventData, transform)) {
+      transform.target.set({ centeredScaling: true });
+      return fabric.controlsUtils.scalingX(eventData, transform, x, y);
+    }
+
   };
 
   const scaleYFromCenter = (eventData, transform, x, y) => {
-    transform.target.set({ centeredScaling: true });
-    return fabric.controlsUtils.scalingY(eventData, transform, x, y);
+    if (!isLocked(eventData, transform)) {
+      transform.target.set({ centeredScaling: true });
+      return fabric.controlsUtils.scalingY(eventData, transform, x, y);
+    }
   };
 
   const rotateWithCenter = (eventData, transform, x, y) => {
-    transform.target.set({ centeredRotation: true });
-    return fabric.controlsUtils.rotationWithSnapping(
-      eventData,
-      transform,
-      x,
-      y
-    );
+    if (!isLocked(eventData, transform)) {
+      transform.target.set({ centeredRotation: true });
+      return fabric.controlsUtils.rotationWithSnapping(
+        eventData,
+        transform,
+        x,
+        y
+      );
+
+    }
   };
 
   const handleHeightChange = (e) => {
@@ -312,7 +341,7 @@ useEffect(() => {
   };
 
 
- const syncMirrorCanvas = () => {
+  const syncMirrorCanvas = () => {
     // return;
 
     const parent = document.querySelector(".corner-img-canva-container");
@@ -327,7 +356,7 @@ useEffect(() => {
 
     const json = mainCanvas.toJSON();
 
-    console.log(json, "json data");
+    // console.log(json, "json data");
 
     // return;
 
@@ -406,134 +435,216 @@ useEffect(() => {
     });
   };
 
-useEffect(() => {
-  const canvas = new fabric.Canvas(canvasRef.current, {
-    width: 650,
-    height: 700,
-  });
+  //  const moveHandler = (e) => {
+  //    console.log(e,"moved eve")
+  //       const obj = e.transform.target;
+  //     const foundObject =textContaintObject && textContaintObject?.find((obj) => obj.id == selectedTextId);
+  //     const isLocked = foundObject?.locked ?? false;
 
-  canvas.preserveObjectStacking = true;
-  fabricCanvasRef.current = canvas;
-  mirrorCanvasRef.current = new fabric.StaticCanvas(id);
+  //      console.log(foundObject,"foundObject");  
 
-  const boundaryBox = new fabric.Rect({
-    left: 215,
-    top: 170,
-    width: 220,
-    height: 355,
-    fill: "transparent",
-    stroke: "skyblue",
-    strokeWidth: 2,
-    selectable: false,
-    evented: false,
-    visible: false,
-  });
+  //       // You can check a custom flag (e.g., obj.locked)
+  //       if (!isLocked) {
+  //         console.log("can move object")
+  //           globalDispatch("position", { x: obj.left, y: obj.top }, selectedTextId);
 
-  const warningText = new fabric.Text("Please keep design inside the box", {
-    left: boundaryBox.left + 2,
-    top: boundaryBox.top,
-    fontSize: 16,
-    fill: "white",
-    selectable: false,
-    evented: false,
-    visible: false,
-  });
+  //         obj.left =  obj.left;  
+  //         obj.top =  obj.top;
+  //         // return;
+  //       }
+  //       else{
+  //         obj.left =foundObject.position.x;
+  //         obj.top =foundObject.position.y;
+  //         globalDispatch("position",{x:foundObject.position.x,y:foundObject.position.y});
+  //         console.log("can not move object");
+  //         return; 
+  //       }
 
-  canvas.add(boundaryBox);
-  canvas.add(warningText);
+  //     }
 
-  function updateBoundaryVisibility() {
-    const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text");
-    textObjects.forEach((obj) => obj.setCoords());
 
-    const allInside = textObjects.every((obj) => {
-      const objBounds = obj.getBoundingRect(true);
-      const boxBounds = boundaryBox.getBoundingRect(true);
-
-      return (
-        objBounds.left >= boxBounds.left &&
-        objBounds.top >= boxBounds.top &&
-        objBounds.left + objBounds.width <= boxBounds.left + boxBounds.width &&
-        objBounds.top + objBounds.height <= boxBounds.top + boxBounds.height
-      );
+  useEffect(() => {
+    const canvas = new fabric.Canvas(canvasRef.current, {
+      width: 650,
+      height: 700,
     });
 
-    boundaryBox.visible = !allInside;
-    warningText.visible = !allInside;
-    canvas.bringToFront(boundaryBox);
-    canvas.bringToFront(warningText);
-    canvas.requestRenderAll();
-  }
+    canvas.preserveObjectStacking = true;
+    fabricCanvasRef.current = canvas;
+    mirrorCanvasRef.current = new fabric.StaticCanvas(id);
 
-  const handleSelection = (e) => {
-    // if (e.selected.length > 1) {
-    //   canvas.discardActiveObject();
-    //   canvas.requestRenderAll();
-    // } else {
-    //   handleObjectSelection(e);
-    //   setSelectedObject(e.selected[0]);
-    // }
-  };
+    const boundaryBox = new fabric.Rect({
+      left: 215,
+      top: 170,
+      width: 220,
+      height: 355,
+      fill: "transparent",
+      stroke: "skyblue",
+      strokeWidth: 2,
+      selectable: false,
+      evented: false,
+      visible: false,
+    });
 
-  const handleSelectionCleared = () => {
-    // setSelectedObject(null);
-    // dispatch(setSelectedTextState(null));
-  };
+    const warningText = new fabric.Text("Please keep design inside the box", {
+      left: boundaryBox.left + 2,
+      top: boundaryBox.top,
+      fontSize: 16,
+      fill: "white",
+      selectable: false,
+      evented: false,
+      visible: false,
+    });
 
-  const events = [
-    ["object:added", updateBoundaryVisibility],
-    ["object:modified", updateBoundaryVisibility],
-    ["object:moving", updateBoundaryVisibility],
-    ["object:scaling", updateBoundaryVisibility],
-    ["selection:created", handleSelection],
-    ["selection:updated", handleSelection],
-    ["selection:cleared", handleSelectionCleared],
-    ["object:modified", syncMirrorCanvas],
-  ];
+    canvas.add(boundaryBox);
+    canvas.add(warningText);
 
-  events.forEach(([event, handler]) => canvas.on(event, handler));
+    function updateBoundaryVisibility() {
+      const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text");
+      textObjects.forEach((obj) => obj.setCoords());
 
-  if (backgroundImage) {
-    fabric.Image.fromURL(
-      backgroundImage,
-      (img) => {
-        const scaleX = 590 / img.width;
-        const scaleY = 450 / img.height;
+      const allInside = textObjects.every((obj) => {
+        const objBounds = obj.getBoundingRect(true);
+        const boxBounds = boundaryBox.getBoundingRect(true);
 
-        img.set({
-          left: canvas.width / 2,
-          top: canvas.height / 2,
-          originX: "center",
-          originY: "center",
-          scaleX,
-          scaleY,
-          selectable: false,
-          evented: false,
-        });
+        return (
+          objBounds.left >= boxBounds.left &&
+          objBounds.top >= boxBounds.top &&
+          objBounds.left + objBounds.width <= boxBounds.left + boxBounds.width &&
+          objBounds.top + objBounds.height <= boxBounds.top + boxBounds.height
+        );
+      });
 
-        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-        syncMirrorCanvas();
-      },
-      { crossOrigin: "anonymous" }
-    );
-  }
+      boundaryBox.visible = !allInside;
+      warningText.visible = !allInside;
+      canvas.bringToFront(boundaryBox);
+      canvas.bringToFront(warningText);
+      canvas.requestRenderAll();
+    }
 
-  return () => {
-    // Remove all listeners
-    events.forEach(([event, handler]) => canvas.off(event, handler));
-    
-    // Dispose of the canvas to prevent memory leaks
-    canvas.dispose();
-    fabricCanvasRef.current = null;
-    // mirrorCanvasRef.current.dispose();
-    mirrorCanvasRef.current = null;
-  };
-}, [iconImages, id, backgroundImage]);
+    const handleSelection = (e) => {
+      if (e.selected.length > 1) {
+        canvas.discardActiveObject();
+        canvas.requestRenderAll();
+      } else {
+        handleObjectSelection(e);
+        setSelectedObject(e.selected[0]);
+      }
+    };
+
+    const handleSelectionCleared = () => {
+      // setSelectedObject(null);
+      dispatch(setSelectedTextState(null));
+    };
+
+    const   handleScale = (e) => {
+      const clampScale = (value, min = 0.2, max = 10) => Math.max(min, Math.min(value, max));
+      const obj = e.target;
+      console.log(e, "event details");
+      if (!obj || !e.transform || !['scale', 'scaleX', 'scaleY'].includes(e.transform.action)) return;
+
+
+      // 👇 DO NOT force object to scale from center manually
+      // const center = obj.getCenterPoint(); ❌ Remove this
+
+      const center = obj.getCenterPoint();
+
+
+      const baseScaleX = Number(obj.scaleX) || 1;
+      const baseScaleY = Number(obj.scaleY) || 1;
+
+      let deltaScaleX = obj.scaleX;
+      let deltaScaleY = obj.scaleY;
+
+      const isUniform = Math.abs(deltaScaleX - deltaScaleY) < 0.001;
+
+      let finalScaleX, finalScaleY;
+
+      if (isUniform) {
+        // Uniform scaling adds to both axes
+        const additiveScale = deltaScaleX;
+        finalScaleX = clampScale((additiveScale));
+        finalScaleY = clampScale((additiveScale));
+      } else {
+
+        finalScaleX = clampScale(deltaScaleX);
+
+        finalScaleY = clampScale(deltaScaleY);
+
+      }
+      obj.scaleX = finalScaleX;
+      obj.scaleY = finalScaleY;
+
+      obj.setPositionByOrigin(center, 'center', 'center');
+      obj.setCoords();
+
+      // Dispatch based on whether it was uniform or not
+
+      globalDispatch("scaleX", parseFloat(finalScaleX.toFixed(1)), obj.id);
+      globalDispatch("scaleY", parseFloat(finalScaleY.toFixed(1)), obj.id);
+
+      globalDispatch("scaledValue", parseFloat(finalScaleX.toFixed(1)), obj.id);
+      canvas.renderAll();
+    };
+
+
+
+    const events = [
+      ["object:added", updateBoundaryVisibility],
+      ["object:modified", updateBoundaryVisibility],
+      ["object:moving", updateBoundaryVisibility],
+      ["object:scaling", updateBoundaryVisibility],
+      ["selection:created", handleSelection],
+      ["selection:updated", handleSelection],
+      ["selection:cleared", handleSelectionCleared],
+      ["object:modified", syncMirrorCanvas],
+      ["object:modified", handleScale],
+      // ["object:moving",moveHandler]
+    ];
+
+    events.forEach(([event, handler]) => canvas.on(event, handler));
+
+    if (backgroundImage) {
+      fabric.Image.fromURL(
+        backgroundImage,
+        (img) => {
+          const scaleX = 590 / img.width;
+          const scaleY = 450 / img.height;
+
+          img.set({
+            left: canvas.width / 2,
+            top: canvas.height / 2,
+            originX: "center",
+            originY: "center",
+            scaleX,
+            scaleY,
+            selectable: false,
+            evented: false,
+          });
+
+          canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+          syncMirrorCanvas();
+        },
+        { crossOrigin: "anonymous" }
+      );
+    }
+
+    return () => {
+      // Remove all listeners
+      events.forEach(([event, handler]) => canvas.off(event, handler));
+
+      // Dispose of the canvas to prevent memory leaks
+      canvas.dispose();
+      fabricCanvasRef.current = null;
+      // mirrorCanvasRef.current.dispose();
+      mirrorCanvasRef.current = null;
+    };
+  }, [iconImages, id, backgroundImage]);
 
 
 
   useEffect(() => {
-    console.log("renderiing on layer index changed");
+    // console.log("renderiing on layer index changed");
     const canvas = fabricCanvasRef.current;
     if (textContaintObject && textContaintObject.length == 0) {
       let existingTextbox = canvas.getObjects();
@@ -541,10 +652,10 @@ useEffect(() => {
       return;
     }
 
-   
+
     if (Array.isArray(textContaintObject)) {
       textContaintObject.forEach((textInput) => {
-        console.log("text input daata", textInput);
+        // console.log("text input daata", textInput);
         // const isCurved = textInput.arc > 0;
         const canvas = fabricCanvasRef.current;
         const existingObj = canvas
@@ -567,7 +678,7 @@ useEffect(() => {
           return;
         }
 
-        console.log("existing object", existingObj);
+        // console.log("existing object", existingObj);
         if (existingObj) {
 
           existingObj.set({
@@ -590,12 +701,15 @@ useEffect(() => {
             flipY: textInput.flipY,
             originX: "center",
             originY: "center",
+            lockMovementX: textInput.locked,
+            lockMovementY: textInput.locked,
             // width: Math.min(measuredWidth + 20, 200),
           });
 
           existingObj.dirty = true;
           existingObj.setCoords();
           canvas.requestRenderAll();
+          existingObj.controls = createControls()
           canvas.renderAll();
         } else if (!existingObj) {
           const curved = new fabric.CurvedText(textInput.content, {
@@ -607,7 +721,7 @@ useEffect(() => {
             fill: textInput.textColor || "white",
             spacing: textInput.spacing,
             warp: Number(textInput.arc),
-            fontSize: 16,
+            fontSize: textInput.fontSize,
             fontFamily: textInput.fontFamily || "Impact",
             originX: "center",
             originY: "center",
@@ -621,6 +735,8 @@ useEffect(() => {
             maxWidth: 250,
             // height: 100,
             objectCaching: false,
+            lockMovementX: textInput.locked,
+            lockMovementY: textInput.locked,
             borderColor: "skyblue",
             borderDashArray: [4, 4],
             hasBorders: true,
@@ -633,52 +749,15 @@ useEffect(() => {
 
           curved.on("modified", (e) => {
 
-            
             const obj = e.target;
             if (!obj) return;
 
             const center = obj.getCenterPoint();
 
-          
-            const baseScaleX = Number(textInput.scaleX) || 1;
-            const baseScaleY = Number(textInput.scaleY) || 1;
-
-            let deltaScaleX = obj.scaleX;
-            let deltaScaleY = obj.scaleY;
-
-            const isUniform = Math.abs(deltaScaleX - deltaScaleY) < 0.001;
-
-            let finalScaleX, finalScaleY;
-
-            if (isUniform) {
-              // Uniform scaling adds to both axes
-              const additiveScale = deltaScaleX;
-              finalScaleX = clampScale(baseScaleX + (additiveScale - 1));
-              finalScaleY = clampScale(baseScaleY + (additiveScale - 1));
-            } else {
-            
-              finalScaleX = clampScale(deltaScaleX);
-             
-              finalScaleY = clampScale(deltaScaleY);
-          
-            }
-
-            obj.scaleX = finalScaleX;
-            obj.scaleY = finalScaleY;
-
             obj.setPositionByOrigin(center, 'center', 'center');
             obj.setCoords();
-
-            // Dispatch based on whether it was uniform or not
-            globalDispatch("scaleX", parseFloat(finalScaleX.toFixed(1)), textInput.id);
-            globalDispatch("scaleY", parseFloat(finalScaleY.toFixed(1)), textInput.id);
-            globalDispatch("originalScaleY", parseFloat(finalScaleY.toFixed(1)), textInput.id);
-            // globalDispatch("originalScaleX", parseFloat(finalScaleX.toFixed(1)), textInput.id);
-
-            globalDispatch("scaledValue", parseFloat(finalScaleX.toFixed(1)), textInput.id);
             globalDispatch("position", { x: obj.left, y: obj.top }, textInput.id);
             globalDispatch("rotate", obj.angle, textInput.id);
-
             canvas.renderAll();
 
           });
@@ -718,7 +797,7 @@ useEffect(() => {
 
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
-     const existingObjects = canvas.getObjects();
+    const existingObjects = canvas.getObjects();
     existingObjects.forEach((obj) => {
       if (
         (obj.type === "curved-text" || obj.type === "text" || obj.type === "textbox") &&
@@ -728,9 +807,9 @@ useEffect(() => {
         canvas.remove(obj);
       }
     });
-  
+
     const object = canvas.getObjects().find((obj) => obj.id === selectedTextId);
-    console.log("selectedTextId", selectedTextId, object)
+    // console.log("selectedTextId", selectedTextId, object)
     if (object) {
       canvas.setActiveObject(object);
       canvas.renderAll();

@@ -30,11 +30,11 @@ const AddTextToolbar = () => {
   const [currentTextToolbarId, setCurrentTextToolbarId] = useState(String(Date.now()));  // current id of toolbar
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   let textContaintObject = allTextInputData.find((text) => text.id === currentTextToolbarId);
-  console.log(allTextInputData, textContaintObject, "render data");
+  // console.log(allTextInputData, textContaintObject, "render data");
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
-
   const isLocked = textContaintObject?.locked;
-  console.log("-------lock", isLocked, "---", textContaintObject?.locked)
+  const [prevSize, setPrevSize] = useState(1);
+  // console.log("-------lock", isLocked, "---", textContaintObject?.locked)
 
 
 
@@ -73,7 +73,7 @@ const AddTextToolbar = () => {
     // setText(textContaintObject.content);
     if (selectedTextId) {
       setCurrentTextToolbarId(selectedTextId);
-      console.log("is selected id ", selectedTextId);
+      // console.log("is selected id ", selectedTextId);
       // setShowContent(true);
       const currentInputData = allTextInputData.find((text) => text.id === selectedTextId);
       if (!currentInputData) return
@@ -114,22 +114,16 @@ const AddTextToolbar = () => {
 
 
   const handleRangeInputSizeChange = (e) => {
+
     const value = parseFloat(e.target.value)
-    const originalX = textContaintObject.originalX;
-    const originalY = textContaintObject.originalY;
-    // const scaleX = textContaintObject.scaleX;
-    // const scaleY = textContaintObject.scaleY;
-
-    globalDispatch("scaleX", originalX);
-    globalDispatch("scaleY", originalY);
-
-
-
+    const scaleRatio = value / prevSize; // e.g. from 4.2 → 5 = 1.19x
+    const scaleX = textContaintObject.scaleX;
+    const scaleY = textContaintObject.scaleY;
+    globalDispatch("scaleX", scaleX * scaleRatio);
+    globalDispatch("scaleY", scaleY * scaleRatio);
     globalDispatch("scaledValue", value);
-    globalDispatch("scaleX", value);
     setRangeValuesSize(parseFloat(value));
-    globalDispatch("scaleY", value);
-    // globalDispatch("size", parseFloat(value));  
+    setPrevSize(value);
   };
 
   const handleRangeInputArcChange = (e) => {
@@ -164,21 +158,7 @@ const AddTextToolbar = () => {
 
     setShowContent(value.length > 0);
 
-    // const newValue = value.split(" ");
-    // const len = newValue.length;
-
-    // // Only append a space if user is typing and last word is too long
-    // const lastWord = newValue[len - 1];
-    // const isTyping = value.length > prevValue.length;
-
-    // if (isTyping && lastWord.length > 22 && !lastWord.endsWith(" ")) {
-    //   newValue[len - 1] = `${lastWord} `;
-    // }
-
-    // const newString = newValue.join(" ");
-
     setText(value);
-    // setPrevValue(value); // Update prevValue for next comparison
 
     if (textContaintObject) {
       globalDispatch("content", value);
@@ -267,7 +247,7 @@ const AddTextToolbar = () => {
   }
 
   const handleBringBackward = () => {
-    console.log("sending id ", selectedTextId)
+    // console.log("sending id ", selectedTextId)
     dispatch(moveTextBackwardState(selectedTextId));
   };
   const handleBringForward = () => {
@@ -276,12 +256,12 @@ const AddTextToolbar = () => {
 
   function getRenderIconForSendToTop() {
     if (!textContaintObject || !allTextInputData) return;
-    console.log(textContaintObject.layerIndex + 1, allTextInputData.length, "both values");
+    // console.log(textContaintObject.layerIndex + 1, allTextInputData.length, "both values");
     const layerIndex = textContaintObject.layerIndex;
     const ArraySize = allTextInputData.length - 1;
 
 
-    console.log(layerIndex, ArraySize, "layer data")
+    // console.log(layerIndex, ArraySize, "layer data")
 
     if (layerIndex > 0 && layerIndex < ArraySize) return false;
 
@@ -295,7 +275,7 @@ const AddTextToolbar = () => {
     const layerIndex = textContaintObject.layerIndex;
     const ArraySize = allTextInputData.length;
 
-    console.log(layerIndex, ArraySize, "layer data")
+    // console.log(layerIndex, ArraySize, "layer data")
 
     if (layerIndex > 0 && layerIndex < ArraySize) return false;
 
@@ -448,7 +428,7 @@ const AddTextToolbar = () => {
                         type="range"
                         id="min"
                         name="min"
-                        min="1"
+                        min="0.2"
                         max="10"
                         step="0.2"
                         value={rangeValuesSize}
