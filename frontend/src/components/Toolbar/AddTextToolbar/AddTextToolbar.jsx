@@ -306,6 +306,7 @@ const AddTextToolbar = () => {
               placeholder="Begin Typing...."
               onInput={handleShowContent}
               value={text || ''}
+              maxLength={250}
             />
 
             {showContent && (
