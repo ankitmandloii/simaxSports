@@ -73,6 +73,7 @@ const MainDesignTool = ({
       })
     );
   };
+  
   const updateBoundaryVisibility = useCallback(() => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
@@ -622,7 +623,7 @@ const MainDesignTool = ({
             evented: false,
           });
 
-          canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+          canvas.setBackgroundImage(img, () => fabricCanvasRef.current.renderAll());
           syncMirrorCanvas();
         },
         { crossOrigin: "anonymous" }

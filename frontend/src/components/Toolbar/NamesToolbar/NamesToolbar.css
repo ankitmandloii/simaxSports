@@ -1,38 +1,94 @@
-.add-names-numberrs-row{
-display: flex;
-justify-content: space-between;
-border-bottom: 2px solid #D2D5D9;
-align-items: center;
-padding-bottom: 10px;
+.add-names-numberrs-row {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 2px solid #D2D5D9;
+  align-items: center;
+  padding-bottom: 10px;
 }
-.namescheckbox-div span{
+
+.namescheckbox-div span {
   font-size: 14px;
 }
-.namescheckbox-div{
+
+.namescheckbox-div {
   display: flex;
   gap: 4px;
 }
-.names-toolbar-button{
+
+.names-toolbar-button {
   background: transparent;
   border: 1px solid #D2D5D9;
   padding: 2px 4px;
 }
-.names-toolbar-button.active{
+
+.names-toolbar-button.active {
   border: 1px solid var(--red);
 }
-.names-toolbar-button img{
+
+.names-toolbar-button img {
   height: 25px;
-} 
-.names-button-main-container{
+}
+
+.names-button-main-container {
   display: flex;
-  gap:10px;
+  gap: 10px;
 }
+
 .namescheckbox-div input[type='checkbox'] {
-  accent-color: #0000; 
+  accent-color: #0000;
 }
-.names-button-main-container .color-names-box{
+
+.names-button-main-container .color-names-box {
   display: flex;
   justify-content: center;
   align-items: center;
+<<<<<<< Updated upstream
+  gap: 10px;
+}
+
+/* -------- */
+/* Disabled button style */
+.names-toolbar-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Disabled color box style */
+.color-names-box[style*="not-allowed"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Optional: Add a subtle grayscale filter on disabled buttons */
+.names-toolbar-button:disabled img {
+  filter: grayscale(70%);
+}
+
+/* Disabled Add Names/Numbers button */
+.black-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+=======
   gap:10px;
+}
+
+.Deactive{
+    opacity: 0.4;
+    pointer-events: none;
+    user-select: none;
+}
+.Active{
+  opacity: 1;
+   user-select: auto;
+    pointer-events:all; 
+}
+
+.step-toggle-container{
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+>>>>>>> Stashed changes
 }

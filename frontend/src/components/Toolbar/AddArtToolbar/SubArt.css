@@ -1,16 +1,37 @@
-.clipart-grid{
+.clipart-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
 }
 
-.clipart-grid img{
+.clipart-grid img {
   width: 5rem;
   height: 3rem;
 }
-.margin-bottom{
+
+.margin-bottom {
   margin-bottom: 8px;
 }
-.addArtToolbar-search-box svg{
+
+.addArtToolbar-search-box svg {
   cursor: pointer;
+}
+
+.toolbar-main-container-ClipArt .cross-icon {
+  height: 17px;
+}
+
+.search-input-subart {
+  width: 100%;
+  padding: 12px 57px 12px 20px;
+  /* Adjust padding for text and icon */
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  /* Rounded corners */
+  font-size: 12px;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow */
+  transition: all 0.3s ease;
+  outline: none;
 }
