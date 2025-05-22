@@ -52,14 +52,6 @@ const categorizedFonts = [
     ],
   },
   {
-    category: "Tech",
-    fonts: [
-      { name: "Audiowide", fontFamily: "Audiowide, cursive" },
-      { name: "Share Tech Mono", fontFamily: "Share Tech Mono, monospace" },
-      { name: "Chakra Petch", fontFamily: "Chakra Petch, sans-serif" }, // ✅ New font
-    ],
-  },
-  {
     category: "Youthful",
     fonts: [
       { name: "Fredoka", fontFamily: "Fredoka, sans-serif" },
@@ -114,9 +106,10 @@ const categorizedFonts = [
     fonts: [
       { name: "Orbitron", fontFamily: "Orbitron, sans-serif" },
       { name: "Audiowide", fontFamily: "Audiowide, cursive" },
-      { name: "Exo 2", fontFamily: "Exo 2, sans-serif" },
       { name: "Share Tech Mono", fontFamily: "Share Tech Mono, monospace" },
       { name: "Major Mono Display", fontFamily: "Major Mono Display, monospace" },
+      { name: "Share Tech Mono", fontFamily: "Share Tech Mono, monospace" },
+      { name: "Chakra Petch", fontFamily: "Chakra Petch, sans-serif" }, // ✅ New font
     ],
   },
   {
