@@ -12,7 +12,7 @@ import { AngleActionIcon } from '../../iconsSvg/CustomIcon';
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox.jsx'
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox.jsx'
 import { useDispatch, useSelector } from 'react-redux';
-import { addOrUpdateNameAndNumberProduct, removeNameAndNumberProduct, setActiveSide, setAddName, setAddNumber, updateNameAndNumberDesignState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
+import { removeNameAndNumberProduct, setActiveSide, setAddName,UpdateNameAndNumberProduct, setAddNumber, updateNameAndNumberDesignState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 import { RxFontFamily } from 'react-icons/rx';
 
 const NamesToolbar = () => {
