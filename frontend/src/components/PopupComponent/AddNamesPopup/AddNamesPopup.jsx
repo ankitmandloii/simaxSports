@@ -21,14 +21,36 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
     setRowsByKey(initialRows);
   }, [selectedProducts]);
 
+  // const getSizeOptions = (product) => {
+  //   if (!product?.allVariants) return [];
+  //   const sizeVariantPairs = product.allVariants.flatMap((variant) => {
+  //     const sizeOption = variant.selectedOptions.find((option) => option.name === 'Size');
+  //     return sizeOption ? [{ size: sizeOption.value, variantId: variant.id }] : [];
+  //   });
+  //   return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
+  // };
   const getSizeOptions = (product) => {
-    if (!product?.allVariants) return [];
-    const sizeVariantPairs = product.allVariants.flatMap((variant) => {
-      const sizeOption = variant.selectedOptions.find((option) => option.name === 'Size');
-      return sizeOption ? [{ size: sizeOption.value, variantId: variant.id }] : [];
-    });
-    return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
+    // Case 1: Custom-structured product
+    if (product?.allVariants?.length) {
+      const sizeVariantPairs = product.allVariants.flatMap((variant) => {
+        const sizeOption = variant.selectedOptions.find((opt) => opt.name === 'Size');
+        return sizeOption ? [{ size: sizeOption.value, variantId: variant.id }] : [];
+      });
+      return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
+    }
+
+    // Case 2: Shopify-style structure
+    if (product?.variants?.edges?.length) {
+      const sizeVariantPairs = product.variants.edges.flatMap(({ node }) => {
+        const sizeOption = node.selectedOptions.find((opt) => opt.name === 'Size');
+        return sizeOption ? [{ size: sizeOption.value, variantId: node.id }] : [];
+      });
+      return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
+    }
+
+    return [];
   };
+
 
   const addRow = (key) => {
     setRowsByKey((prev) => ({
