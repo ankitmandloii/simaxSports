@@ -84,7 +84,7 @@ export const fetchProducts = createAsyncThunk(
           imgurl: variants[0]?.image?.originalSrc,
           colors: Object.values(colorMap), // [{ name, img, variant }]
           allVariants: variants,
-          productID
+          id: productID
         };
       });
 
