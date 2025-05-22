@@ -42,7 +42,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-<<<<<<< Updated upstream
   gap: 10px;
 }
 
@@ -71,7 +70,7 @@
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
-=======
+
   gap:10px;
 }
 
@@ -90,5 +89,4 @@
   gap: 10px;
   display: flex;
   flex-direction: column;
->>>>>>> Stashed changes
 }

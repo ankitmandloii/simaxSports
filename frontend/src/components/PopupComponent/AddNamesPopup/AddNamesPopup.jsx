@@ -2,22 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './AddNamesPopup.css';
 import { CrossIcon, DeleteIcon } from '../../iconsSvg/CustomIcon';
 import { useSelector } from 'react-redux';
-import { addOrUpdateNameAndNumberProduct,removeNameAndNumberProduct, setActiveSide, setAddName, setAddNumber, updateNameAndNumberDesignState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
-const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
-<<<<<<< Updated upstream
-  const selectedProducts = useSelector((state) => state.slectedProducts.selectedProducts);
-  const [rowsByKey, setRowsByKey] = useState({});
-=======
 
-  const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
-  const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
-  const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
+const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
   const selectedProducts = useSelector((state) => state.slectedProducts.selectedProducts);
-  const [rowsByProduct, setRowsByProduct] = useState({});
->>>>>>> Stashed changes
+  console.log("selectedddd", selectedProducts)
+  const [rowsByKey, setRowsByKey] = useState({});
   const [activeRowId, setActiveRowId] = useState(null);
-  console.log("selectedProducts",selectedProducts)
-  console.log("rowsByProduct",rowsByProduct)
 
   useEffect(() => {
     const initialRows = {};
@@ -31,14 +21,36 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
     setRowsByKey(initialRows);
   }, [selectedProducts]);
 
+  // const getSizeOptions = (product) => {
+  //   if (!product?.allVariants) return [];
+  //   const sizeVariantPairs = product.allVariants.flatMap((variant) => {
+  //     const sizeOption = variant.selectedOptions.find((option) => option.name === 'Size');
+  //     return sizeOption ? [{ size: sizeOption.value, variantId: variant.id }] : [];
+  //   });
+  //   return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
+  // };
   const getSizeOptions = (product) => {
-    if (!product?.allVariants) return [];
-    const sizeVariantPairs = product.allVariants.flatMap((variant) => {
-      const sizeOption = variant.selectedOptions.find((option) => option.name === 'Size');
-      return sizeOption ? [{ size: sizeOption.value, variantId: variant.id }] : [];
-    });
-    return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
+    // Case 1: Custom-structured product
+    if (product?.allVariants?.length) {
+      const sizeVariantPairs = product.allVariants.flatMap((variant) => {
+        const sizeOption = variant.selectedOptions.find((opt) => opt.name === 'Size');
+        return sizeOption ? [{ size: sizeOption.value, variantId: variant.id }] : [];
+      });
+      return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
+    }
+
+    // Case 2: Shopify-style structure
+    if (product?.variants?.edges?.length) {
+      const sizeVariantPairs = product.variants.edges.flatMap(({ node }) => {
+        const sizeOption = node.selectedOptions.find((opt) => opt.name === 'Size');
+        return sizeOption ? [{ size: sizeOption.value, variantId: node.id }] : [];
+      });
+      return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
+    }
+
+    return [];
   };
+
 
   const addRow = (key) => {
     setRowsByKey((prev) => ({

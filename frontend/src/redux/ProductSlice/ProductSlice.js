@@ -65,7 +65,7 @@ export const fetchProducts = createAsyncThunk(
       const edges = data.result.data.products.edges;
       const products = edges.map(({ node }) => {
         const variants = node.variants.edges.map((v) => v.node);
-
+        const productID = node.id;
         // Build color → image mapping
         const colorMap = {};
         variants.forEach((variant) => {
@@ -84,6 +84,7 @@ export const fetchProducts = createAsyncThunk(
           imgurl: variants[0]?.image?.originalSrc,
           colors: Object.values(colorMap), // [{ name, img, variant }]
           allVariants: variants,
+          id: productID
         };
       });
 

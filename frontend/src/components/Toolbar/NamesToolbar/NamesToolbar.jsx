@@ -79,7 +79,7 @@ const NamesToolbar = () => {
         })
       );
     };
-
+    
  // Keep local state in sync with Redux on load/update
 
   useEffect(() => {

@@ -11,9 +11,10 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
   const { list: rawProducts, loading, error } = useSelector(
     (state) => state.products
   );
-
+  console.log("rawPRoducts", rawProducts)
   const [products, setProducts] = useState([]);
   const [productStates, setProductStates] = useState({});
+
 
   useEffect(() => {
     if (isOpen) {
