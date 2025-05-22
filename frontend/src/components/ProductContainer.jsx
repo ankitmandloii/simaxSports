@@ -11,6 +11,8 @@ import './ProductContainer.css';
  
 function ProductContainer() {
   const dispatch = useDispatch();
+   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+    
   // const location = useLocation();
   // const isQuantityPage = location.pathname === "/quantity";
  
@@ -80,6 +82,17 @@ const toggleZoom = () => {
   }
 };
 
+
+
+useEffect(() => {
+ if(activeSide == "front"){
+   setShowFrontImage(true)
+ }
+ else{
+  setShowFrontImage(false);
+ }
+ 
+}, [activeSide])
 
 
  

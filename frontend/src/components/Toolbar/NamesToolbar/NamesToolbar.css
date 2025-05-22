@@ -70,4 +70,23 @@
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
+
+  gap:10px;
+}
+
+.Deactive{
+    opacity: 0.4;
+    pointer-events: none;
+    user-select: none;
+}
+.Active{
+  opacity: 1;
+   user-select: auto;
+    pointer-events:all; 
+}
+
+.step-toggle-container{
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
 }
