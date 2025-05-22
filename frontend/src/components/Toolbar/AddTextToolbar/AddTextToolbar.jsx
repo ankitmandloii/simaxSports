@@ -411,7 +411,8 @@ const AddTextToolbar = () => {
                 <div className='addText-first-toolbar-box-container'>
                   <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
                     <div
-                      className={`toolbar-box-icons-container ${centerActive ? 'active' : ''}`}
+                      // className={`toolbar-box-icons-container ${centerActive ? 'active' : ''}`}
+                      className='toolbar-box-icons-container center-btn'
                       onClick={() => {
                         globalDispatch("position", { x: 325, y: textContaintObject.position.y });
                         setCenterActive(!centerActive);
@@ -457,7 +458,10 @@ const AddTextToolbar = () => {
                   <div
                     className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`} onClick={() => handleDuplcateTextInput()}
                   >
-                    <div className={`toolbar-box-icons-container ${duplicateActive ? 'active' : ''}`}>
+                    <div
+                      className="toolbar-box-icons-container duplicate-btn">
+                      {/* className={`toolbar-box-icons-container ${duplicateActive ? 'active' : ''}`} */}
+
                       <span><DuplicateIcon /></span>
                     </div>
                     <div className='toolbar-box-heading-container'>Duplicate</div>

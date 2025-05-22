@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts } from "../../../redux/ProductSlice/ProductSlice";
+import { normalizeProduct } from "../../utils/normalizeProducts";
 import { v4 as uuidv4 } from "uuid";
 import "./AddProductContainer.css";
 import colorwheel1 from "../../images/color-wheel1.png";
-import { fetchProducts } from "../../../redux/ProductSlice/ProductSlice";
 import { CrossIcon } from "../../iconsSvg/CustomIcon";
 
 const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProductPopup }) => {
   const dispatch = useDispatch();
-  const { list: rawProducts, loading, error } = useSelector(
-    (state) => state.products
-  );
-  console.log("rawPRoducts", rawProducts)
+  const { list: rawProducts, loading, error } = useSelector((state) => state.products);
   const [products, setProducts] = useState([]);
   const [productStates, setProductStates] = useState({});
-
 
   useEffect(() => {
     if (isOpen) {
@@ -24,14 +21,11 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
 
   useEffect(() => {
     if (rawProducts.length > 0) {
-      const productsWithKeys = rawProducts.map((product) => ({
-        ...product,
-        productKey: product.id || uuidv4(),
-      }));
-      setProducts(productsWithKeys);
+      const normalized = rawProducts.map((product) => normalizeProduct(product));
+      setProducts(normalized);
 
       const states = {};
-      productsWithKeys.forEach((product) => {
+      normalized.forEach((product) => {
         states[product.productKey] = {
           isPopupOpen: false,
           selectedColor: null,
@@ -67,8 +61,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
     Object.keys(productStates).forEach((key) => {
       updatedStates[key] = {
         ...productStates[key],
-        isPopupOpen:
-          key === productKey ? !productStates[key].isPopupOpen : false,
+        isPopupOpen: key === productKey ? !productStates[key].isPopupOpen : false,
         hoverImage: null,
       };
     });
@@ -97,27 +90,19 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
           <p>Select From Our Most Popular Products</p>
 
           {loading && products.length === 0 && <div className="loader" />}
-
           {error && <p style={{ color: "red" }}>{error}</p>}
 
           <ul className="product-list">
             {products.map((product) => {
               const productKey = product.productKey;
               const state = productStates[productKey] || {};
-              const hasColors = product.colors?.length > 0;
+              const hasColors = product.colors.length > 0;
               const displayImage = state.hoverImage || product.imgurl;
 
               return (
                 <li key={productKey} className="modal-product">
-                  <div
-                    className="product-main"
-                    onClick={() => handleProductClick(product, productKey)}
-                  >
-                    <img
-                      src={displayImage}
-                      alt={product.name}
-                      className="modal-productimg"
-                    />
+                  <div className="product-main" onClick={() => handleProductClick(product, productKey)}>
+                    <img src={displayImage} alt={product.name} className="modal-productimg" />
                     <p>{product.name}</p>
                   </div>
 
@@ -153,10 +138,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                               <span
                                 key={`${productKey}-${color.name}`}
                                 title={color.name}
-                                className={`color-swatch ${state.selectedColor === color.name
-                                  ? "selected"
-                                  : ""
-                                  }`}
+                                className={`color-swatch ${state.selectedColor === color.name ? "selected" : ""}`}
                                 style={{
                                   backgroundColor: color.name,
                                   cursor: "pointer",
@@ -164,10 +146,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                                   margin: "5px",
                                   borderRadius: "50%",
                                   display: "inline-block",
-                                  border:
-                                    state.selectedColor === color.name
-                                      ? "2px solid black"
-                                      : "1px solid gray",
+                                  border: state.selectedColor === color.name ? "2px solid black" : "1px solid gray",
                                 }}
                                 onMouseEnter={() =>
                                   updateProductState(productKey, {
@@ -179,9 +158,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                                     hoverImage: null,
                                   })
                                 }
-                                onClick={(e) =>
-                                  handleColorSelect(e, productKey, color)
-                                }
+                                onClick={(e) => handleColorSelect(e, productKey, color)}
                               />
                             ))}
                           </div>
@@ -194,10 +171,6 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                                 const colorObj = product.colors.find(
                                   (c) => c.name === state.selectedColor
                                 );
-                                console.log("Adding product:", product);
-                                console.log("Selected color:", state.selectedColor);
-                                console.log("Color object:", colorObj);
-
                                 const selectedImage = colorObj?.img || product.imgurl;
 
                                 onProductSelect({
@@ -216,7 +189,6 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                             >
                               Add Product
                             </button>
-
                           </div>
                         </div>
                       )}
@@ -228,15 +200,19 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
           </ul>
 
           <div className="modal-allproductButtonContainer">
-            <button className="modal-AllproductButton" onClick={() => {
-              openChangeProductPopup(true, null);
-              onClose();
-            }}
-            >BROWSE ALL PRODUCTS</button>
+            <button
+              className="modal-AllproductButton"
+              onClick={() => {
+                openChangeProductPopup(true, null);
+                onClose();
+              }}
+            >
+              BROWSE ALL PRODUCTS
+            </button>
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 
