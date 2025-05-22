@@ -46,8 +46,8 @@ const MainDesignTool = ({
 
   const [selectedpopup, setSelectedpopup] = useState(false);
 
-  const [selectedHeight, setSelectedHeight] = useState("");
-  const mirrorFabricRef = useRef(null);
+  // const [selectedHeight, setSelectedHeight] = useState("");
+  // const mirrorFabricRef = useRef(null);
 
 
 
@@ -229,61 +229,61 @@ const MainDesignTool = ({
       dispatch(deleteTextState(transform.target.id));
       canvas.remove(transform.target);
       canvas.requestRenderAll();
-      setSelectedHeight("");
+      // setSelectedHeight("");
       navigate("/product");
     }
   };
 
-  const bringForward = (eventData, transform) => {
-    alert("bring to Farward");
-    if (!isLocked(eventData, transform)) {
-      setSelectedpopup(!selectedpopup);
-      const target = transform.target;
-      target.canvas.bringForward(target);
-      target.canvas.requestRenderAll();
-    }
-  };
+  // const bringForward = (eventData, transform) => {
+  //   alert("bring to Farward");
+  //   if (!isLocked(eventData, transform)) {
+  //     setSelectedpopup(!selectedpopup);
+  //     const target = transform.target;
+  //     target.canvas.bringForward(target);
+  //     target.canvas.requestRenderAll();
+  //   }
+  // };
 
-  const sendBackward = (eventData, transform) => {
-    alert("send to back");
-    if (!isLocked(eventData, transform)) {
-      const target = transform.target;
-      target.canvas.sendBackwards(target);
-      target.canvas.requestRenderAll();
-    }
-  };
+  // const sendBackward = (eventData, transform) => {
+  //   alert("send to back");
+  //   if (!isLocked(eventData, transform)) {
+  //     const target = transform.target;
+  //     target.canvas.sendBackwards(target);
+  //     target.canvas.requestRenderAll();
+  //   }
+  // };
 
-  const bringToFront = (eventData, transform) => {
-    alert("bring to front");
-    if (!isLocked(eventData, transform)) {
-      const target = transform.target;
-      target.canvas.bringToFront(target);
-      target.canvas.requestRenderAll();
-    }
-  };
+  // const bringToFront = (eventData, transform) => {
+  //   alert("bring to front");
+  //   if (!isLocked(eventData, transform)) {
+  //     const target = transform.target;
+  //     target.canvas.bringToFront(target);
+  //     target.canvas.requestRenderAll();
+  //   }
+  // };
   const bringPopup = () => {
     //  setSelectedpopup(!selectedpopup)
     setIsModalOpen(true);
   };
-  const bringToFrontt = (object) => {
+  // const bringToFrontt = (object) => {
 
-    object.canvas.bringToFront(object);
-    object.canvas.requestRenderAll();
-  };
+  //   object.canvas.bringToFront(object);
+  //   object.canvas.requestRenderAll();
+  // };
 
-  const sendToBack = (eventData, transform) => {
-    const target = transform.target;
-    const canvas = target.canvas;
+  // const sendToBack = (eventData, transform) => {
+  //   const target = transform.target;
+  //   const canvas = target.canvas;
 
-    const beforeIndex = canvas.getObjects().indexOf(target);
-    //console.log("Before index:", beforeIndex);
+  //   const beforeIndex = canvas.getObjects().indexOf(target);
+  //   //console.log("Before index:", beforeIndex);
 
-    canvas.sendToBack(target);
-    canvas.requestRenderAll();
+  //   canvas.sendToBack(target);
+  //   canvas.requestRenderAll();
 
-    // const afterIndex = canvas.getObjects().indexOf(target);
-    //console.log("After index:", afterIndex);
-  };
+  //   // const afterIndex = canvas.getObjects().indexOf(target);
+  //   //console.log("After index:", afterIndex);
+  // };
 
   const scaleFromCenter = (eventData, transform, x, y) => {
 
@@ -321,22 +321,22 @@ const MainDesignTool = ({
     }
   };
 
-  const handleHeightChange = (e) => {
-    const value = parseFloat(e.target.value);
-    setSelectedHeight(e.target.value);
-    const canvas = fabricCanvasRef.current;
-    const activeObject = canvas.getActiveObject();
-    if (activeObject && !isNaN(value)) {
-      activeObject.set("scaleY", value / activeObject.height);
-      canvas.requestRenderAll();
-    }
-  };
+  // const handleHeightChange = (e) => {
+  //   const value = parseFloat(e.target.value);
+  //   setSelectedHeight(e.target.value);
+  //   const canvas = fabricCanvasRef.current;
+  //   const activeObject = canvas.getActiveObject();
+  //   if (activeObject && !isNaN(value)) {
+  //     activeObject.set("scaleY", value / activeObject.height);
+  //     canvas.requestRenderAll();
+  //   }
+  // };
 
   const handleObjectSelection = (e) => {
     const obj = e.selected?.[0];
     if (obj && obj.height) {
-      const actualHeight = obj.height * obj.scaleY;
-      setSelectedHeight(actualHeight.toFixed(0));
+      // const actualHeight = obj.height * obj.scaleY;
+      // setSelectedHeight(actualHeight.toFixed(0));
     }
   };
 
@@ -550,8 +550,8 @@ const MainDesignTool = ({
       const center = obj.getCenterPoint();
 
 
-      const baseScaleX = Number(obj.scaleX) || 1;
-      const baseScaleY = Number(obj.scaleY) || 1;
+      // const baseScaleX = Number(obj.scaleX) || 1;
+      // const baseScaleY = Number(obj.scaleY) || 1;
 
       let deltaScaleX = obj.scaleX;
       let deltaScaleY = obj.scaleY;

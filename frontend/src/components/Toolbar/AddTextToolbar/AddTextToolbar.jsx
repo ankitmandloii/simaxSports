@@ -19,7 +19,7 @@ import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox'
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox';
 import { useDispatch, useSelector } from 'react-redux';
 // import { setCenterState, setFlipXState, setFlipYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState, setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
-import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
+// import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
 import { duplicateTextState, addTextState, updateTextState, toggleLockState, moveTextForwardState, moveTextBackwardState } from '../../..//redux/FrontendDesign/TextFrontendDesignSlice.js';
 // import { setSelectedBackTextState } from '../../../redux/BackendDesign/TextBackendDesignSlice.js';
 
