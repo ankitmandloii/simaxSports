@@ -153,3 +153,11 @@
 .remove-icon:hover {
   transform: scale(1.2);
 }
+
+#prepareHeading {
+  
+  justify-content: center;
+  font-size: 14px;
+  color: #8A9099;
+  margin-bottom: 10px;
+}

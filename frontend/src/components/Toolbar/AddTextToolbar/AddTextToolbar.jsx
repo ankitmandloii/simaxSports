@@ -391,8 +391,10 @@ const AddTextToolbar = () => {
     <div className="toolbar-main-container AddTextToolbar-main-container">
       <div className='toolbar-main-heading'>
         <h5 className='Toolbar-badge'>Text Editor</h5>
-        <h3>Add new Text</h3>
-        <p>You can select multiple products and colors</p>
+       {!showContent ?<h3>Add new Text</h3>
+        :<h3>Edit Your Text</h3>}
+
+        {/* <p>You can select multiple products and colors</p> */}
       </div>
 
       <div className="toolbar-box">

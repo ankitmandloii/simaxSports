@@ -1,0 +1,320 @@
+.toolbar-box {
+    gap: 12px;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.toolbar-box textarea {
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  height: 100px; /* Set a fixed height */
+  resize: none;
+  outline: none;
+  font-size: 16px;
+  color: #555;
+  border-radius: 4px;
+  padding: 6px;
+  overflow-y: auto; /* Show vertical scrollbar when needed */
+}
+
+
+.AddTextToolbar-main-container {
+    position: relative;
+}
+
+.addText-first-toolbar-box-container {
+    display: flex;
+    justify-content: space-around;
+    /* gap: 10px; */
+}
+
+.toolbar-box-icons-and-heading-for-together {
+    display: flex;
+}
+
+.toolbar-box-icons-and-heading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 17px;
+}
+
+.toolbar-box-icons-container {
+
+    padding: 3px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #cccfd6;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.toolbar-box-icons-container-layering1 {
+
+    padding: 3px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #cccfd6;
+    border-bottom: 1px solid #cccfd6;
+    border-left: 1px solid #cccfd6;
+    border-right: 1px solid #cccfd6;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    cursor: pointer;
+
+}
+
+.toolbar-box-icons-container-layering2 {
+
+    padding: 3px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #cccfd6;
+    border-bottom: 1px solid #cccfd6;
+    border-right: 1px solid #cccfd6;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    cursor: pointer;
+
+
+}
+
+.toolbar-box-icons-container-flip1 {
+
+    padding: 3px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #cccfd6;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    cursor: pointer;
+}
+
+.toolbar-box-icons-container-clickStyle-flip1 span {
+
+    padding: 6px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    color: white;
+    background-color: black;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #cccfd6;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    cursor: pointer;
+}
+
+.toolbar-box-icons-container-clickStyle-flip2 span {
+
+    padding: 6px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    color: white;
+    background-color: black;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #cccfd6;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    cursor: pointer;
+}
+
+.toolbar-box-icons-container.active {
+    color: white;
+    background-color: black;
+}
+
+.toolbar-box-icons-container-flip2 {
+
+    padding: 3px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #cccfd6;
+    border-bottom: 1px solid #cccfd6;
+    border-left: 1px solid #cccfd6;
+    border-right: 1px solid #cccfd6;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    cursor: pointer;
+
+}
+
+
+/* secondtoolBartoolStyle */
+.toolbar-box-icons-container-for-together {
+    display: flex;
+}
+
+.toolbar-box-Font-Value-set-inner-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.toolbar-box-Font-Value-set-inner-actionlogo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toolbar-box-Font-Value-set-inner-actionlogo span {
+    /* margin-left: 11px; */
+    /* padding:5px; */
+    display: inline-block;
+    text-align: center;
+
+}
+
+.SpanValueBox-input {
+    /* padding: 0px 5px; */
+    border: 1px solid #cccfd6;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #555;
+    width: 50px;
+    text-align: center;
+}
+
+
+
+
+.toolbar-box-Font-Value-set-inner-actionheading {
+    font-weight: 500;
+    font-size: 12px;
+    cursor: pointer;
+    /* position: relative; */
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.none-svg-icon {
+    width: 15px;
+    align-items: center;
+    height: 18px;
+    justify-content: center;
+    border: 2px solid #D2D5D9;
+    display: flex;
+    /* background-color: black; */
+}
+
+.addText-inner-main-containerr {
+    color: #000;
+    gap: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.locked-toolbar {
+    opacity: 0.4;
+    pointer-events: none;
+    /* Prevent interaction */
+    user-select: none;
+    /* Prevent text selection */
+}
+
+
+
+.addText-inner-main-containerr::-webkit-scrollbar {
+    /* color: red; */
+    background-color: #888;
+    color: #fff;
+    width: 5px;
+    height: 3px;
+}
+
+.colorrrrr {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.colorr2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.add-image-reset-text {
+    cursor: pointer;
+    font-size: 10px;
+    color: red;
+}
+
+/* 
+add switch button css */
+
+
+/* Toggle Switch Styling */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #0b70ec; /* Adjust to match screenshot blue */
+}
+
+input:checked + .slider:before {
+  transform: translateX(14px);
+}
+
+/* AI Badge */
+.ai-badge {
+  background: #e6f0ff;
+  color: #0b70ec;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 4px;
+  border-radius: 4px;
+  margin-left: 4px;
+}

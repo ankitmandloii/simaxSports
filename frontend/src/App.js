@@ -11,6 +11,7 @@ import UploadArtToolbar from './components/Toolbar/UploadArtToolbar/UploadArtToo
 import AddArtToolbar from './components/Toolbar/AddArtToolbar/AddArtToolbar';
 import NamesToolbar from './components/Toolbar/NamesToolbar/NamesToolbar';
 import QuantityToolbar from './components/Toolbar/QuantityToolbar/QuantityToolbar';
+import AddImageToolbar from './components/Toolbar/AddImageToolbar/AddImageToolbar';
 
 function App() {
   const location = useLocation();
@@ -32,6 +33,7 @@ function App() {
                 <Route index element={<ProductToolbar />} />
                 <Route path='product' element={<ProductToolbar />} />
                 <Route path="addText" element={<AddTextToolbar />} />
+                <Route path="addImage" element={<AddImageToolbar />} />
                 <Route path="products" element={<ProductContainer />} />
                 <Route path='uploadArt' element={<UploadArtToolbar />} />
                 <Route path='addArt' element={<AddArtToolbar />} />
