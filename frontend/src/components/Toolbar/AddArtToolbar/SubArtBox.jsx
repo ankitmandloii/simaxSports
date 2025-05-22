@@ -6,7 +6,9 @@ import './SubArt.css';
 import { Link } from 'react-router-dom';
 
 const SubArtBox = ({ category, goBack }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  // const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(category);
+
 
   const images = categoryImages[category] || [];
 
@@ -24,7 +26,7 @@ const SubArtBox = ({ category, goBack }) => {
       <div className="toolbar-box">
         <Link to='/uploadArt'><button className="upload-button margin-bottom">Upload Your Own Image</button></Link>
 
-        <div className="addArtToolbar-search-box with-cross">
+        {/* <div className="addArtToolbar-search-box with-cross">
           <input
             type="text"
             value={category + (searchTerm ? ` - ${searchTerm}` : '')}
@@ -35,6 +37,23 @@ const SubArtBox = ({ category, goBack }) => {
           />
           <SearchIcon />
           <RxCross1 className="cross-icon" onClick={handleClear} />
+        </div> */}
+        <div className="search-container ">
+          <div className="search-wrapper">
+            <input
+              type="text"
+              value={searchTerm}
+              className="search-input-subart"
+              placeholder="Search for Clipart and AI Generated Art"
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+
+            <span className="search-icon">
+              <RxCross1 className="cross-icon" onClick={handleClear} />
+              <SearchIcon />
+
+            </span>
+          </div>
         </div>
         <h4 className='margin-bottom'>Clipart Results</h4>
         <div className="clipart-grid">

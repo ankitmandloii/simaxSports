@@ -260,6 +260,30 @@ const ProductToolbar = () => {
                           const current = { ...updated[index] };
                           const newColor = cloneColor(color);
 
+                          const productWithVariants = selectedProducts[index];
+                          console.log("----product", productWithVariants);
+
+                          const allVariants = productWithVariants?.allVariants || [];
+
+                          const colorName = color.name.toLowerCase().trim();
+
+                          const sizesForColor = allVariants
+                            .filter(variant => {
+                              const colorOption = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'color');
+                              return colorOption?.value.toLowerCase().trim() === colorName;
+                            })
+                            .map(variant => {
+                              const sizeOption = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'size');
+                              return sizeOption?.value;
+                            })
+                            .filter(Boolean);
+
+                          console.log(`Sizes for color ${color.name}:`, sizesForColor);
+
+
+                          newColor.sizes = sizesForColor;
+
+                          // Insert the color (same logic as before)
                           if (colorChangeTarget.colorIndex === 0) {
                             current.selectedColor = newColor;
                             current.imgurl = newColor.img;
@@ -281,6 +305,9 @@ const ProductToolbar = () => {
                           dispatch(setSelectedProductsAction(updated));
                           setColorChangeTarget({ productIndex: null, colorIndex: null });
                         }}
+
+
+
                         onHoverColor={(color) =>
                           setHoveredThumbnail({ productIndex: index, colorIndex: colorChangeTarget.colorIndex, color })
                         }
