@@ -45,6 +45,7 @@ const ProductToolbar = () => {
   };
 
   const handleProductSelect = (product, selectedColor = null) => {
+    console.log("--product", product)
     const clonedColor = selectedColor
       ? cloneColor(selectedColor)
       : product.selectedColor

@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 
 const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
   const selectedProducts = useSelector((state) => state.slectedProducts.selectedProducts);
+  console.log("selectedddd", selectedProducts)
   const [rowsByKey, setRowsByKey] = useState({});
   const [activeRowId, setActiveRowId] = useState(null);
 
