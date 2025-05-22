@@ -34,7 +34,7 @@ const MainDesignTool = ({
   const isRender = useSelector(
     (state) => state.TextFrontendDesignSlice.present[activeSide].setRendering
   );
-  console.log("textContaintObject", textContaintObject);
+  // console.log("textContaintObject", textContaintObject);
 
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId)
   // const isLocked = selectedTextId && textContaintObject.find((obj) => obj.id === selectedTextId).locked;
@@ -491,7 +491,7 @@ const MainDesignTool = ({
       left: boundaryBox.left + 2,
       top: boundaryBox.top,
       fontSize: 16,
-      fill: "white",
+      fill: "#00F8E7FF",
       selectable: false,
       evented: false,
       visible: false,
@@ -648,7 +648,7 @@ const MainDesignTool = ({
     // console.log("renderiing on layer index changed");
     const canvas = fabricCanvasRef.current;
     if (textContaintObject && textContaintObject.length == 0) {
-      let existingTextbox = canvas.getObjects();
+      let existingTextbox = canvas.getObjects().filter((obj) => obj.type === "curved-text" || obj.type === "textbox");
       existingTextbox.forEach((obj) => canvas.remove(obj));
       return;
     }

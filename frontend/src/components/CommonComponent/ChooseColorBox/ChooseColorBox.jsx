@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ColorPicker, useColor } from 'react-color-palette';
 import 'react-color-palette/css';
 
@@ -21,8 +21,29 @@ const ChooseColorBox = ({
   const boxRef = useRef(null);
   const [color, setColor] = useColor("hex", defaultColor);
 
+ 
+  const [localOutlineSize, setLocalOutlineSize] = useState(outlineSize?.toString() || "0");
+
+  useEffect(() => {
+    setLocalOutlineSize(outlineSize?.toString() || "0");
+  }, [outlineSize]);
+
   const handleInputChange = (e) => {
-    onRangeChange(parseInt(e.target.value));
+    const rawValue = e.target.value;
+    setLocalOutlineSize(rawValue); // string for flexibility
+
+    const parsed = parseFloat(rawValue);
+    if (!isNaN(parsed) && parsed >= 0 && parsed <= 10) {
+      onRangeChange(parsed); // Call parent handler only if valid
+    }
+  };
+
+  const handleBlur = () => {
+    const parsed = parseFloat(localOutlineSize);
+    if (isNaN(parsed) || parsed < 0 || parsed > 10) {
+      setLocalOutlineSize("5");
+      onRangeChange(5);
+    }
   };
 
   const handleColorChange = (newColor) => {
@@ -32,29 +53,16 @@ const ChooseColorBox = ({
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // If no ref or click is inside the box, do nothing
-      if (!boxRef.current || boxRef.current.contains(event.target)) {
-        return;
-      }
-      // Click is outside — call close handler
+      if (!boxRef.current || boxRef.current.contains(event.target)) return;
       (addColorPopupHAndler || chngColorPopupHandler || showColorPopupHandler)?.();
     };
 
-    // Use mousedown for faster response (before focus changes)
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [addColorPopupHAndler, chngColorPopupHandler, showColorPopupHandler]);
 
   return (
-    <div
-      className="choose-color-box"
-      ref={boxRef}
-      // Prevent clicks inside from bubbling up if you have parent handlers
-      onClick={e => e.stopPropagation()}
-    >
+    <div className="choose-color-box" ref={boxRef} onClick={e => e.stopPropagation()}>
       <div className="color-box-top">
         <h6>{title}</h6>
         <span onClick={addColorPopupHAndler || chngColorPopupHandler || showColorPopupHandler}>
@@ -87,7 +95,8 @@ const ChooseColorBox = ({
               type="range"
               min="0"
               max="10"
-              value={outlineSize}
+              step="0.1"
+              value={localOutlineSize}
               onChange={handleInputChange}
             />
           </div>
@@ -95,8 +104,10 @@ const ChooseColorBox = ({
             type="number"
             min="0"
             max="10"
-            value={outlineSize}
+            step="0.1"
+            value={localOutlineSize}
             onChange={handleInputChange}
+            onBlur={handleBlur}
             className="SpanValueBox-input"
           />
         </div>

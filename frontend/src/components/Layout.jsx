@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 const Layout = () => {
   const location = useLocation();
   const isQuantityPage = location.pathname === "/quantity";
+  const isProductPage = location.pathname === "/product";
   const dispatch = useDispatch();
 
   
@@ -27,7 +28,7 @@ const Layout = () => {
           <div className="layout-toolbar">
             {!isQuantityPage && <AdminSidebar />}
             <Outlet context={{ setActiveProduct: handleSetActiveProduct }}/>
-            {!isQuantityPage && <RedoundoComponent />}
+            {!isQuantityPage && !isProductPage&&<RedoundoComponent />}
           </div>
           <ProductContainer />
         </div>
