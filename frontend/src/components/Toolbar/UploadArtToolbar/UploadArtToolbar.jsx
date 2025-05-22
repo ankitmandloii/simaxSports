@@ -23,6 +23,7 @@ const UploadArtToolbar = () => {
   const handleFiles = (selectedFiles) => {
     const fileArray = Array.from(selectedFiles);
     setFiles((prev) => [...prev, ...fileArray]);
+    console.log("Selected files:", fileArray);
     setIsLoading(true);
     setTimeout(() => {
       navigate("/addImage", { state: { files: fileArray } });

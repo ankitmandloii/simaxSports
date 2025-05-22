@@ -22,6 +22,15 @@ import { useDispatch, useSelector } from 'react-redux';
 // import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
 // import { duplicateTextState, addTextState, updateTextState, toggleLockState, moveTextForwardState, moveTextBackwardState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 // import { setSelectedBackTextState } from '../../../redux/BackendDesign/TextBackendDesignSlice.js';
+import { useLocation } from "react-router-dom";
+
+
+const filters = [
+  { name: 'Normal', src: '/images/normal.png' },
+  { name: 'Single Color', src: '/images/single-color.png' },
+  { name: 'Black/White', src: '/images/black-white.png' },
+];
+
 
 const AddImageToolbar = () => {
 
@@ -35,7 +44,7 @@ const AddImageToolbar = () => {
   const isLocked = textContaintObject?.locked;
   const [prevSize, setPrevSize] = useState(1);
   const textareaRef = useRef(null)
-  
+
 
 
   const [text, setText] = useState(textContaintObject ? textContaintObject.content : "")
@@ -57,11 +66,11 @@ const AddImageToolbar = () => {
   const [duplicateActive, setDuplicateActive] = useState(false);
   const [centerActive, setCenterActive] = useState(false);
   useEffect(() => {
- 
+
     // if (selectedTextId) {
 
     //   setCurrentTextToolbarId(selectedTextId);
-    
+
     //   textContaintObject = allTextInputData.find((text) => text.id === selectedTextId);
     //   if (!textContaintObject) return
 
@@ -80,10 +89,10 @@ const AddImageToolbar = () => {
     // setRangeValuesRotate(parseFloat(textContaintObject?.rotate));
 
     // return () => {
-     
+
     // }
   }, [dispatch, selectedTextId, allTextInputData, textContaintObject])
- 
+
 
 
   const handleRangeInputSizeChange = (e) => {
@@ -291,8 +300,8 @@ const AddImageToolbar = () => {
   }
 
   const handleBringBackward = () => {
-    
-   // dispatch(moveTextBackwardState(selectedTextId));
+
+    // dispatch(moveTextBackwardState(selectedTextId));
   };
   const handleBringForward = () => {
     //dispatch(moveTextForwardState(selectedTextId));
@@ -333,25 +342,43 @@ const AddImageToolbar = () => {
     // }
   }, []);
 
-// const [removeBackground, setRemoveBackground] = useState(false);
+  // const [removeBackground, setRemoveBackground] = useState(false);
 
-// const toggleRemoveBackground = () => {
-//   setRemoveBackground(prev => !prev);
-// };
-
-
-//   const [cropAndTrim, setCropAndTrim] = useState(false);
-
-// const toggleCropAndTrim = () => {
-//   setCropAndTrim(prev => !prev);
-// };
+  // const toggleRemoveBackground = () => {
+  //   setRemoveBackground(prev => !prev);
+  // };
 
 
-//   const [superResolution, setSuperResolution] = useState(false);
+  //   const [cropAndTrim, setCropAndTrim] = useState(false);
 
-// const toggleSuperResolution = () => {
-//   setSuperResolution(prev => !prev);
-// };
+  // const toggleCropAndTrim = () => {
+  //   setCropAndTrim(prev => !prev);
+  // };
+
+
+  //   const [superResolution, setSuperResolution] = useState(false);
+
+  // const toggleSuperResolution = () => {
+  //   setSuperResolution(prev => !prev);
+  // };
+
+  const [selectedFilter, setSelectedFilter] = useState('Normal');
+const location = useLocation();
+  const files = location.state?.files || [];
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+   useEffect(() => {
+    if (files.length > 0) {
+      const file = files[0]; // Just showing the first one
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+
+      return () => URL.revokeObjectURL(url); // Clean up
+    }
+  }, [files]);
+
+
+
 
   return (
     <div className="toolbar-main-container AddTextToolbar-main-container">
@@ -362,190 +389,201 @@ const AddImageToolbar = () => {
       </div>
 
       <div className="toolbar-box">
-        {!showFontSelector ? (
+
+        <>
+
+
+
+
           <>
 
 
 
-
-            <>
-
+            {/* <hr /> */}
 
 
-              {/* <hr /> */}
-              <div className={`addText-inner-main-containerr ${isLocked ? 'locked-toolbar' : ''}`}>
-                {/* <div className='toolbar-box-Font-Value-set-inner-container'>
-                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>Font</div>
-                    <div className='toolbar-box-Font-Value-set-inner-actionlogo cursor' onClick={() => setShowFontSelector(true)}>
-                      {selectedFont} <span><AngleActionIcon /></span>
+            <div className={`addText-inner-main-containerr ${isLocked ? 'locked-toolbar' : ''}`}>
+              <div className="filter-section">
+                <div className="filter-title">Filters</div>
+                <div className="filter-options">
+                  {filters.map(filter => (
+                    <div
+                      key={filter.name}
+                      className={`filter-option ${selectedFilter === filter.name ? 'active' : ''}`}
+                      onClick={() => setSelectedFilter(filter.name)}
+                    >
+                      <img src={previewUrl} alt={filter.name} className="filter-image" />
+                      <div className="filter-label">{filter.name}</div>
                     </div>
-                  </div> */}
-
-                <hr />
-
-                <div className='toolbar-box-Font-Value-set-inner-container'>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>Edit Colors</div>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleTextColorPopup}>
-                    <SpanColorBox color={textColor} />
-                    <SpanColorBox color={textColor} />
-                    <SpanColorBox color={textColor} />
-                    <span><AngleActionIcon /></span>
-                    {textColorPopup && (
-                      <ChooseColorBox
-                        addColorPopupHAndler={toggleTextColorPopup}
-                        title="Text Color"
-                        defaultColor={textColor}
-                        onColorChange={textColorChangedFunctionCalled}  // Update text color
-                        button={true}
-                      />
-
-                    )}
-                  </div>
+                  ))}
                 </div>
+              </div>
 
-                <hr />
-                <div className="toolbar-box-Font-Value-set-inner-container">
-                  <div className="toolbar-box-Font-Value-set-inner-actionheading">
-                    Remove Background
-                    <span className="ai-badge">AI</span>
-                  </div>
-                  <label className="switch">
-                    <input
-                      type="checkbox"
-                    // checked={"removeBackground"}
-                    // onChange={"toggleRemoveBackground"}
+              <hr />
+
+              <div className='toolbar-box-Font-Value-set-inner-container'>
+                <div className='toolbar-box-Font-Value-set-inner-actionheading'>Edit Colors</div>
+                <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleTextColorPopup}>
+                  <SpanColorBox color={textColor} />
+                  <SpanColorBox color={textColor} />
+                  <SpanColorBox color={textColor} />
+                  <span><AngleActionIcon /></span>
+                  {textColorPopup && (
+                    <ChooseColorBox
+                      addColorPopupHAndler={toggleTextColorPopup}
+                      title="Text Color"
+                      defaultColor={textColor}
+                      onColorChange={textColorChangedFunctionCalled}  // Update text color
+                      button={true}
                     />
-                    <span className="slider round"></span>
-                  </label>
+
+                  )}
                 </div>
+              </div>
 
-
-
-                <hr />
-                <div className="toolbar-box-Font-Value-set-inner-container">
-                  <div className="toolbar-box-Font-Value-set-inner-actionheading">
-                    Crop & Trim
-                  </div>
-                  <label className="switch">
-                    <input
-                      type="checkbox"
-                    // checked={cropAndTrim}
-                    // onChange={toggleCropAndTrim}
-                    />
-                    <span className="slider round"></span>
-                  </label>
+              <hr />
+              <div className="toolbar-box-Font-Value-set-inner-container">
+                <div className="toolbar-box-Font-Value-set-inner-actionheading">
+                  Remove Background
+                  <span className="ai-badge">AI</span>
                 </div>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                  // checked={"removeBackground"}
+                  // onChange={"toggleRemoveBackground"}
+                  />
+                  <span className="slider round"></span>
+                </label>
+              </div>
 
 
 
-
-                <hr />
-                <div className="toolbar-box-Font-Value-set-inner-container">
-                  <div className="toolbar-box-Font-Value-set-inner-actionheading">
-                    Super Resolution
-                    <span className="ai-badge">AI</span>
-                  </div>
-                  <label className="switch">
-                    <input
-                      type="checkbox"
-                    // checked={superResolution}
-                    // onChange={toggleSuperResolution}
-                    />
-                    <span className="slider round"></span>
-                  </label>
+              <hr />
+              <div className="toolbar-box-Font-Value-set-inner-container">
+                <div className="toolbar-box-Font-Value-set-inner-actionheading">
+                  Crop & Trim
                 </div>
-                <hr />
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                  // checked={cropAndTrim}
+                  // onChange={toggleCropAndTrim}
+                  />
+                  <span className="slider round"></span>
+                </label>
+              </div>
 
 
-                <div className='toolbar-box-Font-Value-set-inner-container'>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>Replace Background With AI</div>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleOutlineColorPopup}>
 
 
-                    <span><AngleActionIcon /></span>
-
-
-
-                  </div>
+              <hr />
+              <div className="toolbar-box-Font-Value-set-inner-container">
+                <div className="toolbar-box-Font-Value-set-inner-actionheading">
+                  Super Resolution
+                  <span className="ai-badge">AI</span>
                 </div>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                  // checked={superResolution}
+                  // onChange={toggleSuperResolution}
+                  />
+                  <span className="slider round"></span>
+                </label>
+              </div>
+              <hr />
 
-                <hr />
 
-                <div className='toolbar-box-Font-Value-set-inner-container'>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>
-                    Size
-                  </div>
-                  <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
-                    <input
-                      type="range"
-                      name="size"
-                      min="0.2"
-                      max="10"
-                      step="0.1"
-                    // value={rangeValuesSize}
+              <div className='toolbar-box-Font-Value-set-inner-container'>
+                <div className='toolbar-box-Font-Value-set-inner-actionheading'>Replace Background With AI</div>
+                <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleOutlineColorPopup}>
+
+
+                  <span><AngleActionIcon /></span>
+
+
+
+                </div>
+              </div>
+
+              <hr />
+
+              <div className='toolbar-box-Font-Value-set-inner-container'>
+                <div className='toolbar-box-Font-Value-set-inner-actionheading'>
+                  Size
+                </div>
+                <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+                  <input
+                    type="range"
+                    name="size"
+                    min="0.2"
+                    max="10"
+                    step="0.1"
+                  // value={rangeValuesSize}
+                  // onChange={handleRangeInputSizeChange}
+                  />
+
+                  <input
+                    type="number"
+                    min="0.2"
+                    max="10"
+                    step="0.1"
+                    value={rangeValuesSize}
                     // onChange={handleRangeInputSizeChange}
-                    />
-
-                    <input
-                      type="number"
-                      min="0.2"
-                      max="10"
-                      step="0.1"
-                      value={rangeValuesSize}
-                      // onChange={handleRangeInputSizeChange}
-                      // onBlur={handleBlur}
-                      className="SpanValueBox-input"
-                    />
-                    {/* Size end here */}
+                    // onBlur={handleBlur}
+                    className="SpanValueBox-input"
+                  />
+                  {/* Size end here */}
 
 
 
-                  </div>
                 </div>
+              </div>
 
 
-                <hr></hr>
+              <hr></hr>
 
 
 
 
 
 
-                <div className='toolbar-box-Font-Value-set-inner-container'>
-                  <div className='toolbar-box-Font-Value-set-inner-actionheading'>
-                    Rotate
-                  </div>
-                  <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
-                    <input
-                      type="range"
-                      id="min"
-                      name="min"
-                      min="0"
-                      max="360"
-                      step="0.1"
+              <div className='toolbar-box-Font-Value-set-inner-container'>
+                <div className='toolbar-box-Font-Value-set-inner-actionheading'>
+                  Rotate
+                </div>
+                <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+                  <input
+                    type="range"
+                    id="min"
+                    name="min"
+                    min="0"
+                    max="360"
+                    step="0.1"
+                  // value={rangeValuesRotate}
+                  // onChange={handleRangeInputRotateChange}
+                  />
+
+                  <input
+                    type="number"
+                    min="0"
+                    max="360"
+                    step="0.1"
                     // value={rangeValuesRotate}
                     // onChange={handleRangeInputRotateChange}
-                    />
-
-                    <input
-                      type="number"
-                      min="0"
-                      max="360"
-                      step="0.1"
-                      // value={rangeValuesRotate}
-                      // onChange={handleRangeInputRotateChange}
-                      // onBlur={handleRotateBlur}
-                      className="SpanValueBox-input"
-                    />
+                    // onBlur={handleRotateBlur}
+                    className="SpanValueBox-input"
+                  />
 
 
-                  </div>
                 </div>
+              </div>
 
-                <hr></hr>
-                <p className='add-image-reset-text'>Reset To Default</p>
+              <hr></hr>
+              <p className='add-image-reset-text'>Reset To Default</p>
 
-                {/* <div className='toolbar-box-Font-Value-set-inner-container'>
+              {/* <div className='toolbar-box-Font-Value-set-inner-container'>
                     <div className='toolbar-box-Font-Value-set-inner-actionheading'>
                       Spacing
                     </div>
@@ -577,95 +615,92 @@ const AddImageToolbar = () => {
                     </div>
                   </div> */}
 
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+            {/* this is toolbar of image for upload art exm- layring, flip, color, size, arc, rotate, spacing */}
+            <div className='addText-first-toolbar-box-container'>
+
+              <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
+                <div
+                  className={`toolbar-box-icons-container ${centerActive ? 'active' : ''}`}
+                  onClick={() => {
+                    // globalDispatch("position", { x: 325, y: textContaintObject.position.y });
+                    // setCenterActive(!centerActive);
+                  }}
+                >
+                  <span><AlignCenterIcon /></span>
+                </div>
+                <div className='toolbar-box-heading-container'>Center</div>
               </div>
 
+              <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
+                <div className='toolbar-box-icons-container-for-together'>
 
+                  {
+                    getRenderIconForSendToTop() ? <div className='toolbar-box-icons-container-layering1'  > <span><LayeringFirstIcon /></span> </div> : <div className='toolbar-box-icons-container-layering1'
+                    // onClick={() => handleBringForward()}
+                    >
+                      <span><LayeringFirstIconWithBlackBg /></span></div>
+                  }
 
-
-
-
-
-
-
-
-
-              {/* this is toolbar of image for upload art exm- layring, flip, color, size, arc, rotate, spacing */}
-              <div className='addText-first-toolbar-box-container'>
-
-                <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
-                  <div
-                    className={`toolbar-box-icons-container ${centerActive ? 'active' : ''}`}
-                    onClick={() => {
-                      // globalDispatch("position", { x: 325, y: textContaintObject.position.y });
-                      // setCenterActive(!centerActive);
-                    }}
-                  >
-                    <span><AlignCenterIcon /></span>
-                  </div>
-                  <div className='toolbar-box-heading-container'>Center</div>
+                  {
+                    getRenderIconForSendToBack() ? <div className='toolbar-box-icons-container-layering2' > <span><LayeringSecondIcon /></span> </div> : <div className='toolbar-box-icons-container-layering2'
+                    // onClick={() => handleBringBackward()}
+                    >  <span><LayeringSecondIconWithBlackBg /></span></div>
+                  }
                 </div>
-
-                <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
-                  <div className='toolbar-box-icons-container-for-together'>
-
-                    {
-                      getRenderIconForSendToTop() ? <div className='toolbar-box-icons-container-layering1'  > <span><LayeringFirstIcon /></span> </div> : <div className='toolbar-box-icons-container-layering1'
-                      // onClick={() => handleBringForward()}
-                      >
-                        <span><LayeringFirstIconWithBlackBg /></span></div>
-                    }
-
-                    {
-                      getRenderIconForSendToBack() ? <div className='toolbar-box-icons-container-layering2' > <span><LayeringSecondIcon /></span> </div> : <div className='toolbar-box-icons-container-layering2'
-                      // onClick={() => handleBringBackward()}
-                      >  <span><LayeringSecondIconWithBlackBg /></span></div>
-                    }
-                  </div>
-                  Layering
-                </div>
-
-                <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
-                  <div className='toolbar-box-icons-container-for-together'>
-                    <div className={colorClassName} 
-                    // onClick={() => callForXFlip()}
-                    ><span>{icon}</span></div>
-                    <div className={colorClassNameForY}
-                    //  onClick={() => callForYFlip()}
-                     ><span>{iconY}</span></div>
-                  </div>
-                  Flip
-                </div>
-
-                <div
-                  className="toolbar-box-icons-and-heading-container"
-                  // onClick={() => dispatch(toggleLockState(currentTextToolbarId))}
-                >
-                  <div className={`toolbar-box-icons-container ${isLocked ? 'active' : ''}`}>
-                    <span><LockIcon /></span>
-                  </div>
-                  <div className="toolbar-box-heading-container">Lock</div>
-                </div>
-
-                <div
-                  className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`} 
-                  // onClick={() => handleDuplcateTextInput()}
-                >
-                  <div className={`toolbar-box-icons-container ${duplicateActive ? 'active' : ''}`}>
-                    <span><DuplicateIcon /></span>
-                  </div>
-                  <div className='toolbar-box-heading-container'>Duplicate</div>
-                </div>
+                Layering
               </div>
 
+              <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
+                <div className='toolbar-box-icons-container-for-together'>
+                  <div className={colorClassName}
+                  // onClick={() => callForXFlip()}
+                  ><span>{icon}</span></div>
+                  <div className={colorClassNameForY}
+                  //  onClick={() => callForYFlip()}
+                  ><span>{iconY}</span></div>
+                </div>
+                Flip
+              </div>
 
-              {/* toolbar ends here */}
-            </>
+              <div
+                className="toolbar-box-icons-and-heading-container"
+              // onClick={() => dispatch(toggleLockState(currentTextToolbarId))}
+              >
+                <div className={`toolbar-box-icons-container ${isLocked ? 'active' : ''}`}>
+                  <span><LockIcon /></span>
+                </div>
+                <div className="toolbar-box-heading-container">Lock</div>
+              </div>
 
+              <div
+                className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}
+              // onClick={() => handleDuplcateTextInput()}
+              >
+                <div className={`toolbar-box-icons-container ${duplicateActive ? 'active' : ''}`}>
+                  <span><DuplicateIcon /></span>
+                </div>
+                <div className='toolbar-box-heading-container'>Duplicate</div>
+              </div>
+            </div>
+
+
+            {/* toolbar ends here */}
           </>
-        ) : (
-          <></>
-          // <FontCollectionList onSelect={handleFontSelect} onClose={handleClose} />
-        )}
+
+        </>
+
       </div>
     </div>
   );
