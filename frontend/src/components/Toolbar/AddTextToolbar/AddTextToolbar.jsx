@@ -77,19 +77,19 @@ const AddTextToolbar = () => {
       setCurrentTextToolbarId(selectedTextId);
       // console.log("is selected id ", selectedTextId);
       // setShowContent(true);
-      const currentInputData = allTextInputData.find((text) => text.id === selectedTextId);
-      if (!currentInputData) return
+      textContaintObject = allTextInputData.find((text) => text.id === selectedTextId);
+      if (!textContaintObject) return
 
-      setText(currentInputData.content);
-      setTextColor(currentInputData.textColor);
-      setOutlineColor(currentInputData.outLineColor);
-      setOutlineSize(currentInputData.outLineSize);
-      setSelectedFont(currentInputData.fontFamily);
-      setShowFontSelector(false);
-      setRangeValuesSize(currentInputData.size);
-      setRangeValuesSpacing(currentInputData.spacing);
-      setRangeValuesArc(currentInputData.arc);
-      setRangeValuesRotate(currentInputData.rotate);
+      // setText(currentInputData.content);
+      // setTextColor(currentInputData.textColor);
+      // setOutlineColor(currentInputData.outLineColor);
+      // setOutlineSize(currentInputData.outLineSize);
+      // setSelectedFont(currentInputData.fontFamily);
+      // setShowFontSelector(false);
+      // setRangeValuesSize(currentInputData.scaledValue);
+      // setRangeValuesSpacing(currentInputData.spacing);
+      // setRangeValuesArc(currentInputData.arc);
+      // setRangeValuesRotate(currentInputData.rotate);
       // setText(currentInputData.content);
       // setText(currentInputData.content);
 
@@ -104,7 +104,7 @@ const AddTextToolbar = () => {
     setRangeValuesSize(textContaintObject?.scaledValue);
     setRangeValuesSpacing(textContaintObject?.spacing);
     setRangeValuesArc(textContaintObject?.arc);
-    setRangeValuesRotate(parseInt(textContaintObject?.rotate));
+    setRangeValuesRotate(parseFloat(textContaintObject?.rotate));
 
     return () => {
       // dispatch(setSelectedTextState(null));
@@ -114,36 +114,131 @@ const AddTextToolbar = () => {
   //  [dispatch,selectedTextId, selectedBackTextId ])
 
 
-
   const handleRangeInputSizeChange = (e) => {
+    const rawValue = e.target.value;
 
-    const value = parseFloat(e.target.value)
-    const scaleRatio = value / prevSize; // e.g. from 4.2 → 5 = 1.19x
+    // Update the UI state immediately (even for partially typed values)
+    setRangeValuesSize(rawValue);
+
+    const parsed = parseFloat(rawValue);
+
+    if (isNaN(parsed) || parsed < 0.2 || parsed > 10) return;
+
+    const scaleRatio = parsed / prevSize;
     const scaleX = textContaintObject.scaleX;
     const scaleY = textContaintObject.scaleY;
+
     globalDispatch("scaleX", scaleX * scaleRatio);
     globalDispatch("scaleY", scaleY * scaleRatio);
-    globalDispatch("scaledValue", value);
-    setRangeValuesSize(parseFloat(value));
-    setPrevSize(value);
+    globalDispatch("scaledValue", parsed);
+
+    setPrevSize(parsed);
   };
+
+
+  const handleBlur = () => {
+    const parsed = parseFloat(rangeValuesSize);
+    if (isNaN(parsed) || parsed < 0.2 || parsed > 10) {
+      setRangeValuesSize("5");
+      setPrevSize(5);
+      globalDispatch("scaleX", 5);
+      globalDispatch("scaleY", 5);
+      globalDispatch("scaledValue", 5);
+    }
+  };
+
+
+  // const handleRangeInputSizeChange = (e) => {
+
+  //   const value = parseFloat(e.target.value)
+  //   const scaleRatio = value / prevSize; // e.g. from 4.2 → 5 = 1.19x
+  //   const scaleX = textContaintObject.scaleX;
+  //   const scaleY = textContaintObject.scaleY;
+  //   globalDispatch("scaleX", scaleX * scaleRatio);
+  //   globalDispatch("scaleY", scaleY * scaleRatio);
+  //   globalDispatch("scaledValue", value);
+  //   setRangeValuesSize(parseFloat(value));
+  //   setPrevSize(value);
+  // };
+
+  // const handleRangeInputArcChange = (e) => {
+  //   const { value } = e.target;
+  //   setRangeValuesArc(value);
+  //   globalDispatch("arc", parseFloat(value));
+  // };
 
   const handleRangeInputArcChange = (e) => {
-    const { value } = e.target;
-    setRangeValuesArc(value);
-    globalDispatch("arc", parseInt(value));
+    const rawValue = e.target.value;
+    setRangeValuesArc(rawValue);
+
+    const parsed = parseFloat(rawValue);
+    if (isNaN(parsed) || parsed < -100 || parsed > 100) return;
+
+    globalDispatch("arc", parsed);
   };
+
+
+  const handleArcBlur = () => {
+    const parsed = parseFloat(rangeValuesArc);
+    if (isNaN(parsed) || parsed < -100 || parsed > 100) {
+      setRangeValuesArc("0");
+      globalDispatch("arc", 0);
+    }
+  };
+
+
+  // const handleRangeInputRotateChange = (e) => {
+  //   const { value } = e.target;
+  //   setRangeValuesRotate(value);
+  //   globalDispatch("rotate", parseFloat(value));
+  // };
+
+
 
   const handleRangeInputRotateChange = (e) => {
-    const { value } = e.target;
-    setRangeValuesRotate(value);
-    globalDispatch("rotate", parseInt(value));
+    const rawValue = e.target.value;
+    setRangeValuesRotate(rawValue);
+
+    const parsed = parseFloat(rawValue);
+    if (isNaN(parsed) || parsed < 0 || parsed > 360) return;
+
+    globalDispatch("rotate", parsed);
   };
 
+
+  const handleRotateBlur = () => {
+    const parsed = parseFloat(rangeValuesRotate);
+    if (isNaN(parsed) || parsed < 0 || parsed > 360) {
+      setRangeValuesRotate("0");
+      globalDispatch("rotate", 0);
+    }
+  };
+
+
+
+  // const handleRangeInputSpacingChange = (e) => {
+  //   const value = parseFloat(e.target.value);
+  //   globalDispatch("spacing", parseFloat(value));
+  //   setRangeValuesSpacing(value);
+  // };
+
   const handleRangeInputSpacingChange = (e) => {
-    const value = parseInt(e.target.value);
-    globalDispatch("spacing", parseInt(value));
-    setRangeValuesSpacing(value);
+    const rawValue = e.target.value;
+    setRangeValuesSpacing(rawValue);
+
+    const parsed = parseFloat(rawValue);
+    if (isNaN(parsed) || parsed < 0 || parsed > 50) return;
+
+    globalDispatch("spacing", parsed);
+  };
+
+
+  const handleSpacingBlur = () => {
+    const parsed = parseFloat(rangeValuesSpacing);
+    if (isNaN(parsed) || parsed < 0 || parsed > 50) {
+      setRangeValuesSpacing("25");
+      globalDispatch("spacing", 25);
+    }
   };
 
 
@@ -243,6 +338,8 @@ const AddTextToolbar = () => {
   const iconY = flipYValue !== true ? <FlipSecondIcon /> : <FlipSecondWhiteColorIcon />;
 
   const handleDuplcateTextInput = () => {
+    const islocked = textContaintObject.locked;
+    if (islocked) return;
     setDuplicateActive(prev => !prev);
     dispatch(duplicateTextState(currentTextToolbarId));
 
@@ -312,11 +409,11 @@ const AddTextToolbar = () => {
             {showContent && (
               <>
                 <div className='addText-first-toolbar-box-container'>
-                  <div className='toolbar-box-icons-and-heading-container'>
+                  <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
                     <div
                       className={`toolbar-box-icons-container ${centerActive ? 'active' : ''}`}
                       onClick={() => {
-                        globalDispatch("position", { x: 320, y: textContaintObject.position.y });
+                        globalDispatch("position", { x: 325, y: textContaintObject.position.y });
                         setCenterActive(!centerActive);
                       }}
                     >
@@ -325,7 +422,7 @@ const AddTextToolbar = () => {
                     <div className='toolbar-box-heading-container'>Center</div>
                   </div>
 
-                  <div className='toolbar-box-icons-and-heading-container'>
+                  <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
                     <div className='toolbar-box-icons-container-for-together'>
 
                       {
@@ -339,7 +436,7 @@ const AddTextToolbar = () => {
                     Layering
                   </div>
 
-                  <div className='toolbar-box-icons-and-heading-container'>
+                  <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
                     <div className='toolbar-box-icons-container-for-together'>
                       <div className={colorClassName} onClick={() => callForXFlip()}><span>{icon}</span></div>
                       <div className={colorClassNameForY} onClick={() => callForYFlip()}><span>{iconY}</span></div>
@@ -358,8 +455,7 @@ const AddTextToolbar = () => {
                   </div>
 
                   <div
-                    className="toolbar-box-icons-and-heading-container "
-                    onClick={() => handleDuplcateTextInput()}
+                    className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`} onClick={() => handleDuplcateTextInput()}
                   >
                     <div className={`toolbar-box-icons-container ${duplicateActive ? 'active' : ''}`}>
                       <span><DuplicateIcon /></span>
@@ -435,34 +531,27 @@ const AddTextToolbar = () => {
                     <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
                       <input
                         type="range"
-                        id="min"
-                        name="min"
+                        name="size"
                         min="0.2"
                         max="10"
-                        step="0.2"
+                        step="0.1"
                         value={rangeValuesSize}
-                        onChange={(e) => handleRangeInputSizeChange(e)}
+                        onChange={handleRangeInputSizeChange}
                       />
 
-                      {/* <span><SpanValueBox valueShow={rangeValuesSize} /></span> */}
                       <input
                         type="number"
-                        min="1"
+                        min="0.2"
                         max="10"
-                        step="0.2"
+                        step="0.1"
                         value={rangeValuesSize}
-                        onChange={(e) => {
-                          const value = parseFloat(e.target.value);
-                          setRangeValuesSize(value);
-                          if (!isNaN(value) && value <= 10) {
-
-                            globalDispatch("scaledValue", value);
-                            globalDispatch("scaleX", value);
-                            globalDispatch("scaleY", value);
-                          }
-                        }}
+                        onChange={handleRangeInputSizeChange}
+                        onBlur={handleBlur}
                         className="SpanValueBox-input"
                       />
+                      {/* Size end here */}
+
+
 
                     </div>
                   </div>
@@ -480,30 +569,31 @@ const AddTextToolbar = () => {
                         type="range"
                         id="min"
                         name="min"
-                        min="-100" max="100" step="1"
-                        defaultValue={"0"}
+                        min="-100"
+                        max="100"
+                        step="0.1"
                         value={rangeValuesArc}
-                        onChange={(e) => handleRangeInputArcChange(e)}
+                        onChange={handleRangeInputArcChange}
                       />
+
                       <input
                         type="number"
-                        min="-100" max="100" step="1"
+                        min="-100"
+                        max="100"
+                        step="0.1"
                         value={rangeValuesArc}
-                        onChange={(e) => {
-                          const value = parseFloat(e.target.value);
-                          setRangeValuesArc(value);
-
-                          if (!isNaN(value) && value >= -100 && value <= 100) {
-                            handleRangeInputArcChange(e);
-                          }
-                        }}
+                        onChange={handleRangeInputArcChange}
+                        onBlur={handleArcBlur}
                         className="SpanValueBox-input"
                       />
+
                       {/* <span><SpanValueBox valueShow={rangeValuesArc} /></span> */}
                     </div>
                   </div>
-
+                  {/* arc end here */}
                   <hr></hr>
+
+
 
                   <div className='toolbar-box-Font-Value-set-inner-container'>
                     <div className='toolbar-box-Font-Value-set-inner-actionheading'>
@@ -516,24 +606,22 @@ const AddTextToolbar = () => {
                         name="min"
                         min="0"
                         max="360"
+                        step="0.1"
                         value={rangeValuesRotate}
-                        onChange={(e) => handleRangeInputRotateChange(e)}
+                        onChange={handleRangeInputRotateChange}
                       />
+
                       <input
                         type="number"
                         min="0"
                         max="360"
+                        step="0.1"
                         value={rangeValuesRotate}
-                        onChange={(e) => {
-                          const value = parseFloat(e.target.value);
-                          setRangeValuesRotate(value); // Allows user to type freely
-
-                          if (!isNaN(value) && value >= 0 && value <= 360) {
-                            handleRangeInputRotateChange(e);
-                          }
-                        }}
+                        onChange={handleRangeInputRotateChange}
+                        onBlur={handleRotateBlur}
                         className="SpanValueBox-input"
                       />
+
                       {/* <span><SpanValueBox valueShow={rangeValuesRotate} /></span> */}
                     </div>
                   </div>
@@ -549,28 +637,23 @@ const AddTextToolbar = () => {
                         id="min"
                         name="min"
                         min="0"
-                        step={"1"}
                         max="50"
+                        step="0.1"
                         value={rangeValuesSpacing}
-                        onChange={(e) => handleRangeInputSpacingChange(e)}
-
+                        onChange={handleRangeInputSpacingChange}
                       />
 
                       <input
                         type="number"
-                        max={50}
-                        min={0}
+                        min="0"
+                        max="50"
+                        step="0.1"
                         value={rangeValuesSpacing}
-                        onChange={(e) => {
-                          const value = parseFloat(e.target.value);
-                          setRangeValuesSpacing(value); // let user type freely
-
-                          if (!isNaN(value) && value >= 0 && value <= 50) {
-                            handleRangeInputSpacingChange(e);
-                          }
-                        }}
+                        onChange={handleRangeInputSpacingChange}
+                        onBlur={handleSpacingBlur}
                         className="SpanValueBox-input"
                       />
+
                       {/* <span><SpanValueBox valueShow={rangeValuesSpacing} /></span> */}
 
                     </div>
