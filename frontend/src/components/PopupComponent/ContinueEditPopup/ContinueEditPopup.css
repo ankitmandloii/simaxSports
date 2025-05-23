@@ -1,0 +1,77 @@
+.continue-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.continue-edit-popup-mainDiv {
+  padding: 1.5rem;
+  background-color: #fff;
+  /* height: 30%;
+  width: 20%; */
+}
+
+.continue-edit-header {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #cccfd6;
+
+}
+
+.continue-edit-header h4 {
+  font-size: 1rem;
+  color: #005BFF;
+}
+
+.continue-editing-btn {
+  width: 100%;
+  padding: 0.4rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  background: transparent;
+  border: 2px solid #005BFF;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.continue-editing-btn:hover {
+  box-shadow: 0 2px 8px 0 #005BFF;
+}
+
+.img-small img {
+  width: 3rem;
+}
+
+.img-small {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.start-from-scratch-para {
+  text-align: center;
+  font-size: 15px;
+
+}
+
+.start-from-scratch-para span {
+  color: #005BFF;
+  cursor: pointer;
+}
+
+.start-from-scratch-para span:hover {
+  text-decoration: underline;
+}
+
+.cross-icon-continue-box {
+  cursor: pointer;
+}
