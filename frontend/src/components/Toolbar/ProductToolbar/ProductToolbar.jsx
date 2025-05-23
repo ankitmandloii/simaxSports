@@ -75,6 +75,17 @@ const ProductToolbar = () => {
   const handleDeleteProduct = (indexToDelete) => {
     dispatch(deleteProductAction(indexToDelete));
   };
+  const normalizeVariants = (product) => {
+    if (product?.allVariants?.length) {
+      return product.allVariants;
+    }
+
+    if (product?.variants?.edges?.length) {
+      return product.variants.edges.map(edge => edge.node);
+    }
+
+    return [];
+  };
 
   const normalizeColorsFromShopify = (product) => {
     if (!product?.variants?.edges) return [];
@@ -262,29 +273,29 @@ const ProductToolbar = () => {
                           const newColor = cloneColor(color);
 
                           const productWithVariants = selectedProducts[index];
-                          console.log("----product", productWithVariants);
-
-                          const allVariants = productWithVariants?.allVariants || [];
+                          const allVariants = normalizeVariants(productWithVariants);
 
                           const colorName = color.name.toLowerCase().trim();
 
-                          const sizesForColor = allVariants
+                          const sizeVariantPairs = allVariants
                             .filter(variant => {
                               const colorOption = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'color');
                               return colorOption?.value.toLowerCase().trim() === colorName;
                             })
                             .map(variant => {
                               const sizeOption = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'size');
-                              return sizeOption?.value;
+                              return sizeOption?.value
+                                ? {
+                                  size: sizeOption.value,
+                                  variantId: variant.id,
+                                }
+                                : null;
                             })
                             .filter(Boolean);
 
-                          console.log(`Sizes for color ${color.name}:`, sizesForColor);
+                          newColor.sizes = sizeVariantPairs;
 
-
-                          newColor.sizes = sizesForColor;
-
-                          // Insert the color (same logic as before)
+                          // Insert color logic
                           if (colorChangeTarget.colorIndex === 0) {
                             current.selectedColor = newColor;
                             current.imgurl = newColor.img;
@@ -306,6 +317,8 @@ const ProductToolbar = () => {
                           dispatch(setSelectedProductsAction(updated));
                           setColorChangeTarget({ productIndex: null, colorIndex: null });
                         }}
+
+
 
 
 
