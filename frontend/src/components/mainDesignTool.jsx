@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   deleteTextState,
   setSelectedTextState,
+  updateNameAndNumberDesignState,
   updateTextState,
 } from "../redux/FrontendDesign/TextFrontendDesignSlice";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +27,9 @@ const MainDesignTool = ({
   const activeSide = useSelector(
     (state) => state.TextFrontendDesignSlice.activeSide
   );
+  const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
+  const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
+
   // console.log("active side", activeSide);
   // const [lastTranform, setLastTranform] = useState(null);
   const textContaintObject = useSelector(
@@ -34,7 +38,7 @@ const MainDesignTool = ({
   const isRender = useSelector(
     (state) => state.TextFrontendDesignSlice.present[activeSide].setRendering
   );
-  // console.log("textContaintObject", textContaintObject);
+  console.log("nameAndNumberDesignState", nameAndNumberDesignState);
 
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId)
   // const isLocked = selectedTextId && textContaintObject.find((obj) => obj.id === selectedTextId).locked;
@@ -73,7 +77,7 @@ const MainDesignTool = ({
       })
     );
   };
-  
+
   const updateBoundaryVisibility = useCallback(() => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
@@ -83,9 +87,11 @@ const MainDesignTool = ({
 
     if (!boundaryBox || !warningText) return;
 
-    const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text");
+    const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text" || obj.isDesignGroup || obj.type === 'group');
 
     textObjects.forEach((obj) => obj.setCoords());
+
+    console.log("textObject check for boundary",textObjects )
 
     const allInside = textObjects.every((obj) => {
       const objBounds = obj.getBoundingRect(true);
@@ -109,7 +115,7 @@ const MainDesignTool = ({
 
   useEffect(() => {
     updateBoundaryVisibility();
-  }, [textContaintObject, updateBoundaryVisibility]);
+  }, [addName,addNumber,nameAndNumberDesignState, textContaintObject, updateBoundaryVisibility]);
 
 
   useEffect(() => {
@@ -501,7 +507,7 @@ const MainDesignTool = ({
     canvas.add(warningText);
 
     function updateBoundaryVisibility() {
-      const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text");
+      const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text" || obj.type === "group");
       textObjects.forEach((obj) => obj.setCoords());
 
       const allInside = textObjects.every((obj) => {
@@ -538,7 +544,7 @@ const MainDesignTool = ({
       dispatch(setSelectedTextState(null));
     };
 
-    const   handleScale = (e) => {
+    const handleScale = (e) => {
       const clampScale = (value, min = 0.2, max = 10) => Math.max(min, Math.min(value, max));
       const obj = e.target;
       console.log(e, "event details");
@@ -647,11 +653,11 @@ const MainDesignTool = ({
   useEffect(() => {
     // console.log("renderiing on layer index changed");
     const canvas = fabricCanvasRef.current;
-    if (textContaintObject && textContaintObject.length == 0) {
-      let existingTextbox = canvas.getObjects().filter((obj) => obj.type === "curved-text" || obj.type === "textbox");
-      existingTextbox.forEach((obj) => canvas.remove(obj));
-      return;
-    }
+    // if (textContaintObject && textContaintObject.length == 0) {
+    //   let existingTextbox = canvas.getObjects().filter((obj) => obj.type === "curved-text" || obj.type === "textbox");
+    //   existingTextbox.forEach((obj) => canvas.remove(obj));
+    //   return;
+    // }
 
 
     if (Array.isArray(textContaintObject)) {
@@ -741,6 +747,10 @@ const MainDesignTool = ({
             borderColor: "skyblue",
             borderDashArray: [4, 4],
             hasBorders: true,
+            selectable: true,
+            evented: true,
+            hasControls: true,
+
           });
 
           curved.on("mousedown", () => {
@@ -796,18 +806,242 @@ const MainDesignTool = ({
     }
   }, [activeSide, isRender, dispatch, id, textContaintObject]);
 
+  //  *************************************************************  for rendering the name and number**********************************************************
+
+  // useEffect(() => {
+  //   const canvas = fabricCanvasRef.current;
+  //   if (!canvas || !nameAndNumberDesignState) {
+  //     console.warn("Canvas or nameAndNumberDesignState is missing.");
+  //     return;
+  //   }
+
+  //   const {
+  //     name,
+  //     number,
+  //     position,
+  //     fontFamily,
+  //     fontColor,
+  //     fontSize,
+  //     id,
+  //   } = nameAndNumberDesignState;
+
+  //   const objectId = id;
+
+  //   // Remove existing object if neither name nor number is being added
+  //   if (!addName && !addNumber) {
+  //     const existingTextObject = canvas.getObjects().find(obj => obj.id === objectId);
+  //     if (existingTextObject) {
+  //       canvas.remove(existingTextObject);
+  //       canvas.requestRenderAll();
+  //       canvas.renderAll();
+  //     }
+  //     return;
+  //   }
+
+  //   // Build the stacked text
+  //   let stackedText = '';
+  //   if (addName && name) stackedText += name;
+  //   if (addName && addNumber && number) stackedText += '\n';
+  //   if (addNumber && number) stackedText += number;
+
+  //   if (!stackedText) {
+  //     const existingTextObject = canvas.getObjects().find(obj => obj.id === objectId);
+  //     if (existingTextObject) {
+  //       canvas.remove(existingTextObject);
+  //       canvas.requestRenderAll();
+  //     }
+  //     return;
+  //   }
+
+  //   // Font size mapping
+  //   const fontSizeMap = {
+  //     small: 40,
+  //     medium: 60,
+  //     large: 80,
+  //   };
+  //   const resolvedFontSize = fontSizeMap[fontSize] || 60;
+  //   const boxWidth = 300;
+
+  //   let existingTextObject = canvas.getObjects().find(obj => obj.id === objectId);
+
+  //   if (!existingTextObject) {
+  //     existingTextObject = new fabric.CurvedText(stackedText,
+  //       {
+  //         id: objectId,
+  //         originX: "center",
+  //         originY: "center",
+  //         textAlign: "center",
+  //         selectable: true,
+  //         hasBorders: true,
+  //         hasControls: false,
+  //         evented: true,
+  //         width: boxWidth,
+  //         fontWeight:  '700', 
+  //         fontFamily: fontFamily ,
+  //       });
+  //     canvas.add(existingTextObject);
+  //     canvas.renderAll();
+  //   }
+  //   //  existingTextObject = canvas.getObjects().find(obj => obj.id === objectId);
+  //   existingTextObject.set({
+  //     text: stackedText,
+  //     fill: fontColor,
+  //     fontFamily: fontFamily ,
+  //     fontSize: resolvedFontSize,
+  //     left: position?.x || 300,
+  //     top: position?.y || 300,
+  //     evented: true,
+  //   });
+
+  //   existingTextObject.dirty = true;
+  //   existingTextObject.setCoords();
+  //   canvas.requestRenderAll();
+
+  //   console.log(existingTextObject,"existingTextObject")
+  //   canvas.renderAll();
+  // }, [isRender,addName, addNumber, nameAndNumberDesignState,  ]);
+
+  useEffect(() => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas || !nameAndNumberDesignState) {
+      console.warn("Canvas or nameAndNumberDesignState is missing.");
+      return;
+    }
+
+    const {
+      name,
+      number,
+      position,
+      fontFamily,
+      fontColor,
+      fontSize,
+      id,
+    } = nameAndNumberDesignState;
+
+    const objectId = id;
+
+    if (!addName && !addNumber) {
+      const existingGroup = canvas.getObjects().find(obj => obj.id === objectId);
+      if (existingGroup) {
+        canvas.remove(existingGroup);
+        canvas.requestRenderAll();
+      }
+      return;
+    }
+
+    const fontSizeMap = {
+      small: 60,
+      medium: 100,
+      large: 150,
+    };
+    const baseFontSize = fontSizeMap[fontSize] || 80;
+
+    // Remove old group if it exists
+    const oldGroup = canvas.getObjects().find(obj => obj.id === objectId);
+    if (oldGroup) {
+      canvas.remove(oldGroup);
+    }
+
+    const textObjects = [];
+
+    if (addName && name) {
+      const nameText = new fabric.Text(name, {
+        fontSize: baseFontSize*0.3,
+        fontFamily: fontFamily,
+        fill: fontColor,
+        originX: 'left', // manual centering
+        originY: 'top',
+      });
+      // Center horizontally
+      nameText.left = -nameText.width / 2;
+      textObjects.push(nameText);
+    }
+
+    if (addNumber && number) {
+      const numberText = new fabric.Text(number, {
+        fontSize: baseFontSize,
+        fontFamily: fontFamily,
+        fill: fontColor,
+        originX: 'left',
+        originY: 'top',
+      });
+      numberText.left = (-numberText.width) / 2;
+
+      // Stack below name if present
+      if (textObjects.length > 0) {
+        const previous = textObjects[textObjects.length - 1];
+        numberText.top = previous.top + previous.height + 5;
+        numberText.left = ((-previous.width) / 2) - (fontSize == "small" ? 12 : 30);
+      }
+      textObjects.push(numberText);
+    }
+
+    if (textObjects.length === 0) return;
+
+    const group = new fabric.Group(textObjects, {
+      id: objectId,
+      left: position?.x || canvas.getWidth() / 2,
+      top: position?.y || canvas.getHeight() / 2,
+      originX: 'center',
+      originY: 'center',
+      alignText: 'center',
+      selectable: true,
+      hasBorders: false,
+      hasControls: false,
+      evented: true,
+    });
+
+    group.on(("modified"), (e) => {
+      const obj = e.target;
+      if (!obj) return;
+      const center = obj.getCenterPoint();
+
+      obj.setPositionByOrigin(center, 'center', 'center');
+      obj.setCoords();
+      dispatch(updateNameAndNumberDesignState({
+        changes:{
+          "position": { x: obj.left, y: obj.top },
+        }
+      }));
+    })
+    group.on("mousedown",() =>{
+      navigate("/addNames");
+
+    })
+
+    console.log("group ",group,group.type);
+    // Force recalculation of bounds
+    group._calcBounds();
+    group._updateObjectsCoords();
+    group.set({
+      width:fontSize == "small" ? 60 : 150,
+      left: position?.x || canvas.getWidth() / 2,
+      top: position?.y || canvas.getHeight() / 2,
+      // originX: 'center',
+      // originY: 'center',
+      isDesignGroup : true,
+      hasBorders:false,
+
+    });
+
+    canvas.add(group);
+    canvas.requestRenderAll();
+  }, [isRender, addName, addNumber, nameAndNumberDesignState]);
+
+
+
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
     const existingObjects = canvas.getObjects();
-    existingObjects.forEach((obj) => {
-      if (
-        (obj.type === "curved-text" || obj.type === "text" || obj.type === "textbox") &&
-        obj.id &&
-        !textContaintObject.find((txt) => txt.id === obj.id)
-      ) {
-        canvas.remove(obj);
-      }
-    });
+    // existingObjects.forEach((obj) => {
+    //   if (
+    //     (obj.type === "curved-text" || obj.type === "text" || obj.type === "textbox") &&
+    //     obj.id &&
+    //     !textContaintObject.find((txt) => txt.id === obj.id)
+    //   ) {
+    //     canvas.remove(obj);
+    //   }
+    // });
 
     const object = canvas.getObjects().find((obj) => obj.id === selectedTextId);
     // console.log("selectedTextId", selectedTextId, object)

@@ -7,8 +7,8 @@ import { addNameAndNumberProduct, removeNameAndNumberProduct, setActiveSide, set
 const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
-  const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberProductList);
   const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
+  const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberProductList);
 
   const selectedProducts = useSelector((state) => state.slectedProducts.selectedProducts);
 
@@ -111,7 +111,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
       const mainProduct = {
         name: product.name,
         id: product.id.split("/").reverse()[0],
-        imgurl: product.imgurl,
+        imgurl: product?.imgurl,
         color: product?.selectedColor?.name,
         size: product.selectedColor?.variant?.selectedOptions[1]?.value,
         sizes: getSizeOptions(product), // assume this is a valid function in scope
@@ -159,8 +159,8 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
 
     const isValid = selectionsRows.every(([key, rows]) =>
       rows.every(row => {
-        const isSizeFilled = row.size !== '';
-        const isNameFilled = !addName || row.name !== '';
+        const isSizeFilled = !row.size || row.size !== '';
+        const isNameFilled = !addName || row.name !== '';   
         const isNumberFilled = !addNumber || row.number !== '';
         return isSizeFilled && isNameFilled && isNumberFilled;
       })
@@ -369,7 +369,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
                 <div className="canvas-bg">
                   {!activeRowId ? (
                     <div className="text-row">
-                      <div className="name-text">Edit a row to preview</div>
+                      {/* <div className="name-text">Edit a row to preview</div> */}
                     </div>
                   ) : (
                     Object.values(rowsByKey).flat().filter((row) => row.selectionId === activeRowId).map((row) => (

@@ -261,7 +261,7 @@ const createNewText = ({ value, id }, length) => ({
   width: 150,
   height: 50,
   fontSize: 20,
-  position: { x: 320, y: 300 },
+  position: {x:393,y:272},
   locked: false,
   layerIndex: length,
 });
@@ -282,9 +282,13 @@ const initialState = {
 
       // 🆕 Design settings for Name & Number (front)
       nameAndNumberDesignState: {
+        id: "front",
+        name: "NAME",
+        number: "00",
         fontColor: "#000000",
-        fontFamily: "interstate",
+        fontFamily: "Interstate",
         fontSize: "small",
+        position: { x: 325, y: 300 },
       },
 
       // 🆕 Product list for Name & Number (front)
@@ -299,9 +303,13 @@ const initialState = {
 
       // 🆕 Design settings for Name & Number (back)
       nameAndNumberDesignState: {
+        id: "front",
+        name: "NAME",
+        number: "00",
         fontColor: "#000000",
-        fontFamily: "interstate",
+        fontFamily: "Interstate",
         fontSize: "small",
+        position: { x: 325, y: 300 },
       },
 
       // 🆕 Product list for Name & Number (back)
@@ -508,28 +516,32 @@ const TextFrontendDesignSlice = createSlice({
     // ************************************ 🆕 Name/Number Flags and states ******************************************************************
 
     setAddNumber: (state, action) => {
+      const side = state.activeSide;
       state.addNumber = action.payload;
+      state.present[side].setRendering = !state.present[side].setRendering;
     },
     setAddName: (state, action) => {
+      const side = state.activeSide;
       state.addName = action.payload;
+      state.present[side].setRendering = !state.present[side].setRendering;
     },
 
     // 🆕 Update design state (front/back)
     updateNameAndNumberDesignState: (state, action) => {
       const { side = state.activeSide, changes } = action.payload;
       console.log("changes", changes);
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       if (state.present[side]?.nameAndNumberDesignState) {
         Object.assign(state.present[side].nameAndNumberDesignState, changes);
       }
+      state.present[side].setRendering = nanoid();
+       state.future[side] = [];
     },
     // Assuming: state.present[side].nameAndNumberProductList is now an ARRAY, not an object
 
     addNameAndNumberProduct: (state, action) => {
-      const {
-        side = state.activeSide,
-        productData
-      } = action.payload;
-      console.log("product fetcg succesfully", productData)
+      const { side = state.activeSide, productData } = action.payload;
+      console.log("product fetcg succesfully", productData);
       const list = state.present[side]?.nameAndNumberProductList;
       if (!list) return;
 
@@ -539,21 +551,8 @@ const TextFrontendDesignSlice = createSlice({
       if (!product) {
         // Add new product with first variant
         list.push(productData);
-        console.log("product added succesfully")
-      } else {
-        // Check if variant exists
-        // const selectionIndex = product.selections.findIndex(  
-        //   (v) => v.selectionId === selectionId 
-        // );
-
-        // const newVariant = { selectionId, size, name, number };
-
-        // if (selectionIndex !== -1) {
-        //   product.selections[selectionIndex] = newVariant;
-        // } else {
-        //   product.selections.push(newVariant);
-        // }
-      }
+        console.log("product added succesfully");
+      } 
     },
     UpdateNameAndNumberProduct: (state, action) => {
       const {
@@ -576,10 +575,12 @@ const TextFrontendDesignSlice = createSlice({
       }
 
       // Create a map of new selectionIds
-      const incomingMap = new Map(newSelections.map(sel => [sel.selectionId, sel]));
+      const incomingMap = new Map(
+        newSelections.map((sel) => [sel.selectionId, sel])
+      );
 
       // Filter out selections not in the incoming list
-      product.selections = product.selections.filter(existing => {
+      product.selections = product.selections.filter((existing) => {
         const incoming = incomingMap.get(existing.selectionId);
         if (incoming) {
           // Only update if not locked
@@ -594,8 +595,8 @@ const TextFrontendDesignSlice = createSlice({
       });
 
       // Add any new selectionIds that didn't already exist
-      const existingIds = new Set(product.selections.map(s => s.selectionId));
-      newSelections.forEach(sel => {
+      const existingIds = new Set(product.selections.map((s) => s.selectionId));
+      newSelections.forEach((sel) => {
         if (!existingIds.has(sel.selectionId)) {
           product.selections.push(sel);
         }
@@ -610,30 +611,14 @@ const TextFrontendDesignSlice = createSlice({
       state.future[side] = [];
     },
 
-
     removeNameAndNumberProduct: (state, action) => {
-      const {
-        side = state.activeSide,
-        id,
-        selectionId
-      } = action.payload;
-      const list = state.present[side]?.nameAndNumberProductList;
-      if (!list) return;
+      const { side = state.activeSide, id } = action.payload;
 
-      const productIndex = list.findIndex((p) => p.id === id);
-      if (productIndex === -1) return;
+      if (!state.present[side]) return;
 
-      const product = list[productIndex];
-
-      // Remove the matching variant
-      product.selections = product.selections.filter(
-        (v) => !(v.selectionId === selectionId)
-      );
-
-      // If no variants left, remove the entire product
-      if (product.selections.length === 0) {
-        list.splice(productIndex, 1);
-      }
+      state.present[side].nameAndNumberProductList = state.present[
+        side
+      ].nameAndNumberProductList.filter((product) => product.id !== id);
     },
   },
 });
@@ -658,7 +643,7 @@ export const {
   updateNameAndNumberDesignState,
   removeNameAndNumberProduct,
   UpdateNameAndNumberProduct,
-  addNameAndNumberProduct
+  addNameAndNumberProduct,
 } = TextFrontendDesignSlice.actions;
 
 // ✅ Export Selectors

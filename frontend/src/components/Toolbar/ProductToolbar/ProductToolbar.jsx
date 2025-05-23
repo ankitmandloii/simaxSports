@@ -15,7 +15,7 @@ import {
   setSelectedProducts as setSelectedProductsAction,
 } from '../../../redux/ProductSlice/SelectedProductSlice';
 import { useOutletContext } from 'react-router-dom';
-import { setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
+import { removeNameAndNumberProduct, setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 
 const ProductToolbar = () => {
   const dispatch = useDispatch();
@@ -119,6 +119,10 @@ const ProductToolbar = () => {
 
   const handleDeleteColorThumbnail = (productIndex, colorIndex) => {
     const product = selectedProducts[productIndex];
+    const productid = product.id;
+    if(productid){
+      dispatch(removeNameAndNumberProduct(productid));
+    }
     const totalThumbnails = 1 + (product.addedColors?.length || 0);
 
     if (totalThumbnails === 1) {
