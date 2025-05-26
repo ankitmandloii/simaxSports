@@ -13,7 +13,7 @@ import {
   deleteProduct as deleteProductAction,
   setSelectedProducts as setSelectedProductsAction,
 } from '../../../redux/ProductSlice/SelectedProductSlice';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { removeNameAndNumberProduct, setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 
 import ContinueEditPopup from '../../PopupComponent/ContinueEditPopup/ContinueEditPopup'
@@ -21,11 +21,11 @@ import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesi
 
 const ProductToolbar = () => {
   const dispatch = useDispatch();
-  const selectedProducts = useSelector((state) => state.slectedProducts.selectedProducts);
+  const navigate = useNavigate();
+  const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
 
   const { setActiveProduct } = useOutletContext();
   const initialPopupShown = useSelector((state) => state.ContinueDesign.initialPopupShown);
-  const [continueEditPopup, setContinueEditPopup] = useState(false);
   const [changeProductPopup, setChangeProductPopup] = useState(false);
   const [editingProductIndex, setEditingProductIndex] = useState(null);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
@@ -35,22 +35,16 @@ const ProductToolbar = () => {
   const [hoveredThumbnail, setHoveredThumbnail] = useState({ productIndex: null, colorIndex: null, color: null });
 
   const cloneColor = (color) => ({ ...color });
-  useEffect(() => {
-    if (!initialPopupShown) {
-      setContinueEditPopup(true);
-    }
-  }, [initialPopupShown]);
-
-  const handleContinuePopup = () => {
-    dispatch(setInitialPopupShown()); // Update Redux state
-    setContinueEditPopup(false);
-  };
 
   const openChangeProductPopup = (isAdd = false, index = null) => {
     setIsAddingProduct(isAdd);
     setEditingProductIndex(index);
     setChangeProductPopup(true);
   };
+
+  useEffect(() => {
+    console.log("selectedProducts",selectedProducts);
+  },[selectedProducts,dispatch])
 
   const addProductPopup = () => {
     setIsAddingProduct(true);
@@ -376,7 +370,7 @@ const ProductToolbar = () => {
             openChangeProductPopup={openChangeProductPopup}
           />
         )}
-        {continueEditPopup && (<ContinueEditPopup handleContinuePopup={handleContinuePopup} />)}
+       
       </div>
     </div>
   );

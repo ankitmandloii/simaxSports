@@ -25,10 +25,10 @@ function ProductContainer() {
   const backDesignRef = useRef(null);
 
 
-  // const frontImage = useSelector(state => state?.slectedProducts?.selectedProducts[0]?.colors?.[0]?.img || "");
-  //   const backImage = useSelector(state => state?.slectedProducts?.selectedProducts[0]?.colors?.[1]?.img || "");
-  const frontImage = useSelector(state => state?.slectedProducts?.activeProduct?.imgurl || 'https://i.postimg.cc/vHZM9108/Rectangle-11.png');
-  const backImage = useSelector(state => state?.slectedProducts?.activeProduct?.colors?.[1]?.img);
+  // const frontImage = useSelector(state => state?.selectedProducts?.selectedProducts[0]?.colors?.[0]?.img || "");
+  //   const backImage = useSelector(state => state?.selectedProducts?.selectedProducts[0]?.colors?.[1]?.img || "");
+  const frontImage = useSelector(state => state?.selectedProducts?.activeProduct?.imgurl || 'https://i.postimg.cc/vHZM9108/Rectangle-11.png');
+  const backImage = useSelector(state => state?.selectedProducts?.activeProduct?.colors?.[1]?.img);
 
   const [frontBgImage, setFrontBgImage] = useState(frontImage);
   const [backBgImage, setBackBgImage] = useState(backImage || 'https://i.postimg.cc/SKrzZYbT/backimage-removebg-preview.png');
@@ -97,7 +97,7 @@ function ProductContainer() {
       setShowFrontImage(false);
     }
 
-    dispatch(() => setRendering(), 100)
+    setTimeout(() => setRendering(), 100)
 
   }, [activeSide])
 

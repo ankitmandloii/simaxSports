@@ -103,7 +103,11 @@ const productSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+      restoreDesignProductSlice(state, action) {
+      return { ...state, ...action.payload };
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchProducts.pending, (state) => {

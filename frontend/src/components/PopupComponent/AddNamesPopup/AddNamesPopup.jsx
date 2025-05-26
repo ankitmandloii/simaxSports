@@ -10,7 +10,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
   const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
   const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberProductList);
 
-  const selectedProducts = useSelector((state) => state.slectedProducts.selectedProducts);
+  const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
 
   const [allProducts, setAllProducts] = useState(nameAndNumberProductList);
 

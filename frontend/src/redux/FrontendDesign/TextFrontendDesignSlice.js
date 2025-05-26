@@ -261,7 +261,7 @@ const createNewText = ({ value, id }, length) => ({
   width: 150,
   height: 50,
   fontSize: 20,
-  position: { x: 393, y: 272 },
+  position: { x: 325, y: 272 },
   locked: false,
   layerIndex: length,
 });
@@ -696,6 +696,10 @@ const TextFrontendDesignSlice = createSlice({
       state.future[side] = [];
     },
 
+     restoreDesignFromSavedState(state, action) {
+      return { ...state, ...action.payload };
+    },
+
   },
 });
 
@@ -723,6 +727,7 @@ export const {
   addImageState,
   updateImageState,
   deleteImageState,
+  restoreDesignFromSavedState
 } = TextFrontendDesignSlice.actions;
 
 // ✅ Export Selectors

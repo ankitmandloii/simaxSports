@@ -19,18 +19,21 @@ export const fetchCollections = createAsyncThunk(
 );
 
 const collectionSlice = createSlice({
-  name: 'collections',
+  name: "collections",
   initialState: {
     collections: [],
     loading: false,
     hasNextPage: false,
-    cursor: '',
+    cursor: "",
   },
   reducers: {
     resetCollections: (state) => {
       state.collections = [];
-      state.cursor = '';
+      state.cursor = "";
       state.hasNextPage = false;
+    },
+    restoreDesignCollectionSlice(state, action) {
+      return { ...state, ...action.payload };
     },
   },
   extraReducers: (builder) => {
@@ -49,7 +52,7 @@ const collectionSlice = createSlice({
         );
 
         state.collections = [...state.collections, ...newCollections];
-        state.cursor = pageInfo.endCursor || ''; // fallback to empty
+        state.cursor = pageInfo.endCursor || ""; // fallback to empty
         state.hasNextPage = pageInfo.hasNextPage ?? false;
       })
 
@@ -59,5 +62,5 @@ const collectionSlice = createSlice({
   },
 });
 
-export const { resetCollections } = collectionSlice.actions;
+export const { resetCollections,restoreDesignCollectionSlice } = collectionSlice.actions;
 export default collectionSlice.reducer;

@@ -25,8 +25,11 @@ const selectedProductSlice = createSlice({
     setActiveProduct(state, action) {
       state.activeProduct = action.payload;
     },
+      restoreDesignSelectedProductSlice(state, action) {
+      return { ...state, ...action.payload };
+    },  
   },
 });
 
-export const { setSelectedProducts, addProduct, updateProduct, deleteProduct , setActiveProduct} = selectedProductSlice.actions;
+export const {restoreDesignSelectedProductSlice, setSelectedProducts, addProduct, updateProduct, deleteProduct , setActiveProduct} = selectedProductSlice.actions;
 export default selectedProductSlice.reducer;

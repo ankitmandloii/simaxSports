@@ -106,7 +106,7 @@ const MainDesignTool = ({
 
     textObjects.forEach((obj) => obj.setCoords());
 
-    console.log("textObject check for boundary",textObjects )
+    console.log("textObject check for boundary", textObjects)
 
     const allInside = textObjects.every((obj) => {
       const objBounds = obj.getBoundingRect(true);
@@ -130,7 +130,7 @@ const MainDesignTool = ({
 
   useEffect(() => {
     updateBoundaryVisibility();
-  }, [addName,addNumber,nameAndNumberDesignState, textContaintObject, updateBoundaryVisibility]);
+  }, [addName, addNumber, nameAndNumberDesignState, textContaintObject, updateBoundaryVisibility]);
 
 
   useEffect(() => {
@@ -406,7 +406,7 @@ const MainDesignTool = ({
 
       // Scale and reposition each object
 
-      mirrorCanvas.getObjects().forEach((obj) => {
+      mirrorCanvas.getObjects().filter((obj) => obj.type != "rect" && obj.type != "text").forEach((obj) => {
         obj.scaleX *= scale;
         obj.scaleY *= scale;
         obj.left = obj.left * scale + offsetX;
@@ -617,20 +617,34 @@ const MainDesignTool = ({
 
 
 
+    // Consolidated handlers
+    const handleObjectAdded = (e) => {
+      syncMirrorCanvas(e);
+      updateBoundaryVisibility(e);
+    };
+
+    const handleObjectModified = (e) => {
+      updateBoundaryVisibility(e);
+      syncMirrorCanvas();
+      handleScale(e);
+    };
+
     const events = [
-      ["object:added", updateBoundaryVisibility],
-      ["object:modified", updateBoundaryVisibility],
+      ["object:added", handleObjectAdded],
+      ["object:removed", handleObjectAdded],
+      ["object:modified", handleObjectModified],
       ["object:moving", updateBoundaryVisibility],
       ["object:scaling", updateBoundaryVisibility],
       ["selection:created", handleSelection],
-      ["selection:updated", handleSelection],
+      // ["selection:updated", handleSelection],  
       ["selection:cleared", handleSelectionCleared],
-      ["object:modified", syncMirrorCanvas],
-      ["object:modified", handleScale],
       ["editing:exited", updateBoundaryVisibility],
-      ["text:cut", updateBoundaryVisibility],    // Add this for cut operations
-      // ["object:moving",moveHandler]
+      ["text:cut", updateBoundaryVisibility],
+      ["text:added", syncMirrorCanvas], 
+      // ["object:moving", moveHandler], // Uncomment if needed
     ];
+
+
 
     events.forEach(([event, handler]) => canvas.on(event, handler));
 
@@ -665,6 +679,9 @@ const MainDesignTool = ({
         { crossOrigin: "anonymous" }
       );
     }
+    renderCurveTextObjects();
+    renderNameAndNumber(); //note : we have to call it for render object after canvas initialize
+    //want to do same for image 
 
     return () => {
       // Remove all listeners
@@ -677,6 +694,170 @@ const MainDesignTool = ({
       mirrorCanvasRef.current = null;
     };
   }, [iconImages, id, backgroundImage]);
+
+
+    const renderCurveTextObjects = () =>{
+       const canvas = fabricCanvasRef.current;
+      if (textContaintObject && textContaintObject.length == 0) {
+        let existingTextbox = canvas.getObjects().filter((obj) => obj.type === "curved-text" || obj.type === "textbox");
+        existingTextbox.forEach((obj) => canvas.remove(obj));
+        return;
+      }
+      if (Array.isArray(textContaintObject)) {
+        textContaintObject.forEach((textInput) => {
+          // console.log("text input daata", textInput);
+          // const isCurved = textInput.arc > 0;
+          const canvas = fabricCanvasRef.current;
+          const existingObj = canvas
+            .getObjects()
+            .find((obj) => obj.id === textInput.id);
+
+          const text = textInput.content || "";
+          const charSpacing = textInput.spacing || 0;
+          const fontSize = 60;
+
+          const clampScale = (value, min = 1, max = 10) => Math.max(min, Math.min(value, max));
+
+          const context = canvas.getElement().getContext("2d");
+          context.font = `${fontSize}px ${textInput.fontFamily || "Arial"}`;
+          const baseWidth = context.measureText(text).width;
+          const extraSpacing = (text.length - 1) * (charSpacing / 1000) * fontSize;
+          const measuredWidth = baseWidth + extraSpacing;
+          if (existingObj && text.trim() === "") {
+            canvas.remove(existingObj);
+            return;
+          }
+
+          // console.log("existing object", existingObj);
+          if (existingObj) {
+
+            existingObj.set({
+              width: Math.min(measuredWidth + 20, 200),
+            });
+            existingObj.set({
+              text: textInput.content,
+              warp: Number(textInput.arc),
+              spacing: textInput.spacing,
+              stroke: textInput.outLineColor || "",
+              strokeWidth: textInput.outLineSize || 0,
+              fill: textInput.textColor || "white",
+              angle: textInput.rotate || 0,
+              left: textInput.position.x || 300,
+              top: textInput.position.y || 300,
+              fontFamily: textInput.fontFamily || "Impact",
+              scaleX: textInput.scaleX,
+              scaleY: textInput.scaleY,
+              flipX: textInput.flipX,
+              flipY: textInput.flipY,
+              originX: "center",
+              originY: "center",
+              lockMovementX: textInput.locked,
+              lockMovementY: textInput.locked,
+              width: Math.min(measuredWidth + 20, 200),
+            });
+
+            existingObj.dirty = true;
+            existingObj.setCoords();
+            canvas.requestRenderAll();
+            existingObj.controls = createControls()
+
+            canvas.renderAll();
+          } else if (!existingObj) {
+            const curved = new fabric.CurvedText(textInput.content, {
+              id: textInput.id,
+              left: textInput.position.x || 300,
+              top: textInput.position.y || 300,
+              stroke: textInput.outLineColor || "",
+              strokeWidth: textInput.outLineSize || 0,
+              fill: textInput.textColor || "white",
+              spacing: textInput.spacing,
+              warp: Number(textInput.arc),
+              fontSize: textInput.fontSize,
+              fontFamily: textInput.fontFamily || "Impact",
+              originX: "center",
+              originY: "center",
+              hasControls: true,
+              flipX: textInput.flipX,
+              flipY: textInput.flipY,
+              angle: textInput.rotate || 0,
+              scaleX: textInput.scaleX,
+              scaleY: textInput.scaleY,
+              layerIndex: textInput.layerIndex,
+              maxWidth: 250,
+              // height: 100,
+              objectCaching: false,
+              lockMovementX: textInput.locked,
+              lockMovementY: textInput.locked,
+              borderColor: "skyblue",
+              borderDashArray: [4, 4],
+              hasBorders: true,
+              selectable: true,
+              evented: true,
+              hasControls: true,
+              width: Math.min(measuredWidth + 20, 200 ),
+
+            });
+
+            curved.on("mousedown", () => {
+              dispatch(setSelectedTextState(textInput.id));
+              navigate("/addText", { state: textInput });
+            });
+
+            curved.on("modified", (e) => {
+
+              const obj = e.target;
+              if (!obj) return;
+
+              const center = obj.getCenterPoint();
+
+              obj.setPositionByOrigin(center, 'center', 'center');
+              obj.setCoords();
+              globalDispatch("position", { x: obj.left, y: obj.top }, textInput.id);
+              globalDispatch("rotate", obj.angle, textInput.id);
+
+              canvas.renderAll();
+
+            });
+            //                     });
+
+            curved.setControlsVisibility({
+              mt: false,
+              mb: false,
+              ml: false,
+              mr: false,
+              tl: false,
+              tr: false,
+              bl: false,
+              br: false,
+              mtr: false,
+            });
+
+            curved.controls = createControls(); // your custom controls
+            canvas.add(curved);
+          }
+        });
+
+        // ✅ Layering Logic
+        const sorted = [...textContaintObject].sort(
+          (a, b) => a.layerIndex - b.layerIndex
+        );
+        sorted.forEach((text) => {
+          const obj = canvas.getObjects().find((o) => o.id === text.id);
+          if (obj) {
+            canvas.bringToFront(obj);
+          }
+        });
+
+        canvas.renderAll();
+      }
+  }
+
+  useEffect(() => {
+    // console.log("renderiing on layer index changed");
+     renderCurveTextObjects(); 
+
+  }, [activeSide, isRender, dispatch, id, textContaintObject]);
+
 
   // useEffect(() => {
   //   if (!previewUrl) return;
@@ -717,162 +898,6 @@ const MainDesignTool = ({
   //   });
   // }, [previewUrl]); // 👈 Reacts to previewUrl change
 
-
-  useEffect(() => {
-    // console.log("renderiing on layer index changed");
-    const canvas = fabricCanvasRef.current;
-    if (textContaintObject && textContaintObject.length == 0) {
-      let existingTextbox = canvas.getObjects().filter((obj) => obj.type === "curved-text" || obj.type === "textbox");
-      existingTextbox.forEach((obj) => canvas.remove(obj));
-      return;
-    }
-
-
-    if (Array.isArray(textContaintObject)) {
-      textContaintObject.forEach((textInput) => {
-        // console.log("text input daata", textInput);
-        // const isCurved = textInput.arc > 0;
-        const canvas = fabricCanvasRef.current;
-        const existingObj = canvas
-          .getObjects()
-          .find((obj) => obj.id === textInput.id);
-
-        const text = textInput.content || "";
-        const charSpacing = textInput.spacing || 0;
-        const fontSize = 60;
-
-        const clampScale = (value, min = 1, max = 10) => Math.max(min, Math.min(value, max));
-
-        const context = canvas.getElement().getContext("2d");
-        context.font = `${fontSize}px ${textInput.fontFamily || "Arial"}`;
-        const baseWidth = context.measureText(text).width;
-        const extraSpacing = (text.length - 1) * (charSpacing / 1000) * fontSize;
-        const measuredWidth = baseWidth + extraSpacing;
-        if (existingObj && text.trim() === "") {
-          canvas.remove(existingObj);
-          return;
-        }
-
-        // console.log("existing object", existingObj);
-        if (existingObj) {
-
-          existingObj.set({
-            width: Math.min(measuredWidth + 20, 200),
-          });
-          existingObj.set({
-            text: textInput.content,
-            warp: Number(textInput.arc),
-            spacing: textInput.spacing,
-            stroke: textInput.outLineColor || "",
-            strokeWidth: textInput.outLineSize || 0,
-            fill: textInput.textColor || "white",
-            angle: textInput.rotate || 0,
-            left: textInput.position.x || 300,
-            top: textInput.position.y || 300,
-            fontFamily: textInput.fontFamily || "Impact",
-            scaleX: textInput.scaleX,
-            scaleY: textInput.scaleY,
-            flipX: textInput.flipX,
-            flipY: textInput.flipY,
-            originX: "center",
-            originY: "center",
-            lockMovementX: textInput.locked,
-            lockMovementY: textInput.locked,
-            // width: Math.min(measuredWidth + 20, 200),
-          });
-
-          existingObj.dirty = true;
-          existingObj.setCoords();
-          canvas.requestRenderAll();
-          existingObj.controls = createControls()
-          canvas.renderAll();
-        } else if (!existingObj) {
-          const curved = new fabric.CurvedText(textInput.content, {
-            id: textInput.id,
-            left: textInput.position.x || 300,
-            top: textInput.position.y || 300,
-            stroke: textInput.outLineColor || "",
-            strokeWidth: textInput.outLineSize || 0,
-            fill: textInput.textColor || "white",
-            spacing: textInput.spacing,
-            warp: Number(textInput.arc),
-            fontSize: textInput.fontSize,
-            fontFamily: textInput.fontFamily || "Impact",
-            originX: "center",
-            originY: "center",
-            hasControls: true,
-            flipX: textInput.flipX,
-            flipY: textInput.flipY,
-            angle: textInput.rotate || 0,
-            scaleX: textInput.scaleX,
-            scaleY: textInput.scaleY,
-            layerIndex: textInput.layerIndex,
-            maxWidth: 250,
-            // height: 100,
-            objectCaching: false,
-            lockMovementX: textInput.locked,
-            lockMovementY: textInput.locked,
-            borderColor: "skyblue",
-            borderDashArray: [4, 4],
-            hasBorders: true,
-            selectable: true,
-            evented: true,
-            hasControls: true,
-
-          });
-
-          curved.on("mousedown", () => {
-            dispatch(setSelectedTextState(textInput.id));
-            navigate("/addText", { state: textInput });
-          });
-
-          curved.on("modified", (e) => {
-
-            const obj = e.target;
-            if (!obj) return;
-
-            const center = obj.getCenterPoint();
-
-            obj.setPositionByOrigin(center, 'center', 'center');
-            obj.setCoords();
-            globalDispatch("position", { x: obj.left, y: obj.top }, textInput.id);
-            globalDispatch("rotate", obj.angle, textInput.id);
-            canvas.renderAll();
-
-          });
-          //                     });
-
-          curved.setControlsVisibility({
-            mt: false,
-            mb: false,
-            ml: false,
-            mr: false,
-            tl: false,
-            tr: false,
-            bl: false,
-            br: false,
-            mtr: false,
-          });
-
-          curved.controls = createControls(); // your custom controls
-          canvas.add(curved);
-        }
-      });
-
-      // ✅ Layering Logic
-      const sorted = [...textContaintObject].sort(
-        (a, b) => a.layerIndex - b.layerIndex
-      );
-      sorted.forEach((text) => {
-        const obj = canvas.getObjects().find((o) => o.id === text.id);
-        if (obj) {
-          canvas.bringToFront(obj);
-        }
-      });
-
-      canvas.renderAll();
-    }
-  }, [activeSide, isRender, dispatch, id, textContaintObject]);
 
   //  *************************************************************  for rendering the name and number**********************************************************
 
@@ -968,8 +993,8 @@ const MainDesignTool = ({
   //   console.log(existingTextObject,"existingTextObject")
   //   canvas.renderAll();
   // }, [isRender,addName, addNumber, nameAndNumberDesignState,  ]);
-
-  useEffect(() => {
+  
+  const renderNameAndNumber = () =>{
     const canvas = fabricCanvasRef.current;
     if (!canvas || !nameAndNumberDesignState) {
       console.warn("Canvas or nameAndNumberDesignState is missing.");
@@ -1014,7 +1039,7 @@ const MainDesignTool = ({
 
     if (addName && name) {
       const nameText = new fabric.Text(name, {
-        fontSize: baseFontSize*0.3,
+        fontSize: baseFontSize * 0.3,
         fontFamily: fontFamily,
         fill: fontColor,
         originX: 'left', // manual centering
@@ -1067,33 +1092,36 @@ const MainDesignTool = ({
       obj.setPositionByOrigin(center, 'center', 'center');
       obj.setCoords();
       dispatch(updateNameAndNumberDesignState({
-        changes:{
+        changes: {
           "position": { x: obj.left, y: obj.top },
         }
       }));
     })
-    group.on("mousedown",() =>{
+    group.on("mousedown", () => {
       navigate("/addNames");
 
     })
 
-    console.log("group ",group,group.type);
+    console.log("group ", group, group.type);
     // Force recalculation of bounds
     group._calcBounds();
     group._updateObjectsCoords();
     group.set({
-      width:fontSize == "small" ? 60 : 150,
+      width: fontSize == "small" ? 60 : 150,
       left: position?.x || canvas.getWidth() / 2,
       top: position?.y || canvas.getHeight() / 2,
       // originX: 'center',
       // originY: 'center',
-      isDesignGroup : true,
-      hasBorders:false,
+      isDesignGroup: true,
+      hasBorders: false,
 
     });
 
     canvas.add(group);
     canvas.requestRenderAll();
+  }
+  useEffect(() => {
+    renderNameAndNumber();
   }, [isRender, addName, addNumber, nameAndNumberDesignState]);
 
 

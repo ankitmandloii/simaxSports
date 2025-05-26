@@ -22,7 +22,7 @@ const NamesToolbar = () => {
   const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
   const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
   // console.log(addNumber,addName,nameAndNumberDesign,"values");
-  const selectedProducts = useSelector((state) => state.slectedProducts.selectedProducts);
+  const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
 
 
   const dispatch = useDispatch();

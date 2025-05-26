@@ -1,9 +1,21 @@
 import React from 'react'
 import './ContinueEditPopup.css'
 import { CrossIcon } from '../../iconsSvg/CustomIcon'
+import { restoreDesignFromSavedState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice'
+import { useDispatch } from 'react-redux'
+import { restoreDesignSelectedProductSlice } from '../../../redux/ProductSlice/SelectedProductSlice'
+import { restoreAllSlicesFromLocalStorage } from '../../utils/RestoreSliceStates'
 const ContinueEditPopup = ({ handleContinuePopup }) => {
-  const continueEditHandler = () => { }
-  const StartFromScratchHandler = () => { }
+  const dispatch = useDispatch();
+
+  const continueEditHandler = async() => {
+    //  alert("continueEditHandler")    
+    dispatch(restoreAllSlicesFromLocalStorage());
+    handleContinuePopup();
+  }
+  const StartFromScratchHandler = () => {
+    handleContinuePopup();
+   }
   return (
     <div className="continue-overlay">
 

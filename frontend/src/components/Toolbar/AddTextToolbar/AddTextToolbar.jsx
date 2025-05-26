@@ -252,7 +252,14 @@ const AddTextToolbar = () => {
 
   const handleShowContent = (e) => {
     const { value } = e.target;
-    setShowContent(value.length > 0);
+    setShowContent(value.trim().length > 0);
+    console.log("value",value,value.length);
+    if(value.trim().length == 0 && value.trim() == ""){
+      setText("");
+       globalDispatch("content",'');
+      return;
+    }
+    
 
     // Remove only leading spaces
     setText(value.replace(/^\s+/, ''));
@@ -261,7 +268,7 @@ const AddTextToolbar = () => {
       globalDispatch("content", value.replace(/^\s+/, ''));
     } else {
       dispatch(addTextState({
-        value: value,
+        value: value.replace(/^\s+/, ''),
         id: String(currentTextToolbarId)
       }));
     }
