@@ -307,7 +307,7 @@ const initialState = {
         name: "NAME",
         number: "00",
         fontColor: "#000000",
-        fontFamily: "Interstate",
+        fontFamily: "Oswald",
         fontSize: "small",
         position: { x: 325, y: 300 },
       },
@@ -329,7 +329,7 @@ const initialState = {
         name: "NAME",
         number: "00",
         fontColor: "#000000",
-        fontFamily: "Interstate",
+        fontFamily: "Oswald",
         fontSize: "small",
         position: { x: 325, y: 300 },
       },
@@ -551,7 +551,6 @@ const TextFrontendDesignSlice = createSlice({
     // 🆕 Update design state (front/back)
     updateNameAndNumberDesignState: (state, action) => {
       const { side = state.activeSide, changes } = action.payload;
-      console.log("changes", changes);
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       if (state.present[side]?.nameAndNumberDesignState) {
         Object.assign(state.present[side].nameAndNumberDesignState, changes);

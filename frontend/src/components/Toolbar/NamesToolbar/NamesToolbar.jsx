@@ -61,18 +61,18 @@ const NamesToolbar = () => {
     const value = !(addName);
     setActiveName(value)
     dispatch(setAddName(value));
-    setTimeout(() => {
-      dispatch(setAddName(value));
-    }, 50);
+    // setTimeout(() => {
+    //   dispatch(setAddName(value));
+    // }, 50);
 
   }
   const handleAddNumber = () => {
     const value = !(addNumber);
     setActiveNumber(value)
     dispatch(setAddNumber(value));
-    setTimeout(() => {
-      dispatch(setAddNumber(value));
-    }, 50);
+    // setTimeout(() => {
+    //   dispatch(setAddNumber(value));
+    // }, 50);
   }
 
   // ************************************************* WE HAVE TO CHANGE THIS DYNAMICALLY LATER ***********************************************************************************
@@ -98,9 +98,9 @@ const NamesToolbar = () => {
     console.log("your value", `${value}`)
     console.log(value);
     dispatch(updateNameAndNumberDesignState({ changes: { fontFamily: value } }));
-    const cle = setTimeout(() => {
-      dispatch(updateNameAndNumberDesignState({ changes: { fontFamily: value } }));
-    }, 50);
+    // const cle = setTimeout(() => {
+    //   dispatch(updateNameAndNumberDesignState({ changes: { fontFamily: value } }));
+    // }, 50);
     setActiveFont(value);
   }
 
@@ -115,7 +115,7 @@ const NamesToolbar = () => {
     setActiveSize(nameAndNumberDesign?.fontSize);
 
     console.log("active Font", activeFont);
-  }, [addName, nameAndNumberDesign]);
+  }, [ nameAndNumberDesign]);
   return (
     <div className="toolbar-main-container">
       <div className='toolbar-main-heading'>
@@ -128,7 +128,7 @@ const NamesToolbar = () => {
         {/* Step 1 */}
         <div className="add-names-numberrs-row">
           <h5>Step1</h5>
-          <label className="namescheckbox-div" onClick={handleAddNames}>
+          <label className="namescheckbox-div" >
             <input
               type="checkbox"
               checked={activeName}
@@ -138,7 +138,7 @@ const NamesToolbar = () => {
             />
             <span>Add Names</span>
           </label>
-          <label className="namescheckbox-div" onClick={handleAddNumber}>
+          <label className="namescheckbox-div">
             <input
               type="checkbox"
               checked={activeNumber}
@@ -193,14 +193,14 @@ const NamesToolbar = () => {
             <h5>Font</h5>
             <div className="names-button-main-container">
               <button
-                className={`names-toolbar-button ${activeFont === "Interstate" ? 'active' : ''}`}
-                onClick={() => fontHandler("Interstate")}
+                className={`names-toolbar-button ${activeFont === "Oswald" ? 'active' : ''}`}
+                onClick={() => fontHandler("Oswald")}
               >
                 <img src={InterStatebutton} alt="Interstate" />
               </button>
               <button
-                className={`names-toolbar-button ${activeFont == 'PornStarAcademy' ? 'active' : ''}`}
-                onClick={() => fontHandler('PornStarAcademy')}
+                className={`names-toolbar-button ${activeFont == 'Chakra Petch' ? 'active' : ''}`}
+                onClick={() => fontHandler('Chakra Petch')}
               >
                 <img src={Collegiatebutton} alt="Collegiate" />
               </button>
