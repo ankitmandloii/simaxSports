@@ -631,7 +631,7 @@ const MainDesignTool = ({
     };
 
     const events = [
-      ["object:added", handleObjectAdded],
+      // ["object:added", handleObjectAdded],   
       ["object:removed", handleObjectAdded],
       ["object:modified", handleObjectModified],
       ["object:moving", updateBoundaryVisibility],
@@ -641,7 +641,7 @@ const MainDesignTool = ({
       ["selection:cleared", handleSelectionCleared],
       ["editing:exited", updateBoundaryVisibility],
       ["text:cut", updateBoundaryVisibility],
-      ["text:added", syncMirrorCanvas], 
+      // ["text:added", syncMirrorCanvas], 
       // ["object:moving", moveHandler], // Uncomment if needed
     ];
 
@@ -1012,7 +1012,7 @@ const MainDesignTool = ({
       id,
     } = nameAndNumberDesignState;
 
-    const objectId = id;
+    const objectId = id;  
 
     if (!addName && !addNumber) {
       const existingGroup = canvas.getObjects().find(obj => obj.id === objectId);
@@ -1031,11 +1031,9 @@ const MainDesignTool = ({
     const baseFontSize = fontSizeMap[fontSize] || 80;
 
     // Remove old group if it exists
-    const oldGroup = canvas.getObjects().find(obj => obj.id === objectId);
-    if (oldGroup) {
-      canvas.remove(oldGroup);
-    }
-
+    const oldGroup = canvas.getObjects().filter(obj => obj.isDesignGroup == true);
+    oldGroup.forEach((oldGroup) => canvas.remove(oldGroup));
+ 
     const textObjects = [];
 
     if (addName && name) {
@@ -1121,6 +1119,8 @@ const MainDesignTool = ({
     canvas.add(group);
     canvas.requestRenderAll();
   }
+
+  
   useEffect(() => {
     renderNameAndNumber();
   }, [isRender, addName, addNumber, nameAndNumberDesignState]);

@@ -325,7 +325,7 @@ const initialState = {
 
       // 🆕 Design settings for Name & Number (back)
       nameAndNumberDesignState: {
-        id: "front",
+        id: "back",
         name: "NAME",
         number: "00",
         fontColor: "#000000",

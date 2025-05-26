@@ -98,11 +98,14 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
 
               return (
                 <li key={productKey} className="modal-product">
-                  <div className="product-main">
+                  <div className="product-main" 
+                   onClick={(e) => handleColorWheelClick(e, productKey)}
+                  >
                     <img
                       src={displayImage}
                       alt={product.name}
                       className="modal-productimg"
+                      
                     />
                     <p>{product.name}</p>
                   </div>
@@ -113,7 +116,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                         src={colorwheel1}
                         alt="colors"
                         className="modal-productcolor-img"
-                        onClick={(e) => handleColorWheelClick(e, productKey)}
+                          
                       />
                       <p>{product.colors.length} Colors</p>
 
