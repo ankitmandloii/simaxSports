@@ -49,6 +49,12 @@
   border-radius: 4px;
   /* transition: background-color 0.3s ease; */
 }
+
+.font-Category-option-heading:hover {
+  background-color: #F0F0F0; /* Light gray background on hover */
+  color: #005bff; /* Change text color on hover */
+}
+
 .font-Category-option-heading-top-container{
   display: flex;
   align-items: center;
@@ -80,6 +86,11 @@
   border: 1px solid #D2D5D9;
   border-radius: 4px;
   transition: background-color 0.3s ease;
+}
+
+.font-Category-option:hover {
+  background-color: #F0F0F0; /* Light gray background on hover */
+  color: #005bff; /* Change text color on hover */
 }
 
 .font-list-scrollable {

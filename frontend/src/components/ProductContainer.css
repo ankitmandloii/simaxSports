@@ -251,6 +251,10 @@ canvas#mirrorCanvasBack {
     cursor: pointer;
 }
 
+.zoom-container:hover {
+    box-shadow: 0 0 0 2px #005BFF;
+}
+
 .zoom-container svg {
     min-width: 18px;
     min-height: 18px;

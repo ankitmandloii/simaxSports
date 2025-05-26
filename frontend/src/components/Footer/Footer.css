@@ -79,6 +79,12 @@
     /* transition: background-color 0.3s ease, transform 0.2s ease; */
     padding: 9.5px 26px;
 }
+
+.footer-btn:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.05);
+}
+
 .footer-btn1{
   height: 42px;
   background: #fff;
