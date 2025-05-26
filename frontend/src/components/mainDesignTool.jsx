@@ -31,21 +31,21 @@ const MainDesignTool = ({
   const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
 
 
-  const image = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images[0]);
-  const imgRef = useRef(null);
+  // const image = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images[0]);
+  // const imgRef = useRef(null);
 
-  const [previewUrl, setPreviewUrl] = useState(null);
-  console.log("image", image);
-  console.log("imgRef", imgRef);
-  console.log("previewUrl", previewUrl);
+  // const [previewUrl, setPreviewUrl] = useState(null);
+  // console.log("image", image);
+  // console.log("imgRef", imgRef);
+  // console.log("previewUrl", previewUrl);
 
-  useEffect(() => {
-    if (image?.src) {
-      setPreviewUrl(image.src);
-    }
-  }, [image?.src]);
+  // useEffect(() => {
+  //   if (image?.src) {
+  //     setPreviewUrl(image.src);
+  //   }
+  // }, [image?.src]);
 
-  // console.log("active side", activeSide);
+  console.log("active side", activeSide);
   // const [lastTranform, setLastTranform] = useState(null);
   const textContaintObject = useSelector(
     (state) => state.TextFrontendDesignSlice.present[activeSide].texts
@@ -676,56 +676,56 @@ const MainDesignTool = ({
       // mirrorCanvasRef.current.dispose();
       mirrorCanvasRef.current = null;
     };
-  }, [iconImages, id, backgroundImage, image]);
+  }, [iconImages, id, backgroundImage]);
 
-  useEffect(() => {
-    if (!previewUrl) return;
+  // useEffect(() => {
+  //   if (!previewUrl) return;
 
-    const canvas = fabricCanvasRef.current;
-    if (!canvas) return;
+  //   const canvas = fabricCanvasRef.current;
+  //   if (!canvas) return;
 
-    // Remove old image (if needed)
-    const existingImg = canvas.getObjects().find(obj => obj.type === 'image');
-    if (existingImg) {
-      canvas.remove(existingImg);
-    }
+  //   // Remove old image (if needed)
+  //   const existingImg = canvas.getObjects().find(obj => obj.type === 'image');
+  //   if (existingImg) {
+  //     canvas.remove(existingImg);
+  //   }
 
-    // Add new image
-    fabric.Image.fromURL(previewUrl, (img) => {
-      img.set({
-        left: 400,
-        top: 300,
-        scaleX: 0.5,
-        scaleY: 0.5,
-        objectCaching: false,
-        borderColor: "skyblue",
-        borderDashArray: [4, 4],
-        hasBorders: true,
-        customType: "main-image", // use this to identify the image later
-      });
+  //   // Add new image
+  //   fabric.Image.fromURL(previewUrl, (img) => {
+  //     img.set({
+  //       left: 400,
+  //       top: 300,
+  //       scaleX: 0.5,
+  //       scaleY: 0.5,
+  //       objectCaching: false,
+  //       borderColor: "skyblue",
+  //       borderDashArray: [4, 4],
+  //       hasBorders: true,
+  //       customType: "main-image", // use this to identify the image later
+  //     });
 
-      img.setControlsVisibility({
-        mt: false, mb: false, ml: false, mr: false,
-        tl: false, tr: false, bl: false, br: false, mtr: false,
-      });
+  //     img.setControlsVisibility({
+  //       mt: false, mb: false, ml: false, mr: false,
+  //       tl: false, tr: false, bl: false, br: false, mtr: false,
+  //     });
 
-      img.controls = createControls(); // custom controls
-      canvas.add(img);
-      canvas.renderAll();
+  //     img.controls = createControls(); // custom controls
+  //     canvas.add(img);
+  //     canvas.renderAll();
 
-      syncMirrorCanvas?.(); // if you have a sync function
-    });
-  }, [previewUrl]); // 👈 Reacts to previewUrl change
+  //     syncMirrorCanvas?.(); // if you have a sync function
+  //   });
+  // }, [previewUrl]); // 👈 Reacts to previewUrl change
 
 
   useEffect(() => {
     // console.log("renderiing on layer index changed");
     const canvas = fabricCanvasRef.current;
-    // if (textContaintObject && textContaintObject.length == 0) {
-    //   let existingTextbox = canvas.getObjects().filter((obj) => obj.type === "curved-text" || obj.type === "textbox");
-    //   existingTextbox.forEach((obj) => canvas.remove(obj));
-    //   return;
-    // }
+    if (textContaintObject && textContaintObject.length == 0) {
+      let existingTextbox = canvas.getObjects().filter((obj) => obj.type === "curved-text" || obj.type === "textbox");
+      existingTextbox.forEach((obj) => canvas.remove(obj));
+      return;
+    }
 
 
     if (Array.isArray(textContaintObject)) {
@@ -1101,15 +1101,15 @@ const MainDesignTool = ({
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
     const existingObjects = canvas.getObjects();
-    // existingObjects.forEach((obj) => {
-    //   if (
-    //     (obj.type === "curved-text" || obj.type === "text" || obj.type === "textbox") &&
-    //     obj.id &&
-    //     !textContaintObject.find((txt) => txt.id === obj.id)
-    //   ) {
-    //     canvas.remove(obj);
-    //   }
-    // });
+    existingObjects.forEach((obj) => {
+      if (
+        (obj.type === "curved-text" || obj.type === "text" || obj.type === "textbox") &&
+        obj.id &&
+        !textContaintObject.find((txt) => txt.id === obj.id)
+      ) {
+        canvas.remove(obj);
+      }
+    });
 
     const object = canvas.getObjects().find((obj) => obj.id === selectedTextId);
     // console.log("selectedTextId", selectedTextId, object)
