@@ -53,7 +53,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          limit: 10,
+          limit: 50,
           cursor: isLoadMore ? cursor : '',
         }),
       });

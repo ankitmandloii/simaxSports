@@ -117,7 +117,7 @@ const NamesToolbar = () => {
     setActiveSize(nameAndNumberDesign?.fontSize);
 
     console.log("active Font", activeFont);
-  }, [ nameAndNumberDesign]);
+  }, [nameAndNumberDesign]);
   return (
     <div className="toolbar-main-container">
       <div className='toolbar-main-heading'>
@@ -126,7 +126,7 @@ const NamesToolbar = () => {
         <p>Use personalized Names & Numbers for projects like team jerseys where you need a unique name and/or number for each item.</p>
       </div>
 
-      <div className="toolbar-box">
+      <div className="toolbar-box Names-toolbar-box ">
         {/* Step 1 */}
         <div className="add-names-numberrs-row">
           <h5>Step1</h5>

@@ -14,7 +14,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
 
   const [allProducts, setAllProducts] = useState(nameAndNumberProductList);
 
-  console.log(nameAndNumberProductList, "nameAndNumberProductList")
+  // console.log(nameAndNumberProductList, "nameAndNumberProductList")
 
   const dispatch = useDispatch();
 
@@ -95,6 +95,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
     const newAllProducts = [];
 
     selectedProducts.forEach((product) => {
+      console.log("product----------names", product)
       const addedColors = product.addedColors || [];
 
       const extraProducts = addedColors.map((variantProduct) => ({
@@ -109,7 +110,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
       }));
 
       const mainProduct = {
-        name: product.name,
+        name: product.name || product.title,
         id: product.id.split("/").reverse()[0],
         imgurl: product?.imgurl,
         color: product?.selectedColor?.name,

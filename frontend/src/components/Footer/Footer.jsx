@@ -7,16 +7,21 @@ import { FiSave } from "react-icons/fi";
 import { FaArrowRightLong } from "react-icons/fa6";
 import SaveDesignPopup from '../PopupComponent/SaveDesignPopup/SaveDesignPopup.jsx';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { requestExport } from '../../redux/CanvasExportDesign/canvasExportSlice.js';
 
 const Footer = () => {
   const [savedesignpopup, setSavedesignPopup] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const setNavigate = () => {
     navigate('/quantity');
   }
   const setSavedesignPopupHandler = () => {
     setSavedesignPopup(!savedesignpopup);
+    dispatch(requestExport())
   }
+
   return (
     <>
       <div className='footer-container'>

@@ -21,7 +21,8 @@ const MainDesignTool = ({
   backgroundImage,
   mirrorCanvasRef,
   initialDesign,
-  zoomLevel
+  zoomLevel,
+  canvasReff
 }) => {
 
   const activeSide = useSelector(
@@ -59,7 +60,7 @@ const MainDesignTool = ({
   // const isLocked = selectedTextId && textContaintObject.find((obj) => obj.id === selectedTextId).locked;
   // console.log("locked value", isLocked);
   const canvasRef = useRef(null);
-  const fabricCanvasRef = useRef(null);
+  const fabricCanvasRef = canvasReff;
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -1177,51 +1178,11 @@ const MainDesignTool = ({
     }
   };
 
-  const getCanvasAsPNG = () => {
-    const canvas = fabricCanvasRef.current;
-    if (!canvas) return null;
 
-    // Option 1: Basic PNG (default quality)
-    // return canvas.toDataURL('image/png');
-
-    // Option 2: Higher quality PNG with multiplier
-    return canvas.toDataURL({
-      format: 'png',
-      multiplier: 2, // 2x resolution for better quality
-      quality: 1,    // Highest quality (0 to 1)
-    });
-  };
-  const handlePrint = () => {
-    const pngDataUrl = getCanvasAsPNG();
-
-    console.log("pngDataUrl", pngDataUrl);
-    if (!pngDataUrl) {
-      console.error("Canvas not available");
-      return;
-    }
-
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-      <html>
-        <head><title>Print Design</title></head>
-        <body>
-          <img src="${pngDataUrl}" style="max-width:100%;" />
-          <script>
-            setTimeout(() => {
-              window.print();
-              window.close();
-            }, 500);
-          </script>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
-  };
 
   return (
     <div style={{ position: "relative" }} id="">
       <canvas ref={canvasRef} />
-      <button onClick={handlePrint}>print</button>
       <LayerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

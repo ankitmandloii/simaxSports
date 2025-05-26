@@ -5,16 +5,14 @@ import "./AddProductContainer.css";
 import colorwheel1 from "../../images/color-wheel1.png";
 import { fetchProducts } from "../../../redux/ProductSlice/ProductSlice";
 import { CrossIcon } from "../../iconsSvg/CustomIcon";
-
 const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProductPopup }) => {
   const dispatch = useDispatch();
   const { list: rawProducts, loading, error } = useSelector(
     (state) => state.products
   );
-  console.log("rawPRoducts", rawProducts)
+
   const [products, setProducts] = useState([]);
   const [productStates, setProductStates] = useState({});
-
 
   useEffect(() => {
     if (isOpen) {
@@ -26,7 +24,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
     if (rawProducts.length > 0) {
       const productsWithKeys = rawProducts.map((product) => ({
         ...product,
-        productKey: product.id || uuidv4(),
+        productKey: product.id || product.id || uuidv4(),
       }));
       setProducts(productsWithKeys);
 
@@ -34,7 +32,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
       productsWithKeys.forEach((product) => {
         states[product.productKey] = {
           isPopupOpen: false,
-          selectedColor: null,
+          selectedColor: null,  // will hold full color object now
           hoverImage: null,
         };
       });
@@ -54,21 +52,13 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
     }));
   };
 
-  const handleProductClick = (product, productKey) => {
-    if (!productStates[productKey]?.isPopupOpen) {
-      onProductSelect(product);
-      onClose();
-    }
-  };
-
   const handleColorWheelClick = (e, productKey) => {
     e.stopPropagation();
     const updatedStates = {};
     Object.keys(productStates).forEach((key) => {
       updatedStates[key] = {
         ...productStates[key],
-        isPopupOpen:
-          key === productKey ? !productStates[key].isPopupOpen : false,
+        isPopupOpen: key === productKey ? !productStates[key].isPopupOpen : false,
         hoverImage: null,
       };
     });
@@ -78,7 +68,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
   const handleColorSelect = (e, productKey, color) => {
     e.stopPropagation();
     updateProductState(productKey, {
-      selectedColor: color.name,
+      selectedColor: color, // store full color object now
       hoverImage: color.img,
     });
   };
@@ -97,7 +87,6 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
           <p>Select From Our Most Popular Products</p>
 
           {loading && products.length === 0 && <div className="loader" />}
-
           {error && <p style={{ color: "red" }}>{error}</p>}
 
           <ul className="product-list">
@@ -109,10 +98,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
 
               return (
                 <li key={productKey} className="modal-product">
-                  <div
-                    className="product-main"
-                    onClick={() => handleProductClick(product, productKey)}
-                  >
+                  <div className="product-main">
                     <img
                       src={displayImage}
                       alt={product.name}
@@ -153,7 +139,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                               <span
                                 key={`${productKey}-${color.name}`}
                                 title={color.name}
-                                className={`color-swatch ${state.selectedColor === color.name
+                                className={`color-swatch ${state.selectedColor?.name === color.name
                                   ? "selected"
                                   : ""
                                   }`}
@@ -165,7 +151,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                                   borderRadius: "50%",
                                   display: "inline-block",
                                   border:
-                                    state.selectedColor === color.name
+                                    state.selectedColor?.name === color.name
                                       ? "2px solid black"
                                       : "1px solid gray",
                                 }}
@@ -191,24 +177,19 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                               className="add-product-btn-popup"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                const colorObj = product.colors.find(
-                                  (c) => c.name === state.selectedColor
-                                );
-                                console.log("Adding product:", product);
-                                console.log("Selected color:", state.selectedColor);
-                                console.log("Color object:", colorObj);
 
-                                const selectedImage = colorObj?.img || product.imgurl;
+                                if (!state.selectedColor) return;
 
+                                // Pass entire product with full colors & variants + selectedColor object
                                 onProductSelect({
                                   ...product,
                                   selectedColor: state.selectedColor,
-                                  selectedImage,
                                 });
 
                                 updateProductState(productKey, {
                                   isPopupOpen: false,
                                   hoverImage: null,
+                                  selectedColor: null,
                                 });
                                 onClose();
                               }}
@@ -216,7 +197,6 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                             >
                               Add Product
                             </button>
-
                           </div>
                         </div>
                       )}
@@ -228,15 +208,19 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
           </ul>
 
           <div className="modal-allproductButtonContainer">
-            <button className="modal-AllproductButton" onClick={() => {
-              openChangeProductPopup(true, null);
-              onClose();
-            }}
-            >BROWSE ALL PRODUCTS</button>
+            <button
+              className="modal-AllproductButton"
+              onClick={() => {
+                openChangeProductPopup(true, null);
+                onClose();
+              }}
+            >
+              BROWSE ALL PRODUCTS
+            </button>
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 
