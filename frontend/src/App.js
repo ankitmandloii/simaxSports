@@ -12,6 +12,7 @@ import AddArtToolbar from './components/Toolbar/AddArtToolbar/AddArtToolbar';
 import NamesToolbar from './components/Toolbar/NamesToolbar/NamesToolbar';
 import QuantityToolbar from './components/Toolbar/QuantityToolbar/QuantityToolbar';
 import AddImageToolbar from './components/Toolbar/AddImageToolbar/AddImageToolbar';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   const location = useLocation();
@@ -49,6 +50,16 @@ function App() {
           </div>
 
         </div>
+         <ToastContainer 
+        position="bottom-center" // or 'top-center', 'bottom-left', etc.
+        autoClose={3000}     // time in ms
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light" // or "dark", "colored"
+      />
       </div>
     </>
   );

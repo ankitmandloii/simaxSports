@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { removeNameAndNumberProduct, setActiveSide, setAddName, UpdateNameAndNumberProduct, setAddNumber, updateNameAndNumberDesignState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 import { RxFontFamily } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const NamesToolbar = () => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
@@ -31,6 +32,7 @@ const NamesToolbar = () => {
 
   const showAddnamesPopupHAndler = () => {
     if (!selectedProducts || selectedProducts.length == 0) {
+      toast.info("Please Add Product First");      // Orange
       navigate("/product");
       return;
     }

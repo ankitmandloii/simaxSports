@@ -117,6 +117,7 @@ function ProductContainer() {
 
         {/* Side Preview (Mirror Canvases) */}
 
+        <div className="Prouduct-mirror-container">
         <div className="Prouduct-mirror-left-container">
           <div className="corner-img-canva-container" id="mirror-container" onClick={ShowFront}>
             <canvas id="mirrorCanvasFront" width="300" height="180" ref={mirrorCanvasRef} style={{ border: ShowFrontImage ? "2px solid #005BFF" : "2px solid #D2D5D9" }} />
@@ -128,11 +129,14 @@ function ProductContainer() {
             <p>Back</p>
           </div>
 
-          <div className="zoom-container" onClick={toggleZoom}>
+       
+        </div>
+           <div className="zoom-container" onClick={toggleZoom}>
             {logo}
             <p>Zoom</p>
           </div>
-        </div>
+          </div>
+
       </div>
     </div>
 
