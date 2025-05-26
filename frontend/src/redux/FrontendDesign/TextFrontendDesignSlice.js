@@ -517,10 +517,31 @@ const TextFrontendDesignSlice = createSlice({
       const side = state.activeSide;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       state.present = {
-        front: { selectedTextId: null, texts: [], setRendering: false },
-        back: { selectedTextId: null, texts: [], setRendering: false },
+        front: {
+          selectedTextId: null, texts: [], nameAndNumberDesignState: {
+            id: "front",
+            name: "NAME",
+            number: "00",
+            fontColor: "#000000",
+            fontFamily: "Oswald",
+            fontSize: "small",
+            position: { x: 325, y: 300 },
+          }, setRendering: false
+        },
+        back: {
+          selectedTextId: null, texts: [], nameAndNumberDesignState: {
+            id: "front",
+            name: "NAME",
+            number: "00",
+            fontColor: "#000000",
+            fontFamily: "Oswald",
+            fontSize: "small",
+            position: { x: 325, y: 300 },
+          }, setRendering: false
+        },
         leftSleeve: { selectedTextId: null, texts: [], setRendering: false },
         rightSleeve: { selectedTextId: null, texts: [], setRendering: false },
+
       };
       state.future = {
         front: [],
@@ -529,6 +550,8 @@ const TextFrontendDesignSlice = createSlice({
         rightSleeve: [],
       };
       state.present[side].setRendering = !state.present[side].setRendering;
+      state.addName = false;
+      state.addNumber = false;
     },
     setRendering: (state, action) => {
       const side = state.activeSide;
