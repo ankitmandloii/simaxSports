@@ -266,6 +266,26 @@ const createNewText = ({ value, id }, length) => ({
   layerIndex: length,
 });
 
+
+const createNewImage = ({ id, src }, length) => ({
+  id: id,
+  src,
+  scaleX: 1,
+  scaleY: 1,
+  originalScaleX: 1,
+  originalScaleY: 1,
+  rotate: 0,
+  flipX: false,
+  flipY: false,
+  width: 150,
+  height: 150,
+  position: { x: 320, y: 300 },
+  locked: false,
+  layerIndex: length,
+});
+
+
+
 const initialState = {
   activeSide: "front",
   past: {
@@ -278,6 +298,7 @@ const initialState = {
     front: {
       selectedTextId: null,
       texts: [],
+      images: [],
       setRendering: false,
 
       // 🆕 Design settings for Name & Number (front)
@@ -299,6 +320,7 @@ const initialState = {
     back: {
       selectedTextId: null,
       texts: [],
+      images: [],
       setRendering: false,
 
       // 🆕 Design settings for Name & Number (back)
@@ -620,6 +642,38 @@ const TextFrontendDesignSlice = createSlice({
         side
       ].nameAndNumberProductList.filter((product) => product.id !== id);
     },
+
+
+
+    addImageState: (state, action) => {
+      const { src, id, side = state.activeSide } = action.payload;
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+      const newImage = createNewImage({ src, id }, state.present[side].images.length);
+      state.present[side].images.push(newImage);
+      state.future[side] = [];
+      state.present[side].setRendering = !state.present[side].setRendering;
+    },
+
+    updateImageState: (state, action) => {
+      const { id, changes, side = state.activeSide, isRenderOrNot } = action.payload;
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+      const image = state.present[side].images.find((img) => img.id === id);
+      if (image && !image.locked) Object.assign(image, changes);
+      if (isRenderOrNot) {
+        state.present[side].setRendering = !state.present[side].setRendering;
+      }
+      state.future[side] = [];
+    },
+
+    deleteImageState: (state, action) => {
+      const side = state.activeSide;
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+      state.present[side].images = state.present[side].images.filter(
+        (img) => img.id !== action.payload
+      );
+      state.future[side] = [];
+    },
+
   },
 });
 
@@ -644,6 +698,9 @@ export const {
   removeNameAndNumberProduct,
   UpdateNameAndNumberProduct,
   addNameAndNumberProduct,
+  addImageState,
+  updateImageState,
+  deleteImageState,
 } = TextFrontendDesignSlice.actions;
 
 // ✅ Export Selectors

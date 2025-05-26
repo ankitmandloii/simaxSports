@@ -28,7 +28,7 @@ import { useLocation } from "react-router-dom";
 const filters = [
   { name: 'Normal', src: '/images/normal.png' },
   { name: 'Single Color', src: '/images/single-color.png' },
-  { name: 'Black/White', src: '/images/black-white.png' },
+  { name: 'Black/Whte', src: '/images/black-white.png' },
 ];
 
 
@@ -39,6 +39,28 @@ const AddImageToolbar = () => {
   const [currentTextToolbarId, setCurrentTextToolbarId] = useState(String(Date.now()));  // current id of toolbar
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   let textContaintObject = allTextInputData.find((text) => text.id === currentTextToolbarId);
+  
+
+const [currentImageToolbarId, setCurrentImageToolbarId] = useState(String(Date.now()));  // current id of toolbar
+ 
+
+const image = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images[0]);
+// let imageContaintObject = image.find((image) => image.id === currentImageToolbarId);
+
+const [selectedFilter, setSelectedFilter] = useState('Normal');
+  const imgRef = useRef(null);
+
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+
+
+
+  useEffect(() => {
+    if (image?.src) {
+      setPreviewUrl(image.src);
+    }
+  }, [image?.src]);
+
 
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
   const isLocked = textContaintObject?.locked;
@@ -362,20 +384,6 @@ const AddImageToolbar = () => {
   //   setSuperResolution(prev => !prev);
   // };
 
-  const [selectedFilter, setSelectedFilter] = useState('Normal');
-const location = useLocation();
-  const files = location.state?.files || [];
-  const [previewUrl, setPreviewUrl] = useState(null);
-
-   useEffect(() => {
-    if (files.length > 0) {
-      const file = files[0]; // Just showing the first one
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-
-      return () => URL.revokeObjectURL(url); // Clean up
-    }
-  }, [files]);
 
 
 
@@ -412,16 +420,17 @@ const location = useLocation();
                       className={`filter-option ${selectedFilter === filter.name ? 'active' : ''}`}
                       onClick={() => setSelectedFilter(filter.name)}
                     >
-                      <img src={previewUrl} alt={filter.name} className="filter-image" />
+                      <img ref={imgRef}
+                        src={previewUrl} alt={filter.name} className="filter-image" />
                       <div className="filter-label">{filter.name}</div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <hr />
+              {selectedFilter === "Normal" || selectedFilter === "Single Color" && (<hr />)}
 
-              <div className='toolbar-box-Font-Value-set-inner-container'>
+              {selectedFilter === "Normal" && (<div className='toolbar-box-Font-Value-set-inner-container'>
                 <div className='toolbar-box-Font-Value-set-inner-actionheading'>Edit Colors</div>
                 <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleTextColorPopup}>
                   <SpanColorBox color={textColor} />
@@ -439,9 +448,71 @@ const location = useLocation();
 
                   )}
                 </div>
+              </div>)}
+
+
+
+              {selectedFilter === "Single Color" && (<div className='toolbar-box-Font-Value-set-inner-container'>
+                <div className='toolbar-box-Font-Value-set-inner-actionheading'>Colors</div>
+                <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleTextColorPopup}>
+                  <SpanColorBox color={textColor} />
+                  <span><AngleActionIcon /></span>
+                  {textColorPopup && (
+                    <ChooseColorBox
+                      addColorPopupHAndler={toggleTextColorPopup}
+                      title="Text Color"
+                      defaultColor={textColor}
+                      onColorChange={textColorChangedFunctionCalled}  // Update text color
+                      button={true}
+                    />
+
+                  )}
+                </div>
+              </div>)}
+              {selectedFilter === "Black/Whte" && null}
+
+
+              {selectedFilter === "Single Color" && (<hr />)}
+
+
+
+              {selectedFilter === "Single Color" && (<div className="toolbar-box-Font-Value-set-inner-container">
+                <div className="toolbar-box-Font-Value-set-inner-actionheading">
+                  Inverts Colors
+
+                </div>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                  // checked={"removeBackground"}
+                  // onChange={"toggleRemoveBackground"}
+                  />
+                  <span className="slider round"></span>
+                </label>
               </div>
 
+              )}
               <hr />
+
+
+              {selectedFilter === "Single Color" && (<div className="toolbar-box-Font-Value-set-inner-container">
+                <div className="toolbar-box-Font-Value-set-inner-actionheading">
+                  Make Solid
+
+                </div>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                  // checked={"removeBackground"}
+                  // onChange={"toggleRemoveBackground"}
+                  />
+                  <span className="slider round"></span>
+                </label>
+              </div>
+
+              )}
+              {(selectedFilter === "Single Color" && <hr />)}
+
               <div className="toolbar-box-Font-Value-set-inner-container">
                 <div className="toolbar-box-Font-Value-set-inner-actionheading">
                   Remove Background
@@ -496,7 +567,8 @@ const location = useLocation();
 
 
               <div className='toolbar-box-Font-Value-set-inner-container'>
-                <div className='toolbar-box-Font-Value-set-inner-actionheading'>Replace Background With AI</div>
+                <div className='toolbar-box-Font-Value-set-inner-actionheading'>Replace Background With AI<span className="ai-badge">AI</span></div>
+
                 <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleOutlineColorPopup}>
 
 
@@ -583,37 +655,7 @@ const location = useLocation();
               <hr></hr>
               <p className='add-image-reset-text'>Reset To Default</p>
 
-              {/* <div className='toolbar-box-Font-Value-set-inner-container'>
-                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>
-                      Spacing
-                    </div>
-                    <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
-                      <input
-                        type="range"
-                        id="min"
-                        name="min"
-                        min="0"
-                        max="50"
-                        step="0.1"
-                        value={rangeValuesSpacing}
-                        onChange={handleRangeInputSpacingChange}
-                      />
 
-                      <input
-                        type="number"
-                        min="0"
-                        max="50"
-                        step="0.1"
-                        value={rangeValuesSpacing}
-                        onChange={handleRangeInputSpacingChange}
-                        onBlur={handleSpacingBlur}
-                        className="SpanValueBox-input"
-                      />
-
-                      
-
-                    </div>
-                  </div> */}
 
             </div>
 

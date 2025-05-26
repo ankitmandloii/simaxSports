@@ -257,7 +257,7 @@
 .add-image-reset-text {
     cursor: pointer;
     font-size: 10px;
-    color: red;
+    color: #005bff;
 }
 
 /* 
@@ -343,7 +343,7 @@ input:checked + .slider:before {
 }
 
 .filter-option.active {
-  border-color: red;
+  border-color: #005bff;
   position: relative;
 }
 
@@ -354,14 +354,14 @@ input:checked + .slider:before {
 }
 
 .filter-option.active .filter-label {
-  color: orangered;
+  color: #005bff;
   font-weight: bold;
-  border-top: 2px solid orangered;
+  border-top: 2px solid #005bff;
   padding-top: 4px;
 }
 
 .filter-image {
   width: 60px;
   height: 80px;
-  object-fit: cover;
+  object-fit: contain;
 }

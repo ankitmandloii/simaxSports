@@ -30,6 +30,21 @@ const MainDesignTool = ({
   const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
   const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
 
+
+  const image = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images[0]);
+  const imgRef = useRef(null);
+
+  const [previewUrl, setPreviewUrl] = useState(null);
+  console.log("image", image);
+  console.log("imgRef", imgRef);
+  console.log("previewUrl", previewUrl);
+
+  useEffect(() => {
+    if (image?.src) {
+      setPreviewUrl(image.src);
+    }
+  }, [image?.src]);
+
   // console.log("active side", activeSide);
   // const [lastTranform, setLastTranform] = useState(null);
   const textContaintObject = useSelector(
@@ -503,6 +518,7 @@ const MainDesignTool = ({
       visible: false,
     });
 
+
     canvas.add(boundaryBox);
     canvas.add(warningText);
 
@@ -660,8 +676,46 @@ const MainDesignTool = ({
       // mirrorCanvasRef.current.dispose();
       mirrorCanvasRef.current = null;
     };
-  }, [iconImages, id, backgroundImage]);
+  }, [iconImages, id, backgroundImage, image]);
 
+  useEffect(() => {
+    if (!previewUrl) return;
+
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+
+    // Remove old image (if needed)
+    const existingImg = canvas.getObjects().find(obj => obj.type === 'image');
+    if (existingImg) {
+      canvas.remove(existingImg);
+    }
+
+    // Add new image
+    fabric.Image.fromURL(previewUrl, (img) => {
+      img.set({
+        left: 400,
+        top: 300,
+        scaleX: 0.5,
+        scaleY: 0.5,
+        objectCaching: false,
+        borderColor: "skyblue",
+        borderDashArray: [4, 4],
+        hasBorders: true,
+        customType: "main-image", // use this to identify the image later
+      });
+
+      img.setControlsVisibility({
+        mt: false, mb: false, ml: false, mr: false,
+        tl: false, tr: false, bl: false, br: false, mtr: false,
+      });
+
+      img.controls = createControls(); // custom controls
+      canvas.add(img);
+      canvas.renderAll();
+
+      syncMirrorCanvas?.(); // if you have a sync function
+    });
+  }, [previewUrl]); // 👈 Reacts to previewUrl change
 
 
   useEffect(() => {
