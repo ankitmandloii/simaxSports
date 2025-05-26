@@ -3,51 +3,50 @@ import { fabric } from "fabric";
 const CurvedText = fabric.util.createClass(fabric.Object, {
   type: "curved-text",
 
-  initialize: function (text, options = {}) {
+  initialize: function(text, options) {
+    options = options || {};
     this.callSuper("initialize", options);
 
     this.text = text || "";
 
-    // Positioning
+    this.id = options.id || "";
     this.left = options.left || 300;
     this.top = options.top || 300;
+    this.spacing = options.spacing || 0;
+
+    this.stroke = options.stroke || "";
+    this.strokeWidth = options.strokeWidth || 0;
+    this.fill = options.fill || "white";
+
+    this.warp = Number(options.warp) || 0;
+
+    this.fontSize = options.fontSize || 16;
+    this.fontFamily = options.fontFamily || "Impact";
     this.originX = options.originX || "center";
     this.originY = options.originY || "center";
 
-    // Style
-    this.spacing = options.spacing || 0;
-    this.fontSize = options.fontSize || 16;
-    this.fontFamily = options.fontFamily || "Impact";
-    this.fill = options.fill || "white";
-    this.stroke = options.stroke || "";
-    this.strokeWidth = options.strokeWidth || 0;
-    this.lineHeight = options.lineHeight || 1.2;
-    this.maxWidth = options.maxWidth || null;
-    // this.lockMovementY = options.lockMovementY || false;
-    // this.lockMovementX = options.lockMovementX || false;
-    // Warp amount
-    this.warp = Number(options.warp) || 0;
-
-    // Transform
-    this.angle = options.angle || 0;
-    this.scaleX = options.scaleX || 1;
-    this.scaleY = options.scaleY || 1;
     this.flipX = options.flipX || false;
     this.flipY = options.flipY || false;
 
-    // Fabric properties
-    // this.selectable = options.selectable;
-    // this.evented = options.evented ;
-    // this.hasControls = options.hasControls;
-    // this.hasBorders = options.hasBorders;
-    // this.objectCaching =  options.objectCaching;
-    // this.hoverCursor =  'move';
-    // this.moveCursor = 'move';
+    this.angle = options.angle || 0;
+    this.scaleX = options.scaleX || 1;
+    this.scaleY = options.scaleY || 1;
+    this.layerIndex = options.layerIndex || 0;
 
+    this.lineHeight = options.lineHeight || 1.2;
+
+    this.originX = "center";
+    this.originY = "center";
+    
+    this.objectCaching = false;
+
+    this.maxWidth = options.maxWidth || null; // maxWidth option
   },
 
-  _wrapTextToLines: function (ctx, text, maxWidth, spacing) {
-    if (!maxWidth) return text.split("\n");
+  _wrapTextToLines: function(ctx, text, maxWidth, spacing) {
+    if (!maxWidth) {
+      return text.split("\n");
+    }
 
     const lines = [];
     const paragraphs = text.split("\n");
@@ -56,43 +55,89 @@ const CurvedText = fabric.util.createClass(fabric.Object, {
       const words = paragraph.split(" ");
       let currentLine = "";
 
-      for (let word of words) {
-        let testLine = currentLine ? currentLine + " " + word : word;
-        const testWidth = ctx.measureText(testLine).width + (testLine.length - 1) * spacing;
+      for (let n = 0; n < words.length; n++) {
+        let word = words[n];
 
-        if (testWidth <= maxWidth) {
-          currentLine = testLine;
-        } else {
-          if (currentLine) lines.push(currentLine);
-          currentLine = word;
+        while (word.length > 0) {
+          let testLine = currentLine ? currentLine + " " + word : word;
+          let testWidth = ctx.measureText(testLine).width + (testLine.length - 1) * spacing;
+
+          if (testWidth <= maxWidth) {
+            currentLine = testLine;
+            word = "";
+          } else if (word.length === 1) {
+            if (currentLine) {
+              lines.push(currentLine);
+              currentLine = word;
+            } else {
+              currentLine = word;
+            }
+            word = "";
+          } else {
+            let subWord = "";
+            for (let i = 1; i <= word.length; i++) {
+              let part = word.slice(0, i);
+              testLine = currentLine ? currentLine + " " + part : part;
+              testWidth = ctx.measureText(testLine).width + (testLine.length - 1) * spacing;
+              if (testWidth > maxWidth) {
+                break;
+              }
+              subWord = part;
+            }
+
+            if (!subWord) {
+              if (currentLine) {
+                lines.push(currentLine);
+              }
+              currentLine = "";
+              subWord = word[0];
+              word = word.slice(1);
+              continue;
+            }
+
+            if (subWord.length === word.length) {
+              currentLine = currentLine ? currentLine + " " + subWord : subWord;
+              word = "";
+            } else {
+              if (currentLine) {
+                lines.push(currentLine);
+              }
+              currentLine = subWord;
+              word = word.slice(subWord.length);
+            }
+          }
         }
       }
-
-      if (currentLine) lines.push(currentLine);
+      if (currentLine) {
+        lines.push(currentLine);
+      }
     }
 
     return lines;
   },
 
-  _render: function (ctx) {
+  _render: function(ctx) {
+    const spacing = typeof this.spacing === "number" && this.spacing >= 0 ? this.spacing : 1;
     ctx.save();
     ctx.font = `${this.fontSize}px ${this.fontFamily}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    const spacing = this.spacing >= 0 ? this.spacing : 1;
-    const lines = (this.warp === 0 && this.maxWidth)
-      ? this._wrapTextToLines(ctx, this.text, this.maxWidth, spacing)
-      : this.text.split("\n");
+    // Wrap the text based on maxWidth if maxWidth is set and warp == 0 (straight text)
+    let  lines = this._wrapTextToLines(ctx, this.text, this.maxWidth, spacing);
+
 
     const direction = this.warp >= 0 ? 1 : -1;
     const warpAbs = Math.abs(this.warp);
     const lineHeight = this.fontSize * this.lineHeight;
+    const padding = 0;
 
+    // Calculate bounding box min/max values
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     const drawOps = [];
 
     if (this.warp === 0) {
+      // Straight text rendering (with wrapping lines)
       for (let j = 0; j < lines.length; j++) {
         const line = lines[j];
         const y = j * lineHeight + lineHeight / 2;
@@ -123,6 +168,7 @@ const CurvedText = fabric.util.createClass(fabric.Object, {
         }
       }
     } else {
+      // Curved/warped text rendering (no wrapping)
       for (let j = 0; j < lines.length; j++) {
         const line = lines[j];
         const yOffset = j * lineHeight;
@@ -152,22 +198,30 @@ const CurvedText = fabric.util.createClass(fabric.Object, {
       }
     }
 
-    // Bounding box
-    const width = maxX - minX;
-    const height = maxY - minY;
-    this.width = this.maxWidth && width > this.maxWidth ? this.maxWidth : width;
-    this.height = height;
+    // Set bounding box width and height
+    const calculatedWidth = (maxX - minX) + padding * 2;
+    const calculatedHeight = (maxY - minY) + padding * 2;
 
+    if (this.maxWidth && calculatedWidth > this.maxWidth) {
+      this.width = this.maxWidth;
+    } else {
+      this.width = calculatedWidth;
+    }
+    this.height = calculatedHeight;
+
+    // Center offset
     const offsetX = (minX + maxX) / 2;
     const offsetY = (minY + maxY) / 2;
+
     ctx.translate(-offsetX, -offsetY);
 
+    // Draw each character
     for (const op of drawOps) {
       ctx.save();
       if (op.angle !== undefined) {
         ctx.translate(op.x, op.y);
         ctx.rotate(op.angle);
-        if (this.stroke && this.strokeWidth) {
+        if (this.stroke && this.strokeWidth > 0) {
           ctx.lineWidth = this.strokeWidth;
           ctx.strokeStyle = this.stroke;
           ctx.strokeText(op.char, 0, 0);
@@ -175,7 +229,7 @@ const CurvedText = fabric.util.createClass(fabric.Object, {
         ctx.fillStyle = this.fill;
         ctx.fillText(op.char, 0, 0);
       } else {
-        if (this.stroke && this.strokeWidth) {
+        if (this.stroke && this.strokeWidth > 0) {
           ctx.lineWidth = this.strokeWidth;
           ctx.strokeStyle = this.stroke;
           ctx.strokeText(op.char, op.x, op.y);
@@ -189,50 +243,36 @@ const CurvedText = fabric.util.createClass(fabric.Object, {
     ctx.restore();
   },
 
-  toObject: function (propertiesToInclude) {
+  toObject: function(propertiesToInclude) {
     return fabric.util.object.extend(this.callSuper("toObject", propertiesToInclude), {
       text: this.text,
-      spacing: this.spacing,
       fontSize: this.fontSize,
-      fontFamily: this.fontFamily,
+      warp: this.warp,
+      spacing: this.spacing,
       fill: this.fill,
       stroke: this.stroke,
+      originX: this.originX,
+      originY: this.originY,
       strokeWidth: this.strokeWidth,
-      warp: this.warp,
-      maxWidth: this.maxWidth,
+      fontFamily: this.fontFamily,
       lineHeight: this.lineHeight,
       flipX: this.flipX,
       flipY: this.flipY,
       angle: this.angle,
       scaleX: this.scaleX,
       scaleY: this.scaleY,
-      selectable: this.selectable,
-      evented: this.evented,
-      hoverCursor: this.hoverCursor,
-      moveCursor: this.moveCursor,
-      lockMovementY:this.lockMovementY,
-      lockMovementX:this.lockMovementX
-
+      layerIndex: this.layerIndex,
+      maxWidth: this.maxWidth,
     });
   },
-
-  containsPoint: function (point) {
-    const rect = this.getBoundingRect();
-    return (
-      point.x >= rect.left &&
-      point.x <= rect.left + rect.width &&
-      point.y >= rect.top &&
-      point.y <= rect.top + rect.height
-    );
-  }
 });
 
-// Fabric requires fromObject to deserialize
-CurvedText.fromObject = function (object, callback) {
+// fromObject for JSON deserialization
+CurvedText.fromObject = function(object, callback) {
   return callback(new CurvedText(object.text, object));
 };
 
-// Attach to fabric
+// attach to fabric namespace
 fabric.CurvedText = CurvedText;
 
 export default CurvedText;
