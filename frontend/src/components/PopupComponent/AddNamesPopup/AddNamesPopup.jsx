@@ -160,7 +160,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
     const isValid = selectionsRows.every(([key, rows]) =>
       rows.every(row => {
         const isSizeFilled = !row.size || row.size !== '';
-        const isNameFilled = !addName || row.name !== '';   
+        const isNameFilled = !addName || row.name !== '';
         const isNumberFilled = !addNumber || row.number !== '';
         return isSizeFilled && isNameFilled && isNumberFilled;
       })

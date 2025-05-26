@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './ProductToolbar.css';
 import { IoAdd } from 'react-icons/io5';
 import colorwheel from '../../images/color-wheel.png';
@@ -6,7 +6,6 @@ import ChangePopup from '../../PopupComponent/ChangeProductPopup/ChangePopup';
 import AddProductContainer from '../../PopupComponent/addProductContainer/AddProductContainer';
 import ProductAvailableColor from '../../PopupComponent/ProductAvailableColor/ProductAvailableColor';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
-
 import { useSelector, useDispatch } from 'react-redux';
 import {
   addProduct as addProductAction,
@@ -17,11 +16,16 @@ import {
 import { useOutletContext } from 'react-router-dom';
 import { removeNameAndNumberProduct, setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 
+import ContinueEditPopup from '../../PopupComponent/ContinueEditPopup/ContinueEditPopup'
+import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesignSlice';
+
 const ProductToolbar = () => {
   const dispatch = useDispatch();
   const selectedProducts = useSelector((state) => state.slectedProducts.selectedProducts);
-  const { setActiveProduct } = useOutletContext();
 
+  const { setActiveProduct } = useOutletContext();
+  const initialPopupShown = useSelector((state) => state.ContinueDesign.initialPopupShown);
+  const [continueEditPopup, setContinueEditPopup] = useState(false);
   const [changeProductPopup, setChangeProductPopup] = useState(false);
   const [editingProductIndex, setEditingProductIndex] = useState(null);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
@@ -31,6 +35,16 @@ const ProductToolbar = () => {
   const [hoveredThumbnail, setHoveredThumbnail] = useState({ productIndex: null, colorIndex: null, color: null });
 
   const cloneColor = (color) => ({ ...color });
+  useEffect(() => {
+    if (!initialPopupShown) {
+      setContinueEditPopup(true);
+    }
+  }, [initialPopupShown]);
+
+  const handleContinuePopup = () => {
+    dispatch(setInitialPopupShown()); // Update Redux state
+    setContinueEditPopup(false);
+  };
 
   const openChangeProductPopup = (isAdd = false, index = null) => {
     setIsAddingProduct(isAdd);
@@ -362,6 +376,7 @@ const ProductToolbar = () => {
             openChangeProductPopup={openChangeProductPopup}
           />
         )}
+        {continueEditPopup && (<ContinueEditPopup handleContinuePopup={handleContinuePopup} />)}
       </div>
     </div>
   );

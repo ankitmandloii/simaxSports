@@ -529,6 +529,11 @@ const MainDesignTool = ({
       canvas.requestRenderAll();
     }
 
+
+
+
+
+
     const handleSelection = (e) => {
       if (e.selected.length > 1) {
         canvas.discardActiveObject();
@@ -606,10 +611,19 @@ const MainDesignTool = ({
       ["selection:cleared", handleSelectionCleared],
       ["object:modified", syncMirrorCanvas],
       ["object:modified", handleScale],
+      ["editing:exited", updateBoundaryVisibility],
+      ["text:cut", updateBoundaryVisibility],    // Add this for cut operations
       // ["object:moving",moveHandler]
     ];
 
     events.forEach(([event, handler]) => canvas.on(event, handler));
+
+    // Add separate key event handler
+    canvas.on('key:down', function (opt) {
+      if (opt.e.ctrlKey && opt.e.keyCode === 88) { // Ctrl+X
+        setTimeout(updateBoundaryVisibility, 10);
+      }
+    });
 
     if (backgroundImage) {
       fabric.Image.fromURL(
@@ -1081,11 +1095,51 @@ const MainDesignTool = ({
     }
   };
 
+  const getCanvasAsPNG = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return null;
 
+    // Option 1: Basic PNG (default quality)
+    // return canvas.toDataURL('image/png');
+
+    // Option 2: Higher quality PNG with multiplier
+    return canvas.toDataURL({
+      format: 'png',
+      multiplier: 2, // 2x resolution for better quality
+      quality: 1,    // Highest quality (0 to 1)
+    });
+  };
+  const handlePrint = () => {
+    const pngDataUrl = getCanvasAsPNG();
+
+    console.log("pngDataUrl", pngDataUrl);
+    if (!pngDataUrl) {
+      console.error("Canvas not available");
+      return;
+    }
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head><title>Print Design</title></head>
+        <body>
+          <img src="${pngDataUrl}" style="max-width:100%;" />
+          <script>
+            setTimeout(() => {
+              window.print();
+              window.close();
+            }, 500);
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
 
   return (
     <div style={{ position: "relative" }} id="">
       <canvas ref={canvasRef} />
+      <button onClick={handlePrint}>print</button>
       <LayerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

@@ -14,9 +14,9 @@
 .Save-design-popup .popup-input {
   width: 100%;
   padding: 10px 12px;
-  margin-bottom: 12px;
+  margin-bottom: 7px;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 100px;
   font-size: 14px;
 }
 
@@ -25,10 +25,12 @@
   font-size: 12px;
   margin-bottom: 10px;
 }
-.popup-headerr{
+
+.popup-headerr {
   display: flex;
   justify-content: space-between;
 }
+
 .Save-design-popup .popup-button {
   width: 100%;
   padding: 12px;
@@ -42,7 +44,8 @@
 .Save-design-popup .email-button {
   background-color: #000;
   color: #fff;
-  margin-bottom: 12px;
+  margin: 14px 0;
+  border-radius: 100px;
 }
 
 .Save-design-popup .google-button {
@@ -52,6 +55,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  border-radius: 100px;
 }
 
 .Save-design-popup .google-icon {
@@ -76,15 +80,25 @@
   text-decoration: underline;
   color: inherit;
 }
-.Save-design-popup .popup-title h2{
-  font-size: 1rem;
+
+.Save-design-popup .popup-title h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
-.Save-design-popup .popup-title p{
+.Save-design-popup p {
   font-size: .8rem;
-  color:#8A9099;
+  color: #8A9099;
 
 }
-.Save-design-popup label{
+
+.Save-design-popup label {
   font-size: .9rem;
+  font-weight: 600;
+}
+
+.Save-design-popup .close-btn {
+  cursor: pointer;
+  background: transparent;
+  border: none;
 }

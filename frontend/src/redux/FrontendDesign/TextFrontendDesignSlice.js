@@ -261,7 +261,7 @@ const createNewText = ({ value, id }, length) => ({
   width: 150,
   height: 50,
   fontSize: 20,
-  position: {x:393,y:272},
+  position: { x: 393, y: 272 },
   locked: false,
   layerIndex: length,
 });
@@ -535,7 +535,7 @@ const TextFrontendDesignSlice = createSlice({
         Object.assign(state.present[side].nameAndNumberDesignState, changes);
       }
       state.present[side].setRendering = nanoid();
-       state.future[side] = [];
+      state.future[side] = [];
     },
     // Assuming: state.present[side].nameAndNumberProductList is now an ARRAY, not an object
 
@@ -552,7 +552,7 @@ const TextFrontendDesignSlice = createSlice({
         // Add new product with first variant
         list.push(productData);
         console.log("product added succesfully");
-      } 
+      }
     },
     UpdateNameAndNumberProduct: (state, action) => {
       const {

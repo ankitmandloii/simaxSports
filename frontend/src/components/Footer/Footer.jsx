@@ -6,32 +6,37 @@ import { IoPricetagOutline } from "react-icons/io5";
 import { FiSave } from "react-icons/fi";
 import { FaArrowRightLong } from "react-icons/fa6";
 import SaveDesignPopup from '../PopupComponent/SaveDesignPopup/SaveDesignPopup.jsx';
+import { useNavigate } from 'react-router-dom';
 
 const Footer = () => {
-  const [savedesignpopup,setSavedesignPopup]=useState(false);
-  const setSavedesignPopupHandler=()=>{
+  const [savedesignpopup, setSavedesignPopup] = useState(false);
+  const navigate = useNavigate();
+  const setNavigate = () => {
+    navigate('/quantity');
+  }
+  const setSavedesignPopupHandler = () => {
     setSavedesignPopup(!savedesignpopup);
   }
   return (
     <>
-     <div className='footer-container'>
-      <button className="footer-btn ">
-        <IoShareSocialOutline />
-        SHARE
-      </button>
+      <div className='footer-container'>
+        <button className="footer-btn " onClick={setSavedesignPopupHandler}>
+          <IoShareSocialOutline />
+          SHARE
+        </button>
 
-        <button className="footer-btn ">
-        <IoPricetagOutline />
+        <button className="footer-btn " onClick={setNavigate}>
+          <IoPricetagOutline />
 
           GET PRICE
         </button>
-        <button className="footer-btn " onClick={setSavedesignPopupHandler}> 
-        <FiSave />
+        <button className="footer-btn " onClick={setSavedesignPopupHandler}>
+          <FiSave />
 
           SAVE DESIGN
         </button>
-        <button className="footer-btn ">
-          
+        <button className="footer-btn " onClick={setNavigate}>
+
           NEXT STEP
           <FaArrowRightLong />
 
@@ -39,10 +44,10 @@ const Footer = () => {
 
 
 
-    </div>
-    {savedesignpopup && <SaveDesignPopup setSavedesignPopupHandler={setSavedesignPopupHandler}/>}
+      </div>
+      {savedesignpopup && <SaveDesignPopup setSavedesignPopupHandler={setSavedesignPopupHandler} />}
     </>
-   
+
   )
 }
 

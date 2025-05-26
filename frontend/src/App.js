@@ -16,6 +16,7 @@ import AddImageToolbar from './components/Toolbar/AddImageToolbar/AddImageToolba
 function App() {
   const location = useLocation();
   const isQuantityPage = location.pathname === "/quantity";
+
   return (
     <>
       <div className='app-main-container'>
@@ -41,7 +42,7 @@ function App() {
                 <Route path='quantity' element={<QuantityToolbar />} />
               </Route>
               <Route path="review" element={<Review />} />
-         
+
             </Routes>
             {<Footer />}
 

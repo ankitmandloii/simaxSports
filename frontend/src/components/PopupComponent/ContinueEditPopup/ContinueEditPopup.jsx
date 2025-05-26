@@ -1,7 +1,9 @@
 import React from 'react'
 import './ContinueEditPopup.css'
 import { CrossIcon } from '../../iconsSvg/CustomIcon'
-const ContinueEditPopup = () => {
+const ContinueEditPopup = ({ handleContinuePopup }) => {
+  const continueEditHandler = () => { }
+  const StartFromScratchHandler = () => { }
   return (
     <div className="continue-overlay">
 
@@ -10,7 +12,7 @@ const ContinueEditPopup = () => {
 
         <div className="continue-edit-header">
           <h4>Start Where You Left Off</h4>
-          <span className='cross-icon-continue-box'>
+          <span className='cross-icon-continue-box' onClick={handleContinuePopup}>
             <CrossIcon />
           </span>
         </div>
@@ -23,8 +25,8 @@ const ContinueEditPopup = () => {
 
           </div>
         </div>
-        <button className='continue-editing-btn'>Continue Editing</button>
-        <p className='start-from-scratch-para'>or <span>Start From Scratch</span></p>
+        <button className='continue-editing-btn' onClick={continueEditHandler}>Continue Editing</button>
+        <p className='start-from-scratch-para'>or <span onClick={StartFromScratchHandler}> Start From Scratch</span></p>
       </div>
     </div>
   )
