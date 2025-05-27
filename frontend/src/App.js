@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Layout from "./components/Layout";
 import Review from "./pages/Review/Review";
 import ProductToolbar from "./components/Toolbar/ProductToolbar/ProductToolbar";
@@ -19,52 +19,48 @@ import { ToastContainer } from 'react-toastify';
 
 function App() { 
   const location = useLocation();
-  const navigate = useNavigate();
-    const [continueEditPopup, setContinueEditPopup] = useState(false);
+  const [continueEditPopup, setContinueEditPopup] = useState(false);
   const isQuantityPage = location.pathname === "/quantity";
- const reduxState = useSelector((state) => state); // whole state
-  // useEffect(() => {
-  //   // window.addEventListener("load", navigate("/product"));
-  // }, []);
+  const reduxState = useSelector((state) => state); // whole state
+  
 
+
+
+  // Save Redux state to localStorage on unload
   useEffect(() => {
-    const handleBeforeUnload = () => {
+       const handleBeforeUnload = () => {
       localStorage.setItem('savedReduxState', JSON.stringify(reduxState));
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-
   }, [reduxState]);
 
 
   useEffect(() => {
-  window.addEventListener("load",() => handleContinuePopup());
-   return () => window.removeEventListener('load', () => {});
-  },[])
 
-  const cloneColor = (color) => ({ ...color });
+   const savedState = JSON.parse(localStorage.getItem('savedReduxState'));
+
+  if (!savedState || !savedState.TextFrontendDesignSlice) return;
+
+  const { addName, addNumber, present, activeSide } = savedState.TextFrontendDesignSlice;
+  const textObjects = present?.[activeSide]?.texts || [];
+
+  if ((textObjects && textObjects.length > 0) || addName || addNumber) {
+    setContinueEditPopup(true);
+  }
+  }, []);
 
   const handleContinuePopup = () => {
-    // dispatch(setInitialPopupShown()); // Update Redux state
-    setContinueEditPopup(!continueEditPopup)
-  }
+    setContinueEditPopup(false);
+  };
 
   return (
     <>
       <div className="app-main-container">
         <div className="main-inner-container">
-          {/* {!isQuantityPage && (
-          <div className="sidebar-container">
-            <AdminSidebar />
-          </div>
-        )} */}
           <Header />
-          <div
-            className={`main-layout-container ${
-              isQuantityPage ? "quantity-page" : ""
-            }`}
-          >
+          <div className={`main-layout-container ${isQuantityPage ? "quantity-page" : ""}`}>
             <Routes>
               <Route path="/" element={<Layout />}>
                 <Route index element={<ProductToolbar />} />
@@ -79,20 +75,24 @@ function App() {
               </Route>
               <Route path="review" element={<Review />} />
             </Routes>
-            {<Footer />}
+            <Footer />
           </div>
         </div>
-         <ToastContainer 
-        position="bottom-center" // or 'top-center', 'bottom-left', etc.
-        autoClose={3000}     // time in ms
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        pauseOnHover
-        draggable
-        theme="light" // or "dark", "colored"
-      />
-         {continueEditPopup && (<ContinueEditPopup handleContinuePopup={handleContinuePopup} />)}
+
+        <ToastContainer
+          position="bottom-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="light"
+        />
+
+        {continueEditPopup && (
+          <ContinueEditPopup handleContinuePopup={handleContinuePopup} />
+        )}
       </div>
     </>
   );
