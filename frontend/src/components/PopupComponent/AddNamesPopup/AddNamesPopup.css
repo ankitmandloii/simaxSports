@@ -49,9 +49,9 @@
 
 } */
 .name-text {
-  font-size: 30px;
+  /* font-size: 30px;
   font-family: "Chakra Petch", sans-serif;
-  color: #000;
+  color: #000; */
   word-wrap: break-word;
   white-space: normal;
   max-width: 90%;
@@ -61,8 +61,8 @@
 
 
 .number-text {
-  font-size: 140px;
-  font-family: "Chakra Petch", sans-serif;
+  /* font-size: 140px;
+  font-family: "Chakra Petch", sans-serif; */
   font-weight: 900;
   letter-spacing: 4px;
   text-transform: uppercase;

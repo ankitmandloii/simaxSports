@@ -10,6 +10,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
   const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
+  console.log("---------addnamedesignSlice", nameAndNumberDesign)
   const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberProductList);
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
@@ -261,7 +262,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
                         <input
                           type="text"
                           placeholder="Name"
-                          maxLength={25}
+                          maxLength={15}
                           value={row.name}
                           className={`${!addName ? "Deactive" : ""}`}
                           onFocus={() => setActiveRowId(row.selectionId)}
@@ -383,8 +384,18 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
                   ) : (
                     Object.values(rowsByKey).flat().filter((row) => row.selectionId === activeRowId).map((row) => (
                       <div key={row.selectionId} className="text-row">
-                        {row.name && <div className="name-text">{row.name}</div>}
-                        {row.number && <div className="number-text">{row.number}</div>}
+                        {row.name && <div className="name-text" style={{
+                          color: nameAndNumberDesign.fontColor || '#000',
+                          fontFamily: nameAndNumberDesign.fontFamily || "Chakra Petch,sans-serif",
+                          fontSize: nameAndNumberDesign.fontSize === 'large' ? '45px' : '25px',
+
+                        }}>{row.name}</div>}
+                        {row.number && <div className="number-text" style={{
+                          color: nameAndNumberDesign.fontColor || '#000',
+                          fontFamily: nameAndNumberDesign.fontFamily || "Chakra Petch,sans-serif",
+                          fontSize: nameAndNumberDesign.fontSize === 'large' ? '140px' : '60px',
+
+                        }}>{row.number}</div>}
                       </div>
                     ))
                   )}
