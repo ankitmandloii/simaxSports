@@ -7,9 +7,7 @@ import useDrivePicker from "react-google-drive-picker";
 import DropboxPicker from "../../CommonComponent/DropboxPicker";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setUploadedFiles } from "../../../redux/canvasSlice/CanvasSlice";
 import { addImageState } from "../../../redux/FrontendDesign/TextFrontendDesignSlice";
-
 
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
 const DEVELOPER_KEY = process.env.REACT_APP_DEVELOPER_KEY;
@@ -24,24 +22,11 @@ const UploadArtToolbar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
-  // const handleFiles = (selectedFiles) => {
-  //   const fileArray = Array.from(selectedFiles);
-  //   setFiles((prev) => [...prev, ...fileArray]);
-  //   console.log("Selected files:", fileArray);
-  //   setIsLoading(true);
-  //   setTimeout(() => {
-  //     navigate("/addImage", { state: { files: fileArray } });
-  //   }, 4000);
-
-  // };
-
-
-
   const handleFiles = (files) => {
     if (files.length > 0) {
       const file = files[0];
-      const src = URL.createObjectURL(file); // Create a preview URL
-      dispatch(addImageState({ src })); // You can also pass `id` if needed
+      const src = URL.createObjectURL(file);
+      dispatch(addImageState({ src }));
 
       setIsLoading(true);
       setTimeout(() => {
@@ -49,7 +34,6 @@ const UploadArtToolbar = () => {
       }, 4000);
     }
   };
-
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -73,13 +57,23 @@ const UploadArtToolbar = () => {
       multiselect: true,
       callbackFunction: (data) => {
         if (data.action === "cancel") return;
-        if (data.docs) setDriveFiles(data.docs);
+
+        if (data.docs && data.docs.length > 0) {
+          const file = data.docs[0];
+          dispatch(addImageState({ src: file.url }));
+
+          setIsLoading(true);
+          setTimeout(() => {
+            navigate("/addImage");
+          }, 4000);
+
+          setDriveFiles(data.docs);
+        }
       },
     });
   };
 
   return (
-
     <div className="toolbar-main-container">
       <div className="toolbar-main-heading">
         <h5 className="Toolbar-badge">Upload Art</h5>
@@ -87,136 +81,145 @@ const UploadArtToolbar = () => {
         <p>You can select multiple products and colors</p>
       </div>
 
-      {!isLoading ? (<div className="toolbar-box">
-        {/* Drag & Drop */}
-        <div
-          className="upload-option drop-zone"
-          onDrop={handleDrop}
-          onDragOver={(e) => e.preventDefault()}
-        >
-          <p>Drag & drop files here</p>
-          <p>or</p>
-          <button className="upload-file-btn" onClick={handleClick}>
-            <ChooseFileIcon />
-            SHARE
-          </button>
-        </div>
-
-        {/* Local Files */}
-        {files.length > 0 && (
-          <div className="file-list">
-            <h4>Selected files:</h4>
-            <ul>
-              {files.map((file, idx) => (
-                <li key={idx} className="file-item">
-                  {file.name}
-                  <span
-                    className="remove-icon"
-                    onClick={() => {
-                      const updated = [...files];
-                      updated.splice(idx, 1);
-                      setFiles(updated);
-                    }}
-                  >
-                    ✖
-                  </span>
-                </li>
-              ))}
-            </ul>
+      {!isLoading ? (
+        <div className="toolbar-box">
+          {/* Drag & Drop */}
+          <div
+            className="upload-option drop-zone"
+            onDrop={handleDrop}
+            onDragOver={(e) => e.preventDefault()}
+          >
+            <p>Drag & drop files here</p>
+            <p>or</p>
+            <button className="upload-file-btn" onClick={handleClick}>
+              <ChooseFileIcon />
+              SHARE
+            </button>
           </div>
-        )}
 
-        {/* Google Drive Files */}
-        {driveFiles.length > 0 && (
-          <div className="file-list">
-            <h4>Google Drive files:</h4>
-            <ul>
-              {driveFiles.map((file, idx) => (
-                <li key={idx} className="file-item">
-                  <a href={file.url} target="_blank" rel="noopener noreferrer">
+          {/* Local Files */}
+          {files.length > 0 && (
+            <div className="file-list">
+              <h4>Selected files:</h4>
+              <ul>
+                {files.map((file, idx) => (
+                  <li key={idx} className="file-item">
                     {file.name}
-                  </a>
-                  <span
-                    className="remove-icon"
-                    onClick={() => {
-                      const updated = [...driveFiles];
-                      updated.splice(idx, 1);
-                      setDriveFiles(updated);
-                    }}
-                  >
-                    ✖
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Dropbox Files */}
-        {dropboxFiles.length > 0 && (
-          <div className="file-list">
-            <h4>Dropbox files:</h4>
-            <ul>
-              {dropboxFiles.map((file, idx) => (
-                <li key={idx} className="file-item">
-                  <a href={file.link} target="_blank" rel="noopener noreferrer">
-                    {file.name}
-                  </a>
-                  <span
-                    className="remove-icon"
-                    onClick={() => {
-                      const updated = [...dropboxFiles];
-                      updated.splice(idx, 1);
-                      setDropboxFiles(updated);
-                    }}
-                  >
-                    ✖
-                  </span>
-                </li>
-
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Upload Options */}
-        <div className="upload-btn-flex-container">
-          <div className="upload-option-btn" onClick={handleOpenGoogleDrivePicker}>
-            <img src={googleDrive} alt="Google Drive" />
-            <p>Use Google Drive</p>
-          </div>
-
-          <DropboxPicker onFilesSelected={setDropboxFiles}>
-            <div className="upload-option-btn">
-              <img src={dropBox} alt="Dropbox" />
-              <p>Use Dropbox</p>
+                    <span
+                      className="remove-icon"
+                      onClick={() => {
+                        const updated = [...files];
+                        updated.splice(idx, 1);
+                        setFiles(updated);
+                      }}
+                    >
+                      ✖
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </DropboxPicker>
+          )}
+
+          {/* Google Drive Files */}
+          {driveFiles.length > 0 && (
+            <div className="file-list">
+              <h4>Google Drive files:</h4>
+              <ul>
+                {driveFiles.map((file, idx) => (
+                  <li key={idx} className="file-item">
+                    <a href={file.url} target="_blank" rel="noopener noreferrer">
+                      {file.name}
+                    </a>
+                    <span
+                      className="remove-icon"
+                      onClick={() => {
+                        const updated = [...driveFiles];
+                        updated.splice(idx, 1);
+                        setDriveFiles(updated);
+                      }}
+                    >
+                      ✖
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Dropbox Files */}
+          {dropboxFiles.length > 0 && (
+            <div className="file-list">
+              <h4>Dropbox files:</h4>
+              <ul>
+                {dropboxFiles.map((file, idx) => (
+                  <li key={idx} className="file-item">
+                    <a href={file.link} target="_blank" rel="noopener noreferrer">
+                      {file.name}
+                    </a>
+                    <span
+                      className="remove-icon"
+                      onClick={() => {
+                        const updated = [...dropboxFiles];
+                        updated.splice(idx, 1);
+                        setDropboxFiles(updated);
+                      }}
+                    >
+                      ✖
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Upload Options */}
+          <div className="upload-btn-flex-container">
+            <div className="upload-option-btn" onClick={handleOpenGoogleDrivePicker}>
+              <img src={googleDrive} alt="Google Drive" />
+              <p>Use Google Drive</p>
+            </div>
+
+            <DropboxPicker onFilesSelected={(files) => {
+              if (files && files.length > 0) {
+                const file = files[0];
+                dispatch(addImageState({ src: file.link }));
+
+                setIsLoading(true);
+                setTimeout(() => {
+                  navigate("/addImage");
+                }, 4000);
+
+                setDropboxFiles(files);
+              }
+            }}>
+              <div className="upload-option-btn">
+                <img src={dropBox} alt="Dropbox" />
+                <p>Use Dropbox</p>
+              </div>
+            </DropboxPicker>
+          </div>
+
+          <p className="upload-para">
+            Upload ANY file type, but we prefer vector, high-res, or large files such as:
+            .AI, .EPS, .PDF, .TIFF, .PSD, .JPG, .PNG
+          </p>
+
+          <input
+            type="file"
+            multiple
+            ref={inputRef}
+            style={{ display: "none" }}
+            onChange={(e) => handleFiles(e.target.files)}
+          />
         </div>
-
-        <p className="upload-para">
-          Upload ANY file type, but we prefer vector, high-res, or large files such as:
-          .AI, .EPS, .PDF, .TIFF, .PSD, .JPG, .PNG
-        </p>
-
-        <input
-          type="file"
-          multiple
-          ref={inputRef}
-          style={{ display: "none" }}
-          onChange={(e) => handleFiles(e.target.files)}
-        />
-      </div>)
-        :
+      ) : (
         <div>
           <div className="loader" />
           <p id="prepareHeading">Preparing your files...</p>
-        </div>}
+        </div>
+      )}
     </div>
-
-
-
-
   );
 };
 
