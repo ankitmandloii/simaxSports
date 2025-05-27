@@ -1102,7 +1102,7 @@ const MainDesignTool = ({
     group._calcBounds();
     group._updateObjectsCoords();
     group.set({
-      width: fontSize == "small" ? 60 : 150,
+      width: fontSize == "small" ? 60 : 190,
       left: position?.x || canvas.getWidth() / 2,
       top: position?.y || canvas.getHeight() / 2,
       // originX: 'center',
