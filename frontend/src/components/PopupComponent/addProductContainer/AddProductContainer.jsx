@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import "./AddProductContainer.css";
+import { getHexFromName } from "../../utils/colorUtils";
 import colorwheel1 from "../../images/color-wheel1.png";
 import { fetchProducts } from "../../../redux/ProductSlice/ProductSlice";
 import { CrossIcon } from "../../iconsSvg/CustomIcon";
@@ -98,25 +99,25 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
 
               return (
                 <li key={productKey} className="modal-product">
-                  <div className="product-main" 
-                   onClick={(e) => handleColorWheelClick(e, productKey)}
+                  <div className="product-main"
+                    onClick={(e) => handleColorWheelClick(e, productKey)}
                   >
                     <img
                       src={displayImage}
                       alt={product.name}
                       className="modal-productimg"
-                      
+
                     />
                     <p>{product.name}</p>
                   </div>
 
                   {hasColors && (
-                    <div className="modal-productcolor-container">
+                    <div className="modal-productcolor-container" onClick={(e) => handleColorWheelClick(e, productKey)}>
                       <img
                         src={colorwheel1}
                         alt="colors"
                         className="modal-productcolor-img"
-                          
+
                       />
                       <p>{product.colors.length} Colors</p>
 
@@ -147,7 +148,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                                   : ""
                                   }`}
                                 style={{
-                                  backgroundColor: color.name,
+                                  backgroundColor: getHexFromName(color.name),
                                   cursor: "pointer",
                                   padding: "10px",
                                   margin: "5px",

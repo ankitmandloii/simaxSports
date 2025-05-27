@@ -585,7 +585,6 @@ const TextFrontendDesignSlice = createSlice({
 
     addNameAndNumberProduct: (state, action) => {
       const { side = state.activeSide, productData } = action.payload;
-      console.log("product fetcg succesfully", productData);
       const list = state.present[side]?.nameAndNumberProductList;
       if (!list) return;
 
@@ -696,7 +695,7 @@ const TextFrontendDesignSlice = createSlice({
       state.future[side] = [];
     },
 
-     restoreDesignFromSavedState(state, action) {
+    restoreDesignFromSavedState(state, action) {
       return { ...state, ...action.payload };
     },
 
@@ -740,6 +739,11 @@ export const selectCanUndo = (state) => {
 export const selectCanRedo = (state) => {
   const side = state.TextFrontendDesignSlice.activeSide;
   return state.TextFrontendDesignSlice.future[side]?.length > 0;
+};
+export const selectCanStartOver = (state) => {
+  const side = state.TextFrontendDesignSlice.activeSide;
+  return state.TextFrontendDesignSlice.present[side]?.texts?.length > 0;
+  // return state.TextFrontendDesignSlice.present[side]?.length > 0;
 };
 
 // ✅ Export Reducer

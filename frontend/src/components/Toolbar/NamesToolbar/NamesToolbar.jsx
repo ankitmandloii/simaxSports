@@ -97,8 +97,6 @@ const NamesToolbar = () => {
   }
 
   const fontHandler = (value) => {
-    console.log("your value", `${value}`)
-    console.log(value);
     dispatch(updateNameAndNumberDesignState({ changes: { fontFamily: value } }));
     // const cle = setTimeout(() => {
     //   dispatch(updateNameAndNumberDesignState({ changes: { fontFamily: value } }));
@@ -116,7 +114,6 @@ const NamesToolbar = () => {
     setActiveFont(nameAndNumberDesign?.fontFamily);
     setActiveSize(nameAndNumberDesign?.fontSize);
 
-    console.log("active Font", activeFont);
   }, [nameAndNumberDesign]);
   return (
     <div className="toolbar-main-container">

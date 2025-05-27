@@ -4,14 +4,12 @@ import { restoreDesignSelectedProductSlice } from "../../redux/ProductSlice/Sele
 
 
 export const restoreAllSlicesFromLocalStorage = () => (dispatch) => {
-    // alert("hii")    
+  // alert("hii")    
   const saved = localStorage.getItem('savedReduxState');
-  console.log("saved",saved);
   if (!saved) return;
 
   const parsedState = JSON.parse(saved);
 
-  console.log(parsedState,"parsedState");
 
   if (parsedState.TextFrontendDesignSlice) {
     dispatch(restoreDesignFromSavedState(parsedState.TextFrontendDesignSlice));
@@ -21,9 +19,9 @@ export const restoreAllSlicesFromLocalStorage = () => (dispatch) => {
     dispatch(restoreDesignSelectedProductSlice(parsedState.selectedProducts));
   }
 
-//   if (parsedState.ui) {
-//     dispatch(restoreUI(parsedState.ui));
-//   }
+  //   if (parsedState.ui) {
+  //     dispatch(restoreUI(parsedState.ui));
+  //   }
 
   // Add others as needed...
 };

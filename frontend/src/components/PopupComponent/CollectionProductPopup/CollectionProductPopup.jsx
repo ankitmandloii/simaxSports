@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './CollectionProductPopup.css';
 import ColorWheel from '../../images/color-wheel1.png';
+import { getHexFromName } from '../../utils/colorUtils';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
 
 const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
@@ -100,7 +101,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
         <span
           key={idx}
           className={`color-swatch ${isSelected ? 'selected' : ''}`}
-          style={{ backgroundColor: color }}
+          style={{ backgroundColor: getHexFromName(color) }}
           title={color}
           onMouseEnter={() => setHoverImage(prev => ({ ...prev, [product.id]: image }))}
           onMouseLeave={() => setHoverImage(prev => ({ ...prev, [product.id]: '' }))}

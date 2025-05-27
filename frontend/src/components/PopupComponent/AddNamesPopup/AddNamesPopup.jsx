@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './AddNamesPopup.css';
 import { CrossIcon, DeleteIcon } from '../../iconsSvg/CustomIcon';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { addNameAndNumberProduct, removeNameAndNumberProduct, setActiveSide, setAddName, setAddNumber, updateNameAndNumberDesignState, UpdateNameAndNumberProduct } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
+import { getHexFromName } from '../../utils/colorUtils.js';
 
 const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
@@ -29,7 +31,6 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
     return obj;
   };
 
-  console.log("selectedddd", selectedProducts)
   const [rowsByKey, setRowsByKey] = useState(getObjectTypeData(nameAndNumberProductList));
   const [activeRowId, setActiveRowId] = useState(null);
 
@@ -95,8 +96,8 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
     const newAllProducts = [];
 
     selectedProducts.forEach((product) => {
-      console.log("product----------names", product)
       const addedColors = product.addedColors || [];
+      const consistentTitle = product?.title || product?.name || product?.handle || 'Product';
 
       const extraProducts = addedColors.map((variantProduct) => ({
         id: variantProduct?.variant?.id?.split("/")?.reverse()[0],
@@ -105,7 +106,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
         size: variantProduct?.variant?.selectedOptions[1]?.value,
         sizes: variantProduct?.sizes,
         name: product?.name,
-        title: variantProduct.variant?.title,
+        title: consistentTitle,
         selections: [],
       }));
 
@@ -116,7 +117,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
         color: product?.selectedColor?.name,
         size: product.selectedColor?.variant?.selectedOptions[1]?.value,
         sizes: getSizeOptions(product), // assume this is a valid function in scope
-        title: product.selectedColor?.variant?.title,
+        title: consistentTitle,
         selections: [],
       };
       // Add main product and its variants
@@ -150,9 +151,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
   }, [selectedProducts]);
 
 
-  console.log("rowkeys", rowsByKey);
 
-  console.log(allProducts, "allproducts")
 
 
   const saveAndExit = () => {
@@ -183,9 +182,13 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
   };
 
 
+  const activeProduct = allProducts.find(product =>
+    (rowsByKey[product.id] || []).some(row => row.selectionId === activeRowId)
+  );
+  console.log("------activee", activeProduct)
+  const canvasBgColor = getHexFromName(activeProduct?.color) || "#f5f5f5";
 
-
-
+  console.log("--canvass", canvasBgColor)
   return (
     <div className="addNames-popup-box">
       <div className="popup-overlay">
@@ -208,7 +211,11 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
                     </div>
                     <div>
                       <h4>{product.name || product?.title}</h4>
-                      <h5 className="product-color-span-name">{product?.color}</h5>
+                      <div className="color-show-div">
+                        <span className='pr-color-span' style={{ backgroundColor: getHexFromName(product?.color) }}></span>
+                        <h5 className="product-color-span-name">{product?.color}</h5>
+
+                      </div>
                     </div>
                   </div>
 
@@ -367,7 +374,8 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
 
             <div className="popup-right">
               <div className="render-box">
-                <div className="canvas-bg">
+                {/* ✅ [MODIFIED]: Added inline backgroundColor style */}
+                <div className="canvas-bg" style={{ backgroundColor: canvasBgColor }}>
                   {!activeRowId ? (
                     <div className="text-row">
                       {/* <div className="name-text">Edit a row to preview</div> */}
@@ -391,7 +399,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -6,7 +6,7 @@
 }
 
 .canvas-bg {
-  width: 300px;
+  width: 384px;
   height: 250px;
   background-color: #0b70ec;
   border: 1px solid #000;
@@ -259,4 +259,16 @@ select:disabled {
   background-color: transparent;
   border: none;
   cursor: pointer;
+}
+
+.pr-color-span {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  border: 1px solid #888;
+}
+
+.color-show-div {
+  display: flex;
+  gap: 10px;
 }

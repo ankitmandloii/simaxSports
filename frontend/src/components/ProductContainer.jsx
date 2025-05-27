@@ -28,18 +28,18 @@ function ProductContainer() {
 
   // const frontImage = useSelector(state => state?.selectedProducts?.selectedProducts[0]?.colors?.[0]?.img || "");
   //   const backImage = useSelector(state => state?.selectedProducts?.selectedProducts[0]?.colors?.[1]?.img || "");
-  const frontImage = useSelector(state => state?.selectedProducts?.activeProduct?.imgurl || 'https://i.postimg.cc/vHZM9108/Rectangle-11.png');
+  const frontImage = useSelector(state => state?.selectedProducts?.activeProduct?.imgurl || 'https://i.postimg.cc/NfPdntgR/Rectangle-11.png');
   const backImage = useSelector(state => state?.selectedProducts?.activeProduct?.colors?.[1]?.img);
 
   const [frontBgImage, setFrontBgImage] = useState(frontImage);
-  const [backBgImage, setBackBgImage] = useState(backImage || 'https://i.postimg.cc/SKrzZYbT/backimage-removebg-preview.png');
+  const [backBgImage, setBackBgImage] = useState(backImage || 'https://i.postimg.cc/N0xTW81Z/backimage-removebg-preview.png');
 
   useEffect(() => {
     setFrontBgImage(frontImage);
   }, [frontImage]);
 
   useEffect(() => {
-    setBackBgImage(backImage || 'https://i.postimg.cc/SKrzZYbT/backimage-removebg-preview.png');
+    setBackBgImage(backImage || 'https://i.postimg.cc/N0xTW81Z/backimage-removebg-preview.png');
   }, [backImage]);
 
 
