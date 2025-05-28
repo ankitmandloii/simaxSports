@@ -421,7 +421,7 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
                       onClick={() => setSelectedFilter(filter.name)}
                     >
                       <img 
-                        src={previewUrl} alt={filter.name} className="filter-image" />
+                        src={previewUrl} alt={filter.name} className="filter-image" onError={() => alert("Image not publicly accessible")} />
                       <div className="filter-label">{filter.name}</div>
                     </div>
                   ))}
