@@ -46,6 +46,13 @@ const UploadArtToolbar = () => {
 
   const handleClick = () => inputRef.current.click();
 
+
+  const getDriveImageUrl = (file) => {
+  const fileId = file.id;
+  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+};
+
+
   const handleOpenGoogleDrivePicker = () => {
     openPicker({
       clientId: CLIENT_ID,
@@ -60,7 +67,9 @@ const UploadArtToolbar = () => {
 
         if (data.docs && data.docs.length > 0) {
           const file = data.docs[0];
-          dispatch(addImageState({ src: file.url }));
+         const src = getDriveImageUrl(file);
+         console.log("Selected file URL:", src);
+          dispatch(addImageState({ src }));
 
           setIsLoading(true);
           setTimeout(() => {
@@ -183,7 +192,8 @@ const UploadArtToolbar = () => {
             <DropboxPicker onFilesSelected={(files) => {
               if (files && files.length > 0) {
                 const file = files[0];
-                dispatch(addImageState({ src: file.link }));
+                const src = file.link || file.preview;
+                dispatch(addImageState({ src }));
 
                 setIsLoading(true);
                 setTimeout(() => {

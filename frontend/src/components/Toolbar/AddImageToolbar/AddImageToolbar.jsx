@@ -387,7 +387,7 @@ const [selectedFilter, setSelectedFilter] = useState('Normal');
 
 
 
-
+console.log("previewUrl", previewUrl, "image src", image?.src);
   return (
     <div className="toolbar-main-container AddTextToolbar-main-container">
       <div className='toolbar-main-heading'>
@@ -420,7 +420,7 @@ const [selectedFilter, setSelectedFilter] = useState('Normal');
                       className={`filter-option ${selectedFilter === filter.name ? 'active' : ''}`}
                       onClick={() => setSelectedFilter(filter.name)}
                     >
-                      <img ref={imgRef}
+                      <img 
                         src={previewUrl} alt={filter.name} className="filter-image" />
                       <div className="filter-label">{filter.name}</div>
                     </div>
