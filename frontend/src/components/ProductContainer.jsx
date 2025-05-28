@@ -8,6 +8,7 @@ import { MagnifyGlassIcon } from './iconsSvg/CustomIcon';
 import './ProductContainer.css';
 import { setExportedImages } from '../redux/CanvasExportDesign/canvasExportSlice';
 import SleeveDesignPopup from './PopupComponent/addSleeveDesign/addSleeveDesingPopup';
+import { getHexFromName } from './utils/colorUtils';
 
 function ProductContainer() {
   const dispatch = useDispatch();
@@ -17,6 +18,37 @@ function ProductContainer() {
   const frontImage = useSelector(state => state?.selectedProducts?.activeProduct?.imgurl || 'https://i.postimg.cc/vHZM9108/Rectangle-11.png');
   const backImage = useSelector(state => state?.selectedProducts?.activeProduct?.colors?.[1]?.img || "https://i.postimg.cc/SKrzZYbT/backimage-removebg-preview.png");
 
+
+
+function invertHexColor(hex) {
+  try {
+    hex = hex.replace('#', '');
+
+    if (hex.length === 3) {
+      hex = hex.split('').map(char => char + char).join('');
+    }
+
+    if (hex.length !== 6) {
+      throw new Error('Invalid HEX color.');
+    }
+
+    const inverted = (parseInt(hex, 16) ^ 0xFFFFFF).toString(16).padStart(6, '0');
+    return `#${inverted.toUpperCase()}`;
+  } catch (error) {
+    console.error('Error inverting hex color:', error.message);
+    // Optionally return a default/fallback color
+    return '#FFFFFF'; // fallback to black or any default color
+  }
+}
+
+
+  const activeProductColor = useSelector(state => state?.selectedProducts?.activeProduct?.selectedColor?.name); 
+
+  const activeProductColorHex = getHexFromName(activeProductColor);
+     
+  const invertedColor = invertHexColor(activeProductColorHex);
+
+ 
   const [frontBgImage, setFrontBgImage] = useState(frontImage);
   const [backBgImage, setBackBgImage] = useState(frontImage);
   const [rightSleeveBgImage, setRightSleeveBgImage] = useState(frontImage);
@@ -95,6 +127,7 @@ function ProductContainer() {
         {/* Render Active Canvas Side */}
         <div style={{ display: activeSide === "front" ? "block" : "none" }}>
           <MainDesignTool
+           warningColor={invertedColor}
             id="mirrorCanvasFront"
             key="front"
             backgroundImage={frontBgImage}
@@ -108,6 +141,7 @@ function ProductContainer() {
 
         <div style={{ display: activeSide === "back" ? "block" : "none" }}>
           <MainDesignTool
+          warningColor={invertedColor}
             id="mirrorCanvasBack"
             key="back"
             backgroundImage={frontImage}
@@ -121,6 +155,7 @@ function ProductContainer() {
 
         <div style={{ display: activeSide === "rightSleeve" ? "block" : "none" }}>
           <MainDesignTool
+         warningColor={invertedColor}
             id="mirrorCanvasRightSleeve"
             key="rightSleeve"
             backgroundImage={frontImage}
@@ -134,6 +169,7 @@ function ProductContainer() {
 
         <div style={{ display: activeSide === "leftSleeve" ? "block" : "none" }}>
           <MainDesignTool
+          warningColor={invertedColor}
             id="mirrorCanvasLeftSleeve"
             key="leftSleeve"
             backgroundImage={frontImage}

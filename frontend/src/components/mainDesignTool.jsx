@@ -17,6 +17,7 @@ import LayerModal from "./CommonComponent/layerComponent/layerComponent";
 import CurvedText from "./fabric/fabric.TextCurved"; // Adjust path if needed
 fabric.CurvedText = CurvedText;
 const MainDesignTool = ({
+  warningColor,
   key,
   id,
   backgroundImage,
@@ -571,7 +572,7 @@ const MainDesignTool = ({
       width: 220,
       height: 355,
       fill: "transparent",
-      stroke: "skyblue",
+      stroke: warningColor || "skyblue",
       strokeWidth: 2,
       selectable: false,
       evented: false,
@@ -583,7 +584,8 @@ const MainDesignTool = ({
       left: boundaryBox.left + 2,
       top: boundaryBox.top,
       fontSize: 16,
-      fill: "#00F8E7FF",
+      // fontFamily: "montserrat",
+      fill: warningColor || "#00F8E7FF",
       selectable: false,
       evented: false,
       visible: false,
