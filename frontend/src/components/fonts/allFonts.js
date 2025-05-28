@@ -26,18 +26,32 @@ const categorizedFonts = [
       { name: "Bitter", fontFamily: "Bitter, serif" },
       { name: "Georgia", fontFamily: "Georgia, serif" },
       { name: "Times New Roman", fontFamily: "Times New Roman, serif" },
+      { name: "Libre Baskerville", fontFamily: "Libre Baskerville, serif" },
+      { name: "Noto Color Emoji", fontFamily: "Noto Color Emoji" },
+      { name: "Noto Emoji", fontFamily: "Noto Emoji" },
+      { name: "Rubik Microbe", fontFamily: "Rubik Microbe" },
+      { name: "Hanalei", fontFamily: "Hanalei" },
     ],
   },
   {
     category: "Elegant",
     fonts: [
+      { name: "Love Light", fontFamily: "Love Light" },
+      { name: "Flavors", fontFamily: "Flavors" },
+      { name: "Rubik Wet Paint", fontFamily: "Rubik Wet Paint" },
       { name: "Forum", fontFamily: "Forum, serif" },
       { name: "Playfair Display", fontFamily: "Playfair Display, serif" },
+      { name: "Kablammo", fontFamily: "Kablammo" },
       { name: "Lora", fontFamily: "Lora, serif" },
       { name: "Great Vibes", fontFamily: "Great Vibes, cursive" },
       { name: "Dancing Script", fontFamily: "Dancing Script, cursive" },
       { name: "Alex Brush", fontFamily: "Alex Brush, cursive" },
       { name: "Allura", fontFamily: "Allura, cursive" },
+      { name: "Nabla", fontFamily: "Nabla" },
+      
+     
+     
+     
     ],
   },
   {
