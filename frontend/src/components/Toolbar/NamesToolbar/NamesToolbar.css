@@ -10,9 +10,15 @@
   font-size: 14px;
 }
 
+
 .namescheckbox-div {
   display: flex;
   gap: 4px;
+}
+
+.names-toolbar-button:hover {
+  background: #F0F0F0;
+  scale: 1.05;
 }
 
 .names-toolbar-button {
