@@ -5,7 +5,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   exportRequested: false,
   exportedImages: null,
-};
+};  
 
 const canvasExportSlice = createSlice({
   name: "canvasExport",

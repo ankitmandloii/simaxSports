@@ -261,7 +261,7 @@ const createNewText = ({ value, id }, length) => ({
   width: 150,
   height: 50,
   fontSize: 20,
-  position: { x: 325, y: 272 },
+ position: { x: 280, y: 200 },
   locked: false,
   layerIndex: length,
 });
@@ -279,7 +279,7 @@ const createNewImage = ({ id, src }, length) => ({
   flipY: false,
   width: 150,
   height: 150,
-  position: { x: 320, y: 300 },
+   position: { x: 280, y: 200 },
   locked: false,
   layerIndex: length,
 });
@@ -309,7 +309,7 @@ const initialState = {
         fontColor: "#000000",
         fontFamily: "Oswald",
         fontSize: "small",
-        position: { x: 325, y: 300 },
+        position: { x: 280, y: 200 },
       },
 
       // 🆕 Product list for Name & Number (front)
@@ -331,7 +331,7 @@ const initialState = {
         fontColor: "#000000",
         fontFamily: "Oswald",
         fontSize: "small",
-        position: { x: 325, y: 300 },
+        position: { x: 280, y: 200 },
       },
 
       // 🆕 Product list for Name & Number (back)

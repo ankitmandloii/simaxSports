@@ -82,17 +82,17 @@ const NamesToolbar = () => {
 
   const sizeHandler = (value) => {
     dispatch(updateNameAndNumberDesignState({ changes: { fontSize: value } }));
-    if (value == "small") {
-      if (activeSide === 'front') {
-        dispatch(updateNameAndNumberDesignState({ changes: { position: { x: 393, y: 272 } } }));
-      }
-      else {
-        dispatch(updateNameAndNumberDesignState({ changes: { position: { x: 325, y: 300 } } }));
-      }
-    }
-    else {
-      dispatch(updateNameAndNumberDesignState({ changes: { position: { x: 330, y: 350 } } }));
-    }
+    // if (value == "small") {
+    //   if (activeSide === 'front') {
+    //     dispatch(updateNameAndNumberDesignState({ changes: { position: { x: 393, y: 272 } } }));
+    //   }
+    //   else {
+    //     dispatch(updateNameAndNumberDesignState({ changes: { position: { x: 325, y: 300 } } }));
+    //   }
+    // }
+    // else {
+    //   dispatch(updateNameAndNumberDesignState({ changes: { position: { x: 330, y: 350 } } }));
+    // }
     setActiveSize(value);
   }
 

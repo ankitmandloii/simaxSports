@@ -17,12 +17,18 @@ import LayerModal from "./CommonComponent/layerComponent/layerComponent";
 import CurvedText from "./fabric/fabric.TextCurved"; // Adjust path if needed
 fabric.CurvedText = CurvedText;
 const MainDesignTool = ({
+  key,
   id,
   backgroundImage,
-  mirrorCanvasRef,
-  initialDesign,
+  // mirrorCanvasRef,
+  // initialDesign,
   zoomLevel,
-  canvasReff
+  // canvasReff,
+  setFrontPreviewImage,
+  setBackPreviewImage,
+  setLeftSleevePreviewImage,
+  setRightSleevePreviewImage,
+  setPreviewForCurrentSide
 }) => {
 
   const activeSide = useSelector(
@@ -53,12 +59,13 @@ const MainDesignTool = ({
   const isRender = useSelector(
     (state) => state.TextFrontendDesignSlice.present[activeSide].setRendering
   );
+  // console.log("nameAndNumberDesignState", nameAndNumberDesignState);
 
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId)
   // const isLocked = selectedTextId && textContaintObject.find((obj) => obj.id === selectedTextId).locked;
   // console.log("locked value", isLocked);
   const canvasRef = useRef(null);
-  const fabricCanvasRef = canvasReff;
+  const fabricCanvasRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -105,6 +112,7 @@ const MainDesignTool = ({
 
     textObjects.forEach((obj) => obj.setCoords());
 
+    // console.log("textObject check for boundary", textObjects)
 
     const allInside = textObjects.every((obj) => {
       const objBounds = obj.getBoundingRect(true);
@@ -131,22 +139,7 @@ const MainDesignTool = ({
   }, [addName, addNumber, nameAndNumberDesignState, textContaintObject, updateBoundaryVisibility]);
 
 
-  useEffect(() => {
-    const canvas = new fabric.StaticCanvas(canvasRef.current);
-    mirrorCanvasRef.current = canvas;
 
-    // Load saved design if exists
-    if (initialDesign) {
-      canvas.loadFromJSON(initialDesign, () => {
-        canvas.renderAll();
-      });
-    }
-
-    return () => {
-      mirrorCanvasRef.current = null;
-      canvas.dispose();
-    };
-  }, []);
 
   const iconImages = useMemo(() => {
     const imgs = {};
@@ -361,99 +354,171 @@ const MainDesignTool = ({
   };
 
 
-  const syncMirrorCanvas = () => {
-    // return;
+  const syncMirrorCanvas = async (activeSide) => {
 
-    const parent = document.querySelector(".corner-img-canva-container");
 
-    const w = parent.clientWidth;
-    const h = parent.clientHeight - 30;
-    //console.log(mirrorCanvasRef.current, "dafh")
-    const mirrorCanvas = mirrorCanvasRef.current;
-    const mainCanvas = fabricCanvasRef.current;
+    const getImageFromCanvas = async (fabricCanvas) => {
+      if (!fabricCanvas) return null;
 
-    if (!mirrorCanvas || !mainCanvas) return;
-
-    const json = mainCanvas.toJSON();
-
-    // console.log(json, "json data");
-
-    // return;
-
-    mirrorCanvas.loadFromJSON(json, () => {
-      const originalWidth = mainCanvas.getWidth();
-      const originalHeight = mainCanvas.getHeight();
-
-      // Target mirror canvas size
-      const mirrorWidth = w;
-      const mirrorHeight = h;
-
-      // Scale ratio (fit while maintaining aspect ratio)
-      const scale = Math.min(
-        mirrorWidth / originalWidth,
-        mirrorHeight / originalHeight
-      );
-
-      // Calculate offset to center content
-      const offsetX = (mirrorWidth - originalWidth * scale) / 2;
-      const offsetY = (mirrorHeight - originalHeight * scale) / 2;
-
-      // Set mirror canvas size
-      mirrorCanvas.setWidth(mirrorWidth);
-      mirrorCanvas.setHeight(mirrorHeight);
-
-      // Scale and reposition each object
-
-      mirrorCanvas.getObjects().filter((obj) => obj.type != "rect" && obj.type != "text").forEach((obj) => {
-        obj.scaleX *= scale;
-        obj.scaleY *= scale;
-        obj.left = obj.left * scale + offsetX;
-        obj.top = obj.top * scale + offsetY;
-        obj.setCoords();
+      // Create an off-screen Fabric canvas
+      const tempCanvas = new fabric.StaticCanvas(null, {
+        width: fabricCanvas.getWidth(),
+        height: fabricCanvas.getHeight(),
+        backgroundColor: fabricCanvas.backgroundColor,
       });
 
-      // Set background color
-      mirrorCanvas.setBackgroundColor(
-        "white",
-        mirrorCanvas.renderAll.bind(mirrorCanvas)
+      // Clone only non-text/non-rect objects 
+      const objectClones = await Promise.all(
+        fabricCanvas.getObjects()
+          .filter(obj => obj.type !== 'text' && obj.type !== 'rect')
+          .map(obj => new Promise(resolve => obj.clone(clone => resolve(clone))))
       );
 
-      // Scale and center background image
-      const extraScale = 1.1; // slightly enlarge
+      objectClones.forEach(obj => tempCanvas.add(obj));
 
-      const bgImage = mainCanvas.backgroundImage;
-      if (bgImage) {
-        bgImage.clone((clonedBg) => {
-          // Get mirror canvas size
-          const canvasW = mirrorCanvas.getWidth();
-          const canvasH = mirrorCanvas.getHeight();
+      // Clone and apply background image (if any)
+      if (fabricCanvas.backgroundImage) {
+        const clonedBg = await new Promise(resolve =>
+          fabricCanvas.backgroundImage.clone(clone => resolve(clone))
+        );
 
-          // Original image size
-          const imgW = bgImage.width || bgImage._element?.naturalWidth;
-          const imgH = bgImage.height || bgImage._element?.naturalHeight;
-
-          // Scale to fit while maintaining aspect ratio
-          const bgScale = Math.min(canvasW / imgW, canvasH / imgH) * extraScale;
-
-          clonedBg.set({
-            originX: "center",
-            originY: "center",
-            scaleX: bgScale,
-            scaleY: bgScale,
-            left: canvasW / 2,
-            top: canvasH / 2,
-          });
-
-          mirrorCanvas.setBackgroundImage(
-            clonedBg,
-            mirrorCanvas.renderAll.bind(mirrorCanvas)
-          );
+        tempCanvas.setBackgroundImage(clonedBg, () => {
+          tempCanvas.renderAll();
         });
       } else {
-        mirrorCanvas.renderAll();
+        tempCanvas.renderAll();
       }
-    });
+
+      // Wait for 1 frame to ensure rendering
+      await new Promise(resolve => requestAnimationFrame(resolve));
+
+
+      // Export the canvas image
+      return tempCanvas.toDataURL({
+        format: 'png',
+        quality: 1,
+        multiplier: 2,
+      });
+    };
+
+
+    console.log("activeSide inside", activeSide);
+    if (activeSide == "front") {
+      console.log("active side", activeSide, "changing front")
+      setFrontPreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
+    }
+    else if (activeSide == "back") {
+      setBackPreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
+    }
+    else if(activeSide == "leftSleeve"){
+      setLeftSleevePreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
+    }
+    else if(activeSide == "rightSleeve"){
+      setRightSleevePreviewImage(await getImageFromCanvas(fabricCanvasRef.current))
+    }
+
+    // return;
+
+    // const parent = document.querySelector(".corner-img-canva-container");
+
+    // const w = parent.clientWidth;
+    // const h = parent.clientHeight - 30;
+    // //console.log(mirrorCanvasRef.current, "dafh")
+    // const mirrorCanvas = mirrorCanvasRef.current;
+    // const mainCanvas = fabricCanvasRef.current;
+
+    // if (!mirrorCanvas || !mainCanvas) return;
+
+    // const json = mainCanvas.toJSON();
+
+    // // console.log(json, "json data");
+
+    // // return;
+
+    // mirrorCanvas.loadFromJSON(json, () => {
+    //   const originalWidth = mainCanvas.getWidth();
+    //   const originalHeight = mainCanvas.getHeight();
+
+    //   // Target mirror canvas size
+    //   const mirrorWidth = w;
+    //   const mirrorHeight = h;
+
+    //   // Scale ratio (fit while maintaining aspect ratio)
+    //   const scale = Math.min(
+    //     mirrorWidth / originalWidth,
+    //     mirrorHeight / originalHeight
+    //   );
+
+    //   // Calculate offset to center content
+    //   const offsetX = (mirrorWidth - originalWidth * scale) / 2;
+    //   const offsetY = (mirrorHeight - originalHeight * scale) / 2;
+
+    //   // Set mirror canvas size
+    //   mirrorCanvas.setWidth(mirrorWidth);
+    //   mirrorCanvas.setHeight(mirrorHeight);
+
+    //   // Scale and reposition each object
+    //   mirrorCanvas.getObjects().forEach((obj) => {
+    //     // obj.scaleX *= scale;
+    //     // obj.scaleY *= scale;
+    //     // obj.left = obj.left * scale + offsetX;
+    //     // obj.top = obj.top * scale + offsetY;
+    //     // obj.setCoords();
+    //     console.log(obj);
+    //   });
+
+    //   mirrorCanvas.getObjects().filter((obj) => obj.type == "curved-text" || obj.type  == "group" || obj.type == "image").forEach((obj) => {
+    //     obj.scaleX *= scale;
+    //     obj.scaleY *= scale;
+    //     obj.left = obj.left * scale + offsetX;
+    //     obj.top = obj.top * scale + offsetY;
+    //     obj.setCoords();
+    //   });
+
+    //   // Set background color
+    //   mirrorCanvas.setBackgroundColor(
+    //     "white",
+    //     mirrorCanvas.renderAll.bind(mirrorCanvas)
+    //   );
+
+    //   // Scale and center background image
+    //   const extraScale = 1.1; // slightly enlarge
+
+    //   const bgImage = mainCanvas.backgroundImage;
+    //   if (bgImage) {
+    //     bgImage.clone((clonedBg) => {
+    //       // Get mirror canvas size
+    //       const canvasW = mirrorCanvas.getWidth();
+    //       const canvasH = mirrorCanvas.getHeight();
+
+    //       // Original image size
+    //       const imgW = bgImage.width || bgImage._element?.naturalWidth;
+    //       const imgH = bgImage.height || bgImage._element?.naturalHeight;
+
+    //       // Scale to fit while maintaining aspect ratio
+    //       const bgScale = Math.min(canvasW / imgW, canvasH / imgH) * extraScale;
+
+    //       clonedBg.set({
+    //         originX: "center",
+    //         originY: "center",
+    //         scaleX: bgScale,
+    //         scaleY: bgScale,
+    //         left: canvasW / 2,
+    //         top: canvasH / 2,
+    //       });
+
+    //       mirrorCanvas.setBackgroundImage(
+    //         clonedBg,
+    //         mirrorCanvas.renderAll.bind(mirrorCanvas)
+    //       );
+    //     });
+    //   } else {
+    //     mirrorCanvas.renderAll();
+    //   }
+    // });
   };
+
+
 
   //  const moveHandler = (e) => {
   //    console.log(e,"moved eve")
@@ -485,17 +550,24 @@ const MainDesignTool = ({
 
   useEffect(() => {
     const canvas = new fabric.Canvas(canvasRef.current, {
-      width: 650,
-      height: 700,
+      width: 550,
+      height: 450,
+      // backgroundColor: "gray"  
     });
 
     canvas.preserveObjectStacking = true;
     fabricCanvasRef.current = canvas;
-    mirrorCanvasRef.current = new fabric.StaticCanvas(id);
+    // mirrorCanvasRef.current = new fabric.StaticCanvas(id);
+
+    const boxWidth = 220;
+    const boxHeight = 355;
+    const canvasWidth = canvas.getWidth();
+    const canvasHeight = canvas.getHeight();
+
 
     const boundaryBox = new fabric.Rect({
-      left: 215,
-      top: 170,
+      left: (canvasWidth - boxWidth) / 2,
+      top: (canvasHeight - boxHeight) / 2,
       width: 220,
       height: 355,
       fill: "transparent",
@@ -504,6 +576,7 @@ const MainDesignTool = ({
       selectable: false,
       evented: false,
       visible: false,
+      isSync: false,
     });
 
     const warningText = new fabric.Text("Please keep design inside the box", {
@@ -514,6 +587,7 @@ const MainDesignTool = ({
       selectable: false,
       evented: false,
       visible: false,
+      isSync: false
     });
 
 
@@ -566,7 +640,7 @@ const MainDesignTool = ({
     const handleScale = (e) => {
       const clampScale = (value, min = 0.2, max = 10) => Math.max(min, Math.min(value, max));
       const obj = e.target;
-      console.log(e, "event details");
+      // console.log(e, "event details");
       if (!obj || !e.transform || !['scale', 'scaleX', 'scaleY'].includes(e.transform.action)) return;
 
 
@@ -617,28 +691,28 @@ const MainDesignTool = ({
 
     // Consolidated handlers
     const handleObjectAdded = (e) => {
-      syncMirrorCanvas(e);
+      syncMirrorCanvas(activeSide);
       updateBoundaryVisibility(e);
     };
 
     const handleObjectModified = (e) => {
       updateBoundaryVisibility(e);
-      syncMirrorCanvas();
+      syncMirrorCanvas(activeSide);
       handleScale(e);
     };
 
     const events = [
-      // ["object:added", handleObjectAdded],   
+      ["object:added", handleObjectAdded],   
       ["object:removed", handleObjectAdded],
       ["object:modified", handleObjectModified],
       ["object:moving", updateBoundaryVisibility],
       ["object:scaling", updateBoundaryVisibility],
       ["selection:created", handleSelection],
-      // ["selection:updated", handleSelection],  
+      ["selection:updated", handleSelection],  
       ["selection:cleared", handleSelectionCleared],
       ["editing:exited", updateBoundaryVisibility],
       ["text:cut", updateBoundaryVisibility],
-      // ["text:added", syncMirrorCanvas], 
+      ["text:changed", handleObjectAdded],    
       // ["object:moving", moveHandler], // Uncomment if needed
     ];
 
@@ -672,7 +746,7 @@ const MainDesignTool = ({
           });
 
           canvas.setBackgroundImage(img, () => fabricCanvasRef.current.renderAll());
-          syncMirrorCanvas();
+          syncMirrorCanvas(activeSide);
         },
         { crossOrigin: "anonymous" }
       );
@@ -689,9 +763,9 @@ const MainDesignTool = ({
       canvas.dispose();
       fabricCanvasRef.current = null;
       // mirrorCanvasRef.current.dispose();
-      mirrorCanvasRef.current = null;
+      // mirrorCanvasRef.current = null;
     };
-  }, [iconImages, id, backgroundImage]);
+  }, [iconImages, id, backgroundImage, activeSide]);
 
 
   const renderCurveTextObjects = () => {
@@ -793,6 +867,7 @@ const MainDesignTool = ({
             evented: true,
             hasControls: true,
             width: Math.min(measuredWidth + 20, 200),
+            isSync: true,
 
           });
 
@@ -812,10 +887,15 @@ const MainDesignTool = ({
             obj.setCoords();
             globalDispatch("position", { x: obj.left, y: obj.top }, textInput.id);
             globalDispatch("rotate", obj.angle, textInput.id);
-
             canvas.renderAll();
 
+            syncMirrorCanvas(activeSide);
+
           });
+
+          curved.on("update",() =>{
+            alert("ok");
+          })
           //                     });
 
           curved.setControlsVisibility({
@@ -880,6 +960,7 @@ const MainDesignTool = ({
   //       borderColor: "skyblue",
   //       borderDashArray: [4, 4],
   //       hasBorders: true,
+  //       isSync:true,
   //       customType: "main-image", // use this to identify the image later
   //     });
 
@@ -995,7 +1076,7 @@ const MainDesignTool = ({
   const renderNameAndNumber = () => {
     const canvas = fabricCanvasRef.current;
     if (!canvas || !nameAndNumberDesignState) {
-      console.warn("Canvas or nameAndNumberDesignState is missing.");
+      // console.warn("Canvas or nameAndNumberDesignState is missing.");
       return;
     }
 
@@ -1078,6 +1159,7 @@ const MainDesignTool = ({
       hasBorders: false,
       hasControls: false,
       evented: true,
+      isSync: true,
     });
 
     group.on(("modified"), (e) => {
@@ -1092,17 +1174,18 @@ const MainDesignTool = ({
           "position": { x: obj.left, y: obj.top },
         }
       }));
+
     })
     group.on("mousedown", () => {
       navigate("/addNames");
-
     })
 
+    // console.log("group ", group, group.type);
     // Force recalculation of bounds
     group._calcBounds();
     group._updateObjectsCoords();
     group.set({
-      width: fontSize == "small" ? 60 : 190,
+      width: fontSize == "small" ? 60 : 190,  
       left: position?.x || canvas.getWidth() / 2,
       top: position?.y || canvas.getHeight() / 2,
       // originX: 'center',
@@ -1114,14 +1197,37 @@ const MainDesignTool = ({
 
     canvas.add(group);
     canvas.requestRenderAll();
+    syncMirrorCanvas(activeSide);
   }
 
 
   useEffect(() => {
     renderNameAndNumber();
-  }, [isRender, addName, addNumber, nameAndNumberDesignState]);
+  }, [isRender, addName, addNumber, nameAndNumberDesignState, activeSide]);
 
+  // useEffect(() => {
 
+  // const getImageFromCanvas = (fabricCanvas) => {
+  //   if (!fabricCanvas) return null;
+  //   // const canvas = fabricCanvas.lowerCanvasEl;
+  //   return fabricCanvas .toDataURL("image/png");
+  // };
+
+  // console.log("key",activeSide  );
+  // if(activeSide == "front"){
+  //   console.log("active side",activeSide,"changing front")
+  //   if(fabricCanvasRef.current){
+  //     setFrontPreviewImage(getImageFromCanvas(fabricCanvasRef.current));
+  //   }
+  // }
+  // else{
+  //     console.log("active side",activeSide,"changing back")
+  //     if(fabricCanvasRef.current){
+  //       setBackPreviewImage(getImageFromCanvas(fabricCanvasRef.current));
+  //     }
+  // }
+  // // syncMirrorCanvas();
+  // },[fabricCanvasRef.current,activeSide])
 
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
@@ -1175,9 +1281,14 @@ const MainDesignTool = ({
   };
 
 
+// useEffect(() =>{
+//   const st = setTimeout(() =>{
+//    syncMirrorCanvas(activeSide);
+//   },3000);
+// },[textContaintObject,activeSide])
 
   return (
-    <div style={{ position: "relative" }} id="">
+    <div style={{ position: "relative" ,top:5}}  id="canvas">
       <canvas ref={canvasRef} />
       <LayerModal
         isOpen={isModalOpen}

@@ -1,5 +1,6 @@
 .ProductContainerMainDiv {
-    width: 70%;
+    width: 70%;  
+    /* border: 2px solid black; */
     /* background-color: aqua; */
 }
 
@@ -75,13 +76,14 @@
 .Prouduct-mirror-left-container {
     display: flex;
     flex-direction: column;
-    /* margin-left: 20px; */
+    padding: 10px 10px;
     background: white;
     height: max-content;
     border-radius: 10px;
     gap: 17.86px;
-    width: 104px;
+    /* width: 104px; */
     align-items: center;
+    justify-content: center;
 }
 
 .Prouduct-mirror-container {
@@ -97,17 +99,20 @@
 }
 
 .ProductContainerSmallImage {
-    object-fit: contain;
-    height: 130px;
-    width: 100px;
-
-
-    margin-bottom: 20px;
+    /* object-fit:cc; */
+    height: 100px;
+    width: 90px;
+    /* margin:5px;   */
     border-radius: 10px;
     background-color: white;
-    /* margin-right: 20px; */
+    box-shadow: 0 0 0 1px #D2D5D9;
+    padding: 10px;
+    margin-bottom: 2px;
+    transition: all 0.5s ease-in-out;
 }
-
+.ProductContainerSmallImage:hover {
+  box-shadow: 0 0 0 2px #005BFF;
+}
 .ProductContainerSmallImage p {
     text-align: center;
 }
@@ -159,8 +164,8 @@
 
 .corner-img-canva-container {
     object-fit: contain;
-    height: 114px;
-    width: 96px;
+    height: 86px;
+    width: 86px;
     margin-bottom: 0px;
     border-radius: 10px;
     background-color: white;
@@ -169,14 +174,18 @@
     align-items: center;
 }
 
-canvas#mirrorCanvasFront {
+.hover-active{
+ box-shadow: 0 0 0 2px #005BFF;
+}
+
+/* canvas#mirrorCanvasFront {
     width: 86px !important;
     height: 90px !important;
     border: 2px solid #005BFF;
     border-radius: 10px;
     margin: 9px 5px 10px 5px;
     padding: 7px;
-}
+} */
 
 canvas#mirrorCanvasBack {
     width: 86px !important;
@@ -244,11 +253,12 @@ canvas#mirrorCanvasBack {
     gap: 10px;
     border: 1px solid #D2D5D9;
     background: #fff;
-    padding: 8px 19.5px;
+    padding: 8px 20px;
     border-radius: 10px;
-    width: 104px;
+    /* width: 104px; */
     /* margin-left: 20px; */
     cursor: pointer;
+    transition: all 0.4s ease-in-out;
 }
 
 .zoom-container:hover {

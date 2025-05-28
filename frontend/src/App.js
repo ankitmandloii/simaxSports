@@ -75,7 +75,7 @@ function App() {
               </Route>
               <Route path="review" element={<Review />} />
             </Routes>
-            <Footer />
+            {/* <Footer /> */}
           </div>
         </div>
 
