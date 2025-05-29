@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Page, FormLayout, TextField, Button, Card } from '@shopify/polaris';
 
 export default function Login() {
-      const BASE_URL = process.env.REACT_APP_BASE_URL;
+    const BASE_URL = process.env.REACT_APP_BASE_URL;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [emailError, setEmailError] = useState('');
@@ -47,7 +47,7 @@ const handleLogin = useCallback(async () => {
   setLoading(true); // Start loading
 
   try {
-    const response = await fetch(`${BASE_URL}/auth/login`, {
+    const response = await fetch(`${BASE_URL}auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json' },
