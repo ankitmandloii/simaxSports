@@ -169,15 +169,15 @@ const ProductToolbar = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  useEffect( () => {
-    const productId = searchParams.get("productId"); // "8847707537647"
-    const title = searchParams.get("title");         // "Dusty Rose / S"
-    console.log("productId", productId);
-    console.log(rawProducts,"productId")
-    const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/${productId}`);
-    console.log("initiale Product", initialProduct);
-    dispatch(setSelectedProducts(initialProduct))
-  }, [rawProducts])
+  // useEffect( () => {
+  //   const productId = searchParams.get("productId"); // "8847707537647"
+  //   const title = searchParams.get("title");         // "Dusty Rose / S"
+  //   console.log("productId", productId);
+  //   console.log(rawProducts,"productId")
+  //   const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/${productId}`);
+  //   console.log("initiale Product", initialProduct);
+  //   dispatch(setSelectedProducts(initialProduct))
+  // }, [rawProducts])
 
   return (
     <div className="toolbar-main-container">

@@ -17,7 +17,7 @@ function ProductContainer() {
   const dispatch = useDispatch();
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const exportRequested = useSelector((state) => state.canvasExport.exportRequested);
-
+  const selectedProducts = useSelector(state => state.selectedProducts.selectedProducts);
   const frontImage = useSelector(state => state?.selectedProducts?.activeProduct?.imgurl);
   const backImage = useSelector(state => state?.selectedProducts?.activeProduct?.colors?.[1]?.img);
 
@@ -48,7 +48,7 @@ function ProductContainer() {
   const activeProductColor = useSelector(state => state?.selectedProducts?.activeProduct?.selectedColor?.name); 
   const activeProductColorHex = getHexFromName(activeProductColor);
   const invertedColor = invertHexColor(activeProductColorHex);  //convert the color to text to hax then invert it
-
+ 
 
   const [frontBgImage, setFrontBgImage] = useState(null);
   const [backBgImage, setBackBgImage] = useState(frontImage);
@@ -126,6 +126,7 @@ function ProductContainer() {
   }, [dispatch]);
 
   useEffect(() => {
+    if(Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
     const productId = searchParams.get("productId"); // "8847707537647"
     const title = searchParams.get("title");         // "Dusty Rose / S"
     console.log("productId", productId);
@@ -160,14 +161,14 @@ function ProductContainer() {
 
   }, [frontImage]);
 
-  if (rawProducts.length == 0) {
-   return (
-    <div className="fullscreen-loader" style={{ flexDirection: 'column' }}>
-      <p style={{ marginBottom: 20, fontSize: 15, color: '#555',fontWeight:"700" }}>Let's create something greate today</p>
-      <div className="loader-spinner"></div>
-    </div>
-  );
-  }
+  // if (rawProducts.length == 0) {
+  //  return (
+  //   <div className="fullscreen-loader" style={{ flexDirection: 'column' }}>
+  //     <p style={{ marginBottom: 20, fontSize: 15, color: '#555',fontWeight:"700" }}>Let's create something greate today</p>
+  //     <div className="loader-spinner"></div>
+  //   </div>
+  // );
+  // }
 
   return (
     <div className="ProductContainerMainDiv">

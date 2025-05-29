@@ -33,11 +33,11 @@ const AdminSidebar = () => {
   };
 
   const menuItems = [
-    { path: "/product?productId=8847707537647&title=Dusty%20Rose%20/%20S", icon: <RiTShirt2Line />, label: "Products" },
-    { path: "/addText?productId=8847707537647&title=Dusty%20Rose%20/%20S", icon: <AddProductIcon />, label: "Text" },
-    { path: "/uploadArt?productId=8847707537647&title=Dusty%20Rose%20/%20S", icon: <AddArtIcon />, label: "Upload" },
-    { path: "/addArt?productId=8847707537647&title=Dusty%20Rose%20/%20S", icon: <SelectArtIcon />, label: "Add Art" },
-    { path: "/addNames?productId=8847707537647&title=Dusty%20Rose%20/%20S", icon: <NumberArtIcon />, label: "Names & Numbers" },
+    { path: "/product", icon: <RiTShirt2Line />, label: "Products" },
+    { path: "/addText", icon: <AddProductIcon />, label: "Text" },
+    { path: "/uploadArt", icon: <AddArtIcon />, label: "Upload" },
+    { path: "/addArt", icon: <SelectArtIcon />, label: "Add Art" },
+    { path: "/addNames", icon: <NumberArtIcon />, label: "Names & Numbers" },
   ];
 
   return (

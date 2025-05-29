@@ -21,11 +21,14 @@ import { fetchProducts } from "./redux/ProductSlice/ProductSlice";
 function App() {
   const location = useLocation();
   const [continueEditPopup, setContinueEditPopup] = useState(false);
+  const [willRenderContinue,setWillRenderContinue] = useState(false);
   const isQuantityPage = location.pathname === "/quantity";
   const reduxState = useSelector((state) => state); // whole state
-  const { list: rawProducts, loading, error } = useSelector(
-    (state) => state.products
-  );
+  const {
+    list: rawProducts,
+    loading,
+    error,
+  } = useSelector((state) => state.products);
   // Save Redux state to localStorage on unload
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -46,9 +49,11 @@ function App() {
     const textObjects = present?.[activeSide]?.texts || [];
 
     if ((textObjects && textObjects.length > 0) || addName || addNumber) {
-      if(rawProducts.length !== 0){
+      
+      if(!willRenderContinue && rawProducts.length !== 0 ){
+        setWillRenderContinue(true);
         setContinueEditPopup(true);
-      }
+      } 
     }
   }, [rawProducts]);
 
@@ -57,19 +62,17 @@ function App() {
   };
   const navigate = useNavigate();
   useEffect(() => {
-    window.addEventListener("load",() =>{
-       const productId = "8847707537647";
-    const title = "Dusty Rose / S";
-
-    // Create the query string
-    const queryString = new URLSearchParams({ productId, title }).toString();
-    navigate(`/product?${queryString}`);
-     dispatch(fetchProducts("8847707537647")); 
-    })
-
+    window.addEventListener("load", () => {
+      const productId = "8847707537647";
+      const title = "Dusty Rose / S";
+      // Create the query string
+      const queryString = new URLSearchParams({ productId, title }).toString();
+      navigate(`/product?${queryString}`);
+      dispatch(fetchProducts("8847707537647"));
+    });
   }, []);
 
-   const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // dispatch(fetchProducts("8847707537647")); // Initial product fetch
@@ -80,11 +83,34 @@ function App() {
       <div className="app-main-container">
         <div className="main-inner-container">
           <Header />
+
           <div
             className={`main-layout-container ${
               isQuantityPage ? "quantity-page" : ""
             }`}
           >
+            {rawProducts.length === 0 ? (
+              <>
+                <div
+                  className="fullscreen-loader"
+                  style={{ flexDirection: "column" }}
+                >
+                  <p
+                    style={{
+                      marginBottom: 20,
+                      fontSize: 15,
+                      color: "#555",
+                      fontWeight: "700",
+                    }}
+                  >
+                    Let's create something greate today
+                  </p>
+                  <div className="loader-spinner"></div>
+                </div>
+              </>
+            ) : (
+              <></>
+            )}
             <Routes>
               <Route path="/" element={<Layout />}>
                 <Route index element={<ProductToolbar />} />
