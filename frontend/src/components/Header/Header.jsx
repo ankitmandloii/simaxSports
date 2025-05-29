@@ -8,7 +8,7 @@ const Header = () => {
   const location = useLocation();
 
   // Group of routes that map to "DESIGN"
-  const designRoutes = ['/product', '/addArt', '/uploadArt', '/addNames', '/addText'];
+  const designRoutes = ['/product?productId=8847707537647&title=Dusty%20Rose%20/%20S', '/addArt?productId=8847707537647&title=Dusty%20Rose%20/%20S', '/uploadArt?productId=8847707537647&title=Dusty%20Rose%20/%20S', '/addNames?productId=8847707537647&title=Dusty%20Rose%20/%20S', '/addText?productId=8847707537647&title=Dusty%20Rose%20/%20S'];
 
   return (
     <header className="app-header">
@@ -17,21 +17,21 @@ const Header = () => {
 
         <nav className="nav-steps">
           <Link
-            to="/product"
+            to="/product?productId=8847707537647&title=Dusty%20Rose%20/%20S"
             className={`step ${designRoutes.includes(location.pathname) ? 'active' : ''}`}
           >
             <span className='nav-span-number'>1</span> DESIGN
           </Link>
 
           <Link
-            to="/quantity"
+            to="/quantity?productId=8847707537647&title=Dusty%20Rose%20/%20S"
             className={`step ${location.pathname === '/quantity' ? 'active' : ''}`}
           >
             <span className='nav-span-number'>2</span> QUANTITY & SIZES
           </Link>
 
           <Link
-            to="/review"
+            to="/review?productId=8847707537647&title=Dusty%20Rose%20/%20S"
             className={`step ${location.pathname === '/review' ? 'active' : ''}`}
           >
             <span className='nav-span-number'>3</span> REVIEW

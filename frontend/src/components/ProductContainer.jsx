@@ -9,45 +9,48 @@ import './ProductContainer.css';
 import { setExportedImages } from '../redux/CanvasExportDesign/canvasExportSlice';
 import SleeveDesignPopup from './PopupComponent/addSleeveDesign/addSleeveDesingPopup';
 import { getHexFromName } from './utils/colorUtils';
+import { fetchProducts } from '../redux/ProductSlice/ProductSlice';
+import { setSelectedProducts } from '../redux/ProductSlice/SelectedProductSlice';
+import { useSearchParams } from 'react-router-dom';
 
 function ProductContainer() {
   const dispatch = useDispatch();
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const exportRequested = useSelector((state) => state.canvasExport.exportRequested);
 
-  const frontImage = useSelector(state => state?.selectedProducts?.activeProduct?.imgurl || 'https://i.postimg.cc/vHZM9108/Rectangle-11.png');
-  const backImage = useSelector(state => state?.selectedProducts?.activeProduct?.colors?.[1]?.img || "https://i.postimg.cc/SKrzZYbT/backimage-removebg-preview.png");
+  const frontImage = useSelector(state => state?.selectedProducts?.activeProduct?.imgurl);
+  const backImage = useSelector(state => state?.selectedProducts?.activeProduct?.colors?.[1]?.img);
 
 
 
-function invertHexColor(hex) {
-  try {
-    hex = hex.replace('#', '');
+  function invertHexColor(hex) {
+    try {
+      hex = hex.replace('#', '');
 
-    if (hex.length === 3) {
-      hex = hex.split('').map(char => char + char).join('');
+      if (hex.length === 3) {
+        hex = hex.split('').map(char => char + char).join('');
+      }
+
+      if (hex.length !== 6) {
+        throw new Error('Invalid HEX color.');
+      }
+
+      const inverted = (parseInt(hex, 16) ^ 0xFFFFFF).toString(16).padStart(6, '0');
+      return `#${inverted.toUpperCase()}`;
+    } catch (error) {
+      console.error('Error inverting hex color:', error.message);
+      // Optionally return a default/fallback color
+      return '#FFFFFF'; // fallback to black or any default color
     }
-
-    if (hex.length !== 6) {
-      throw new Error('Invalid HEX color.');
-    }
-
-    const inverted = (parseInt(hex, 16) ^ 0xFFFFFF).toString(16).padStart(6, '0');
-    return `#${inverted.toUpperCase()}`;
-  } catch (error) {
-    console.error('Error inverting hex color:', error.message);
-    // Optionally return a default/fallback color
-    return '#FFFFFF'; // fallback to black or any default color
   }
-}
 
 
   const activeProductColor = useSelector(state => state?.selectedProducts?.activeProduct?.selectedColor?.name); 
   const activeProductColorHex = getHexFromName(activeProductColor);
   const invertedColor = invertHexColor(activeProductColorHex);  //convert the color to text to hax then invert it
 
- 
-  const [frontBgImage, setFrontBgImage] = useState(frontImage);
+
+  const [frontBgImage, setFrontBgImage] = useState(null);
   const [backBgImage, setBackBgImage] = useState(frontImage);
   const [rightSleeveBgImage, setRightSleeveBgImage] = useState(frontImage);
   const [leftSleeveBgImage, setLeftSleeveBgImage] = useState(frontImage);
@@ -105,18 +108,66 @@ function invertHexColor(hex) {
     onClose();
   };
 
-  useEffect(() => {
-    setFrontBgImage(frontImage);
-    setFrontPreviewImage(frontImage);
-    setLeftSleevePreviewImage(frontImage);
-    setRightSleevePreviewImage(frontImage);
-    setBackPreviewImage(frontImage);
-  }, [frontImage]);
 
   // useEffect(() => {
   //   setBackBgImage(frontImage);
   //   setBackPreviewImage(frontImage);
   // }, [backImage]);
+
+
+  const { list: rawProducts, loading, error } = useSelector(
+    (state) => state.products
+  );
+
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const productId = searchParams.get("productId"); // "8847707537647"
+    const title = searchParams.get("title");         // "Dusty Rose / S"
+    console.log("productId", productId);
+    console.log(rawProducts, "productId")
+    const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/${productId}`);
+    console.log("initiale Product", initialProduct);
+    dispatch(setSelectedProducts(initialProduct));
+    if (initialProduct.length > 0) {
+      const img = initialProduct[0].imgurl;
+      setFrontBgImage(img);
+      setBackBgImage(img);
+      setLeftSleeveBgImage(img);
+      setRightSleeveBgImage(img);
+
+      setFrontPreviewImage(img);
+      setLeftSleevePreviewImage(img);
+      setRightSleevePreviewImage(img);
+      setBackPreviewImage(img);
+    }
+  }, [rawProducts])
+
+  useEffect(() => {
+    setFrontBgImage(frontImage);
+    setBackBgImage(frontImage);
+    setLeftSleeveBgImage(frontImage);
+    setRightSleeveBgImage(frontImage);
+
+    setFrontPreviewImage(frontImage);
+    setLeftSleevePreviewImage(frontImage);
+    setRightSleevePreviewImage(frontImage);
+    setBackPreviewImage(frontImage);
+
+  }, [frontImage]);
+
+  if (rawProducts.length == 0) {
+   return (
+    <div className="fullscreen-loader" style={{ flexDirection: 'column' }}>
+      <p style={{ marginBottom: 20, fontSize: 15, color: '#555',fontWeight:"700" }}>Let's create something greate today</p>
+      <div className="loader-spinner"></div>
+    </div>
+  );
+  }
 
   return (
     <div className="ProductContainerMainDiv">
@@ -125,7 +176,7 @@ function invertHexColor(hex) {
         {/* Render Active Canvas Side */}
         <div style={{ display: activeSide === "front" ? "block" : "none" }}>
           <MainDesignTool
-           warningColor={invertedColor}
+            warningColor={invertedColor}
             id="mirrorCanvasFront"
             key="front"
             backgroundImage={frontBgImage}
@@ -139,10 +190,10 @@ function invertHexColor(hex) {
 
         <div style={{ display: activeSide === "back" ? "block" : "none" }}>
           <MainDesignTool
-          warningColor={invertedColor}
+            warningColor={invertedColor}
             id="mirrorCanvasBack"
             key="back"
-            backgroundImage={frontImage}
+            backgroundImage={backBgImage}
             zoomLevel={zoomLevel}
             setFrontPreviewImage={() => { }}
             setLeftSleevePreviewImage={() => { }}
@@ -153,10 +204,10 @@ function invertHexColor(hex) {
 
         <div style={{ display: activeSide === "rightSleeve" ? "block" : "none" }}>
           <MainDesignTool
-         warningColor={invertedColor}
+            warningColor={invertedColor}
             id="mirrorCanvasRightSleeve"
             key="rightSleeve"
-            backgroundImage={frontImage}
+            backgroundImage={rightSleeveBgImage}
             zoomLevel={zoomLevel}
             setFrontPreviewImage={() => { }}
             setBackPreviewImage={() => { }}
@@ -167,10 +218,10 @@ function invertHexColor(hex) {
 
         <div style={{ display: activeSide === "leftSleeve" ? "block" : "none" }}>
           <MainDesignTool
-          warningColor={invertedColor}
+            warningColor={invertedColor}
             id="mirrorCanvasLeftSleeve"
             key="leftSleeve"
-            backgroundImage={frontImage}
+            backgroundImage={leftSleeveBgImage}
             zoomLevel={zoomLevel}
             setFrontPreviewImage={() => { }}
             setBackPreviewImage={() => { }}
@@ -227,11 +278,11 @@ function invertHexColor(hex) {
 
           </div>
 
-        {!addSleeves &&
+          {!addSleeves &&
             <div className="zoom-container" onClick={onClose}>
-            <p>SLEEVES & MORE</p>
-          </div>
-        }
+              <p>SLEEVES & MORE</p>
+            </div>
+          }
 
           <div className="zoom-container" onClick={toggleZoom}>
             {logo}

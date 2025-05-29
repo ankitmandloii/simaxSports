@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import Review from "./pages/Review/Review";
 import ProductToolbar from "./components/Toolbar/ProductToolbar/ProductToolbar";
@@ -13,54 +13,78 @@ import NamesToolbar from "./components/Toolbar/NamesToolbar/NamesToolbar";
 import QuantityToolbar from "./components/Toolbar/QuantityToolbar/QuantityToolbar";
 import AddImageToolbar from "./components/Toolbar/AddImageToolbar/AddImageToolbar";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ContinueEditPopup from "./components/PopupComponent/ContinueEditPopup/ContinueEditPopup";
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer } from "react-toastify";
+import { fetchProducts } from "./redux/ProductSlice/ProductSlice";
 
-function App() { 
+function App() {
   const location = useLocation();
   const [continueEditPopup, setContinueEditPopup] = useState(false);
   const isQuantityPage = location.pathname === "/quantity";
   const reduxState = useSelector((state) => state); // whole state
-  
-
-
-
+  const { list: rawProducts, loading, error } = useSelector(
+    (state) => state.products
+  );
   // Save Redux state to localStorage on unload
   useEffect(() => {
-       const handleBeforeUnload = () => {
-      localStorage.setItem('savedReduxState', JSON.stringify(reduxState));
+    const handleBeforeUnload = () => {
+      localStorage.setItem("savedReduxState", JSON.stringify(reduxState));
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [reduxState]);
 
-
   useEffect(() => {
+    const savedState = JSON.parse(localStorage.getItem("savedReduxState"));
 
-   const savedState = JSON.parse(localStorage.getItem('savedReduxState'));
+    if (!savedState || !savedState.TextFrontendDesignSlice) return;
 
-  if (!savedState || !savedState.TextFrontendDesignSlice) return;
+    const { addName, addNumber, present, activeSide } =
+      savedState.TextFrontendDesignSlice;
+    const textObjects = present?.[activeSide]?.texts || [];
 
-  const { addName, addNumber, present, activeSide } = savedState.TextFrontendDesignSlice;
-  const textObjects = present?.[activeSide]?.texts || [];
-
-  if ((textObjects && textObjects.length > 0) || addName || addNumber) {
-    setContinueEditPopup(true);
-  }
-  }, []);
+    if ((textObjects && textObjects.length > 0) || addName || addNumber) {
+      if(rawProducts.length !== 0){
+        setContinueEditPopup(true);
+      }
+    }
+  }, [rawProducts]);
 
   const handleContinuePopup = () => {
     setContinueEditPopup(false);
   };
+  const navigate = useNavigate();
+  useEffect(() => {
+    window.addEventListener("load",() =>{
+       const productId = "8847707537647";
+    const title = "Dusty Rose / S";
+
+    // Create the query string
+    const queryString = new URLSearchParams({ productId, title }).toString();
+    navigate(`/product?${queryString}`);
+     dispatch(fetchProducts("8847707537647")); 
+    })
+
+  }, []);
+
+   const dispatch = useDispatch();
+
+  useEffect(() => {
+    // dispatch(fetchProducts("8847707537647")); // Initial product fetch
+  }, [dispatch]);
 
   return (
     <>
       <div className="app-main-container">
         <div className="main-inner-container">
           <Header />
-          <div className={`main-layout-container ${isQuantityPage ? "quantity-page" : ""}`}>
+          <div
+            className={`main-layout-container ${
+              isQuantityPage ? "quantity-page" : ""
+            }`}
+          >
             <Routes>
               <Route path="/" element={<Layout />}>
                 <Route index element={<ProductToolbar />} />

@@ -300,7 +300,7 @@ hr {
 
 .loader {
   border: 6px solid #f3f3f3;
-  border-top: 6px solid #000000;
+  border-top: 6px solid #005BFF;    
   /* Blue */
   border-radius: 50%;
   width: 40px;

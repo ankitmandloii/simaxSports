@@ -13,11 +13,13 @@ import {
   updateProduct as updateProductAction,
   deleteProduct as deleteProductAction,
   setSelectedProducts as setSelectedProductsAction,
+  setSelectedProducts,
 } from '../../../redux/ProductSlice/SelectedProductSlice';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { removeNameAndNumberProduct, setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 import ContinueEditPopup from '../../PopupComponent/ContinueEditPopup/ContinueEditPopup';
 import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesignSlice';
+import { fetchProducts } from '../../../redux/ProductSlice/ProductSlice';
 
 const ProductToolbar = () => {
   const dispatch = useDispatch();
@@ -156,6 +158,26 @@ const ProductToolbar = () => {
     dispatch(setSelectedProductsAction(updated));
     setActiveThumbnail({ productIndex: null, colorIndex: null });
   };
+
+  const { list: rawProducts, loading, error } = useSelector(
+    (state) => state.products
+  );
+
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
+  useEffect( () => {
+    const productId = searchParams.get("productId"); // "8847707537647"
+    const title = searchParams.get("title");         // "Dusty Rose / S"
+    console.log("productId", productId);
+    console.log(rawProducts,"productId")
+    const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/${productId}`);
+    console.log("initiale Product", initialProduct);
+    dispatch(setSelectedProducts(initialProduct))
+  }, [rawProducts])
 
   return (
     <div className="toolbar-main-container">

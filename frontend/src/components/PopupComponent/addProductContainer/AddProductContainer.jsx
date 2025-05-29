@@ -23,6 +23,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
 
   useEffect(() => {
     if (rawProducts.length > 0) {
+      console.log(rawProducts,"rawProducts")
       const productsWithKeys = rawProducts.map((product) => ({
         ...product,
         productKey: product.id || product.id || uuidv4(),

@@ -400,7 +400,7 @@ const CurvedText = fabric.util.createClass(fabric.Object, {
   _render: function (ctx) {
     const spacing = typeof this.spacing === "number" && this.spacing >= 0 ? this.spacing : 1;
     ctx.save();
-    ctx.font = `${this.fontSize}px ${this.fontFamily}`;
+    ctx.font = `${this.fontStyle || "normal"} ${this.fontWeight || "normal"} ${this.fontSize}px ${this.fontFamily}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 

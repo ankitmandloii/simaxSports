@@ -69,6 +69,44 @@ const AddTextToolbar = () => {
   const [fontweightValue, setFontweightValue] = useState(textContaintObject ? textContaintObject.fontWeight : "normal");
   const [fontStyleValue, setFontStyleValue] = useState(textContaintObject ? textContaintObject.fontStyle : "normal");
 
+  const boldIcon = (
+    <span
+      style={{
+        fontWeight: 'bold',
+        fontSize: 15,
+        color: fontweightValue === 'bold' ? 'white' : 'black',
+        padding: '2px 4px',
+        borderRadius: 4,
+      }}
+    >
+      B
+    </span>
+  );
+
+const colorClassNameForBold = fontweightValue === 'bold' 
+  ? 'toolbar-icon active' 
+  : 'toolbar-icon';
+
+const colorClassNameForItalic = fontStyleValue === 'italic' 
+  ? 'toolbar-icon active' 
+  : 'toolbar-icon';
+
+
+  const italicIcon = (
+    <span
+      style={{
+        fontStyle: 'italic',
+        fontSize: 16,
+        backgroundColor: fontStyleValue === 'italic' ? 'black' : 'transparent',
+        color: fontStyleValue === 'italic' ? 'white' : 'black',
+        padding: '2px 4px',
+        borderRadius: 4,
+      }}
+    >
+      I
+    </span>
+  );
+
 
   const [rangeValuesArc, setRangeValuesArc] = useState(textContaintObject ? textContaintObject.arc : 0);
   // const [prevValue, setPrevValue] = useState("");
@@ -343,9 +381,6 @@ const AddTextToolbar = () => {
   const icon = flipXValue !== true ? <FlipFirstIcon /> : <FlipFirstWhiteColorIcon />;
 
 
-   const boldIcon = <span style={{ fontWeight: 'bold' }}>B</span>;
-   const italicIcon = <span style={{ fontStyle: 'italic' }}>I</span>;
-
   //for FLipY
 
 
@@ -455,11 +490,11 @@ const AddTextToolbar = () => {
                     <div className='toolbar-box-icons-container-for-together'>
 
                       {
-                        getRenderIconForSendToTop() ? <div className='toolbar-box-icons-container-layering1'  > <span><LayeringFirstIcon /></span> </div> : <div className='toolbar-box-icons-container-layering1' onClick={() => handleBringForward()} > <span><LayeringFirstIconWithBlackBg /></span></div>
+                        getRenderIconForSendToTop() ? <div className='toolbar-box-icons-container-layering1'  > <span><LayeringFirstIcon /></span> </div> : <div className='toolbar-box-icons-container-layering1-active' onClick={() => handleBringForward()} > <span><LayeringFirstIcon /></span></div>
                       }
 
                       {
-                        getRenderIconForSendToBack() ? <div className='toolbar-box-icons-container-layering2' > <span><LayeringSecondIcon /></span> </div> : <div className='toolbar-box-icons-container-layering2' onClick={() => handleBringBackward()}>  <span><LayeringSecondIconWithBlackBg /></span></div>
+                        getRenderIconForSendToBack() ? <div className='toolbar-box-icons-container-layering2' > <span><LayeringSecondIcon /></span> </div> : <div className='toolbar-box-icons-container-layering2-active' onClick={() => handleBringBackward()}>  <span><LayeringSecondIcon /></span></div>
                       }
                     </div>
                     Layering
@@ -487,11 +522,16 @@ const AddTextToolbar = () => {
 
                   <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
                     <div className='toolbar-box-icons-container-for-together'>
-                      <div className={colorClassName} onClick={() => callForBold()}><span>{boldIcon}</span></div>
-                      <div className={colorClassNameForY} onClick={() => callForItalic()}><span>{italicIcon}</span></div>
+                      <div className={colorClassNameForBold} onClick={callForBold}>
+                        <span>{boldIcon}</span>
+                      </div>
+                      <div className={colorClassNameForItalic} onClick={callForItalic}>
+                        <span>{italicIcon}</span>
+                      </div>
                     </div>
                     B/I
                   </div>
+
 
 
 

@@ -15,7 +15,7 @@ const Footer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const setNavigate = () => {
-    navigate('/quantity');
+    navigate('/quantity?productId=8847707537647&title=Dusty%20Rose%20/%20S');
   }
   const setSavedesignPopupHandler = () => {
     setSavedesignPopup(!savedesignpopup);
