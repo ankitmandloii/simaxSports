@@ -43,10 +43,8 @@ function invertHexColor(hex) {
 
 
   const activeProductColor = useSelector(state => state?.selectedProducts?.activeProduct?.selectedColor?.name); 
-
   const activeProductColorHex = getHexFromName(activeProductColor);
-     
-  const invertedColor = invertHexColor(activeProductColorHex);
+  const invertedColor = invertHexColor(activeProductColorHex);  //convert the color to text to hax then invert it
 
  
   const [frontBgImage, setFrontBgImage] = useState(frontImage);

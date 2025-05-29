@@ -266,6 +266,12 @@ input[type="range"]::-webkit-slider-thumb {
   border-color: #fff;
 }
 
+hr {
+  /* border: none; */
+  opacity: 0.5;
+ 
+  /* margin: 10px 0; */
+}
 /* @media screen and (max-width:1400px) {
   .layout-toolbar {
     position: absolute;

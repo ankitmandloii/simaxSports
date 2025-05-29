@@ -31,7 +31,8 @@ const categorizedFonts = [
       { name: "Noto Emoji", fontFamily: "Noto Emoji" },
       { name: "Rubik Microbe", fontFamily: "Rubik Microbe" },
       { name: "Hanalei", fontFamily: "Hanalei" },
-    ],
+      { name: "Hanalei Fill", fontFamily: "Hanalei Fill" },
+      ],
   },
   {
     category: "Elegant",
@@ -48,7 +49,8 @@ const categorizedFonts = [
       { name: "Alex Brush", fontFamily: "Alex Brush, cursive" },
       { name: "Allura", fontFamily: "Allura, cursive" },
       { name: "Nabla", fontFamily: "Nabla" },
-      
+      { name: "Sacramento", fontFamily: "Sacramento, cursive" },
+         
      
      
      
@@ -63,6 +65,8 @@ const categorizedFonts = [
       { name: "Indie Flower", fontFamily: "Indie Flower, cursive" },
       { name: "Amatic SC", fontFamily: "Amatic SC, cursive" },
       { name: "Caveat", fontFamily: "Caveat, cursive" },
+      { name: "Patrick Hand", fontFamily: "Patrick Hand, cursive" },
+      
     ],
   },
   {
@@ -73,6 +77,8 @@ const categorizedFonts = [
       { name: "Comic Neue", fontFamily: "Comic Neue, cursive" },
       { name: "Baloo", fontFamily: "Baloo, cursive" },
       { name: "Bubblegum Sans", fontFamily: "Bubblegum Sans, cursive" },
+      { name: "Luckiest Guy", fontFamily: "Luckiest Guy, cursive" },
+     
     ],
   },
   {
@@ -83,6 +89,8 @@ const categorizedFonts = [
       { name: "Roboto Mono", fontFamily: "Roboto Mono, monospace" },
       { name: "Source Code Pro", fontFamily: "Source Code Pro, monospace" },
       { name: "Inconsolata", fontFamily: "Inconsolata, monospace" },
+      { name: "Fira Code", fontFamily: "Fira Code, monospace" },
+    
     ],
   },
   {
@@ -93,6 +101,8 @@ const categorizedFonts = [
       { name: "Kalam", fontFamily: "Kalam, cursive" },
       { name: "Permanent Marker", fontFamily: "Permanent Marker, cursive" },
       { name: "Satisfy", fontFamily: "Satisfy, cursive" },
+      { name: "Patrick Hand", fontFamily: "Patrick Hand, cursive" },
+      
     ],
   },
   {
@@ -103,6 +113,8 @@ const categorizedFonts = [
       { name: "Anton", fontFamily: "Anton, sans-serif" },
       { name: "Bebas Neue", fontFamily: "Bebas Neue, sans-serif" },
       { name: "Fredoka One", fontFamily: "Fredoka One, cursive" },
+      { name: "Archivo Black", fontFamily: "Archivo Black, sans-serif" },
+    
     ],
   },
   {
@@ -113,6 +125,11 @@ const categorizedFonts = [
       { name: "Monoton", fontFamily: "Monoton, cursive" },
       { name: "Righteous", fontFamily: "Righteous, cursive" },
       { name: "Orbitron", fontFamily: "Orbitron, sans-serif" },
+      { name: "VT323", fontFamily: "VT323, monospace" },
+      { name: "Russo One", fontFamily: "Russo One, sans-serif" },
+      { name: "Cinzel Decorative", fontFamily: "Cinzel Decorative, serif" },
+      { name: "Bangers", fontFamily: "Bangers, cursive" },
+      { name: "Luckiest Guy", fontFamily: "Luckiest Guy, cursive" },
     ],
   },
   {
@@ -124,6 +141,11 @@ const categorizedFonts = [
       { name: "Major Mono Display", fontFamily: "Major Mono Display, monospace" },
       { name: "Share Tech Mono", fontFamily: "Share Tech Mono, monospace" },
       { name: "Chakra Petch", fontFamily: "Chakra Petch, sans-serif" }, // ✅ New font
+      { name: "Russo One", fontFamily: "Russo One, sans-serif" },
+      { name: "Exo 2", fontFamily: "Exo 2, sans-serif" },
+      { name: "Roboto Mono", fontFamily: "Roboto Mono, monospace" },
+      { name: "Fira Code", fontFamily: "Fira Code, monospace" },
+      { name: "PT Mono", fontFamily: "PT Mono, monospace" },
     ],
   },
   {
@@ -134,6 +156,11 @@ const categorizedFonts = [
       { name: "Futura", fontFamily: "Futura, sans-serif" },
       { name: "Avenir", fontFamily: "Avenir, sans-serif" },
       { name: "Gill Sans", fontFamily: "Gill Sans, sans-serif" },
+      { name: "Roboto", fontFamily: "Roboto, sans-serif" },
+      { name: "Open Sans", fontFamily: "Open Sans, sans-serif" },
+      { name: "Lato", fontFamily: "Lato, sans-serif" },
+      { name: "Montserrat", fontFamily: "Montserrat, sans-serif" },
+      { name: "Source Sans Pro", fontFamily: "Source Sans Pro, sans-serif" },
     ],
   },
   {
@@ -144,6 +171,11 @@ const categorizedFonts = [
       { name: "Papyrus", fontFamily: "Papyrus, fantasy" },
       { name: "Lobster", fontFamily: "Lobster, cursive" },
       { name: "Dawning of a New Day", fontFamily: "'Dawning of a New Day', cursive" },
+      { name: "Pacifico", fontFamily: "Pacifico, cursive" },
+      { name: "Great Vibes", fontFamily: "Great Vibes, cursive" },
+      { name: "Sacramento", fontFamily: "Sacramento, cursive" },
+      { name: "Allura", fontFamily: "Allura, cursive" },
+      { name: "Alex Brush", fontFamily: "Alex Brush, cursive" },
     ],
   },
 
