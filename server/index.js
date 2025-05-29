@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 const bodyParser = require("body-parser");
 const cors = require('cors');
 const routes = require("./routes/index.js");
@@ -47,7 +47,7 @@ res.send("yes Now you hit APis");
 // app.use("/external/",routes);
 
 
-app.listen(PORT, console.log("server is on port 3000"));
+app.listen(PORT, console.log("server is on port ", PORT));
 
 
 // app.listen(PORT, (err)=> {

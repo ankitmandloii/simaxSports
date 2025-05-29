@@ -39,21 +39,40 @@ exports.signUp = async (req, res) => {
 
 
 // // create access token controller
-exports.login = async (req, res) => {
-    try {
-        const {email , password} = req.body;
+// exports.login = async (req, res) => {
+//     try {
+//         const {email , password} = req.body;
        
         
        
-        const result = await services.login(email, password);
-        if (!result) {
-            return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.WRONG_EMAIL_OR_PASSWORD);
-        }
-        return sendResponse(res, statusCode.OK, true, SuccessMessage.LOGIN_SUCCESS, result);
-    } catch (error) {
-        //console.log(error)
-        return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+//         const result = await services.login(email, password);
+//         if (!result) {
+//             return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.WRONG_EMAIL_OR_PASSWORD);
+//         }
+//         return sendResponse(res, statusCode.OK, true, SuccessMessage.LOGIN_SUCCESS, result);
+//     } catch (error) {
+//         //console.log(error)
+//         return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+//     }
+// };
+
+
+
+
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const result = await services.login(email, password);
+
+    if (!result) {
+      return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.WRONG_EMAIL_OR_PASSWORD);
     }
+
+    return sendResponse(res, statusCode.OK, true, SuccessMessage.LOGIN_SUCCESS, result);
+    
+  } catch (error) {
+    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+  }
 };
 
 
