@@ -810,6 +810,8 @@ const MainDesignTool = ({
           });
           existingObj.set({
             text: textInput.content,
+             fontWeight: textInput.fontWeight || "normal",
+            fontStyle: textInput.fontStyle || "normal",
             warp: Number(textInput.arc),
             spacing: textInput.spacing,
             stroke: textInput.outLineColor || "",
@@ -837,8 +839,10 @@ const MainDesignTool = ({
 
           canvas.renderAll();
         } else if (!existingObj) {
-          const curved = new fabric.CurvedText(textInput.content, {
+          const curved = new fabric.Textbox(textInput.content, {
             id: textInput.id,
+            fontWeight: textInput.fontWeight || "normal",
+            fontStyle: textInput.fontStyle || "normal",
             left: textInput.position.x || 300,
             top: textInput.position.y || 300,
             stroke: textInput.outLineColor || "",

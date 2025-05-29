@@ -305,6 +305,8 @@ const CurvedText = fabric.util.createClass(fabric.Object, {
     this.fontFamily = options.fontFamily || "Impact";
     this.originX = "center";
     this.originY = "center";
+    this.fontWeight = options.fontWeight || "normal";
+    this.fontStyle = options.fontStyle || "normal";
 
     this.flipX = options.flipX || false;
     this.flipY = options.flipY || false;
@@ -533,6 +535,8 @@ const CurvedText = fabric.util.createClass(fabric.Object, {
       scaleY: this.scaleY,
       layerIndex: this.layerIndex,
       maxWidth: this.maxWidth,
+      fontWeight: this.fontWeight,
+      fontStyle: this.fontStyle,
     });
   },
 });

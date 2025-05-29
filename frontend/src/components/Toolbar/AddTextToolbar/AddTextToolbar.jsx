@@ -66,6 +66,10 @@ const AddTextToolbar = () => {
   const [rangeValuesSpacing, setRangeValuesSpacing] = useState(textContaintObject ? textContaintObject.Spacing : 0);
   const [flipXValue, setflipXValue] = useState(textContaintObject ? textContaintObject.flipX : false);
   const [flipYValue, setflipYValue] = useState(textContaintObject ? textContaintObject.flipY : false);
+  const [fontweightValue, setFontweightValue] = useState(textContaintObject ? textContaintObject.fontWeight : "normal");
+  const [fontStyleValue, setFontStyleValue] = useState(textContaintObject ? textContaintObject.fontStyle : "normal");
+
+
   const [rangeValuesArc, setRangeValuesArc] = useState(textContaintObject ? textContaintObject.arc : 0);
   // const [prevValue, setPrevValue] = useState("");
   const [duplicateActive, setDuplicateActive] = useState(false);
@@ -253,13 +257,13 @@ const AddTextToolbar = () => {
   const handleShowContent = (e) => {
     const { value } = e.target;
     setShowContent(value.trim().length > 0);
-    console.log("value",value,value.length);
-    if(value.trim().length == 0 && value.trim() == ""){
+    console.log("value", value, value.length);
+    if (value.trim().length == 0 && value.trim() == "") {
       setText("");
-       globalDispatch("content",'');
+      globalDispatch("content", '');
       return;
     }
-    
+
 
     // Remove only leading spaces
     setText(value.replace(/^\s+/, ''));
@@ -322,10 +326,25 @@ const AddTextToolbar = () => {
     //console.log("clicked", value);
   }
 
+  const callForBold = () => {
+    const value = textContaintObject.fontWeight === "bold" ? "normal" : "bold";
+    setFontweightValue(value);
+    globalDispatch("fontWeight", value);
+    //console.log("clicked", value);
+  }
+  const callForItalic = () => {
+    const value = textContaintObject.fontStyle === "italic" ? "normal" : "italic";
+    setFontStyleValue(value);
+    globalDispatch("fontStyle", value);
+  }
+
 
   const colorClassName = flipXValue !== true ? 'toolbar-box-icons-container-flip1' : 'toolbar-box-icons-container-clickStyle-flip1';
   const icon = flipXValue !== true ? <FlipFirstIcon /> : <FlipFirstWhiteColorIcon />;
 
+
+   const boldIcon = <span style={{ fontWeight: 'bold' }}>B</span>;
+   const italicIcon = <span style={{ fontStyle: 'italic' }}>I</span>;
 
   //for FLipY
 
@@ -463,6 +482,18 @@ const AddTextToolbar = () => {
                     </div>
                     <div className="toolbar-box-heading-container">Lock</div>
                   </div>
+
+
+
+                  <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
+                    <div className='toolbar-box-icons-container-for-together'>
+                      <div className={colorClassName} onClick={() => callForBold()}><span>{boldIcon}</span></div>
+                      <div className={colorClassNameForY} onClick={() => callForItalic()}><span>{italicIcon}</span></div>
+                    </div>
+                    B/I
+                  </div>
+
+
 
                   <div
                     className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`} onClick={() => handleDuplcateTextInput()}
