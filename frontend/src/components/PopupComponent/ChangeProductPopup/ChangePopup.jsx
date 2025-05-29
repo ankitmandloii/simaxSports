@@ -8,7 +8,7 @@ const ChangePopup = ({ onClose, onProductSelect }) => {
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
 
   return (
-    <div className="changeProdcutPopup-mainContainer">
+    <div className="changeProductPopup-mainContainer">
       <div className="popup-overlay">
         <div className="popup-container">
           <div className="popup-header">

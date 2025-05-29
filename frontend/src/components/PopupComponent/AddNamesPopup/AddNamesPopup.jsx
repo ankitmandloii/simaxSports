@@ -5,6 +5,8 @@ import { CrossIcon, DeleteIcon } from '../../iconsSvg/CustomIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { addNameAndNumberProduct, removeNameAndNumberProduct, setActiveSide, setAddName, setAddNumber, updateNameAndNumberDesignState, UpdateNameAndNumberProduct } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 import { getHexFromName } from '../../utils/colorUtils.js';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
@@ -160,7 +162,9 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
 
     const isValid = selectionsRows.every(([key, rows]) =>
       rows.every(row => {
-        const isSizeFilled = !row.size || row.size !== '';
+        const product = allProducts.find(p => `${p.id}` === key);
+        const isSizeFilled =
+          product?.sizes?.length === 0 || (row.size && row.size.trim() !== '');
         const isNameFilled = !addName || row.name !== '';
         const isNumberFilled = !addNumber || row.number !== '';
         return isSizeFilled && isNameFilled && isNumberFilled;
@@ -168,7 +172,8 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
     );
 
     if (!isValid) {
-      alert("All required fields must be filled.");
+      toast.error("All required fields (Size, Name, Number) must be filled.");
+      // alert("All required fields must be filled.");
     } else {
       selectionsRows.forEach(([id, rows]) => {
         dispatch(UpdateNameAndNumberProduct({
@@ -410,6 +415,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
           </div>
         </div>
       </div>
+      {/* <ToastContainer position="top-center" autoClose={3000} /> */}
     </div >
   );
 };

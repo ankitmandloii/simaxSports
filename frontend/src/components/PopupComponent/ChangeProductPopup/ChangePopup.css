@@ -1,5 +1,5 @@
 /* Overlay for modal background */
-.changeProdcutPopup-mainContainer .popup-overlay {
+.changeProductPopup-mainContainer .popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,7 +13,7 @@
 }
 
 /* Modal container */
-.changeProdcutPopup-mainContainer .popup-container {
+.changeProductPopup-mainContainer .popup-container {
   background: #fff;
   width: 95%;
   height: 85%;
@@ -25,7 +25,7 @@
 }
 
 /* Header with close button */
-.changeProdcutPopup-mainContainer .popup-header {
+.changeProductPopup-mainContainer .popup-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -33,12 +33,12 @@
   border-bottom: 1px solid #ddd;
 }
 
-.changeProdcutPopup-mainContainer .popup-header h3 {
+.changeProductPopup-mainContainer .popup-header h3 {
   font-size: 1.5rem;
   font-weight: 600;
 }
 
-.changeProdcutPopup-mainContainer .close-btn {
+.changeProductPopup-mainContainer .close-btn {
   font-size: 24px;
   background: none;
   border: none;
@@ -46,14 +46,14 @@
 }
 
 /* Content layout with sidebar and main */
-.changeProdcutPopup-mainContainer .popup-content {
+.changeProductPopup-mainContainer .popup-content {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
 /* Sidebar styling */
-.changeProdcutPopup-mainContainer .changProduct-popup .sidebarr {
+.changeProductPopup-mainContainer .changProduct-popup .sidebarr {
   width: 20%;
   background: #f9f9f9;
   padding: 1rem;
@@ -61,7 +61,7 @@
   border-right: 1px solid #ddd;
 }
 
-.changeProdcutPopup-mainContainer .popup-overlay .sidebar-item {
+.changeProductPopup-mainContainer .popup-overlay .sidebar-item {
   padding: 12px;
   margin-bottom: 8px;
   cursor: pointer;
@@ -87,7 +87,7 @@
   overflow-y: auto;
   background: #fff;
 } */
-.changeProdcutPopup-mainContainer .popup-overlay .product-card-container {
+.changeProductPopup-mainContainer .popup-overlay .product-card-container {
   /* width: 80%; */
   display: flex;
   padding: 1rem;
@@ -97,7 +97,7 @@
 }
 
 /* Individual product card */
-.changeProdcutPopup-mainContainer .popup-overlay .product-card {
+.changeProductPopup-mainContainer .popup-overlay .product-card {
   width: 10rem;
   /* 264px */
   height: 13rem;
@@ -114,23 +114,23 @@
   justify-content: space-between;
 }
 
-.changeProdcutPopup-mainContainer .popup-overlay .product-card:hover {
+.changeProductPopup-mainContainer .popup-overlay .product-card:hover {
   transform: scale(1.02);
 }
 
-.changeProdcutPopup-mainContainer .popup-overlay .product-card img {
+.changeProductPopup-mainContainer .popup-overlay .product-card img {
   width: 100%;
   height: 130px;
   object-fit: contain;
 }
 
-.changeProdcutPopup-mainContainer .popup-overlay .product-card p {
+.changeProductPopup-mainContainer .popup-overlay .product-card p {
   font-size: 14px;
   margin-top: 0.5rem;
 }
 
 /* Load more button */
-.changeProdcutPopup-mainContainer .load-more {
+.changeProductPopup-mainContainer .load-more {
   text-align: center;
   height: 33px;
   width: 126px;
@@ -149,7 +149,7 @@
   margin: 1rem auto;
 }
 
-.changeProdcutPopup-mainContainer .no-products {
+.changeProductPopup-mainContainer .no-products {
   grid-column: span 5;
   text-align: center;
   font-size: 16px;
@@ -157,13 +157,13 @@
   margin-top: 2rem;
 }
 
-.changeProdcutPopup-mainContainer .changProduct-popup .product-grid {
+.changeProductPopup-mainContainer .changProduct-popup .product-grid {
   width: 80%;
 }
 
 /* ================= */
 /* Product grid container with scrolling */
-.changeProdcutPopup-mainContainer .changProduct-popup .product-grid {
+.changeProductPopup-mainContainer .changProduct-popup .product-grid {
   width: 80%;
   display: flex;
   flex-direction: column;
@@ -175,7 +175,7 @@
 }
 
 /* Scrollable product card container */
-.changeProdcutPopup-mainContainer .popup-overlay .product-card-container {
+.changeProductPopup-mainContainer .popup-overlay .product-card-container {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -184,7 +184,7 @@
 }
 
 /* Load More button fixed at bottom */
-/* .changeProdcutPopup-mainContainer .load-more {
+/* .changeProductPopup-mainContainer .load-more {
   position: absolute;
   bottom: 10px;
   left: 50%;
@@ -204,28 +204,28 @@
 } */
 
 /* No product found styling */
-.changeProdcutPopup-mainContainer .no-products {
+.changeProductPopup-mainContainer .no-products {
   text-align: center;
   font-size: 16px;
   color: #999;
   margin-top: 2rem;
 }
 
-.changeProdcutPopup-mainContainer .popup-body-layout {
+.changeProductPopup-mainContainer .popup-body-layout {
   display: flex;
   flex: 1;
   height: 100%;
   min-height: 0
 }
 
-.changeProdcutPopup-mainContainer .popup-sidebar {
+.changeProductPopup-mainContainer .popup-sidebar {
   width: 20%;
   overflow-y: auto;
   height: 500px;
   min-height: 0;
 }
 
-.changeProdcutPopup-mainContainer .popup-products {
+.changeProductPopup-mainContainer .popup-products {
   width: 80%;
   padding: 1rem;
   overflow-y: auto;

@@ -3,14 +3,17 @@
   src: url('../public/Roboto-Regular.ttf') format('opentype');
   font-weight: normal;
 }
+
 @font-face {
   font-family: 'PornStarAcademy';
   src: url('../public/fonts/sportsjersey.ttf') format('opentype');
 }
+
 @font-face {
-  font-family: 'Interstate';  
+  font-family: 'Interstate';
   src: url('../public/fonts/overpass/overpass-extrabold.otf') format('opentype');
 }
+
 * {
   margin: 0;
   padding: 0;
@@ -149,7 +152,7 @@ h4 {
   align-items: center;
   padding: 6px 10px;
   cursor: pointer;
-  margin: 0 auto;
+  /* margin: 0 auto; */
 }
 
 /* common css of toolbar head */
