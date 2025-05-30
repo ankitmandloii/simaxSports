@@ -9,11 +9,16 @@ import Dashboard from './admin/Dashboard';
 import ProductList from './admin/ProductList';
 import ProductDesign from './admin/ProductDesign';
 import OrderList from './admin/OrderList';
-import Setting from './admin/Setting';
+
 import ProtectedRoute from './admin/ProtectedRoute';
 import { AppProvider } from '@shopify/polaris';
+import GeneralSettings from './admin/settings/genaralSettings';
+import AccountSettings from './admin/settings/AccountSettings';
+import { ToastProvider } from './admin/ToastContext'; // Import the ToastProvider
+
 function App() {
   return (
+    <ToastProvider>
     <AppProvider i18n={{}}>
       <Router>
         <Routes>
@@ -49,7 +54,15 @@ function App() {
             path="/admin/setting"
             element={
               <ProtectedRoute>
-                <AdminLayout><Setting /></AdminLayout>
+                <AdminLayout><GeneralSettings /></AdminLayout>
+              </ProtectedRoute>
+            }
+          />
+            <Route
+            path="/admin/setting/account-settings"
+            element={
+              <ProtectedRoute>
+                <AdminLayout><AccountSettings /></AdminLayout>
               </ProtectedRoute>
             }
           />
@@ -61,10 +74,12 @@ function App() {
               </ProtectedRoute>
             }
           />
+           
           {/* Add other pages similarly */}
         </Routes>
       </Router>
     </AppProvider>
+    </ToastProvider>
 
   );
 }

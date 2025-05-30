@@ -1,4 +1,3 @@
-// src/admin/Setting.js
 import {
   Page,
   Card,
@@ -12,18 +11,14 @@ import {
   Divider,
   Toast,
 } from '@shopify/polaris';
-import { useCallback, useState } from 'react';
+import {  useState } from 'react';
+import { useToast } from '../ToastContext';
 
-export default function Setting() {
-  const [storeName, setStoreName] = useState('Simax Apparel');
-  const [email, setEmail] = useState('admin@simaxapparel.com');
-  const [phone, setPhone] = useState('+1 123-456-7890');
-  const [toastActive, setToastActive] = useState(false);
 
-  const toggleToastActive = useCallback(() => setToastActive((active) => !active), []);
-  const toastMarkup = toastActive ? (
-    <Toast content="Settings saved successfully" onDismiss={toggleToastActive} />
-  ) : null;
+export default function GeneralSettings() {
+
+  const { showToast } = useToast();
+
 
   const [settingsForTextSection, setSettingsForTextSection] = useState({
     sideBarTextSection: true,
@@ -47,15 +42,11 @@ export default function Setting() {
     setSettingsForTextSection(prev => ({ ...prev, [field]: !prev[field] }));
   };
 
-  const handleSaveTextForm = () => {
-    console.log('Settings saved:', settingsForTextSection);
-    setToastActive(true);
-  };
+  // const handleSaveTextForm = () => {
+  //   console.log('Settings saved:', settingsForTextSection);
+  //   setToastActive(true);
+  // };
 
-  const SettingsStoresaved = () => {
-    console.log('Settings saved:', { storeName, email, phone });
-    setToastActive(true);
-  };
 
   const [settingsforAddNamesAndNumbers, setSettingsforAddNamesAndNumbers] = useState({
     sideBarAddNamesAndNumbersSection: true,
@@ -72,10 +63,10 @@ export default function Setting() {
     setSettingsforAddNamesAndNumbers(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleSaveforNameAndNumbersSetting = () => {
-    console.log('Saved Names & Numbers Settings:', settingsforAddNamesAndNumbers);
-    setToastActive(true);
-  };
+  // const handleSaveforNameAndNumbersSetting = () => {
+  //   console.log('Saved Names & Numbers Settings:', settingsforAddNamesAndNumbers);
+  //   setToastActive(true);
+  // };
 
 
   // ADD ART SECTION SETTINGS
@@ -92,10 +83,11 @@ export default function Setting() {
   const handleToggleforAddArtSectionSetting = (key) => {
     setSettingsforAddArtSection(prev => ({ ...prev, [key]: !prev[key] }));
   };
-  const handleSaveforAddArtSectionSettings = () => {
-    console.log('Saved Add Art Settings:', settingsforAddArtSection);
-    setToastActive(true);
-  };
+
+  // const handleSaveforAddArtSectionSettings = () => {
+  //   console.log('Saved Add Art Settings:', settingsforAddArtSection);
+  //   setToastActive(true);
+  // };
 
 
 
@@ -116,10 +108,10 @@ export default function Setting() {
     setUploadSettings(prev => ({ ...prev, [key]: !prev[key] }));
   }
 
-  const handleSaveUploadSettings = () => {
-    console.log('Saved Upload Settings:', uploadSettings);
-    setToastActive(true);
-  };
+  // const handleSaveUploadSettings = () => {
+  //   console.log('Saved Upload Settings:', uploadSettings);
+  //   setToastActive(true);
+  // };
 
 
   //  IMAGE UPLOAD edit ART work section SETTINGS
@@ -144,11 +136,43 @@ export default function Setting() {
     setArtworkEditorSettings(prev => ({ ...prev, [key]: !prev[key] }));
   }
 
-  const handleSaveArtworkEditorSettings = () => {
-    console.log('Saved Artwork Editor Settings:', artworkEditorSettings);
-    setToastActive(true);
+  // const handleSaveArtworkEditorSettings = () => {
+  //   console.log('Saved Artwork Editor Settings:', artworkEditorSettings);
+  //   setToastActive(true);
+  // }
+
+
+
+  const [otherSettings, setOtherSettings] = useState({
+    enableZoomFeature: true,
+    enableSleevesShow: true,
+    enableFrontSmallImageSectionShow: true,
+    enableBackSmallImageSectionShow: true,
+    enableMainImageSectionShow: true,
+  });
+
+  const handleToggleOtherSetting = (key) => {
+    setOtherSettings(prev => ({ ...prev, [key]: !prev[key] }));
   }
 
+  // const handleSaveOtherSettings = () => {
+  //   console.log('Saved Other Settings:', otherSettings);
+  //   setToastActive(true);
+  // }
+
+
+  const handleSaveAllSettings = () => {
+    console.log('Settings saved:');
+    console.log({
+      settingsForTextSection,
+      settingsforAddNamesAndNumbers,
+      settingsforAddArtSection,
+      uploadSettings,
+      artworkEditorSettings,
+      otherSettings
+    });
+    showToast({ content: 'Settings updated successfully!' });
+  };
 
   return (
     <Page title="Settings" fullWidth subtitle="Manage your product gadget settings here for visible to the user.">
@@ -179,11 +203,11 @@ export default function Setting() {
                 ))}
               </BlockStack>
             </Box>
-            <InlineStack align="end">
+            {/* <InlineStack align="end">
               <Button variant="primary" onClick={handleSaveTextForm}>
                 Save Text Section Settings
               </Button>
-            </InlineStack>
+            </InlineStack> */}
           </BlockStack>
         </Card>
 
@@ -205,11 +229,11 @@ export default function Setting() {
                 ))}
               </BlockStack>
             </Box>
-            <InlineStack align="end">
+            {/* <InlineStack align="end">
               <Button variant="primary" onClick={handleSaveforNameAndNumbersSetting}>
                 Save Names & Numbers Settings
               </Button>
-            </InlineStack>
+            </InlineStack> */}
           </BlockStack>
         </Card>
 
@@ -231,11 +255,11 @@ export default function Setting() {
                 ))}
               </BlockStack>
             </Box>
-            <InlineStack align="end">
+            {/* <InlineStack align="end">
               <Button variant="primary" onClick={handleSaveforAddArtSectionSettings}>
                 Save Add Art Settings
               </Button>
-            </InlineStack>
+            </InlineStack> */}
           </BlockStack>
         </Card>
 
@@ -260,83 +284,84 @@ export default function Setting() {
                 ))}
               </BlockStack>
             </Box>
-            <InlineStack align="end">
+            {/* <InlineStack align="end">
               <Button variant="primary" onClick={handleSaveArtworkEditorSettings}>
                 Save Artwork Settings
               </Button>
-            </InlineStack>
+            </InlineStack> */}
           </BlockStack>
         </Card>
 
-     
 
 
-      {/* IMAGE UPLOAD SETTINGS */}
-      <Card sectioned>
-        <BlockStack gap="400">
-          <Text variant="headingLg" as="h2">Upload Art Settings</Text>
-          <Text tone="subdued">Enable or disable options for the upload section.</Text>
-          <Divider />
-          <Box paddingBlock="300">
-            <BlockStack gap="200">
-              {Object.entries(uploadSettings).map(([key, value]) => (
-                <Checkbox
-                  key={key}
-                  label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                  checked={value}
-                  onChange={() => handleToggleUploadSetting(key)}
-                />
-              ))}
-            </BlockStack>
-          </Box>
-          <InlineStack align="end">
+
+        {/* IMAGE UPLOAD SETTINGS */}
+        <Card sectioned>
+          <BlockStack gap="400">
+            <Text variant="headingLg" as="h2">Upload Art Settings</Text>
+            <Text tone="subdued">Enable or disable options for the upload section.</Text>
+            <Divider />
+            <Box paddingBlock="300">
+              <BlockStack gap="200">
+                {Object.entries(uploadSettings).map(([key, value]) => (
+                  <Checkbox
+                    key={key}
+                    label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                    checked={value}
+                    onChange={() => handleToggleUploadSetting(key)}
+                  />
+                ))}
+              </BlockStack>
+            </Box>
+            {/* <InlineStack align="end">
             <Button variant="primary" onClick={handleSaveUploadSettings}>
               Save Upload Settings
             </Button>
-          </InlineStack>
-        </BlockStack>
-      </Card>
+          </InlineStack> */}
+          </BlockStack>
+        </Card>
 
- </Box>
-      {/* STORE INFO SETTINGS */}
-      <Card sectioned>
-        <BlockStack gap="400">
-          <Text variant="headingLg" as="h2">Information</Text>
-          <Text tone="subdued">Update your store’s basic contact info below.</Text>
-          <Divider />
-          <Box paddingBlockStart="300">
-            <TextField
-              label="Store name"
-              value={storeName}
-              onChange={setStoreName}
-              autoComplete="off"
-            />
-          </Box>
-          <Box paddingBlockStart="300">
-            <TextField
-              label="Email"
-              value={email}
-              onChange={setEmail}
-              autoComplete="email"
-            />
-          </Box>
-          <Box paddingBlockStart="300">
-            <TextField
-              label="Phone"
-              value={phone}
-              onChange={setPhone}
-              autoComplete="tel"
-            />
-          </Box>
-          <InlineStack align="end" paddingBlockStart="300">
-            <Button variant="primary" onClick={SettingsStoresaved}>
-              Save Store Info
+
+        {        /* Other SETTINGS  */}
+        <Card sectioned>
+          <BlockStack gap="400">
+            <Text variant="headingLg" as="h2">Other Settings</Text>
+            <Text tone="subdued">Enable or disable options for the Other settings section.</Text>
+            <Divider />
+            <Box paddingBlock="300">
+              <BlockStack gap="200">
+                {Object.entries(otherSettings).map(([key, value]) => (
+                  <Checkbox
+                    key={key}
+                    label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                    checked={value}
+                    onChange={() => handleToggleOtherSetting(key)}
+                  />
+                ))}
+              </BlockStack>
+            </Box>
+            {/* <InlineStack align="end">
+            <Button variant="primary" onClick={handleSaveOtherSettings}>
+              Save Others Settings
+            </Button>
+          </InlineStack> */}
+          </BlockStack>
+        </Card>
+        <Box  padding="1000">
+          <InlineStack  >
+            <Button variant="primary" size="large" onClick={handleSaveAllSettings}>
+              Save Settings
             </Button>
           </InlineStack>
-        </BlockStack>
-      </Card>
+        </Box>
+      </Box>
 
-      {toastMarkup}
+
+
+     
+     
+
+
     </Page>
   );
 }

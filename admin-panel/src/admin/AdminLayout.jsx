@@ -67,20 +67,41 @@ export default function AdminLayout({ children }) {
                         selected: location.pathname === '/admin/product-list',
                         onClick: () => navigate('/admin/product-list')
                     },
+                     {
+                        label: 'Order List',
+                        icon: OrderIcon,
+                        selected: location.pathname === '/admin/orders',
+                        onClick: () => navigate('/admin/orders')
+                    },
                     {
                         label: 'Settings',
                         icon: SettingsIcon,
                         selected: location.pathname === '/admin/setting',
                         onClick: () => navigate('/admin/setting')
                     },
-                    {
-                        label: 'Order List',
-                        icon: OrderIcon,
-                        selected: location.pathname === '/admin/orders',
-                        onClick: () => navigate('/admin/orders')
-                    },
+                   
+                   
                 ]}
             />
+
+            {location.pathname.startsWith('/admin/setting') && (
+            <Navigation.Section
+                label="Settings"
+                items={[
+                    {
+                        label: 'General Settings',
+                        selected: location.pathname === '/admin/setting',
+                        onClick: () => navigate('/admin/setting')
+                    },
+                    {
+                        label: 'Account Settings',
+                        selected: location.pathname === '/admin/setting/account-settings',
+                        onClick: () => navigate('/admin/setting/account-settings')
+                    },
+                   
+                ]}
+            />
+        )}
         </Navigation>
     );
 
@@ -94,6 +115,7 @@ export default function AdminLayout({ children }) {
             >
                 <Page fullWidth>
                     {children}
+                    
                 </Page>
 
                 <footer
