@@ -31,8 +31,8 @@ export default function AccountSettings() {
 
   return (
     <Page>
-      <Card sectioned >
-        <BlockStack gap="400">
+      <Card sectioned title="Account Settings" subtitle="Manage your account settings and preferences">
+        <BlockStack gap="400" >
           <Text variant="headingLg" as="h2">Change Password</Text>
           <Text tone="subdued">Update your Password And Basic contact info below.</Text>
           <Divider />

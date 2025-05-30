@@ -15,70 +15,87 @@ import { AppProvider } from '@shopify/polaris';
 import GeneralSettings from './admin/settings/genaralSettings';
 import AccountSettings from './admin/settings/AccountSettings';
 import { ToastProvider } from './admin/ToastContext'; // Import the ToastProvider
+import NotFound from './admin/NotFound';
 
 function App() {
   return (
     <ToastProvider>
-    <AppProvider i18n={{}}>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/admin/login" element={<Login />} />
+      <AppProvider i18n={{}}>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/admin/login" element={<Login />} />
 
-          {/* Admin Pages with shared layout */}
-          <Route
-            path="/admin/dashboard"
-            element={
-              <ProtectedRoute>
-                <AdminLayout><Dashboard /></AdminLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/product-list"
-            element={
-              <ProtectedRoute>
-                <AdminLayout><ProductList /></AdminLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/orders"
-            element={
-              <ProtectedRoute>
-                <AdminLayout><OrderList /></AdminLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/setting"
-            element={
-              <ProtectedRoute>
-                <AdminLayout><GeneralSettings /></AdminLayout>
-              </ProtectedRoute>
-            }
-          />
+            {/* Admin Pages with shared layout */}
             <Route
-            path="/admin/setting/account-settings"
-            element={
-              <ProtectedRoute>
-                <AdminLayout><AccountSettings /></AdminLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/product-design"
-            element={
-              <ProtectedRoute>
-                <AdminLayout><ProductDesign /></AdminLayout>
-              </ProtectedRoute>
-            }
-          />
-           
-          {/* Add other pages similarly */}
-        </Routes>
-      </Router>
-    </AppProvider>
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute>
+                  <AdminLayout><Dashboard /></AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/product-list"
+              element={
+                <ProtectedRoute>
+                  <AdminLayout><ProductList /></AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/orders"
+              element={
+                <ProtectedRoute>
+                  <AdminLayout><OrderList /></AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/setting"
+              element={
+                <ProtectedRoute>
+                  <AdminLayout><GeneralSettings /></AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/setting/account-settings"
+              element={
+                <ProtectedRoute>
+                  <AdminLayout><AccountSettings /></AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/product-design"
+              element={
+                <ProtectedRoute>
+                  <AdminLayout><ProductDesign /></AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/*"
+              element={
+                <ProtectedRoute>
+                  <AdminLayout><NotFound /></AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="*"
+              element={
+
+                <NotFound />
+
+              }
+            />
+
+            {/* Add other pages similarly */}
+          </Routes>
+        </Router>
+      </AppProvider>
     </ToastProvider>
 
   );

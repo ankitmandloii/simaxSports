@@ -1,8 +1,12 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Page, FormLayout, TextField, Button, Card } from '@shopify/polaris';
 
 export default function Login() {
+
+
+
+
     const BASE_URL = process.env.REACT_APP_BASE_URL;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -10,6 +14,14 @@ export default function Login() {
     const [passwordError, setPasswordError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+
+    useEffect(() => {
+        if (localStorage.getItem('admin-token')) {
+            navigate('/admin/dashboard');
+        }
+    }, [navigate]);
+
 
     const validateEmail = useCallback((value) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
