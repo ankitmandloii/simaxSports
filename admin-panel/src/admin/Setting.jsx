@@ -121,8 +121,37 @@ export default function Setting() {
     setToastActive(true);
   };
 
+
+  //  IMAGE UPLOAD edit ART work section SETTINGS
+
+  const [artworkEditorSettings, setArtworkEditorSettings] = useState({
+    Filter: true,
+    editColors: true,
+    removeBackgroundAI: true,
+    cropTrim: true,
+    superResolution: true,
+    replaceBackgroundAI: true,
+    sizeSlider: true,
+    rotateSlider: true,
+    centerButton: true,
+    layeringButton: true,
+    flipButton: true,
+    lockButton: true,
+    duplicateButton: true,
+  });
+
+  const handleToggleArtworkSettings = (key) => {
+    setArtworkEditorSettings(prev => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  const handleSaveArtworkEditorSettings = () => {
+    console.log('Saved Artwork Editor Settings:', artworkEditorSettings);
+    setToastActive(true);
+  }
+
+
   return (
-    <Page title="Settings" fullWidth subtitle="Manage your product gadget settings here.">
+    <Page title="Settings" fullWidth subtitle="Manage your product gadget settings here for visible to the user.">
       {/* GRID WRAPPER FOR CARDS */}
       <Box
         paddingBlockEnd="500"
@@ -209,7 +238,37 @@ export default function Setting() {
             </InlineStack>
           </BlockStack>
         </Card>
-      </Box>
+
+
+
+        {/* ARTWORK EDITOR SETTINGS */}
+
+        <Card sectioned>
+          <BlockStack gap="400">
+            <Text variant="headingLg" as="h2">Image Upload Sections's Edit Artwork Settings</Text>
+            <Text tone="subdued">Toggle options to control artwork editing tools visible to the user.</Text>
+            <Divider />
+            <Box paddingBlock="300">
+              <BlockStack gap="200">
+                {Object.entries(artworkEditorSettings).map(([key, value]) => (
+                  <Checkbox
+                    key={key}
+                    label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                    checked={value}
+                    onChange={() => handleToggleArtworkSettings(key)}
+                  />
+                ))}
+              </BlockStack>
+            </Box>
+            <InlineStack align="end">
+              <Button variant="primary" onClick={handleSaveArtworkEditorSettings}>
+                Save Artwork Settings
+              </Button>
+            </InlineStack>
+          </BlockStack>
+        </Card>
+
+     
 
 
       {/* IMAGE UPLOAD SETTINGS */}
@@ -238,7 +297,7 @@ export default function Setting() {
         </BlockStack>
       </Card>
 
-
+ </Box>
       {/* STORE INFO SETTINGS */}
       <Card sectioned>
         <BlockStack gap="400">
