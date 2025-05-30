@@ -1,8 +1,8 @@
-import './layerComponent.css';
 import icons from '../../../data/icons';
 import BringFront from '../../images/bring-to-front.png'
 import BringBack from '../../images/send-backwards.png'
 import SendBack from '../../images/send-to-back.png'
+import style from './layerComponent.module.css';
 
 
 
@@ -11,9 +11,9 @@ const LayerModal = ({ isOpen, onClose, onLayerAction }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className={style.modalContent} onClick={(e) => e.stopPropagation()}>
         <h2>Layer Actions</h2>
-        <div className="modal-actions">
+        <div className={style.modalActions}>
           <button onClick={() => {
             onLayerAction('bringForward');
             onClose();
@@ -33,7 +33,7 @@ const LayerModal = ({ isOpen, onClose, onLayerAction }) => {
             onClose();
           }}> <img src={SendBack} alt="Bring Forward" title="Bring Forward" /> Send to Back</button>
         </div>
-        <button className="close-button" onClick={onClose}>Close</button>
+        <button className={style.closeButton} onClick={onClose}>Close</button>
       </div>
     </div>
   );

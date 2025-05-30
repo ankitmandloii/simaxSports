@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import "./FontCollectionList.css";
 import { CrossIcon } from "../../iconsSvg/CustomIcon";
 import { IoArrowBackCircleSharp } from "react-icons/io5";
 import ViewAllFonts from "./ViewAllFonts";
 import PopularFonts from "./PopularFonts";
 import AllFontsCategory from "./AllFontsCategory";
 import FontsList from "./FontsList";
+import style from './FontCollectionList.module.css'
 
 function FontCollectionList({ onSelect, onClose }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -55,7 +55,7 @@ function FontCollectionList({ onSelect, onClose }) {
 
   return (
     <>
-      <div className="FontCollectionList-header">
+      <div className={style.fontCollectionListHeader}>
         {(selectedSubCategory || selectedPopular || selectedViewAll) && (
           <IoArrowBackCircleSharp
             style={{ fontSize: 25, cursor: "pointer" }}
@@ -76,11 +76,11 @@ function FontCollectionList({ onSelect, onClose }) {
 
       <hr />
 
-      <div className="font-list-scrollable">
+      <div className={style.fontListScrollable}>
         {!selectedSubCategory && !selectedViewAll && !selectedPopular && (
-          <div className="font-Category-option-heading-top-container">
+          <div className={style.fontCategoryOptionHeadingTopContainer}>
             <div
-              className="font-Category-option-heading-top"
+              className={style.fontCategoryOptionHeadingTop}
               onClick={() => {
                 setSelectedPopular(!selectedPopular);
                 setTopHeading("Popular");
@@ -90,7 +90,7 @@ function FontCollectionList({ onSelect, onClose }) {
               POPULAR
             </div>
             <div
-              className="font-Category-option-heading-top "
+              className={style.fontCategoryOptionHeadingTop}
               onClick={() => {
                 setSelectedViewAll(true);
                 setSelectedSubCategory(null);

@@ -1,0 +1,144 @@
+/* popup-overlay: The semi-transparent background */
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  /* Semi-transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  /* Ensure it's on top of other content */
+}
+
+/* popup-content: The main popup box */
+.popupContent {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  /* Adjust as needed */
+  max-width: 700px;
+  /* Max width for larger screens */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  /* For positioning the close button */
+  box-sizing: border-box;
+  /* Include padding in width/height */
+}
+
+/* popup-header: Top section with title and close button */
+.popupHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  /* Add some space below header */
+  border-bottom: 1px solid #eee;
+  /* Light separator line */
+}
+
+.popupHeader h2 {
+  margin: 0;
+  font-size: 1.2em;
+  /* Adjust font size */
+  color: #333;
+  text-transform: uppercase;
+}
+
+/* Close button styling */
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 2em;
+  color: #888;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  /* Prevent extra space around 'x' */
+}
+
+.closeButton:hover {
+  color: #555;
+}
+
+/* Image Grid */
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  /* Responsive grid */
+  gap: 15px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.imageItem {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.imageItem img {
+  width: 100%;
+  height: auto;
+  display: block;
+  /* Remove extra space below image */
+}
+
+/* Description text */
+.description {
+  font-size: 1.1em;
+  color: #555;
+  text-align: center;
+  margin-bottom: 30px;
+  /* Space before buttons */
+}
+
+/* Add Design Button */
+.addDesignButton {
+  background-color: #005BFF;
+  /* Orange color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 25px;
+  font-size: 1.1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 15px;
+  /* Space between buttons */
+  transition: all 0.3s ease-in-out;
+}
+
+.addDesignButton:hover {
+  transform: scale(0.9);
+  /* Darker orange on hover */
+}
+
+/* No Thanks Button */
+.noThanksButton {
+  background: none;
+  border: none;
+  color: #005BFF;
+  /* Reddish/orange color for consistency */
+  font-size: 0.9em;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.noThanksButton:hover {
+  color: #005BFF;
+  /* Darker on hover */
+}

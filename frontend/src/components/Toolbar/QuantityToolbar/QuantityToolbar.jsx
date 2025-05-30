@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import './QuantityToolbar.css'
 import miniProd from '../../images/mini-prod.png'
+import style from './QuantityToolbar.module.css'
 
 const adultSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"];
 const womenSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
@@ -21,7 +21,7 @@ const QuantityToolbar = () => {
   };
 
   return (
-    <div className="toolbar-main-container quantity-toolbar">
+    <div className="toolbar-main-container ">
       <div className='toolbar-main-heading'>
         <h5 className='Toolbar-badge'>Quantity And Sizes</h5>
         <h2>How Many Do You Need?</h2>
@@ -42,12 +42,12 @@ const QuantityToolbar = () => {
             </div>
           </div>
 
-          <div className="size-section">
-            <div className="size-group">
+          <div className={style.sizeSection}>
+            <div className={style.sizeGroup}>
               <h5>Adult Sizes</h5>
-              <div className="size-inputs">
+              <div className={style.sizeInputs}>
                 {adultSizes.map(size => (
-                  <div className="size-box" key={`adult-${size}`}>
+                  <div className={style.sizeBox} key={`adult-${size}`}>
                     <label>{size}</label>
                     <input
                       type="text"
@@ -60,11 +60,11 @@ const QuantityToolbar = () => {
               </div>
             </div>
 
-            <div className="size-group">
+            <div className={style.sizeGroup}>
               <h5>Womens Sizes</h5>
-              <div className="size-inputs">
+              <div className={style.sizeInputs}>
                 {womenSizes.map(size => (
-                  <div className="size-box" key={`women-${size}`}>
+                  <div className={style.sizeBox} key={`women-${size}`}>
                     <label>{size}</label>
                     <input
                       type="text"
@@ -100,7 +100,7 @@ const QuantityToolbar = () => {
           </label>
         </div>
 
-        <button className="calculate-btn">CALCULATE PRICING</button>
+        <button className={style.calculateBtn}>CALCULATE PRICING</button>
       </div>
     </div>
   );

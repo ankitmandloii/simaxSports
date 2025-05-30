@@ -1,8 +1,8 @@
 import React from 'react';
-import './Header.css';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../images/Logo.png'
 import { CartIcon, UserIcon } from '../iconsSvg/CustomIcon';
+import style from './Header.module.css'
 
 const Header = () => {
   const location = useLocation();
@@ -11,40 +11,40 @@ const Header = () => {
   const designRoutes = ['/product?productId=8847707537647&title=Dusty%20Rose%20/%20S', '/addArt?productId=8847707537647&title=Dusty%20Rose%20/%20S', '/uploadArt?productId=8847707537647&title=Dusty%20Rose%20/%20S', '/addNames?productId=8847707537647&title=Dusty%20Rose%20/%20S', '/addText?productId=8847707537647&title=Dusty%20Rose%20/%20S'];
 
   return (
-    <header className="app-header">
-      <div className="left-section">
-        <img src={logo} alt="SIMAX" className="logo" />
+    <header className={style.appHeader}>
+      <div className={style.leftSection}>
+        <img src={logo} alt="SIMAX" className={style.logo} />
 
-        <nav className="nav-steps">
+        <nav className={style.navSteps}>
           <Link
             to="/product?productId=8847707537647&title=Dusty%20Rose%20/%20S"
-            className={`step ${designRoutes.includes(location.pathname) ? 'active' : ''}`}
+            className={`${style.step} ${designRoutes.includes(location.pathname) ? style.stepActive : ''}`}
           >
-            <span className='nav-span-number'>1</span> DESIGN
+            <span className={style.navSpanNumber}>1</span> DESIGN
           </Link>
 
           <Link
             to="/quantity?productId=8847707537647&title=Dusty%20Rose%20/%20S"
-            className={`step ${location.pathname === '/quantity' ? 'active' : ''}`}
+            className={`${style.step} ${location.pathname === '/quantity' ? style.stepActive : ''}`}
           >
-            <span className='nav-span-number'>2</span> QUANTITY & SIZES
+            <span className={style.navSpanNumber}>2</span> QUANTITY & SIZES
           </Link>
 
           <Link
             to="/review?productId=8847707537647&title=Dusty%20Rose%20/%20S"
-            className={`step ${location.pathname === '/review' ? 'active' : ''}`}
+            className={`${style.step} ${location.pathname === '/review' ? style.stepActive : ''}`}
           >
-            <span className='nav-span-number'>3</span> REVIEW
+            <span className={style.navSpanNumber}>3</span> REVIEW
           </Link>
         </nav>
       </div>
 
-      <div className="right-section">
-        <button className="header-btn">
+      <div className={style.rightSection}>
+        <button className={style.headerBtn}>
           <CartIcon />
           Cart
         </button>
-        <button className="header-btn">
+        <button className={style.headerBtn}>
           <UserIcon />
           Login
         </button>

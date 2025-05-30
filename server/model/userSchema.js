@@ -10,14 +10,7 @@ const userSchema = new mongoose.Schema({
   phoneNumber: {type: String, required: true},
   password: { type: String, required: true },
   role: { type: String, required: true},
-  myPatient: [ {
-    type : mongoose.Schema.Types.ObjectId,
-    ref: "User"
-  }],
-  myDoctor: [ {
-    type : mongoose.Schema.Types.ObjectId,
-    ref: "User"
-  }],
+ 
   
   
 }, { timestamps: true });

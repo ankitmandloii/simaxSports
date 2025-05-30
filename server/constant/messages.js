@@ -1,3 +1,5 @@
+const User = require("../model/userSchema");
+
 //Success messages
 module.exports.SuccessMessage = {
   DATA_FETCHED: "Data Fetched Successfully.",
@@ -22,9 +24,15 @@ module.exports.SuccessMessage = {
   AUTHENTICATE_APP: "Authenticate App",
   REVIEW_CREATED: "Review is being processed in background, it will be created shortly in a few minutes.",
   SIGNUP_SUCCESS: "Sign UP Success",
+  PASSWORD_CHANGED_SUCCESSFULLY: "Password Changed Successfully",
+  USER_UPDATED: "User Updated Successfully",
 };
 //Error messages
 module.exports.ErrorMessage = {
+  NEWPASSWORD_SAME_AS_OLD: "New password must be different from the current password",
+  ONLY_ADMIN_CAN_CHANGE_PASSWORD: "Only Admin Can Change Password.",
+  ADMIN_NOT_FOUND: "Admin Not Found.",
+  USER_NOT_FOUND: "User Not Found.",
   COLLECTION_FETCHED: "Error Getting Collection's.",
   DESIGN_NOT_SAVED: "Desings Not Saved Successfully.",
   USER_NOT_UPDATED: "User Not Updated.",

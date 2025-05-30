@@ -1,5 +1,7 @@
 const User = require("../model/userSchema");
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
 
 
 
@@ -67,31 +69,63 @@ const bcrypt = require('bcrypt');
 
 
 
+// exports.login = async (email, password) => {
+//   try {
+
+//     const user = await User.findOne({ email });
+//     if (!user) {
+
+//       return false;
+//     }
+
+
+//     const passwordsMatch = await bcrypt.compare(password, user.password);
+//     if (!passwordsMatch) {
+
+//       return false;
+//     }
+
+
+//     return user;
+
+//   } catch (error) {
+//     //console.error('Login error:', error);
+//     return false;
+//   }
+// };
+
+
+
 exports.login = async (email, password) => {
   try {
-
     const user = await User.findOne({ email });
-    if (!user) {
-
-      return false;
-    }
-
+    if (!user) return false;
 
     const passwordsMatch = await bcrypt.compare(password, user.password);
-    if (!passwordsMatch) {
+    if (!passwordsMatch) return false;
 
-      return false;
-    }
+    // Generate JWT
+    const token = jwt.sign(
+      { id: user._id, email: user.email }, // Payload
+      SECRET_KEY,
+      { expiresIn: '1d' } // Token expires in 1 day
+    );
 
-
-    return user;
+    // Return user info + token
+    return {
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.userName,
+      },
+      token,
+    };
 
   } catch (error) {
-    //console.error('Login error:', error);
+    console.error('Login error:', error);
     return false;
   }
 };
-
 
 
 exports.signUp = async (userName, email, phoneNumber, password,role) => {

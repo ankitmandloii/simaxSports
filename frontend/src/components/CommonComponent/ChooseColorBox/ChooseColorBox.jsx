@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ColorPicker, useColor } from 'react-color-palette';
 import 'react-color-palette/css';
-
-import './ChooseColorBox.css';
+import style from './ChooseColorBox.module.css'
 import { RxCross1 } from "react-icons/rx";
 import SpanColorBox from "../SpanColorBox/SpanColorBox";
 
@@ -21,7 +20,7 @@ const ChooseColorBox = ({
   const boxRef = useRef(null);
   const [color, setColor] = useColor("hex", defaultColor);
 
- 
+
   const [localOutlineSize, setLocalOutlineSize] = useState(outlineSize?.toString() || "0");
 
   useEffect(() => {
@@ -62,21 +61,21 @@ const ChooseColorBox = ({
   }, [addColorPopupHAndler, chngColorPopupHandler, showColorPopupHandler]);
 
   return (
-    <div className="choose-color-box" ref={boxRef} onClick={e => e.stopPropagation()}>
-      <div className="color-box-top">
+    <div className={style.chooseColorBox} ref={boxRef} onClick={e => e.stopPropagation()}>
+      <div className={style.colorBoxTop}>
         <h6>{title}</h6>
         <span onClick={addColorPopupHAndler || chngColorPopupHandler || showColorPopupHandler}>
           <RxCross1 />
         </span>
       </div>
 
-      <div className="middle-color-pick">
+      <div className={style.middleColorPick}>
         <span>Color:</span>
         <SpanColorBox color={color.hex} />
         <span>{color.hex}</span>
       </div>
 
-      <div className="react-colorful-wrapper" style={{ margin: '10px 0' }}>
+      <div className={style.reactColorfulWrapper} style={{ margin: '10px 0' }}>
         <ColorPicker
           width={200}
           height={100}
@@ -88,9 +87,9 @@ const ChooseColorBox = ({
       </div>
 
       {range && (
-        <div className='toolbar-box-Font-Value-set-inner-container'>
-          <div className='toolbar-box-Font-Value-set-inner-actionheading'>Size</div>
-          <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+        <div className={style.toolbarBoxFontValueSetInnerContainer}>
+          <div className={style.toolbarBoxFontValueSetInnerActionHeading}>Size</div>
+          <div className={style.toolbarBoxFontValueSetInnerActionLogo}>
             <input
               type="range"
               min="0"
@@ -108,7 +107,7 @@ const ChooseColorBox = ({
             value={localOutlineSize}
             onChange={handleInputChange}
             onBlur={handleBlur}
-            className="SpanValueBox-input"
+            className={style.spanValueBoxInput}
           />
         </div>
       )}

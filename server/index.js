@@ -47,7 +47,7 @@ res.send("yes Now you hit APis");
 // app.use("/external/",routes);
 
 
-app.listen(PORT, console.log("server is on port 3000"));
+app.listen(PORT, console.log("server is on port ", PORT));
 
 
 // app.listen(PORT, (err)=> {

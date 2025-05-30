@@ -1,5 +1,6 @@
 import React from "react";
 import categorizedFonts from "../../fonts/allFonts";
+import style from './FontCollectionList.module.css'
 
 function AllFontsCategory({
   onSelect,
@@ -8,10 +9,10 @@ function AllFontsCategory({
   setSelectedSubCategory,
 }) {
   return (
-    <div className="FontCollectionList-category">
+    <div className={style.fontCollectionListCategory}>
       {categorizedFonts.map((cat) => (
         <div
-          className="font-Category-option-heading"
+          className={style.fontCategoryOptionHeading}
           onClick={() => {
             handleCategoryClick(cat.category);
             setSelectedSubCategory(cat.fonts);

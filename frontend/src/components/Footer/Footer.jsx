@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react'
-import './Footer.css'
+import footerStyle from './Footer.module.css'
 import { IoShareSocialOutline } from "react-icons/io5";
 import { IoPricetagOutline } from "react-icons/io5";
 import { FiSave } from "react-icons/fi";
@@ -24,23 +24,23 @@ const Footer = () => {
 
   return (
     <>
-      <div className='footer-container'>
-        <button className="footer-btn " onClick={setSavedesignPopupHandler}>
+      <div className={footerStyle.footerContainer}>
+        <button className={footerStyle.footerBtn} onClick={setSavedesignPopupHandler}>
           <IoShareSocialOutline />
           SHARE
         </button>
 
-        <button className="footer-btn " onClick={setNavigate}>
+        <button className={footerStyle.footerBtn} onClick={setNavigate}>
           <IoPricetagOutline />
 
           GET PRICE
         </button>
-        <button className="footer-btn " onClick={setSavedesignPopupHandler}>
+        <button className={footerStyle.footerBtn} onClick={setSavedesignPopupHandler}>
           <FiSave />
 
           SAVE DESIGN
         </button>
-        <button className="footer-btn " onClick={setNavigate}>
+        <button className={footerStyle.footerBtn} onClick={setNavigate}>
 
           NEXT STEP
           <FaArrowRightLong />

@@ -1,0 +1,168 @@
+.productListCollection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  /* display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem; */
+}
+
+.colorPopupHeader {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modalProduct {
+  position: relative;
+  width: 12rem;
+  /* height: 17rem; */
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: visible;
+  background: #fff;
+  padding: 10px;
+  text-align: center;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.modalProduct:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.imgProContainer {
+  height: 160px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.imgProContainer img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+/* .modal-productimg {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+} */
+
+/* .modal-product p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+} */
+
+.modalProductcolorContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.modalProductcolorImg {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.loadMore {
+  margin: 2rem auto 1rem;
+  display: block;
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.loadMore:hover {
+  background-color: #1565c0;
+}
+
+.loadMore:disabled {
+  background-color: #90caf9;
+  cursor: not-allowed;
+}
+
+/* ----- */
+.colorPopup {
+  position: absolute;
+  top: 2 0px;
+  /* adjust as needed, positive value for below */
+  left: 0;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.colorSwatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+
+.colorSwatch:hover {
+  background-color: #f5f5f5;
+}
+
+.colorName {
+  font-size: 14px;
+}
+
+.addProductBtnPopup {
+  background-color: #000000;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.colorSwatch.selected {
+  border: 2px solid #000;
+  box-shadow: 0 0 0 2px white;
+}
+
+.closePopupBtn {
+  font-size: 5px;
+  border: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: transparent;
+}
+
+.defaultCollectionPara {
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #b63b3b;
+  font-weight: 500;
+}
+
+.popupActions {
+  margin: auto;
+}

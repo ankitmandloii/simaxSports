@@ -1,0 +1,52 @@
+.redoundoContainer {
+    flex-direction: column;
+    justify-content: start;
+    gap: 0;
+    margin-top: 0;
+    border-radius: 8px;
+    margin-left: 10px;
+}
+
+.redoundoContainer li {
+    list-style: none;
+}
+
+.productContainerButton {
+    background-color: #fff;
+    border: 1px solid #fff;
+    flex-direction: column;
+    padding: 11px 9px 21px 10px;
+    border-radius: 0px;
+    color: #7f7f7f;
+    font-size: 12px;
+    font-weight: 600;
+    width: 89px;
+    white-space: nowrap;
+}
+
+.productContainerButton span {
+    margin-right: 0;
+    display: block;
+}
+
+.redoundoContainer li:first-child .productContainerButton {
+    border-radius: 10px 10px 0px 0px;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.redoundoContainer li:last-child .productContainerButton {
+    border-radius: 0px 0px 10px 10px;
+    border-top: 1px solid #D9D9D9;
+}
+
+.productContainerButton svg {
+    width: 20px;
+    height: 20px;
+}
+
+.productContainerButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    user-select: none;
+}

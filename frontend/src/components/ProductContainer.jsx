@@ -5,13 +5,13 @@ import MainDesignTool from './mainDesignTool';
 import { GrZoomOut } from "react-icons/gr";
 import { BsZoomIn } from "react-icons/bs";
 import { MagnifyGlassIcon } from './iconsSvg/CustomIcon';
-import './ProductContainer.css';
 import { setExportedImages } from '../redux/CanvasExportDesign/canvasExportSlice';
 import SleeveDesignPopup from './PopupComponent/addSleeveDesign/addSleeveDesingPopup';
 import { getHexFromName } from './utils/colorUtils';
 import { fetchProducts } from '../redux/ProductSlice/ProductSlice';
 import { setSelectedProducts } from '../redux/ProductSlice/SelectedProductSlice';
 import { useSearchParams } from 'react-router-dom';
+import style from './ProductContainer.module.css'
 
 function ProductContainer() {
   const dispatch = useDispatch();
@@ -45,10 +45,10 @@ function ProductContainer() {
   }
 
 
-  const activeProductColor = useSelector(state => state?.selectedProducts?.activeProduct?.selectedColor?.name); 
+  const activeProductColor = useSelector(state => state?.selectedProducts?.activeProduct?.selectedColor?.name);
   const activeProductColorHex = getHexFromName(activeProductColor);
   const invertedColor = invertHexColor(activeProductColorHex);  //convert the color to text to hax then invert it
- 
+
 
   const [frontBgImage, setFrontBgImage] = useState(null);
   const [backBgImage, setBackBgImage] = useState(frontImage);
@@ -126,7 +126,7 @@ function ProductContainer() {
   }, [dispatch]);
 
   useEffect(() => {
-    if(Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
+    if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
     const productId = searchParams.get("productId"); // "8847707537647"
     const title = searchParams.get("title");         // "Dusty Rose / S"
     // console.log("productId", productId);
@@ -174,8 +174,8 @@ function ProductContainer() {
   
 
   return (
-    <div className="ProductContainerMainDiv">
-      <div className="flex">
+    <div className={style.ProductContainerMainDiv}>
+      <div className={style.flex}>
 
         {/* Render Active Canvas Side */}
         <div style={{ display: activeSide === "front" ? "block" : "none" }}>
@@ -235,21 +235,22 @@ function ProductContainer() {
         </div>
 
         {/* Side Preview Thumbnails */}
-        <div className="Prouduct-mirror-container" >
-          <div className="Prouduct-mirror-left-container">
+        <div className={style.ProuductMirrorContainer} >
+          <div className={style.ProuductMirrorLeftContainer}>
 
-            <div className="corner-img-canva-container" onClick={ShowFront}>
+            <div className={style.cornerImgCanvaContainer} onClick={ShowFront}>
               <img
                 src={frontPreviewImage}
-                className={`ProductContainerSmallImage ${activeSide === 'front' ? "hover-active" : ""}`}
+                className={`${style.ProductContainerSmallImage} ${activeSide === "front" ? style["hover-active"] : ""}`}
               />
+
               <p>Front</p>
             </div>
 
-            <div className="corner-img-canva-container" onClick={ShowBack}>
+            <div className={style.cornerImgCanvaContainer} onClick={ShowBack}>
               <img
                 src={backPreviewImage}
-                className={`ProductContainerSmallImage ${activeSide === 'back' ? "hover-active" : ""}`}
+                className={`${style.ProductContainerSmallImage} ${activeSide === "back" ? style["hover-active"] : ""}`}
               />
               <p>Back</p>
             </div>
@@ -257,17 +258,17 @@ function ProductContainer() {
             {
               addSleeves &&
               <>
-                <div className="corner-img-canva-container" onClick={ShowRightSleeve}  >
+                <div className={style.cornerImgCanvaContainer} onClick={ShowRightSleeve}  >
                   <img
                     src={rightSleevePreviewImage}
-                    className={`ProductContainerSmallImage ${activeSide === 'rightSleeve' ? "hover-active" : ""}`}
+                    className={`${style.ProductContainerSmallImage} ${activeSide === "rightSleeve" ? style["hover-active"] : ""}`}
                   />
                   <p>Right Sleeve</p>
                 </div>
-                <div className="corner-img-canva-container" onClick={ShowLeftSleeve}  >
+                <div className={style.cornerImgCanvaContainer} onClick={ShowLeftSleeve}  >
                   <img
                     src={leftSleevePreviewImage}
-                    className={`ProductContainerSmallImage ${activeSide === 'leftSleeve' ? "hover-active" : ""}`}
+                    className={`${style.ProductContainerSmallImage} ${activeSide === "leftSleeve" ? style["hover-active"] : ""}`}
                   />
                   <p>Left Sleeve</p>
                 </div>
@@ -283,12 +284,12 @@ function ProductContainer() {
           </div>
 
           {!addSleeves &&
-            <div className="zoom-container" onClick={onClose}>
+            <div className={style.zoomContainer} onClick={onClose}>
               <p>SLEEVES & MORE</p>
             </div>
           }
 
-          <div className="zoom-container" onClick={toggleZoom}>
+          <div className={style.zoomContainer} onClick={toggleZoom}>
             {logo}
             <p>Zoom</p>
           </div>

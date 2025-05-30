@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import '../AddTextToolbar/AddTextToolbar.css';
+import style from './AddTextToolbar.module.css';
 import {
   AlignCenterIcon,
   LayeringFirstIcon,
@@ -14,6 +14,8 @@ import {
   LayeringFirstIconWithBlackBg,
   LayeringSecondIconWithBlackBg,
 } from '../../iconsSvg/CustomIcon';
+import { FaBold } from "react-icons/fa";
+import { ImItalic } from "react-icons/im";
 import FontCollectionList from './FontCollectionList';
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox';
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox';
@@ -84,43 +86,18 @@ const AddTextToolbar = () => {
   const [fontweightValue, setFontweightValue] = useState(textContaintObject ? textContaintObject.fontWeight : "normal");
   const [fontStyleValue, setFontStyleValue] = useState(textContaintObject ? textContaintObject.fontStyle : "normal");
 
-  const boldIcon = (
-    <span
-      style={{
-        fontWeight: 'bold',
-        fontSize: 15,
-        color: fontweightValue === 'bold' ? 'white' : 'black',
-        padding: '2px 4px',
-        borderRadius: 4,
-      }}
-    >
-      B
-    </span>
-  );
+
 
   const colorClassNameForBold = fontweightValue === 'bold'
-    ? 'toolbar-icon active'
-    : 'toolbar-icon';
+    ? style.toolbarIconActive
+    : style.toolbarIcon;
 
   const colorClassNameForItalic = fontStyleValue === 'italic'
-    ? 'toolbar-icon active'
-    : 'toolbar-icon';
+    ? style.toolbarIconActive
+    : style.toolbarIcon;
 
 
-  const italicIcon = (
-    <span
-      style={{
-        fontStyle: 'italic',
-        fontSize: 16,
-        backgroundColor: fontStyleValue === 'italic' ? 'black' : 'transparent',
-        color: fontStyleValue === 'italic' ? 'white' : 'black',
-        padding: '2px 4px',
-        borderRadius: 4,
-      }}
-    >
-      I
-    </span>
-  );
+
 
 
   const [rangeValuesArc, setRangeValuesArc] = useState(textContaintObject ? textContaintObject.arc : 0);
@@ -392,7 +369,7 @@ const AddTextToolbar = () => {
   }
 
 
-  const colorClassName = flipXValue !== true ? 'toolbar-box-icons-container-flip1' : 'toolbar-box-icons-container-clickStyle-flip1';
+  const colorClassName = flipXValue !== true ? style.toolbarBoxIconsContainerFlip1 : style.toolbarBoxIconsContainerClickStyleFlip1;
   const icon = flipXValue !== true ? <FlipFirstIcon /> : <FlipFirstWhiteColorIcon />;
 
 
@@ -410,7 +387,7 @@ const AddTextToolbar = () => {
     //console.log(currentTextToolbarId, "id =>");
   }, [flipXValue, flipYValue])
 
-  const colorClassNameForY = flipYValue !== true ? 'toolbar-box-icons-container-flip2' : 'toolbar-box-icons-container-clickStyle-flip2';
+  const colorClassNameForY = flipYValue !== true ? style.toolbarBoxIconsContainerFlip2 : style.toolbarBoxIconsContainerClickStyleFlip2;
   const iconY = flipYValue !== true ? <FlipSecondIcon /> : <FlipSecondWhiteColorIcon />;
 
   const handleDuplcateTextInput = () => {
@@ -464,7 +441,7 @@ const AddTextToolbar = () => {
     }
   }, []);
   return (
-    <div className="toolbar-main-container AddTextToolbar-main-container">
+    <div className="toolbar-main-container ">
       <div className='toolbar-main-heading'>
         <h5 className='Toolbar-badge'>Text Editor</h5>
         {!showContent ? <h3>Add new Text</h3>
@@ -473,7 +450,7 @@ const AddTextToolbar = () => {
         {/* <p>You can select multiple products and colors</p> */}
       </div>
 
-      <div className="toolbar-box">
+      <div className={style.toolbarBox}>
         {!showFontSelector ? (
           <>
             <textarea
@@ -486,11 +463,12 @@ const AddTextToolbar = () => {
 
             {showContent && (
               <>
-                <div className='addText-first-toolbar-box-container'>
-                  <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
+                <div className={style.addTextFirstToolbarBoxContainer}>
+                  <div className={`${style.toolbarBoxIconsAndHeadingContainer} ${isLocked ? style.lockedToolbar : ''}`}>
                     <div
                       // className={`toolbar-box-icons-container ${centerActive ? 'active' : ''}`}
-                      className='toolbar-box-icons-container center-btn'
+                      className={`${style.toolbarBoxIconsContainer} center-btn ${centerActive ? 'active' : ''}`}
+
                       onClick={() => {
                         globalDispatch("position", { x: 280, y: textContaintObject.position.y });
                         setCenterActive(!centerActive);
@@ -501,22 +479,22 @@ const AddTextToolbar = () => {
                     <div className='toolbar-box-heading-container'>Center</div>
                   </div>
 
-                  <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
-                    <div className='toolbar-box-icons-container-for-together'>
+                  <div className={`${style.toolbarBoxIconsAndHeadingContainer} ${isLocked ? style.lockedToolbar : ''}`}>
+                    <div className={style.toolbarBoxIconsContainerForTogether}>
 
                       {
-                        getRenderIconForSendToTop() ? <div className='toolbar-box-icons-container-layering1'  > <span><LayeringFirstIcon /></span> </div> : <div className='toolbar-box-icons-container-layering1-active' onClick={() => handleBringForward()} > <span><LayeringFirstIcon /></span></div>
+                        getRenderIconForSendToTop() ? <div className={style.toolbarBoxIconsContainerLayering1}  > <span><LayeringFirstIcon /></span> </div> : <div className={style.toolbarBoxIconsContainerLayering1Active} onClick={() => handleBringForward()} > <span><LayeringFirstIcon /></span></div>
                       }
 
                       {
-                        getRenderIconForSendToBack() ? <div className='toolbar-box-icons-container-layering2' > <span><LayeringSecondIcon /></span> </div> : <div className='toolbar-box-icons-container-layering2-active' onClick={() => handleBringBackward()}>  <span><LayeringSecondIcon /></span></div>
+                        getRenderIconForSendToBack() ? <div className={style.toolbarBoxIconsContainerLayering2} > <span><LayeringSecondIcon /></span> </div> : <div className={style.toolbarBoxIconsContainerLayering2Active} onClick={() => handleBringBackward()}>  <span><LayeringSecondIcon /></span></div>
                       }
                     </div>
                     Layering
                   </div>
 
-                  <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
-                    <div className='toolbar-box-icons-container-for-together'>
+                  <div className={`${style.toolbarBoxIconsAndHeadingContainer} ${isLocked ? style.lockedToolbar : ''}`}>
+                    <div className={style.toolbarBoxIconsContainerForTogether}>
                       <div className={colorClassName} onClick={() => callForXFlip()}><span>{icon}</span></div>
                       <div className={colorClassNameForY} onClick={() => callForYFlip()}><span>{iconY}</span></div>
                     </div>
@@ -524,10 +502,10 @@ const AddTextToolbar = () => {
                   </div>
 
                   <div
-                    className="toolbar-box-icons-and-heading-container"
+                    className={style.toolbarBoxIconsAndHeadingContainer}
                     onClick={() => dispatch(toggleLockState(currentTextToolbarId))}
                   >
-                    <div className={`toolbar-box-icons-container ${isLocked ? 'active' : ''}`}>
+                    <div className={`${style.toolbarBoxIconsContainer} ${isLocked ? style.toolbarBoxIconsContainerActive : ''}`}>
                       <span><LockIcon /></span>
                     </div>
                     <div className="toolbar-box-heading-container">Lock</div>
@@ -535,13 +513,13 @@ const AddTextToolbar = () => {
 
 
 
-                  <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
-                    <div className='toolbar-box-icons-container-for-together'>
+                  <div className={`${style.toolbarBoxIconsAndHeadingContainer} ${isLocked ? style.lockedToolbar : ''}`}>
+                    <div className={style.toolbarBoxIconsContainerForTogether}>
                       <div className={colorClassNameForBold} onClick={callForBold}>
-                        <span>{boldIcon}</span>
+                        <span><FaBold /></span>
                       </div>
                       <div className={colorClassNameForItalic} onClick={callForItalic}>
-                        <span>{italicIcon}</span>
+                        <span><ImItalic /></span>
                       </div>
                     </div>
                     B/I
@@ -551,10 +529,11 @@ const AddTextToolbar = () => {
 
 
                   <div
-                    className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`} onClick={() => handleDuplcateTextInput()}
+                    className={`${style.toolbarBoxIconsAndHeadingContainer} ${isLocked ? style.lockedToolbar : ''}`} onClick={() => handleDuplcateTextInput()}
                   >
                     <div
-                      className="toolbar-box-icons-container duplicate-btn">
+                      className={`${style.toolbarBoxIconsContainer} ${style.duplicateBtn}`}>
+
                       {/* className={`toolbar-box-icons-container ${duplicateActive ? 'active' : ''}`} */}
 
                       <span><DuplicateIcon /></span>
@@ -565,19 +544,19 @@ const AddTextToolbar = () => {
                 </div>
 
                 <hr />
-                <div className={`addText-inner-main-containerr ${isLocked ? 'locked-toolbar' : ''}`}>
-                  <div className='toolbar-box-Font-Value-set-inner-container'>
-                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>Font</div>
-                    <div className='toolbar-box-Font-Value-set-inner-actionlogo cursor' onClick={() => setShowFontSelector(true)}>
+                <div className={`${style.addTextInnerMainContainerr} ${isLocked ? style.lockedToolbar : ''}`}>
+                  <div className={style.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={style.toolbarBoxFontValueSetInnerActionHeading}>Font</div>
+                    <div className={style.toolbarBoxFontValueSetInnerActionLogo} onClick={() => setShowFontSelector(true)}>
                       {selectedFont} <span><AngleActionIcon /></span>
                     </div>
                   </div>
 
                   <hr />
 
-                  <div className='toolbar-box-Font-Value-set-inner-container'>
-                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>Color</div>
-                    <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleTextColorPopup}>
+                  <div className={style.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={style.toolbarBoxFontValueSetInnerActionHeading}>Color</div>
+                    <div className={style.toolbarBoxFontValueSetInnerActionHeading} onClick={toggleTextColorPopup}>
                       {textColor}
                       <SpanColorBox color={textColor} />
                       <span><AngleActionIcon /></span>
@@ -595,9 +574,9 @@ const AddTextToolbar = () => {
                   </div>
 
                   <hr />
-                  <div className='toolbar-box-Font-Value-set-inner-container'>
-                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>Outline</div>
-                    <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleOutlineColorPopup}>
+                  <div className={style.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={style.toolbarBoxFontValueSetInnerActionHeading}>Outline</div>
+                    <div className={style.toolbarBoxFontValueSetInnerActionHeading} onClick={toggleOutlineColorPopup}>
                       {outlineColor === '' ? 'None' : outlineColor}
                       <SpanColorBox color={outlineColor} />
                       <span><AngleActionIcon /></span>
@@ -623,11 +602,11 @@ const AddTextToolbar = () => {
 
 
 
-                  <div className='toolbar-box-Font-Value-set-inner-container'>
-                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>
+                  <div className={style.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={style.toolbarBoxFontValueSetInnerActionHeading}>
                       Size
                     </div>
-                    <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+                    <div className={style.toolbarBoxFontValueSetInnerActionLogo}>
                       <input
                         type="range"
                         name="size"
@@ -646,7 +625,7 @@ const AddTextToolbar = () => {
                         value={rangeValuesSize}
                         onChange={handleRangeInputSizeChange}
                         onBlur={handleBlur}
-                        className="SpanValueBox-input"
+                        className={style.spanValueBoxInput}
                       />
                       {/* Size end here */}
 
@@ -659,11 +638,11 @@ const AddTextToolbar = () => {
                   <hr></hr>
 
 
-                  <div className='toolbar-box-Font-Value-set-inner-container'>
-                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>
+                  <div className={style.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={style.toolbarBoxFontValueSetInnerActionHeading}>
                       Arc
                     </div>
-                    <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+                    <div className={style.toolbarBoxFontValueSetInnerActionLogo}>
                       <input
                         type="range"
                         id="min"
@@ -683,7 +662,7 @@ const AddTextToolbar = () => {
                         value={rangeValuesArc}
                         onChange={handleRangeInputArcChange}
                         onBlur={handleArcBlur}
-                        className="SpanValueBox-input"
+                        className={style.spanValueBoxInput}
                       />
 
                       {/* <span><SpanValueBox valueShow={rangeValuesArc} /></span> */}
@@ -694,11 +673,11 @@ const AddTextToolbar = () => {
 
 
 
-                  <div className='toolbar-box-Font-Value-set-inner-container'>
-                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>
+                  <div className={style.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={style.toolbarBoxFontValueSetInnerActionHeading}>
                       Rotate
                     </div>
-                    <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+                    <div className={style.toolbarBoxFontValueSetInnerActionLogo}>
                       <input
                         type="range"
                         id="min"
@@ -718,7 +697,7 @@ const AddTextToolbar = () => {
                         value={rangeValuesRotate}
                         onChange={handleRangeInputRotateChange}
                         onBlur={handleRotateBlur}
-                        className="SpanValueBox-input"
+                        className={style.spanValueBoxInput}
                       />
 
                       {/* <span><SpanValueBox valueShow={rangeValuesRotate} /></span> */}
@@ -726,11 +705,11 @@ const AddTextToolbar = () => {
                   </div>
 
                   <hr></hr>
-                  <div className='toolbar-box-Font-Value-set-inner-container'>
-                    <div className='toolbar-box-Font-Value-set-inner-actionheading'>
+                  <div className={style.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={style.toolbarBoxFontValueSetInnerActionHeading}>
                       Spacing
                     </div>
-                    <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+                    <div className={style.toolbarBoxFontValueSetInnerActionLogo}>
                       <input
                         type="range"
                         id="min"
@@ -750,7 +729,7 @@ const AddTextToolbar = () => {
                         value={rangeValuesSpacing}
                         onChange={handleRangeInputSpacingChange}
                         onBlur={handleSpacingBlur}
-                        className="SpanValueBox-input"
+                        className={style.spanValueBoxInput}
                       />
 
                       {/* <span><SpanValueBox valueShow={rangeValuesSpacing} /></span> */}

@@ -2,8 +2,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCollections, resetCollections } from '../../../redux/ProductSlice/CollectionSlice';
-import './CollectionPopupList.css';
 import { AngleActionIconBlack } from '../../iconsSvg/CustomIcon';
+import styles from './CollectionPopupList.module.css';
 
 const CollectionPopupList = ({ onCollectionSelect }) => {
   const dispatch = useDispatch();
@@ -36,17 +36,17 @@ const CollectionPopupList = ({ onCollectionSelect }) => {
 
 
   return (
-    <div className="collection-sidebar" onScroll={handleScroll}>
+    <div className={styles.collectionSidebar} onScroll={handleScroll}>
       {loading && collections.length === 0 ? (
         // <div className="loader"></div>
         <div ></div>
 
       ) : (
-        <ul className="collection-ul">
+        <ul className={styles.collectionUl}>
           {collections.map((collection) => (
             <li
               key={collection.id}
-              className="collection-card collection-li"
+              className={`${styles.collectionCard} ${styles.collectionLi}`}
               onClick={() => onCollectionSelect(collection.id)}
             >
               <span>{collection.title}</span>

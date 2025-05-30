@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import '../AddImageToolbar/AddImageToolbar.css';
+import styles from './AddImageToolbar.module.css'
 import {
   AlignCenterIcon,
   LayeringFirstIcon,
@@ -39,15 +39,15 @@ const AddImageToolbar = () => {
   const [currentTextToolbarId, setCurrentTextToolbarId] = useState(String(Date.now()));  // current id of toolbar
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   let textContaintObject = allTextInputData.find((text) => text.id === currentTextToolbarId);
-  
 
-const [currentImageToolbarId, setCurrentImageToolbarId] = useState(String(Date.now()));  // current id of toolbar
- 
 
-const image = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images[0]);
-// let imageContaintObject = image.find((image) => image.id === currentImageToolbarId);
+  const [currentImageToolbarId, setCurrentImageToolbarId] = useState(String(Date.now()));  // current id of toolbar
 
-const [selectedFilter, setSelectedFilter] = useState('Normal');
+
+  const image = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images[0]);
+  // let imageContaintObject = image.find((image) => image.id === currentImageToolbarId);
+
+  const [selectedFilter, setSelectedFilter] = useState('Normal');
   const imgRef = useRef(null);
 
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -292,7 +292,7 @@ const [selectedFilter, setSelectedFilter] = useState('Normal');
   }
 
 
-  const colorClassName = flipXValue !== true ? 'toolbar-box-icons-container-flip1' : 'toolbar-box-icons-container-clickStyle-flip1';
+  const colorClassName = flipXValue !== true ? styles.toolbarBoxIconsContainerFlip1 : styles.toolbarBoxIconsContainerClickStyleFlip1;
   const icon = flipXValue !== true ? <FlipFirstIcon /> : <FlipFirstWhiteColorIcon />;
 
 
@@ -310,7 +310,7 @@ const [selectedFilter, setSelectedFilter] = useState('Normal');
     //console.log(currentTextToolbarId, "id =>");
   }, [flipXValue, flipYValue])
 
-  const colorClassNameForY = flipYValue !== true ? 'toolbar-box-icons-container-flip2' : 'toolbar-box-icons-container-clickStyle-flip2';
+  const colorClassNameForY = flipYValue !== true ? styles.toolbarBoxIconsContainerFlip2 : styles.toolbarBoxIconsContainerClickStyleFlip2;
   const iconY = flipYValue !== true ? <FlipSecondIcon /> : <FlipSecondWhiteColorIcon />;
 
   const handleDuplcateTextInput = () => {
@@ -387,16 +387,16 @@ const [selectedFilter, setSelectedFilter] = useState('Normal');
 
 
 
-console.log("previewUrl", previewUrl, "image src", image?.src);
+  console.log("previewUrl", previewUrl, "image src", image?.src);
   return (
-    <div className="toolbar-main-container AddTextToolbar-main-container">
+    <div className="toolbar-main-container ">
       <div className='toolbar-main-heading'>
         <h5 className='Toolbar-badge'>Upload Art</h5>
         <h3>Edit Your Artwork</h3>
         <p>Our design professionals will select ink colors <br></br> for you or tellus your preferred colors at checkout.</p>
       </div>
 
-      <div className="toolbar-box">
+      <div className={styles.toolbarBox}>
 
         <>
 
@@ -410,19 +410,19 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
             {/* <hr /> */}
 
 
-            <div className={`addText-inner-main-containerr ${isLocked ? 'locked-toolbar' : ''}`}>
-              <div className="filter-section">
-                <div className="filter-title">Filters</div>
-                <div className="filter-options">
+            <div className={`${styles.addTextInnerMainContainerr} ${isLocked ? styles.lockedToolbar : ''}`}>
+              <div className={styles.filterSection}>
+                <div className={styles.filterTitle}>Filters</div>
+                <div className={styles.filterOptions}>
                   {filters.map(filter => (
                     <div
                       key={filter.name}
-                      className={`filter-option ${selectedFilter === filter.name ? 'active' : ''}`}
+                      className={`${styles.filterOption} ${selectedFilter === filter.name ? styles.filterOptionActive : ''}`}
                       onClick={() => setSelectedFilter(filter.name)}
                     >
-                      <img 
-                        src={previewUrl} alt={filter.name} className="filter-image" onError={() => alert("Image not publicly accessible")} />
-                      <div className="filter-label">{filter.name}</div>
+                      <img
+                        src={previewUrl} alt={filter.name} className={styles.filterImage} onError={() => alert("Image not publicly accessible")} />
+                      <div className={styles.filterLabel}>{filter.name}</div>
                     </div>
                   ))}
                 </div>
@@ -430,9 +430,9 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
 
               {selectedFilter === "Normal" || selectedFilter === "Single Color" && (<hr />)}
 
-              {selectedFilter === "Normal" && (<div className='toolbar-box-Font-Value-set-inner-container'>
-                <div className='toolbar-box-Font-Value-set-inner-actionheading'>Edit Colors</div>
-                <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleTextColorPopup}>
+              {selectedFilter === "Normal" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Edit Colors</div>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleTextColorPopup}>
                   <SpanColorBox color={textColor} />
                   <SpanColorBox color={textColor} />
                   <SpanColorBox color={textColor} />
@@ -452,9 +452,9 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
 
 
 
-              {selectedFilter === "Single Color" && (<div className='toolbar-box-Font-Value-set-inner-container'>
-                <div className='toolbar-box-Font-Value-set-inner-actionheading'>Colors</div>
-                <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleTextColorPopup}>
+              {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Colors</div>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleTextColorPopup}>
                   <SpanColorBox color={textColor} />
                   <span><AngleActionIcon /></span>
                   {textColorPopup && (
@@ -476,8 +476,8 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
 
 
 
-              {selectedFilter === "Single Color" && (<div className="toolbar-box-Font-Value-set-inner-container">
-                <div className="toolbar-box-Font-Value-set-inner-actionheading">
+              {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Inverts Colors
 
                 </div>
@@ -495,8 +495,8 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
               <hr />
 
 
-              {selectedFilter === "Single Color" && (<div className="toolbar-box-Font-Value-set-inner-container">
-                <div className="toolbar-box-Font-Value-set-inner-actionheading">
+              {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Make Solid
 
                 </div>
@@ -513,8 +513,8 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
               )}
               {(selectedFilter === "Single Color" && <hr />)}
 
-              <div className="toolbar-box-Font-Value-set-inner-container">
-                <div className="toolbar-box-Font-Value-set-inner-actionheading">
+              <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Remove Background
                   <span className="ai-badge">AI</span>
                 </div>
@@ -531,8 +531,8 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
 
 
               <hr />
-              <div className="toolbar-box-Font-Value-set-inner-container">
-                <div className="toolbar-box-Font-Value-set-inner-actionheading">
+              <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Crop & Trim
                 </div>
                 <label className="switch">
@@ -549,8 +549,8 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
 
 
               <hr />
-              <div className="toolbar-box-Font-Value-set-inner-container">
-                <div className="toolbar-box-Font-Value-set-inner-actionheading">
+              <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Super Resolution
                   <span className="ai-badge">AI</span>
                 </div>
@@ -566,10 +566,10 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
               <hr />
 
 
-              <div className='toolbar-box-Font-Value-set-inner-container'>
-                <div className='toolbar-box-Font-Value-set-inner-actionheading'>Replace Background With AI<span className="ai-badge">AI</span></div>
+              <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Replace Background With AI<span className="ai-badge">AI</span></div>
 
-                <div className='toolbar-box-Font-Value-set-inner-actionheading' onClick={toggleOutlineColorPopup}>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleOutlineColorPopup}>
 
 
                   <span><AngleActionIcon /></span>
@@ -581,11 +581,11 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
 
               <hr />
 
-              <div className='toolbar-box-Font-Value-set-inner-container'>
-                <div className='toolbar-box-Font-Value-set-inner-actionheading'>
+              <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Size
                 </div>
-                <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+                <div className={styles.toolbarBoxFontValueSetInnerActionlogo}>
                   <input
                     type="range"
                     name="size"
@@ -604,7 +604,7 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
                     value={rangeValuesSize}
                     // onChange={handleRangeInputSizeChange}
                     // onBlur={handleBlur}
-                    className="SpanValueBox-input"
+                    className={styles.spanValueBoxInput}
                   />
                   {/* Size end here */}
 
@@ -621,11 +621,11 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
 
 
 
-              <div className='toolbar-box-Font-Value-set-inner-container'>
-                <div className='toolbar-box-Font-Value-set-inner-actionheading'>
+              <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Rotate
                 </div>
-                <div className='toolbar-box-Font-Value-set-inner-actionlogo'>
+                <div className={styles.toolbarBoxFontValueSetInnerActionlogo}>
                   <input
                     type="range"
                     id="min"
@@ -645,7 +645,7 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
                     // value={rangeValuesRotate}
                     // onChange={handleRangeInputRotateChange}
                     // onBlur={handleRotateBlur}
-                    className="SpanValueBox-input"
+                    className={styles.spanValueBoxInput}
                   />
 
 
@@ -670,11 +670,11 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
 
 
             {/* this is toolbar of image for upload art exm- layring, flip, color, size, arc, rotate, spacing */}
-            <div className='addText-first-toolbar-box-container'>
+            <div className={styles.addTextFirstToolbarBoxContainer}>
 
-              <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
+              <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`}>
                 <div
-                  className={`toolbar-box-icons-container ${centerActive ? 'active' : ''}`}
+                  className={`${styles.toolbarBoxIconsContainer} ${centerActive ? styles.toolbarBoxIconsContainerActive : ''}`}
                   onClick={() => {
                     // globalDispatch("position", { x: 325, y: textContaintObject.position.y });
                     // setCenterActive(!centerActive);
@@ -685,18 +685,18 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
                 <div className='toolbar-box-heading-container'>Center</div>
               </div>
 
-              <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
-                <div className='toolbar-box-icons-container-for-together'>
+              <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`}>
+                <div className={styles.toolbarBoxIconsContainerForTogether}>
 
                   {
-                    getRenderIconForSendToTop() ? <div className='toolbar-box-icons-container-layering1'  > <span><LayeringFirstIcon /></span> </div> : <div className='toolbar-box-icons-container-layering1'
+                    getRenderIconForSendToTop() ? <div className={styles.toolbarBoxIconsContainerLayering1}> <span><LayeringFirstIcon /></span> </div> : <div className={styles.toolbarBoxIconsContainerLayering1}
                     // onClick={() => handleBringForward()}
                     >
                       <span><LayeringFirstIconWithBlackBg /></span></div>
                   }
 
                   {
-                    getRenderIconForSendToBack() ? <div className='toolbar-box-icons-container-layering2' > <span><LayeringSecondIcon /></span> </div> : <div className='toolbar-box-icons-container-layering2'
+                    getRenderIconForSendToBack() ? <div className={styles.toolbarBoxIconsContainerLayering2} > <span><LayeringSecondIcon /></span> </div> : <div className={styles.toolbarBoxIconsContainerLayering2}
                     // onClick={() => handleBringBackward()}
                     >  <span><LayeringSecondIconWithBlackBg /></span></div>
                   }
@@ -704,8 +704,8 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
                 Layering
               </div>
 
-              <div className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}>
-                <div className='toolbar-box-icons-container-for-together'>
+              <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`}>
+                <div className={styles.toolbarBoxIconsContainerForTogether}>
                   <div className={colorClassName}
                   // onClick={() => callForXFlip()}
                   ><span>{icon}</span></div>
@@ -717,20 +717,17 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
               </div>
 
               <div
-                className="toolbar-box-icons-and-heading-container"
+                className={styles.toolbarBoxIconsAndHeadingContainer}
               // onClick={() => dispatch(toggleLockState(currentTextToolbarId))}
               >
-                <div className={`toolbar-box-icons-container ${isLocked ? 'active' : ''}`}>
+                <div className={`${styles.toolbarBoxIconsContainer} ${isLocked ? styles.toolbarBoxIconsContainerActive : ''}`}>
                   <span><LockIcon /></span>
                 </div>
                 <div className="toolbar-box-heading-container">Lock</div>
               </div>
 
-              <div
-                className={`toolbar-box-icons-and-heading-container ${isLocked ? 'locked-toolbar' : ''}`}
-              // onClick={() => handleDuplcateTextInput()}
-              >
-                <div className={`toolbar-box-icons-container ${duplicateActive ? 'active' : ''}`}>
+              <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`}>
+                <div className={`${styles.toolbarBoxIconsContainer} ${duplicateActive ? styles.toolbarBoxIconsContainerActive : ''}`}>
                   <span><DuplicateIcon /></span>
                 </div>
                 <div className='toolbar-box-heading-container'>Duplicate</div>
@@ -744,7 +741,7 @@ console.log("previewUrl", previewUrl, "image src", image?.src);
         </>
 
       </div>
-    </div>
+    </div >
   );
 };
 

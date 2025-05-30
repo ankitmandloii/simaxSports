@@ -1,0 +1,78 @@
+.colorPopupContainerSpanBox {
+  position: absolute;
+  top: 46%;
+  right: 2%;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 16rem;
+  margin: auto;
+  z-index: 200;
+}
+
+.colorOptionsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.colorOptionCard {
+  width: 30px;
+  text-align: center;
+}
+
+.colorOptionCard span {
+  height: 10px;
+}
+
+.colorOptionCard p {
+  font-size: 10px;
+}
+
+/* .color-popup-container-span_box .color-option-card {
+  cursor: pointer;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 5px;
+  text-align: center;
+} */
+
+
+/* .color-popup-container-span_box .color-option-card img {
+  width: 10px;
+  height: 10px;
+  object-fit: cover;
+} */
+
+.cancelColorBtn {
+  margin-top: 20px;
+  padding: 8px 16px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.crossProdIConn {
+  position: absolute;
+  right: 6px;
+  height: 1rem;
+  display: flex;
+  justify-content: center;
+  width: 1rem;
+  align-items: center;
+  /* width: 16px; */
+  top: 3px;
+  cursor: pointer;
+  background-color: #ffffff;
+  border-radius: 100%;
+  border: 1px solid #888;
+}
+
+.crossProdIConn svg {
+  height: 8px;
+}

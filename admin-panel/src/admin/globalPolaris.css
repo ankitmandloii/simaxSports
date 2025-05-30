@@ -1,0 +1,5 @@
+.Polaris-Navigation__Section {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}

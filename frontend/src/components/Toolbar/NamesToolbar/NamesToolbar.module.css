@@ -1,0 +1,105 @@
+.addNamesNumberrsRow {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #D2D5D9;
+  align-items: center;
+  /* padding-bottom: 10px;
+   */
+  padding: 10px;
+}
+
+.namescheckboxDiv span {
+  font-size: 14px;
+}
+
+
+.namescheckbox-div {
+  display: flex;
+  gap: 4px;
+}
+
+.namesToolbarButton:hover {
+  background: #F0F0F0;
+  scale: 1.05;
+}
+
+.namesToolbarButton {
+  background: transparent;
+  border: 1px solid #D2D5D9;
+  padding: 2px 4px;
+}
+
+.namesToolbarButtonActive {
+  border: 1px solid var(--red);
+}
+
+.namesToolbarButton img {
+  height: 25px;
+}
+
+.namesButtonMainContainer {
+  display: flex;
+  gap: 10px;
+}
+
+.namescheckboxDiv input[type='checkbox'] {
+  accent-color: #0000;
+}
+
+.namesButtonMainContainer .colorNamesBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+/* -------- */
+/* Disabled button style */
+.namesToolbarButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Disabled color box style */
+.colorNamesBox[style*="not-allowed"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Optional: Add a subtle grayscale filter on disabled buttons */
+.namesToolbarButton:disabled img {
+  filter: grayscale(70%);
+}
+
+/* Disabled Add Names/Numbers button */
+.blackButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+
+  gap: 10px;
+}
+
+.Deactive {
+  opacity: 0.4;
+  pointer-events: none;
+  user-select: none;
+}
+
+.Active {
+  opacity: 1;
+  user-select: auto;
+  pointer-events: all;
+}
+
+.stepToggleContainer {
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.NamesToolbarBox {
+  position: relative;
+}

@@ -1,0 +1,45 @@
+.modalContent {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 250px;
+  text-align: center;
+}
+
+.modalActions button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px auto;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.modalActions button:hover {
+  background-color: aliceblue;
+}
+
+.modalActions button:active {
+  background-color: aliceblue;
+}
+
+.closeButton {
+  background-color: black;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.svgStrokes {
+  height: 20px;
+}
+
+.layerBtnnnn {
+  gap: 10px;
+}

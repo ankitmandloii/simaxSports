@@ -14,7 +14,7 @@ function extractName(email) {
 
 
 
-exports.sendEmailTamplate = (email, frontSrc,backSrc,designname) => {
+exports.sendEmailTamplate = (email, frontSrc, backSrc, designname) => {
 
   const userName = extractName(email);
   const designName = designname || "";
