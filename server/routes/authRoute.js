@@ -11,6 +11,7 @@ const router = express.Router();
 // router.post('/signup',customerValidation.customerRegister, controllers.signup);
 router.post('/signup', controllers.signUp);
 router.post('/login', controllers.login);
+router.post('/admin-change-password', controllers.adminChangePassword);
 // router.post('/logout', controllers.logout);
 
 module.exports = router;
