@@ -24,7 +24,7 @@ export default function AdminLayout({ children }) {
         <TopBar.UserMenu
             actions={[{ items: [{ content: 'Sign out', onAction: handleSignOut }] }]}
             name="Admin"
-            initials="A"
+            initials="SO"
             open={isUserMenuOpen}
             onToggle={toggleUserMenu}
         />
@@ -49,11 +49,36 @@ export default function AdminLayout({ children }) {
             </Box>
             <Navigation.Section
                 items={[
-                    { label: 'Dashboard', icon: HomeIcon, onClick: () => navigate('/admin/dashboard') },
-                    { label: 'Product Design List', icon: ListNumberedIcon,onClick: () => navigate('/admin/product-design') },
-                    { label: 'Product List', icon: ProductIcon, onClick: () => navigate('/admin/product-list') },
-                    { label: 'Setting', icon: SettingsIcon, onClick: () => navigate('/admin/setting') },
-                    { label: 'Order List', icon: OrderIcon, onClick: () => navigate('/admin/orders')},
+                    {
+                        label: 'Dashboard',
+                        icon: HomeIcon,
+                        selected: location.pathname === '/admin/dashboard',
+                        onClick: () => navigate('/admin/dashboard')
+                    },
+                    {
+                        label: 'Product Design List',
+                        icon: ListNumberedIcon,
+                        selected: location.pathname === '/admin/product-design',
+                        onClick: () => navigate('/admin/product-design')
+                    },
+                    {
+                        label: 'Product List',
+                        icon: ProductIcon,
+                        selected: location.pathname === '/admin/product-list',
+                        onClick: () => navigate('/admin/product-list')
+                    },
+                    {
+                        label: 'Settings',
+                        icon: SettingsIcon,
+                        selected: location.pathname === '/admin/setting',
+                        onClick: () => navigate('/admin/setting')
+                    },
+                    {
+                        label: 'Order List',
+                        icon: OrderIcon,
+                        selected: location.pathname === '/admin/orders',
+                        onClick: () => navigate('/admin/orders')
+                    },
                 ]}
             />
         </Navigation>
@@ -83,7 +108,7 @@ export default function AdminLayout({ children }) {
                     }}
                 >
                     <Text variant="bodySm" as="p">
-                        © 2025 Your Company. All rights reserved.
+                        © 2025 SimaxSports. All rights reserved.
                     </Text>
                 </footer>
             </Frame>

@@ -15,12 +15,9 @@ export default function Dashboard() {
   const [searchValue, setSearchValue] = useState('');
 
   return (
-    <Page fullWidth>
-      <Box paddingBlockEnd="800">
-        <Text variant="heading2xl" as="h1">
-          Welcome to the Dashboard
-        </Text>
-      </Box>
+    <Page fullWidth title="Dashboard" subtitle="Manage your subscriptions and products here.">
+     
+
 
       {[1, 2, 3, 4].map((_, index) => (
         <Card key={index}>
