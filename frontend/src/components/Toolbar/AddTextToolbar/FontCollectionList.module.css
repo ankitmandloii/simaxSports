@@ -1,15 +1,15 @@
-.FontCollectionList-header {
+.fontCollectionListHeader {
   padding-top: 10px;
   padding-left: 10px;
   padding-right: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
- 
+
 }
 
 
-.FontCollectionList-header p {
+.fontCollectionListHeader p {
   font-size: 14px;
   font-weight: 600;
   color: #000000;
@@ -19,7 +19,7 @@
 
 
 
-.FontCollectionList-header span svg {
+.fontCollectionListHeader span svg {
   font-size: 14px;
   font-weight: 600;
   color: #000000;
@@ -27,7 +27,7 @@
   cursor: pointer;
 }
 
-.FontCollectionList-category {
+.fontCollectionListCategory {
   display: grid;
   width: 100%;
   grid-template-columns: repeat(2, 1fr);
@@ -36,7 +36,7 @@
 }
 
 
-.font-Category-option-heading {
+.fontCategoryOptionHeading {
   margin-top: 10px;
   display: flex;
   font-size: 20px;
@@ -50,19 +50,22 @@
   /* transition: background-color 0.3s ease; */
 }
 
-.font-Category-option-heading:hover {
-  background-color: #F0F0F0; /* Light gray background on hover */
-  color: #005bff; /* Change text color on hover */
+.fontCategoryOptionHeading:hover {
+  background-color: #F0F0F0;
+  /* Light gray background on hover */
+  color: #005bff;
+  /* Change text color on hover */
 }
 
-.font-Category-option-heading-top-container{
+.fontCategoryOptionHeadingTopContainer {
   display: flex;
   align-items: center;
-  justify-content:space-around;
+  justify-content: space-around;
   gap: 5px;
-  
+
 }
-.font-Category-option-heading-top{
+
+.fontCategoryOptionHeadingTop {
   /* margin-top: 10px; */
   display: flex;
   font-size: 15px;
@@ -75,8 +78,9 @@
   border: 1px solid #D2D5D9;
   border-radius: 20px;
 }
-.font-Category-option {
-  
+
+.fontCategoryOption {
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -88,26 +92,29 @@
   transition: background-color 0.3s ease;
 }
 
-.font-Category-option:hover {
-  background-color: #F0F0F0; /* Light gray background on hover */
-  color: #005bff; /* Change text color on hover */
+.fontCategoryOption:hover {
+  background-color: #F0F0F0;
+  /* Light gray background on hover */
+  color: #005bff;
+  /* Change text color on hover */
 }
 
-.font-list-scrollable {
- 
-  overflow-y: auto; /* Enables vertical scrolling if content exceeds height */
-  overflow-x: hidden; /* Hides horizontal scrollbar */
+.fontListScrollable {
 
-  grid-column: span 2; /* Ensures it spans across both columns */
+  overflow-y: auto;
+  /* Enables vertical scrolling if content exceeds height */
+  overflow-x: hidden;
+  /* Hides horizontal scrollbar */
+
+  grid-column: span 2;
+  /* Ensures it spans across both columns */
 }
 
-.font-Category-option:hover {
-  background-color: #F0F0F0; /* Light gray background on hover */
-  
-}
-.subcategory-block{
+
+
+.subcategoryBlock {
   display: flex;
-  flex-direction:column ;
+  flex-direction: column;
   align-items: center;
   justify-content: start;
   width: 100%;

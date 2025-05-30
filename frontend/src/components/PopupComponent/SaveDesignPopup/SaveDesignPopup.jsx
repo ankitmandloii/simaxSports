@@ -136,8 +136,8 @@
 
 // export default SaveDesignPopup;
 import React, { useState, useEffect, useRef } from 'react';
-import './SaveDesignPopup.css';
 import { CrossIcon, GoogleIcon } from '../../iconsSvg/CustomIcon';
+import style from './SaveDesignPopup.module.css'
 
 const SaveDesignPopup = ({ setSavedesignPopupHandler }) => {
   const [designName, setDesignName] = useState("");
@@ -223,50 +223,49 @@ const SaveDesignPopup = ({ setSavedesignPopupHandler }) => {
   }, []);
 
   return (
-    <div className='Save-design-popup'>
-      <div className="modal-overlay">
-        <div className="popup-container">
-          <div className="popup-headerr">
-            <div className='popup-title'>
-              <h2>Save Your Design</h2>
-              <p>Once saved, share with others and access it from anywhere!</p>
-            </div>
-            <button className="close-btn" onClick={setSavedesignPopupHandler}>
-              <CrossIcon />
-            </button>
+    <div className="modal-overlay">
+      <div className={style.popupContainer}>
+        <div className={style.popupHeaderr}>
+          <div className={style.popupTitle}>
+            <h2>Save Your Design</h2>
+            <p>Once saved, share with others and access it from anywhere!</p>
           </div>
+          <button className={style.closeBtn} onClick={setSavedesignPopupHandler}>
+            <CrossIcon />
+          </button>
+        </div>
 
-          {!showEmailForm ? (
-            <>
-              <label>Enter Design Name</label>
-              <input
-                type="text"
-                className="popup-input"
-                placeholder="Enter Design Name"
-                maxLength={25}
-                value={designName}
-                onChange={(e) => {
-                  setDesignName(e.target.value);
-                  setError("");
-                }}
-              />
-              {!isValid ? (
-                <p className="popup-error">Design Name is Required</p>
-              ) : (
-                <p>25 characters max, no symbols except dashes</p>
-              )}
-              {error && <p className="popup-error">{error}</p>}
+        {!showEmailForm ? (
+          <>
+            <label>Enter Design Name</label>
+            <input
+              type="text"
+              className={style.popupInput}
+              placeholder="Enter Design Name"
+              maxLength={25}
+              value={designName}
+              onChange={(e) => {
+                setDesignName(e.target.value);
+                setError("");
+              }}
+            />
+            {!isValid ? (
+              <p className={style.popupError}>Design Name is Required</p>
+            ) : (
+              <p>25 characters max, no symbols except dashes</p>
+            )}
+            {error && <p className={style.popupError}>{error}</p>}
 
-              <button
-                className={`popup-button email-button ${!isValid ? "locked-toolbar" : ""}`}
-                onClick={handleContinueWithEmail}
-                disabled={!isValid}
-              >
-                CONTINUE WITH EMAIL
-              </button>
+            <button
+              className={`${style.popupButton} ${style.emailButton} ${!isValid ? style.lockedToolbar : ''}`}
+              onClick={handleContinueWithEmail}
+              disabled={!isValid}
+            >
+              CONTINUE WITH EMAIL
+            </button>
 
-              <div className="popup-or">OR</div>
-              {/* <button
+            <div className={style.popupOr}>OR</div>
+            {/* <button
                 className={`popup-button  google-button ${!isValid ? "locked-toolbar" : ""}`}
                 disabled={!isValid}
                 ref={googleButtonRef}
@@ -274,43 +273,43 @@ const SaveDesignPopup = ({ setSavedesignPopupHandler }) => {
                 <GoogleIcon />
                 Continue With Google
               </button> */}
-              <div className="btn">
-                <div ref={googleButtonRef} className={`${!isValid ? "locked-toolbar" : ""}`} />
-              </div>
+            <div className="btn">
+              <div ref={googleButtonRef} className={`${!isValid ? style.lockedToolbar : ""}`} />
+            </div>
 
 
-            </>
-          ) : (
-            <>
-              <label>Enter Your Email</label>
-              <input
-                type="email"
-                className="popup-input"
-                placeholder="Your Email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setError("");
-                }}
-              />
-              {error && <p className="popup-error">{error}</p>}
+          </>
+        ) : (
+          <>
+            <label>Enter Your Email</label>
+            <input
+              type="email"
+              className={style.popupInput}
+              placeholder="Your Email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError("");
+              }}
+            />
+            {error && <p className={style.popupError}>{error}</p>}
 
-              <button className="popup-button email-button" onClick={handleSaveDesign}>
-                SAVE DESIGN
-              </button>
+            <button className={`${style.popupButton} ${style.emailButton}`}
+              onClick={handleSaveDesign}>
+              SAVE DESIGN
+            </button>
 
-              <button className="popup-button back-button" onClick={handleBack}>
-                BACK
-              </button>
-            </>
-          )}
+            <button className={`${style.popupButton} ${style.backButton}`} onClick={handleBack}>
+              BACK
+            </button>
+          </>
+        )}
 
-          <p className="popup-footer">
-            Your email is safe and secure. <a href="#">Read our privacy policy.</a>
-          </p>
-        </div>
+        <p className={style.popupFooter}>
+          Your email is safe and secure. <a href="#">Read our privacy policy.</a>
+        </p>
       </div>
-    </div>
+    </div >
   );
 };
 

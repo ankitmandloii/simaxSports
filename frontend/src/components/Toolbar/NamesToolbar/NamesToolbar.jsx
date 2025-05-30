@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import './NamesToolbar.css';
+// import './NamesToolbar.css';
+import style from './NamesToolbar.module.css'
 import FrontBtn from '../../images/Frontbutton.png';
 import BackBtn from '../../images/Backbuton.png';
 import SmallBtn from '../../images/sm-btn.png';
@@ -116,18 +117,20 @@ const NamesToolbar = () => {
 
   }, [nameAndNumberDesign]);
   return (
-    <div className="toolbar-main-container">
+    <div className={`toolbar-main-container ${style.NamesToolbarBox}`}>
+
       <div className='toolbar-main-heading'>
         <h5 className='Toolbar-badge'>Names And Numbers</h5>
         <h2>Add Names And Numbers</h2>
         <p>Use personalized Names & Numbers for projects like team jerseys where you need a unique name and/or number for each item.</p>
       </div>
 
-      <div className="toolbar-box Names-toolbar-box ">
+      <div className="toolbar-box
+      ">
         {/* Step 1 */}
-        <div className="add-names-numberrs-row">
+        <div className={style.addNamesNumberrsRow}>
           <h5>Step1</h5>
-          <label className="namescheckbox-div" >
+          <label className={style.namescheckboxDiv} >
             <input
               type="checkbox"
               checked={activeName}
@@ -137,7 +140,7 @@ const NamesToolbar = () => {
             />
             <span>Add Names</span>
           </label>
-          <label className="namescheckbox-div">
+          <label className={style.namescheckboxDiv}>
             <input
               type="checkbox"
               checked={activeNumber}
@@ -150,17 +153,17 @@ const NamesToolbar = () => {
         {/* ***************************show only when either number or name checked************ */}
         <div className={`${(activeName || activeNumber) ? "Active" : "Deactive"} step-toggle-container`}>
           {/* Side */}
-          <div className="add-names-numberrs-row">
+          <div className={style.addNamesNumberrsRow}>
             <h5>Side</h5>
-            <div className="names-button-main-container">
+            <div className={style.namesButtonMainContainer}>
               <button
-                className={`names-toolbar-button ${activeSide === 'front' ? 'active' : ''}`}
+                className={`${style.namesToolbarButton} ${activeSide === 'front' ? style.namesToolbarButtonActive : ''}`}
                 onClick={() => sideHandler("front")}
               >
                 <img src={FrontBtn} alt="Front" />
               </button>
               <button
-                className={`names-toolbar-button ${activeSide === 'back' ? 'active' : ''}`}
+                className={`${style.namesToolbarButton} ${activeSide === 'back' ? style.namesToolbarButtonActive : ''}`}
                 onClick={() => sideHandler("back")}
               >
                 <img src={BackBtn} alt="Back" />
@@ -169,17 +172,17 @@ const NamesToolbar = () => {
           </div>
 
           {/* Size */}
-          <div className="add-names-numberrs-row">
+          <div className={style.addNamesNumberrsRow}>
             <h5>Size</h5>
-            <div className="names-button-main-container">
+            <div className={style.namesButtonMainContainer}>
               <button
-                className={`names-toolbar-button ${activeSize === 'small' ? 'active' : ''}`}
+                className={`${style.namesToolbarButton} ${activeSize === 'small' ? style.namesToolbarButtonActive : ''}`}
                 onClick={() => sizeHandler("small")}
               >
                 <img src={SmallBtn} alt="Small" />
               </button>
               <button
-                className={`names-toolbar-button ${activeSize === 'large' ? 'active' : ''}`}
+                className={`${style.namesToolbarButton} ${activeSize === 'large' ? style.namesToolbarButtonActive : ''}`}
                 onClick={() => sizeHandler("large")}
               >
                 <img src={LargeBtn} alt="Large" />
@@ -188,17 +191,19 @@ const NamesToolbar = () => {
           </div>
 
           {/* Font */}
-          <div className="add-names-numberrs-row">
+          <div className={style.addNamesNumberrsRow}>
             <h5>Font</h5>
-            <div className="names-button-main-container">
+            <div className={style.namesButtonMainContainer}>
               <button
-                className={`names-toolbar-button ${activeFont === "Oswald" ? 'active' : ''}`}
+                // className={`names-toolbar-button ${activeFont === "Oswald" ? 'active' : ''}`}
+                className={`${style.namesToolbarButton} ${activeFont === 'Oswald' ? style.namesToolbarButtonActive : ''}`}
                 onClick={() => fontHandler("Oswald")}
               >
                 <img src={InterStatebutton} alt="Interstate" />
               </button>
               <button
-                className={`names-toolbar-button ${activeFont == 'Chakra Petch' ? 'active' : ''}`}
+                // className={`names-toolbar-button ${activeFont == 'Chakra Petch' ? 'active' : ''}`}
+                className={`${style.namesToolbarButton} ${activeFont === 'Chakra Petch' ? style.namesToolbarButtonActive : ''}`}
                 onClick={() => fontHandler('Chakra Petch')}
               >
                 <img src={Collegiatebutton} alt="Collegiate" />
@@ -207,10 +212,10 @@ const NamesToolbar = () => {
           </div>
 
           {/* Color */}
-          <div className="add-names-numberrs-row">
+          <div className={style.addNamesNumberrsRow}>
             <h5>Color</h5>
-            <div className="names-button-main-container">
-              <div className="color-names-box" onClick={showColorPopupHandler}>
+            <div className={style.namesButtonMainContainer}>
+              <div className={style.colorNamesBox} onClick={showColorPopupHandler}>
                 <span>{activeColor}</span>
                 <SpanColorBox color={activeColor} />
                 <AngleActionIcon />

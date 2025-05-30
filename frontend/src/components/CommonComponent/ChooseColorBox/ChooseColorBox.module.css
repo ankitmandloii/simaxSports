@@ -1,0 +1,82 @@
+.selectColorBtn {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.colorBoxTop span {
+  cursor: pointer;
+}
+
+.reactColorfulWrapper {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  /* height: 200px; Add fixed height to avoid jitter */
+  box-sizing: border-box;
+}
+
+.chooseColorBox {
+  position: absolute;
+  top: 30%;
+  /* or wherever you want it */
+  left: 60%;
+  /* example position */
+  border-radius: 10px;
+  padding: 10px;
+  background-color: #fff;
+  width: 15rem;
+  z-index: 7;
+  height: auto;
+  /* optional: or use a fixed height if shaking persists */
+  box-sizing: border-box;
+}
+
+
+.colorBoxTop {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px;
+  border-bottom: 2px solid red;
+}
+
+.middleColorPick {
+  margin: 8px 0;
+  font-size: 14px;
+  display: flex;
+  gap: 12px
+}
+
+.toolbarBoxFontValueSetInnerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.toolbarBoxFontValueSetInnerActionHeading {
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+  /* position: relative; */
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.toolbarBoxFontValueSetInnerActionLogo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spanValueBoxInput {
+  /* padding: 0px 5px; */
+  border: 1px solid #cccfd6;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #555;
+  width: 50px;
+  text-align: center;
+}

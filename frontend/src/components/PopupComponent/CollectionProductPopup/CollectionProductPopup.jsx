@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
-import './CollectionProductPopup.css';
 import ColorWheel from '../../images/color-wheel1.png';
 import { getHexFromName } from '../../utils/colorUtils';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
-
+import { toast } from 'react-toastify';
+import style from './CollectionProductPopup.module.css'
 const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const popupRef = useRef(null);
@@ -116,46 +116,46 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   };
 
   return (
-    <div className="product-panel">
+    <div className={style.productPanel}>
       {!effectiveCollectionId ? (
-        <p className="default-collection-para">Select a collection to view products.</p>
+        <p className={style.defaultCollectionPara}>Select a collection to view products.</p>
       ) : loading && products.length === 0 ? (
         <div className="loader" />
       ) : products.length === 0 ? (
         <p>No products found.</p>
       ) : (
         <>
-          <div className="product-list-collection">
+          <div className={style.productListCollection}>
             {products.map((product) => (
               <div
                 key={product.id}
-                className="modal-product"
+                className={style.modalProduct}
                 onClick={() =>
                   setSelectedProductColors(
                     selectedProductColors === product.id ? null : product.id
                   )
                 }
               >
-                <div className="img-pro-container">
+                <div className={style.imgProContainer}>
                   <img
                     src={hoverImage[product.id] || getFirstVariantImage(product)}
                     alt={product.title}
-                    className="modal-productimg"
+                    className={style.modalProductcolorImg}
                   />
                 </div>
                 <p>{product.title}</p>
-                <div className="modal-productcolor-container">
+                <div className={style.modalProductcolorContainer}>
                   <img
                     src={ColorWheel}
                     alt="colors"
-                    className="modal-productcolor-img"
+                    className={style.modalProductcolorImg}
                     style={{ cursor: 'pointer' }}
                   />
                   <p>{getUniqueColors(product).length} Colors</p>
 
                   {selectedProductColors === product.id && (
-                    <div className="color-popup" ref={popupRef}>
-                      <div className="color-popup-header">
+                    <div className={style.colorPopup} ref={popupRef}>
+                      <div className={style.colorPopupHeader}>
                         <button
                           className="close-popup-btn"
                           onClick={(e) => {
@@ -169,19 +169,29 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
 
                       <div className="color-swatch-list">{renderColorSwatches(product)}</div>
 
-                      <div className="popup-actions">
+                      <div className={style.popupActions}>
                         <button
-                          className="add-product-btn-popup"
+                          className={style.addProductBtnPopup}
                           onClick={(e) => {
                             e.stopPropagation();
+
                             const selectedColor = selectedColorByProduct[product.id];
                             const selectedImage = selectedVariantImage[product.id];
+
+
+
+                            if (!selectedColor) {
+                              toast.error("Please select a color before adding the product.");
+                              return;
+                            }
+
                             onProductSelect({ ...product, selectedColor, selectedImage });
                             onClose();
                           }}
                         >
                           Add Product
                         </button>
+
                       </div>
                     </div>
                   )}

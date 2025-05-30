@@ -1,0 +1,135 @@
+ .popupContainer {
+   width: 30%;
+   height: 54%;
+   background: white;
+   border-radius: 12px;
+   padding: 15px;
+   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+   line-height: 40px;
+   /* font-family: Arial, sans-serif; */
+ }
+
+
+
+ .popupInput {
+   width: 100%;
+   padding: 10px 12px;
+   margin-bottom: 7px;
+   border: 1px solid #ccc;
+   border-radius: 100px;
+   font-size: 14px;
+ }
+
+ .popupError {
+   color: red;
+   font-size: 12px;
+   margin-bottom: 10px;
+ }
+
+ .popupHeaderr {
+   display: flex;
+   justify-content: space-between;
+ }
+
+ .popupButton {
+   width: 100%;
+   padding: 12px;
+   border: none;
+   border-radius: 100px;
+   font-size: 14px;
+   font-weight: 600;
+   cursor: pointer;
+ }
+
+ .emailButton {
+   background-color: #000;
+   color: #fff;
+   margin: 14px 0;
+   border-radius: 100px;
+ }
+
+ /*  .google-button {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 100px;
+} */
+
+ .googleButtonWrapper {
+   background-color: #fff;
+   border: 1px solid #ccc;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 8px;
+   border-radius: 100px;
+   /* You can also limit width here if needed */
+ }
+
+ /* .nsm7Bb-HzV7m-LgbsSe {
+  width: 100% !important;
+  border: none !important;
+} */
+
+ /* .google-button-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 100px;
+} */
+
+
+ .googleIcon {
+   font-size: 18px;
+ }
+
+ .popupOr {
+   text-align: center;
+   color: #aaa;
+   font-size: 13px;
+   /* margin-bottom: 12px; */
+ }
+
+ .popupFooter {
+   text-align: center;
+   font-size: 11px;
+   color: #888;
+   margin-top: 16px;
+ }
+
+ .popupFooter a {
+   text-decoration: underline;
+   color: inherit;
+ }
+
+ .popupTitle h2 {
+   font-size: 1.2rem;
+   font-weight: 600;
+ }
+
+ /* 
+ p {
+   font-size: .8rem;
+   color: #8A9099;
+
+ } */
+
+ label {
+   font-size: .9rem;
+   font-weight: 600;
+ }
+
+ .closeBtn {
+   cursor: pointer;
+   background: transparent;
+   border: none;
+ }

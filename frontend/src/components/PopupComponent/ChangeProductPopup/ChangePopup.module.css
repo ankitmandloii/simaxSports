@@ -1,5 +1,5 @@
 /* Overlay for modal background */
-.changeProductPopup-mainContainer .popup-overlay {
+.popupOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,7 +13,7 @@
 }
 
 /* Modal container */
-.changeProductPopup-mainContainer .popup-container {
+.popupContainer {
   background: #fff;
   width: 95%;
   height: 85%;
@@ -25,7 +25,7 @@
 }
 
 /* Header with close button */
-.changeProductPopup-mainContainer .popup-header {
+.popupHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -33,12 +33,12 @@
   border-bottom: 1px solid #ddd;
 }
 
-.changeProductPopup-mainContainer .popup-header h3 {
+.popupHeader h3 {
   font-size: 1.5rem;
   font-weight: 600;
 }
 
-.changeProductPopup-mainContainer .close-btn {
+.closeBtn {
   font-size: 24px;
   background: none;
   border: none;
@@ -46,14 +46,14 @@
 }
 
 /* Content layout with sidebar and main */
-.changeProductPopup-mainContainer .popup-content {
+.popupContent {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
 /* Sidebar styling */
-.changeProductPopup-mainContainer .changProduct-popup .sidebarr {
+.changProductPopup .sidebarr {
   width: 20%;
   background: #f9f9f9;
   padding: 1rem;
@@ -61,7 +61,7 @@
   border-right: 1px solid #ddd;
 }
 
-.changeProductPopup-mainContainer .popup-overlay .sidebar-item {
+.popupOverlay .sidebarItem {
   padding: 12px;
   margin-bottom: 8px;
   cursor: pointer;
@@ -70,8 +70,8 @@
   border-left: 3px solid transparent;
 }
 
-.popup-overlay .sidebar-item:hover,
-.popup-overlay .sidebar-item.active {
+.popupOverlay .sidebarItem:hover,
+.popupOverlay .sidebarItem.active {
   /* background: #eee; */
   border-bottom: 1px solid #e32636;
   /* color: #e32636; */
@@ -87,7 +87,7 @@
   overflow-y: auto;
   background: #fff;
 } */
-.changeProductPopup-mainContainer .popup-overlay .product-card-container {
+.popupOverlay .productCardContainer {
   /* width: 80%; */
   display: flex;
   padding: 1rem;
@@ -97,7 +97,7 @@
 }
 
 /* Individual product card */
-.changeProductPopup-mainContainer .popup-overlay .product-card {
+.popupOverlay .productCard {
   width: 10rem;
   /* 264px */
   height: 13rem;
@@ -114,42 +114,25 @@
   justify-content: space-between;
 }
 
-.changeProductPopup-mainContainer .popup-overlay .product-card:hover {
+.popupOverlay .productCard:hover {
   transform: scale(1.02);
 }
 
-.changeProductPopup-mainContainer .popup-overlay .product-card img {
+.popupOverlay .productCard img {
   width: 100%;
   height: 130px;
   object-fit: contain;
 }
 
-.changeProductPopup-mainContainer .popup-overlay .product-card p {
+.popupOverlay .productCard p {
   font-size: 14px;
   margin-top: 0.5rem;
 }
 
 /* Load more button */
-.changeProductPopup-mainContainer .load-more {
-  text-align: center;
-  height: 33px;
-  width: 126px;
-  color: #fff;
-  background-color: black;
-  border: 1px solid rgb(34, 32, 32);
-  justify-content: center;
-  border-radius: 8px;
-  font-size: 11px;
-  display: block;
-  gap: 10px;
-  align-items: center;
-  padding: 6px 10px;
-  cursor: pointer;
-  grid-column: span 5;
-  margin: 1rem auto;
-}
 
-.changeProductPopup-mainContainer .no-products {
+
+.noProducts {
   grid-column: span 5;
   text-align: center;
   font-size: 16px;
@@ -157,13 +140,13 @@
   margin-top: 2rem;
 }
 
-.changeProductPopup-mainContainer .changProduct-popup .product-grid {
+.changProductPopup .productGrid {
   width: 80%;
 }
 
 /* ================= */
 /* Product grid container with scrolling */
-.changeProductPopup-mainContainer .changProduct-popup .product-grid {
+.changProductPopup .productGrid {
   width: 80%;
   display: flex;
   flex-direction: column;
@@ -175,7 +158,7 @@
 }
 
 /* Scrollable product card container */
-.changeProductPopup-mainContainer .popup-overlay .product-card-container {
+.popupOverlay .productCardContainer {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -184,7 +167,7 @@
 }
 
 /* Load More button fixed at bottom */
-/* .changeProductPopup-mainContainer .load-more {
+/* . .load-more {
   position: absolute;
   bottom: 10px;
   left: 50%;
@@ -204,28 +187,28 @@
 } */
 
 /* No product found styling */
-.changeProductPopup-mainContainer .no-products {
+.noProducts {
   text-align: center;
   font-size: 16px;
   color: #999;
   margin-top: 2rem;
 }
 
-.changeProductPopup-mainContainer .popup-body-layout {
+.popupBodyLayout {
   display: flex;
   flex: 1;
   height: 100%;
   min-height: 0
 }
 
-.changeProductPopup-mainContainer .popup-sidebar {
+.popupSidebar {
   width: 20%;
   overflow-y: auto;
   height: 500px;
   min-height: 0;
 }
 
-.changeProductPopup-mainContainer .popup-products {
+.popupProducts {
   width: 80%;
   padding: 1rem;
   overflow-y: auto;
@@ -235,7 +218,7 @@
 
 }
 
-.product-list-collection {
+.productListCollection {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;

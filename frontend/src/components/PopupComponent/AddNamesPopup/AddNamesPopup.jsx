@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import './AddNamesPopup.css';
 import { CrossIcon, DeleteIcon } from '../../iconsSvg/CustomIcon';
+import styles from './AddNamesPopup.module.css'
 
 import { useDispatch, useSelector } from 'react-redux';
 import { addNameAndNumberProduct, removeNameAndNumberProduct, setActiveSide, setAddName, setAddNumber, updateNameAndNumberDesignState, UpdateNameAndNumberProduct } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
@@ -40,14 +40,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
   const [activeRowId, setActiveRowId] = useState(null);
 
 
-  // const getSizeOptions = (product) => {
-  //   if (!product?.allVariants) return [];
-  //   const sizeVariantPairs = product.allVariants.flatMap((variant) => {
-  //     const sizeOption = variant.selectedOptions.find((option) => option.name === 'Size');
-  //     return sizeOption ? [{ size: sizeOption.value, variantId: variant.id }] : [];
-  //   });
-  //   return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
-  // };
+
   const getSizeOptions = (product) => {
     // Case 1: Custom-structured product
     if (product?.allVariants?.length) {
@@ -198,228 +191,144 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
 
   console.log("--canvass", canvasBgColor)
   return (
-    <div className="addNames-popup-box">
-      <div className="popup-overlay">
-        <div className="popup-container add-name-popup">
-          <div className="popup-header">
-            <div>
-              <h2>Edit Names & Numbers List</h2>
-              <p>Personalize your apparel with Names and/or Numbers!</p>
-            </div>
-            <button className="close-btn" onClick={showAddnamesPopupHAndler}><CrossIcon /></button>
+
+    <div className={styles.popupOverlay}>
+      <div className={styles.popupContainer}>
+        <div className={styles.popupHeader}>
+          <div>
+            <h2>Edit Names & Numbers List</h2>
+            <p>Personalize your apparel with Names and/or Numbers!</p>
+          </div>
+          <button className={styles.closeBtn} onClick={showAddnamesPopupHAndler}>
+            <CrossIcon />
+          </button>
+        </div>
+
+        <div className={styles.popupBody}>
+          <div className={styles.popupLeft}>
+            {allProducts.map((product, pIdx) => (
+              <div key={pIdx} className={styles.productBlock}>
+                <div className={styles.productDetails}>
+                  <div className={styles.miniProdImgContainer}>
+                    <img src={product?.imgurl} className={styles.productMiniImg} alt="mini" />
+                  </div>
+                  <div>
+                    <h4>{product.name || product?.title}</h4>
+                    <div className={styles.colorShowDiv}>
+                      <span className={styles.prColorSpan} style={{ backgroundColor: getHexFromName(product?.color) }}></span>
+                      <h5 className={styles.productColorSpanName}>{product?.color}</h5>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.namesList}>
+                  <div className={styles.tableHeader}>
+                    <span>Size</span>
+                    <span className={!addName ? styles.deactive : ""}>Name</span>
+                    <span className={!addNumber ? styles.deactive : ""}>Number</span>
+                    <span></span>
+                  </div>
+
+                  {(rowsByKey[product.id] || []).map((row) => (
+                    <div key={row.selectionId} className={styles.tableRow}>
+                      <select
+                        value={row.size}
+                        onChange={e =>
+                          updateRow(`${product.id}`, row.selectionId, 'size', e.target.value)
+                        }
+                        disabled={product.sizes.length === 0}
+                      >
+                        {product.sizes.length === 0 ? (
+                          <option value="">Not Available</option>
+                        ) : (
+                          <>
+                            <option value="" disabled>Select Size</option>
+                            {product.sizes.map((s, indx) => {
+                              const sizeValue = typeof s === 'object' ? s.size : s;
+                              return (
+                                <option key={indx} value={sizeValue}>{sizeValue}</option>
+                              );
+                            })}
+                          </>
+                        )}
+                      </select>
+
+                      <input
+                        type="text"
+                        placeholder="Name"
+                        maxLength={15}
+                        value={row.name}
+                        className={!addName ? styles.deactive : ""}
+                        onFocus={() => setActiveRowId(row.selectionId)}
+                        onChange={(e) => updateRow(`${product.id}`, row.selectionId, 'name', e.target.value.toUpperCase())}
+                      />
+
+                      <input
+                        type="text"
+                        placeholder="Number"
+                        maxLength={4}
+                        value={row.number}
+                        className={!addNumber ? styles.deactive : ""}
+                        onFocus={() => setActiveRowId(row.selectionId)}
+                        onChange={(e) => updateRow(`${product.id}`, row.selectionId, 'number', e.target.value.toUpperCase())}
+                      />
+
+                      <button className={styles.trashBtn} onClick={() => removeRow(`${product.id}`, row.selectionId)}><DeleteIcon /></button>
+                    </div>
+                  ))}
+
+                  <p className={styles.addAnother} onClick={() => addRow(`${product.id}`)}>+ Add Another</p>
+                  <hr className={styles.hrUnderline} />
+                </div>
+              </div>
+            ))}
           </div>
 
-          <div className="popup-body names-popup-body">
-            <div className="popup-left">
-              {allProducts.map((product, pIdx) => (
-                <div key={pIdx} className="product-block">
-                  <div className="product-details">
-                    <div className="mini-prod-img-container">
-                      <img src={product?.imgurl} className="product-mini-img" alt="mini" />
-                    </div>
-                    <div>
-                      <h4>{product.name || product?.title}</h4>
-                      <div className="color-show-div">
-                        <span className='pr-color-span' style={{ backgroundColor: getHexFromName(product?.color) }}></span>
-                        <h5 className="product-color-span-name">{product?.color}</h5>
-
+          <div className={styles.popupRight}>
+            <div className={styles.renderBox}>
+              <div className={styles.canvasBg} style={{ backgroundColor: canvasBgColor }}>
+                {!activeRowId ? null : Object.values(rowsByKey).flat().filter((row) => row.selectionId === activeRowId).map((row) => (
+                  <div key={row.selectionId} className={styles.textRow}>
+                    {row.name && (
+                      <div
+                        className={styles.nameText}
+                        style={{
+                          color: nameAndNumberDesign.fontColor || '#000',
+                          fontFamily: nameAndNumberDesign.fontFamily || 'Chakra Petch,sans-serif',
+                          fontSize: nameAndNumberDesign.fontSize === 'large' ? '45px' : '25px',
+                        }}
+                      >
+                        {row.name}
                       </div>
-                    </div>
+                    )}
+                    {row.number && (
+                      <div
+                        className={styles.numberText}
+                        style={{
+                          color: nameAndNumberDesign.fontColor || '#000',
+                          fontFamily: nameAndNumberDesign.fontFamily || 'Chakra Petch,sans-serif',
+                          fontSize: nameAndNumberDesign.fontSize === 'large' ? '140px' : '60px',
+                        }}
+                      >
+                        {row.number}
+                      </div>
+                    )}
                   </div>
-
-                  <div className="names-list">
-                    <div className="table-header">
-                      <span>Size</span>
-                      <span className={`${!addName ? "Deactive" : ""}`}>Name</span>
-                      <span className={`${!addNumber ? "Deactive" : ""}`}>Number</span>
-                      <span></span>
-                    </div>
-
-                    {(rowsByKey[product.id] || []).map((row) => (
-                      <div key={product.id} className="table-row">
-                        <select
-                          value={row.size}
-                          onChange={e => {
-                            const selectedSize = e.target.value;
-                            // const variant = getSizeOptions(product).find(opt => opt.size === selectedSize);
-                            // console.log(`Selected size: ${selectedSize}, Variant ID: ${variant?.variantId}`);
-                            updateRow(`${product.id}`, row.selectionId, 'size', selectedSize);
-                          }}
-                          disabled={product.sizes.length === 0}
-                        >
-                          {product.sizes.length === 0 ? (
-                            <option value="">Not Available</option>
-                          ) : (
-                            <>
-                              <option value="" disabled>Select Size</option>
-                              {product.sizes.map((s, indx) => {
-                                const isObject = s && typeof s === 'object';
-                                const sizeValue = isObject ? s.size : s;
-                                return (
-                                  <option key={indx} value={sizeValue}>
-                                    {sizeValue}
-                                  </option>
-                                );
-                              })}
-
-                            </>
-                          )}
-                        </select>
-
-                        <input
-                          type="text"
-                          placeholder="Name"
-                          maxLength={15}
-                          value={row.name}
-                          className={`${!addName ? "Deactive" : ""}`}
-                          onFocus={() => setActiveRowId(row.selectionId)}
-                          onChange={(e) => updateRow(`${product.id}`, row.selectionId, 'name', e.target.value.toUpperCase())}
-                        />
-                        <input
-                          type="text"
-                          placeholder="Number"
-                          maxLength={4}
-                          value={row.number}
-                          className={`${!addNumber ? "Deactive" : ""}`}
-                          onFocus={() => setActiveRowId(row.selectionId)}
-                          onChange={(e) => updateRow(`${product.id}`, row.selectionId, 'number', e.target.value.toUpperCase())}
-                        />
-
-                        <button className="trash-btn" onClick={() => removeRow(`${product.id}`, row.selectionId)}><DeleteIcon /></button>
-                      </div>
-                    ))}
-
-                    <p className="add-another" onClick={() => addRow(`${product.id}`)}>+ Add Another</p>
-                    {/* <p className="total-show-box">
-                      Totals: {rowsByKey[`${pIdx}`]?.filter((r) => r.name).length || 0} with Names | {rowsByKey[`${pIdx}`]?.filter((r) => r.number).length || 0} with Numbers
-                    </p> */}
-                    <hr className="hr-underline" />
-                  </div>
-
-                  {/* {(product.addedColors || []).map((color, cIdx) => { 
-                    const key = `${pIdx}-${cIdx}`;
-                    const rows = rowsByKey[key] || [];
-
-                    return (
-                      <div key={key} className="color-block">
-                        <div className="product-details">
-                          <div className="mini-prod-img-container">
-                            <img src={color.img} className="product-mini-img" alt="mini" />
-                          </div>
-                          <div>
-                            <h4>{product.name || product?.handle}</h4>
-                            <p className="toolbar-span">{product?.colors?.map((c) => c.name).join(', ')}</p>
-                            <h5 className="product-color-span-name">{color?.name}</h5>
-                          </div>
-                        </div>
-
-                        <div className="names-list">
-                          <div className="table-header">
-                            <span>Size</span>
-                            <span>Name</span>
-                            <span>Number</span>
-                            <span></span>
-                          </div>
-
-                          {rows.map((row) => (
-                            <div key={row.id} className="table-row">
-                              <select
-                                value={row.size}
-                                onChange={e => {
-                                  const selectedSize = e.target.value;
-                                  const variant = getSizeOptions(product).find(opt => opt.size === selectedSize);
-                                  console.log(`Selected size: ${selectedSize}, Variant ID: ${variant?.variantId}`);
-                                  updateRow(`${pIdx}`, row.id, 'size', selectedSize);
-                                }}
-                                disabled={getSizeOptions(product).length === 0}
-                              >
-                                {getSizeOptions(product).length === 0 ? (
-                                  <option value="">Not Available</option>
-                                ) : (
-                                  <>
-                                    <option value="" disabled>Select Size</option>
-                                    {getSizeOptions(product).map(({ size, variantId }) => (
-                                      <option key={variantId} value={size}>{size}</option>
-                                    ))}
-                                  </>
-                                )}
-                              </select>
-
-                              <input
-                                type="text"
-                                placeholder="Name"
-                                maxLength={25}
-                                value={row.name}
-                                onFocus={() => setActiveRowId(row.id)}
-                                onChange={(e) => updateRow(key, row.id, 'name', e.target.value.toUpperCase())}
-                              />
-
-                              <input
-                                type="text"
-                                placeholder="Number"
-                                maxLength={4}
-                                value={row.number}
-                                onFocus={() => setActiveRowId(row.id)}
-                                onChange={(e) => updateRow(key, row.id, 'number', e.target.value.toUpperCase())}
-                              />
-
-                              <button className="trash-btn" onClick={() => removeRow(key, row.id)}><DeleteIcon /></button>
-                            </div>
-                          ))}
-
-                          <p className="add-another" onClick={() => addRow(key)}>+ Add Another</p>
-                          <p className="total-show-box">
-                            Totals: {rows.filter((r) => r.name).length} with Names | {rows.filter((r) => r.number).length} with Numbers
-                          </p>
-                          <hr className="hr-underline" />
-                        </div>
-                      </div>
-                    );
-                  })} */}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            <div className="popup-right">
-              <div className="render-box">
-                {/* ✅ [MODIFIED]: Added inline backgroundColor style */}
-                <div className="canvas-bg" style={{ backgroundColor: canvasBgColor }}>
-                  {!activeRowId ? (
-                    <div className="text-row">
-                      {/* <div className="name-text">Edit a row to preview</div> */}
-                    </div>
-                  ) : (
-                    Object.values(rowsByKey).flat().filter((row) => row.selectionId === activeRowId).map((row) => (
-                      <div key={row.selectionId} className="text-row">
-                        {row.name && <div className="name-text" style={{
-                          color: nameAndNumberDesign.fontColor || '#000',
-                          fontFamily: nameAndNumberDesign.fontFamily || "Chakra Petch,sans-serif",
-                          fontSize: nameAndNumberDesign.fontSize === 'large' ? '45px' : '25px',
-
-                        }}>{row.name}</div>}
-                        {row.number && <div className="number-text" style={{
-                          color: nameAndNumberDesign.fontColor || '#000',
-                          fontFamily: nameAndNumberDesign.fontFamily || "Chakra Petch,sans-serif",
-                          fontSize: nameAndNumberDesign.fontSize === 'large' ? '140px' : '60px',
-
-                        }}>{row.number}</div>}
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              <div className="popup-footer">
-                <button className="primary-btn" onClick={saveAndExit}>Save & Close</button>
-                <button className="link-btn" onClick={showAddnamesPopupHAndler}>Exit Without Saving</button>
-              </div>
+            <div className={styles.popupFooter}>
+              <button className={styles.primaryBtn} onClick={saveAndExit}>Save & Close</button>
+              <button className={styles.linkBtn} onClick={showAddnamesPopupHAndler}>Exit Without Saving</button>
             </div>
           </div>
         </div>
       </div>
-      {/* <ToastContainer position="top-center" autoClose={3000} /> */}
-    </div >
+    </div>
   );
 };
+
+
 
 export default AddNamesPopup;

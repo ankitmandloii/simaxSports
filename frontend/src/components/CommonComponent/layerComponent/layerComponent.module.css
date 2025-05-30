@@ -1,4 +1,4 @@
-.modal-content {
+.modalContent {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
@@ -7,7 +7,7 @@
   text-align: center;
 }
 
-.modal-actions button {
+.modalActions button {
   background-color: transparent;
   border: none;
   outline: none;
@@ -20,26 +20,26 @@
   cursor: pointer;
 }
 
-.modal-actions button:hover {
+.modalActions button:hover {
   background-color: aliceblue;
 }
 
-.modal-actions button:active {
+.modalActions button:active {
   background-color: aliceblue;
 }
 
-.close-button {
-  background-color: #005BFF;
+.closeButton {
+  background-color: black;
   color: white;
   padding: 10px;
   border: none;
   cursor: pointer;
 }
 
-.svg-strokes {
+.svgStrokes {
   height: 20px;
 }
 
-.layer-btnnnn {
+.layerBtnnnn {
   gap: 10px;
 }

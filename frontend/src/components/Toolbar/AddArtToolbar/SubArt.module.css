@@ -1,0 +1,114 @@
+.clipartGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.clipartGrid img {
+  width: 5rem;
+  height: 3rem;
+}
+
+.marginBottom {
+  margin-bottom: 8px;
+}
+
+.uploadButton {
+  width: 100%;
+  padding: 6px;
+  background: black;
+  color: white;
+  border-radius: 100px;
+  font-weight: bold;
+  font-size: .7rem;
+}
+
+
+.addArtToolbarSearchBox svg {
+  cursor: pointer;
+}
+
+.toolbarMainContainerClipArt .crossIcon {
+  height: 17px;
+}
+
+.searchInputSubart {
+  width: 100%;
+  padding: 12px 57px 12px 20px;
+  /* Adjust padding for text and icon */
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  /* Rounded corners */
+  font-size: 12px;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow */
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.searchContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+  /* Adjust padding as needed */
+  background-color: #f6f6f6;
+
+}
+
+.searchWrapper {
+  position: relative;
+  /* For positioning the search icon */
+  width: 100%;
+
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 45px 12px 20px;
+  /* Adjust padding for text and icon */
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  /* Rounded corners */
+  font-size: 12px;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow */
+  transition: all 0.3s ease;
+  outline: none;
+  /* Remove default focus outline */
+}
+
+.searchInput::placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+.searchInput:focus {
+  border-color: #007bff;
+  /* Highlight on focus */
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+}
+
+.searchIcon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  cursor: pointer;
+  font-size: 20px;
+  /* If you're using an SVG or an icon font, adjust accordingly */
+  /* For a simple magnifying glass, you could use an SVG or a unicode character if not using an icon library */
+}
+
+.uploadButton {
+  width: 100%;
+  padding: 6px;
+  background: black;
+  color: white;
+  border-radius: 100px;
+  font-weight: bold;
+  font-size: .7rem;
+}

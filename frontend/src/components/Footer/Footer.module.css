@@ -45,47 +45,47 @@
     border-bottom: 1px solid #ddd;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 } */
-.footer-container {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    margin: 0 auto;
-    background-color: transparent;
-    padding: 13px;
-    display: flex;
-    border-radius: 10px;
-    flex-direction: column;
-    margin: 0  8px 8px;
-    gap: 20px;
-        align-items: end;
+.footerContainer {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 0 auto;
+  background-color: transparent;
+  padding: 13px;
+  display: flex;
+  border-radius: 10px;
+  flex-direction: column;
+  margin: 0 8px 8px;
+  gap: 20px;
+  align-items: end;
 }
 
 
-.footer-btn {
-    background: transparent;
-    width: max-content;
-    color: black;
-    border: 1px solid rgb(34, 32, 32);
-    border-radius: 100px;
-    font-size: 11px;
-    display: flex;
-    justify-content: center;
-    display: inline-flex;
-    gap: 10px;
-    align-items: center;
-    font-weight: 600;
-    padding: 3px 8px;
-    cursor: pointer;
-    /* transition: background-color 0.3s ease, transform 0.2s ease; */
-    padding: 9.5px 26px;
+.footerBtn {
+  background: transparent;
+  width: max-content;
+  color: black;
+  border: 1px solid rgb(34, 32, 32);
+  border-radius: 100px;
+  font-size: 11px;
+  display: flex;
+  justify-content: center;
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  font-weight: 600;
+  padding: 3px 8px;
+  cursor: pointer;
+  /* transition: background-color 0.3s ease, transform 0.2s ease; */
+  padding: 9.5px 26px;
 }
 
-.footer-btn:hover {
+.footerBtn:hover {
   background-color: #f0f0f0;
   transform: scale(1.05);
 }
 
-.footer-btn1{
+.footerBtn1 {
   height: 42px;
   background: #fff;
   width: 127px;
@@ -101,16 +101,18 @@
   cursor: pointer;
   /* transition: background-color 0.3s ease, transform 0.2s ease; */
 }
-.footer-btn svg{
+
+.footerBtn svg {
   width: 20px;
   height: 20px;
 }
-.footer-btn1 svg{
+
+.footerBtn1 svg {
   width: 18px;
   height: 19.88px;
 }
 
-.footer-btn-container {
+.footerBtnContainer {
   display: flex;
   gap: 10px;
 }

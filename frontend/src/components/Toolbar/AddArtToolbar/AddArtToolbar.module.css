@@ -1,4 +1,4 @@
-.addArtToolbar-search-box {
+.addArtToolbarSearchBox {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
@@ -8,12 +8,12 @@
   border: 1px solid #ccc;
 }
 
-.addArtToolbar-search-box svg {
+.addArtToolbarSearchBox svg {
   height: 14px;
   cursor: pointer;
 }
 
-.addArtToolbar-search-box input {
+.addArtToolbarSearchBox input {
   width: 90%;
   border: none;
   outline: none;
@@ -27,7 +27,7 @@
   /* margin-bottom: 20px; */
 }
 
-.art-button {
+.artButton {
   display: flex;
   height: 2rem;
   /* width: 4.7rem; */
@@ -41,16 +41,16 @@
   gap: 2px;
 }
 
-.art-button svg {
+.artButton svg {
   /* font-size: 4px; */
   height: 15px;
 }
 
-.art-button span {
+.artButton span {
   font-size: 14px;
 }
 
-.upload-button {
+.uploadButton {
   width: 100%;
   padding: 6px;
   background: black;
@@ -58,13 +58,14 @@
   border-radius: 100px;
   font-weight: bold;
   font-size: .7rem;
+  margin-top: 10px;
 }
 
-.ai-relative {
+.aiRelative {
   position: relative;
 }
 
-.ai-spannn {
+.aiSpannn {
   position: absolute;
   top: 30px;
   left: 100px;
@@ -82,7 +83,7 @@
 /* -------------- */
 /* SearchBar.css */
 
-.search-container {
+.searchContainer {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -92,14 +93,14 @@
 
 }
 
-.search-wrapper {
+.searchWrapper {
   position: relative;
   /* For positioning the search icon */
   width: 100%;
 
 }
 
-.search-input {
+.searchInput {
   width: 100%;
   padding: 12px 45px 12px 20px;
   /* Adjust padding for text and icon */
@@ -115,18 +116,18 @@
   /* Remove default focus outline */
 }
 
-.search-input::placeholder {
+.searchInput::placeholder {
   color: #888;
   font-style: italic;
 }
 
-.search-input:focus {
+.searchInput:focus {
   border-color: #007bff;
   /* Highlight on focus */
   box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
 }
 
-.search-icon {
+.searchIcon {
   position: absolute;
   right: 20px;
   top: 50%;

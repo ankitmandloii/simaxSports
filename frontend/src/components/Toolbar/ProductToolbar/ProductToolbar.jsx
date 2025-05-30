@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './ProductToolbar.css';
+import style from './ProductToolbar.module.css';
 import { getHexFromName } from '../../utils/colorUtils';
 import { IoAdd } from 'react-icons/io5';
 import colorwheel from '../../images/color-wheel.png';
@@ -169,11 +169,11 @@ const ProductToolbar = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  // useEffect( () => {
+  // useEffect(() => {
   //   const productId = searchParams.get("productId"); // "8847707537647"
   //   const title = searchParams.get("title");         // "Dusty Rose / S"
   //   console.log("productId", productId);
-  //   console.log(rawProducts,"productId")
+  //   console.log(rawProducts, "productId")
   //   const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/${productId}`);
   //   console.log("initiale Product", initialProduct);
   //   dispatch(setSelectedProducts(initialProduct))
@@ -181,7 +181,7 @@ const ProductToolbar = () => {
 
   return (
     <div className="toolbar-main-container">
-      <div className="product-toolbar">
+      <div className={style.productToolbar}>
         <div className="toolbar-main-heading">
           <h5 className="Toolbar-badge">Product</h5>
           <h2>Manage Your Products</h2>
@@ -190,16 +190,16 @@ const ProductToolbar = () => {
 
         <div className="toolbar-box">
           {selectedProducts.map((product, index) => (
-            <div className="toolbar-product-head" key={index}>
-              <div className="toolbar-head">
-                <div className="toolbar-product-title-head">
+            <div className={style.toolbarProductHead} key={index}>
+              <div className={style.toolbarHead}>
+                <div className={style.toolbarProductTitleHead}>
                   <h4>{product?.name || product?.title}</h4>
-                  <span className="crossProdICon" onClick={() => handleDeleteProduct(index)} style={{ cursor: 'pointer' }}>
+                  <span className={style.crossProdICon} onClick={() => handleDeleteProduct(index)} style={{ cursor: 'pointer' }}>
                     <CrossIcon />
                   </span>
                 </div>
 
-                <div className="product-toolbar-image-with-btn">
+                <div className={style.productToolbarImageWithBtn}>
                   {[
                     {
                       img: product?.imgurl || product?.selectedImage,
@@ -233,7 +233,7 @@ const ProductToolbar = () => {
                         {activeThumbnail.productIndex === index && activeThumbnail.colorIndex === i && (
                           <div className="thumbnail-actions">
                             <span
-                              className="crossProdIConofSingleProduct"
+                              className={style.crossProdIConofSingleProduct}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleDeleteColorThumbnail(index, i);
@@ -243,7 +243,7 @@ const ProductToolbar = () => {
                             </span>
 
                             <button
-                              className="toolbar-span"
+                              className={style.toolbarSpan}
                               style={{ '--indicator-color': getHexFromName(color?.name) }}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -254,7 +254,7 @@ const ProductToolbar = () => {
                             </button>
                           </div>
                         )}
-                        <div className="img-thumbnaill-container">
+                        <div className={style.imgThumbnaillContainer}>
                           <img src={imgSrc} className="product-mini-img" alt={color.name} title={color.name} />
                         </div>
                       </div>
@@ -262,17 +262,17 @@ const ProductToolbar = () => {
                   })}
                 </div>
 
-                <div className="toolbar-middle-button">
+                <div className={style.toolbarMiddleButton}>
                   <button className="black-button" onClick={() => openChangeProductPopup(false, index)}>
                     Change Product
                   </button>
 
-                  <div className="add-color-btn-main-container">
+                  <div className={style.addColorBtnMainContainer}>
                     <div
-                      className="addCart-button"
+                      className={style.addCartButton}
                       onClick={() => setColorChangeTarget({ productIndex: index, colorIndex: -1 })}
                     >
-                      <img src={colorwheel} alt="color wheel" className="color-img" />
+                      <img src={colorwheel} alt="color wheel" className={style.colorImg} />
                       <p>Add Color</p>
                     </div>
 
@@ -338,7 +338,7 @@ const ProductToolbar = () => {
             </div>
           ))}
 
-          <button className="add-product-btn" onClick={addProductPopup}>
+          <button className={style.addProductBtn} onClick={addProductPopup}>
             <IoAdd /> Add Products
           </button>
 

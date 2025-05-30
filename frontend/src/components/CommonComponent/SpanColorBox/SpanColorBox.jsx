@@ -1,8 +1,8 @@
 import React from 'react'
-import './SpanColorBox.css'
+import style from './SpanColorBox.module.css'
 const SpanColorBox = ({ color = '#ccc', onClick, onMouseEnter, onMouseLeave }) => {
   return (
-    <span className='small-color-span'
+    <span className={style.smallColorSpan}
       style={{
         backgroundColor: color,
         cursor: 'pointer',

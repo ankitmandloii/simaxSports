@@ -1,23 +1,23 @@
-.collection-ul {
+.collectionUl {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.collection-sidebar {
+.collectionSidebar {
   padding: 1rem;
   height: 500px;
   overflow-y: auto;
 }
 
-.collection-sidebar li {
+.collectionSidebar li {
   list-style: none;
   padding: 10px;
   /* text-align: center; */
   cursor: pointer;
 }
 
-.collection-sidebar li:hover {
+.collectionSidebar li:hover {
   transition: .2s ease;
 
   border-bottom: 2px solid black;
@@ -25,7 +25,7 @@
 
 
 
-.collection-li {
+.collectionLi {
   display: flex;
   justify-content: space-between;
 }

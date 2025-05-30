@@ -1,39 +1,43 @@
-.toolbar-box {
+.toolbarBox {
     gap: 12px;
     display: flex;
     flex-direction: column;
+    position: relative;
 
 }
 
-.toolbar-box textarea {
-  font-family: "Montserrat", sans-serif;
-  width: 100%;
-  height: 100px; /* Set a fixed height */
-  resize: none;
-  outline: none;
-  font-size: 16px;
-  color: #555;
-  border-radius: 4px;
-  padding: 6px;
-  overflow-y: auto; /* Show vertical scrollbar when needed */
+.toolbarBoxTextarea {
+    font-family: "Montserrat", sans-serif;
+    width: 100%;
+    height: 100px;
+    /* Set a fixed height */
+    resize: none;
+    outline: none;
+    font-size: 16px;
+    color: #555;
+    border-radius: 4px;
+    padding: 6px;
+    overflow-y: auto;
+    /* Show vertical scrollbar when needed */
 }
 
 
-.AddTextToolbar-main-container {
+.AddTextToolbarMainContainer {
     position: relative;
 }
 
-.addText-first-toolbar-box-container {
+.addTextFirstToolbarBoxContainer {
     display: flex;
     justify-content: space-around;
-    /* gap: 10px; */
+    gap: 10px;
 }
 
-.toolbar-box-icons-and-heading-for-together {
+.toolbarBoxIconsAndHeadingForTogether {
     display: flex;
 }
 
-.toolbar-box-icons-and-heading-container {
+
+.toolbarBoxIconsAndHeadingContainer {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -43,7 +47,7 @@
     line-height: 17px;
 }
 
-.toolbar-box-icons-container {
+.toolbarBoxIconsContainer {
 
     padding: 3px 8px;
     margin-bottom: 4px;
@@ -55,7 +59,7 @@
     cursor: pointer;
 }
 
-.toolbar-box-icons-container-layering1 {
+.toolbarBoxIconsContainerLayering1 {
 
     padding: 3px 8px;
     margin-bottom: 4px;
@@ -72,7 +76,26 @@
 
 }
 
-.toolbar-box-icons-container-layering2 {
+.toolbarBoxIconsContainerLayering1Active {
+
+    padding: 3px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #cccfd6;
+    border-bottom: 1px solid #cccfd6;
+    border-left: 1px solid #cccfd6;
+    border-right: 1px solid #cccfd6;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    cursor: pointer;
+    background-color: black;
+    color: white;
+
+}
+
+.toolbarBoxIconsContainerLayering2 {
 
     padding: 3px 8px;
     margin-bottom: 4px;
@@ -89,7 +112,25 @@
 
 }
 
-.toolbar-box-icons-container-flip1 {
+.toolbarBoxIconsContainerLayering2Active {
+    padding: 3px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #cccfd6;
+    border-bottom: 1px solid #cccfd6;
+    border-right: 1px solid #cccfd6;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    cursor: pointer;
+    background-color: black;
+    color: white;
+
+
+}
+
+.toolbarBoxIconsContainerFlip1 {
 
     padding: 3px 8px;
     margin-bottom: 4px;
@@ -102,7 +143,7 @@
     cursor: pointer;
 }
 
-.toolbar-box-icons-container-clickStyle-flip1 span {
+.toolbarBoxIconsContainerClickStyleFlip1 span {
 
     padding: 6px 8px;
     margin-bottom: 4px;
@@ -117,7 +158,7 @@
     cursor: pointer;
 }
 
-.toolbar-box-icons-container-clickStyle-flip2 span {
+.toolbarBoxIconsContainerClickStyleFlip2 span {
 
     padding: 6px 8px;
     margin-bottom: 4px;
@@ -132,12 +173,12 @@
     cursor: pointer;
 }
 
-.toolbar-box-icons-container.active {
+.toolbarBoxIconsContainerActive {
     color: white;
     background-color: black;
 }
 
-.toolbar-box-icons-container-flip2 {
+.toolbarBoxIconsContainerFlip2 {
 
     padding: 3px 8px;
     margin-bottom: 4px;
@@ -156,25 +197,25 @@
 
 
 /* secondtoolBartoolStyle */
-.toolbar-box-icons-container-for-together {
+.toolbarBoxIconsContainerForTogether {
     display: flex;
 }
 
-.toolbar-box-Font-Value-set-inner-container {
+.toolbarBoxFontValueSetInnerContainer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 10px;
 }
 
-.toolbar-box-Font-Value-set-inner-actionlogo {
+.toolbarBoxFontValueSetInnerActionLogo {
     position: relative;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.toolbar-box-Font-Value-set-inner-actionlogo span {
+.toolbarBoxFontValueSetInnerActionLogo span {
     /* margin-left: 11px; */
     /* padding:5px; */
     display: inline-block;
@@ -182,7 +223,7 @@
 
 }
 
-.SpanValueBox-input {
+.spanValueBoxInput {
     /* padding: 0px 5px; */
     border: 1px solid #cccfd6;
     border-radius: 4px;
@@ -196,7 +237,7 @@
 
 
 
-.toolbar-box-Font-Value-set-inner-actionheading {
+.toolbarBoxFontValueSetInnerActionHeading {
     font-weight: 500;
     font-size: 12px;
     cursor: pointer;
@@ -206,7 +247,7 @@
     gap: 7px;
 }
 
-.none-svg-icon {
+.noneSvgIcon {
     width: 15px;
     align-items: center;
     height: 18px;
@@ -216,7 +257,7 @@
     /* background-color: black; */
 }
 
-.addText-inner-main-containerr {
+.addTextInnerMainContainerr {
     color: #000;
     gap: 12px;
     display: flex;
@@ -224,7 +265,7 @@
     overflow-y: auto;
 }
 
-.locked-toolbar {
+.lockedToolbar {
     opacity: 0.4;
     pointer-events: none;
     /* Prevent interaction */
@@ -234,7 +275,7 @@
 
 
 
-.addText-inner-main-containerr::-webkit-scrollbar {
+.addTextInnerMainContainerr::-webkit-scrollbar {
     /* color: red; */
     background-color: #888;
     color: #fff;
@@ -254,114 +295,32 @@
     left: 0;
 }
 
-.add-image-reset-text {
+.center-btn:active {
+    color: white;
+    background-color: black;
+}
+
+.duplicateBtn:active {
+    color: white;
+    background-color: black;
+}
+
+.toolbarIcon {
+    background-color: transparent;
+    color: black;
+    padding: 4px 4px;
+    border-radius: 4px;
+    border: 1px solid #D2D5D9;
     cursor: pointer;
-    font-size: 10px;
-    color: #005bff;
+    margin-bottom: 5px;
 }
 
-/* 
-add switch button css */
-
-
-/* Toggle Switch Styling */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 34px;
-  height: 20px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0;
-  right: 0; bottom: 0;
-  background-color: #ccc;
-  transition: .4s;
-  border-radius: 34px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 14px;
-  width: 14px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: #0b70ec; /* Adjust to match screenshot blue */
-}
-
-input:checked + .slider:before {
-  transform: translateX(14px);
-}
-
-/* AI Badge */
-.ai-badge {
-  background: #e6f0ff;
-  color: #0b70ec;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 4px;
-  border-radius: 4px;
-  margin-left: 4px;
-}
-
-
-.filter-section {
-  padding: 10px;
-}
-
-.filter-title {
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.filter-options {
-  display: flex;
-  gap: 15px;
-}
-
-.filter-option {
-  border: 3px solid transparent;
-  padding: 5px;
-  border-radius: 4px;
-  cursor: pointer;
-  text-align: center;
-}
-
-.filter-option.active {
-  border-color: #005bff;
-  position: relative;
-}
-
-.filter-label {
-  margin-top: 5px;
-  font-size: 12px;
-  color: #333;
-}
-
-.filter-option.active .filter-label {
-  color: #005bff;
-  font-weight: bold;
-  border-top: 2px solid #005bff;
-  padding-top: 4px;
-}
-
-.filter-image {
-  width: 60px;
-  height: 80px;
-  object-fit: contain;
+.toolbarIconActive {
+    background-color: black;
+    color: white;
+    padding: 4px 4px;
+    border-radius: 4px;
+    border: 1px solid #D2D5D9;
+    cursor: pointer;
+    margin-bottom: 5px;
 }

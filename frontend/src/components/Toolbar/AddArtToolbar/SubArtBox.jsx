@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { SearchIcon } from '../../iconsSvg/CustomIcon';
 import { RxCross1 } from 'react-icons/rx'; // Cross icon
 import { categoryImages } from '../../json/aiicontent';
-import './SubArt.css';
 import { Link } from 'react-router-dom';
+import style from './SubArt.module.css'
 
 const SubArtBox = ({ category, goBack }) => {
   // const [searchTerm, setSearchTerm] = useState('');
@@ -22,9 +22,9 @@ const SubArtBox = ({ category, goBack }) => {
   };
 
   return (
-    <div className="toolbar-main-container-ClipArt">
+    <div className={style.toolbarMainContainerClipArt}>
       <div className="toolbar-box">
-        <Link to='/uploadArt'><button className="upload-button margin-bottom">Upload Your Own Image</button></Link>
+        <Link to='/uploadArt'><button className={style.uploadButton}>Upload Your Own Image</button></Link>
 
         {/* <div className="addArtToolbar-search-box with-cross">
           <input
@@ -38,17 +38,17 @@ const SubArtBox = ({ category, goBack }) => {
           <SearchIcon />
           <RxCross1 className="cross-icon" onClick={handleClear} />
         </div> */}
-        <div className="search-container ">
-          <div className="search-wrapper">
+        <div className={style.searchContainer}>
+          <div className={style.searchWrapper}>
             <input
               type="text"
               value={searchTerm}
-              className="search-input-subart"
+              className={style.searchInputSubart}
               placeholder="Search for Clipart and AI Generated Art"
               onChange={(e) => setSearchTerm(e.target.value)}
             />
 
-            <span className="search-icon">
+            <span className={style.searchIcon}>
               <RxCross1 className="cross-icon" onClick={handleClear} />
               <SearchIcon />
 
@@ -56,7 +56,7 @@ const SubArtBox = ({ category, goBack }) => {
           </div>
         </div>
         <h4 className='margin-bottom'>Clipart Results</h4>
-        <div className="clipart-grid">
+        <div className={style.clipartGrid}>
           {filteredImages.map((img) => (
             <img
               key={img.id}

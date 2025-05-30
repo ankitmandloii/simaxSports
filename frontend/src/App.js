@@ -21,7 +21,7 @@ import { fetchProducts } from "./redux/ProductSlice/ProductSlice";
 function App() {
   const location = useLocation();
   const [continueEditPopup, setContinueEditPopup] = useState(false);
-  const [willRenderContinue,setWillRenderContinue] = useState(false);
+  const [willRenderContinue, setWillRenderContinue] = useState(false);
   const isQuantityPage = location.pathname === "/quantity";
   const reduxState = useSelector((state) => state); // whole state
   const {
@@ -49,11 +49,9 @@ function App() {
     const textObjects = present?.[activeSide]?.texts || [];
 
     if ((textObjects && textObjects.length > 0) || addName || addNumber) {
-      
-      if(!willRenderContinue && rawProducts.length !== 0 ){
-        setWillRenderContinue(true);
+      if (rawProducts.length !== 0) {
         setContinueEditPopup(true);
-      } 
+      }
     }
   }, [rawProducts]);
 
@@ -65,11 +63,13 @@ function App() {
     window.addEventListener("load", () => {
       const productId = "8847707537647";
       const title = "Dusty Rose / S";
+
       // Create the query string
       const queryString = new URLSearchParams({ productId, title }).toString();
       navigate(`/product?${queryString}`);
       dispatch(fetchProducts("8847707537647"));
-    });
+    })
+
   }, []);
 
   const dispatch = useDispatch();
@@ -85,9 +85,8 @@ function App() {
           <Header />
 
           <div
-            className={`main-layout-container ${
-              isQuantityPage ? "quantity-page" : ""
-            }`}
+            className={`main-layout-container ${isQuantityPage ? "quantity-page" : ""
+              }`}
           >
             {rawProducts.length === 0 ? (
               <>
@@ -125,7 +124,7 @@ function App() {
               </Route>
               <Route path="review" element={<Review />} />
             </Routes>
-            {/* <Footer /> */}
+            <Footer />
           </div>
         </div>
 

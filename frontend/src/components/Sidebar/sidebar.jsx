@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import {
-
-  FaBars,
-} from "react-icons/fa";
-import "./sidebar.css";
+import { FaBars } from "react-icons/fa";
 import { RiTShirt2Line } from "react-icons/ri";
-import { AddProductIcon, AddArtIcon, SelectArtIcon, NumberArtIcon } from "../iconsSvg/CustomIcon";
+import {
+  AddProductIcon,
+  AddArtIcon,
+  SelectArtIcon,
+  NumberArtIcon,
+} from "../iconsSvg/CustomIcon";
+
+import styles from "./sidebar.module.css";
 
 const AdminSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
 
-  // Close mobile sidebar on resize to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 1024) {
@@ -33,42 +35,74 @@ const AdminSidebar = () => {
   };
 
   const menuItems = [
-    { path: "/product", icon: <RiTShirt2Line />, label: "Products" },
-    { path: "/addText", icon: <AddProductIcon />, label: "Text" },
-    { path: "/uploadArt", icon: <AddArtIcon />, label: "Upload" },
-    { path: "/addArt", icon: <SelectArtIcon />, label: "Add Art" },
-    { path: "/addNames", icon: <NumberArtIcon />, label: "Names & Numbers" },
+    {
+      path: "/product?productId=8847707537647&title=Dusty%20Rose%20/%20S",
+      icon: <RiTShirt2Line />,
+      label: "Products",
+    },
+    {
+      path: "/addText?productId=8847707537647&title=Dusty%20Rose%20/%20S",
+      icon: <AddProductIcon />,
+      label: "Text",
+    },
+    {
+      path: "/uploadArt?productId=8847707537647&title=Dusty%20Rose%20/%20S",
+      icon: <AddArtIcon />,
+      label: "Upload",
+    },
+    {
+      path: "/addArt?productId=8847707537647&title=Dusty%20Rose%20/%20S",
+      icon: <SelectArtIcon />,
+      label: "Add Art",
+    },
+    {
+      path: "/addNames?productId=8847707537647&title=Dusty%20Rose%20/%20S",
+      icon: <NumberArtIcon />,
+      label: "Names & Numbers",
+    },
   ];
 
   return (
-    <div className="sidebar-wrapper">
-      <button className="sidebar-toggle-btn" onClick={toggleSidebar}>
+    <div className={styles.sidebarWrapper}>
+      <button className={styles.sidebarToggleBtn} onClick={toggleSidebar}>
         <FaBars />
       </button>
 
       <div
-        className={`sidebar ${collapsed ? "collapsed" : ""} ${mobileOpen ? "show" : ""
+        className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""} ${mobileOpen ? styles.show : ""
           }`}
       >
+        <nav className={styles.sidebarMenu}>
+          {menuItems.map((item) => {
+            const isActive =
+              (item.path.startsWith("/product") &&
+                (location.pathname === "/" ||
+                  location.pathname === "/product")) ||
+              location.pathname + location.search === item.path;
 
-
-        <nav className="sidebar-menu">
-          {menuItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`sidebar-link ${(item.path === "/product" && (location.pathname === "/" || location.pathname === "/product"))
-                || location.pathname === item.path
-                ? "active"
-                : ""
-                }`}
-              onClick={() => setMobileOpen(false)}
-            >
-              <span className={item.path === '/addArt' ? "sidebar-icon sidebaricon-add-art" : "sidebar-icon"}>{item.icon}</span>
-              {item.path === '/addArt' && <span className="spannAI">AI</span>}
-              {!collapsed && <span className="sidebar-label">{item.label}</span>}
-            </Link>
-          ))}
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`${styles.sidebarLink} ${isActive ? styles.active : ""
+                  }`}
+                onClick={() => setMobileOpen(false)}
+              >
+                <span
+                  className={`${styles.sidebarIcon} ${item.path === "/addArt" ? styles.sidebariconAddArt : ""
+                    }`}
+                >
+                  {item.icon}
+                </span>
+                {item.path === "/addArt" && (
+                  <span className={styles.spannAi}>AI</span>
+                )}
+                {!collapsed && (
+                  <span className={styles.sidebarLabel}>{item.label}</span>
+                )}
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </div>
@@ -76,3 +110,4 @@ const AdminSidebar = () => {
 };
 
 export default AdminSidebar;
+

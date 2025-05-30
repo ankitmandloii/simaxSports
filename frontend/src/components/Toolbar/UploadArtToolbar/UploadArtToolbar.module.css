@@ -1,13 +1,13 @@
 /* UploadArtToolbar.css */
 
-.upload-container {
+.uploadContainer {
   width: 100%;
   max-width: 500px;
   margin: 40px auto;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.drop-zone {
+.dropZone {
   border: 2px dashed #ccc;
   border-radius: 12px;
   padding: 40px 20px;
@@ -17,18 +17,18 @@
   background-color: #F7F7F7;
 }
 
-.drop-zone:hover {
+.dropZone:hover {
   background-color: #f0f8ff;
   border-color: #1e90ff;
 }
 
-.drop-zone p {
+.dropZone p {
   margin: 0;
   font-size: 16px;
   color: #555;
 }
 
-.file-list {
+.fileList {
   /* margin-top: 20px; */
   background-color: #fdfdfd;
   padding: 6px;
@@ -38,13 +38,13 @@
   gap:10px */
 }
 
-.file-list h4 {
+.fileList h4 {
   /* margin-bottom: 10px; */
   font-size: 12px;
   color: black;
 }
 
-.file-list ul {
+.fileList ul {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -53,7 +53,7 @@
   gap:10px */
 }
 
-.file-list li {
+.fileList li {
   border: 1px solid #eee;
   padding: 4px;
   font-size: 12px;
@@ -63,11 +63,11 @@
   margin-bottom: 5px;
 }
 
-.file-list li:last-child {
+.fileList li:last-child {
   border-bottom: none;
 }
 
-.upload-file-btn {
+.uploadFileBtn {
   height: 33px;
   background: black;
   width: 126px;
@@ -84,14 +84,14 @@
   /* transition: background-color 0.3s ease, transform 0.2s ease; */
 }
 
-.upload-btn-flex-container {
+.uploadBtnFlexContainer {
   display: flex;
   justify-content: space-between;
   gap: 10px;
   margin: 1rem 0;
 }
 
-.upload-option-btn {
+.uploadOptionBtn {
   cursor: pointer;
   font-size: 12px;
   justify-content: center;
@@ -105,22 +105,22 @@
   border-radius: 30px;
 }
 
-.upload-option-btn img {
+.uploadOptionBtn img {
   height: 15px;
 }
 
-.upload-option-btn p {
+.uploadOptionBtn p {
   font-size: 14px;
 }
 
-.upload-para {
+.uploadPara {
   font-size: 12px;
   color: #8A9099;
   ;
 }
 
 /* -- */
-.file-item {
+.fileItem {
   position: relative;
   display: flex;
   align-items: center;
@@ -131,7 +131,7 @@
   border: 1px solid #ddd;
 }
 
-.remove-icon {
+.removeIcon {
   cursor: pointer;
   position: absolute;
   top: -4px;
@@ -150,12 +150,12 @@
   transition: transform 0.2s ease;
 }
 
-.remove-icon:hover {
+.removeIcon:hover {
   transform: scale(1.2);
 }
 
 #prepareHeading {
-  
+
   justify-content: center;
   font-size: 14px;
   color: #8A9099;

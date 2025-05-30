@@ -1,11 +1,12 @@
 
 import React, { useState } from 'react';
-import '../ProductToolbar/ProductToolbar.css';
+// import '../ProductToolbar/ProductToolbar.css';
 import { SearchIcon } from '../../iconsSvg/CustomIcon';
 import { aiContent } from '../../json/aiicontent';
 import SubArtBox from './SubArtBox';
 import { Link } from 'react-router-dom';
-import './AddArtToolbar.css'
+import style from './AddArtToolbar.module.css';
+import '../../../App.css'
 const AddArtToolbar = () => {
   const [subArt, setSubArt] = useState(false);
   const [category, setCategory] = useState("");
@@ -21,7 +22,7 @@ const AddArtToolbar = () => {
       <div className="toolbar-main-heading ai-relative">
         <h5 className="Toolbar-badge">Art Powered By AI</h5>
         <h2 >Add Art</h2>
-        <span className='ai-spannn'>AI</span>
+        <span className={style.aiSpannn}>AI</span>
         <p>Add your own artwork or choose from our library to personalize your design.</p>
       </div>
       {subArt ? <SubArtBox category={category} goBack={() => setSubArt(false)} /> : <div className="toolbar-box">
@@ -29,30 +30,30 @@ const AddArtToolbar = () => {
           <input type="text" placeholder="Search for Clipart " />
           <SearchIcon />
         </div> */}
-        <div className="search-container">
-          <div className="search-wrapper">
+        <div className={style.searchContainer}>
+          <div className={style.searchWrapper}>
             <input
               type="text"
-              className="search-input"
+              className={style.searchInput}
               placeholder="Search for Clipart and AI Generated Art"
             />
-            <span className="search-icon">
+            <span className={style.searchIcon}>
 
               <SearchIcon />
             </span>
           </div>
         </div>
 
-        <div className="addArtToolbarBoxContent">
+        <div className={style.addArtToolbarBoxContent}>
           {aiContent.map((item) => (
-            <button key={item.id} className="art-button" onClick={() => handleSubClick(item.title)}>
+            <button key={item.id} className={style.artButton} onClick={() => handleSubClick(item.title)}>
               {item.svg}
               <span>{item.title}</span>
             </button>
           ))}
         </div>
 
-        <Link to='/uploadArt'><button className="upload-button">Upload Your Own Image</button></Link>
+        <Link to='/uploadArt'><button className={style.uploadButton}>Upload Your Own Image</button></Link>
       </div>}
 
     </div>

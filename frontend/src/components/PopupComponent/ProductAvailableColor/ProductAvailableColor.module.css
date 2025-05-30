@@ -1,4 +1,4 @@
-.color-popup-container-span_box {
+.colorPopupContainerSpanBox {
   position: absolute;
   top: 46%;
   right: 2%;
@@ -12,23 +12,23 @@
   z-index: 200;
 }
 
-.color-popup-container-span_box .color-options-grid {
+.colorOptionsGrid {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 15px;
 }
 
-.color-popup-container-span_box .color-option-card {
+.colorOptionCard {
   width: 30px;
   text-align: center;
 }
 
-.color-popup-container-span_box .color-option-card span {
+.colorOptionCard span {
   height: 10px;
 }
 
-.color-popup-container-span_box .color-option-card p {
+.colorOptionCard p {
   font-size: 10px;
 }
 
@@ -47,7 +47,7 @@
   object-fit: cover;
 } */
 
-.color-popup-container-span_box .cancel-color-btn {
+.cancelColorBtn {
   margin-top: 20px;
   padding: 8px 16px;
   background: #f44336;

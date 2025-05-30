@@ -1,0 +1,371 @@
+.toolbarBox {
+  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+}
+
+
+textarea {
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  height: 100px;
+  /* Set a fixed height */
+  resize: none;
+  outline: none;
+  font-size: 16px;
+  color: #555;
+  border-radius: 4px;
+  padding: 6px;
+  overflow-y: auto;
+  /* Show vertical scrollbar when needed */
+}
+
+
+
+.addTextFirstToolbarBoxContainer {
+  display: flex;
+  justify-content: space-around;
+  /* gap: 10px; */
+}
+
+.toolbarBoxIconsAndHeadingForTogether {
+  display: flex;
+}
+
+.toolbarBoxIconsAndHeadingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 17px;
+}
+
+.toolbarBoxIconsContainer {
+
+  padding: 3px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #cccfd6;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.toolbarBoxIconsContainerLayering1 {
+
+  padding: 3px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #cccfd6;
+  border-bottom: 1px solid #cccfd6;
+  border-left: 1px solid #cccfd6;
+  border-right: 1px solid #cccfd6;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  cursor: pointer;
+
+}
+
+.toolbarBoxIconsContainerLayering2 {
+
+  padding: 3px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #cccfd6;
+  border-bottom: 1px solid #cccfd6;
+  border-right: 1px solid #cccfd6;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  cursor: pointer;
+
+
+}
+
+.toolbarBoxIconsContainerFlip1 {
+
+  padding: 3px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #cccfd6;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  cursor: pointer;
+}
+
+.toolbarBoxIconsContainerClickStyleFlip1 span {
+
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  color: white;
+  background-color: black;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #cccfd6;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  cursor: pointer;
+}
+
+.toolbarBoxIconsContainerClickStyleFlip2 span {
+
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  color: white;
+  background-color: black;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #cccfd6;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  cursor: pointer;
+}
+
+.toolbarBoxIconsContainerActive {
+  color: white;
+  background-color: black;
+}
+
+.toolbarBoxIconsContainerFlip2 {
+
+  padding: 3px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #cccfd6;
+  border-bottom: 1px solid #cccfd6;
+  border-left: 1px solid #cccfd6;
+  border-right: 1px solid #cccfd6;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  cursor: pointer;
+
+}
+
+
+/* secondtoolBartoolStyle */
+.toolbarBoxIconsContainerForTogether {
+  display: flex;
+}
+
+.toolbarBoxFontValueSetInnerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.toolbarBoxFontValueSetInnerActionlogo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbarBoxFontValueSetInnerActionlogo span {
+  /* margin-left: 11px; */
+  /* padding:5px; */
+  display: inline-block;
+  text-align: center;
+
+}
+
+.spanValueBoxInput {
+  /* padding: 0px 5px; */
+  border: 1px solid #cccfd6;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #555;
+  width: 50px;
+  text-align: center;
+}
+
+
+
+
+.toolbarBoxFontValueSetInnerActionheading {
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+  /* position: relative; */
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.noneSvgIcon {
+  width: 15px;
+  align-items: center;
+  height: 18px;
+  justify-content: center;
+  border: 2px solid #D2D5D9;
+  display: flex;
+  /* background-color: black; */
+}
+
+.addTextInnerMainContainerr {
+  color: #000;
+  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.lockedToolbar {
+  opacity: 0.4;
+  pointer-events: none;
+  /* Prevent interaction */
+  user-select: none;
+  /* Prevent text selection */
+}
+
+
+
+.addTextInnerMainContainerr::-webkit-scrollbar {
+  /* color: red; */
+  background-color: #888;
+  color: #fff;
+  width: 5px;
+  height: 3px;
+}
+
+.colorrrrr {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.colorr2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.addImageResetText {
+  cursor: pointer;
+  font-size: 10px;
+  color: #005bff;
+}
+
+/* 
+add switch button css */
+
+
+/* Toggle Switch Styling */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked+.slider {
+  background-color: #0b70ec;
+  /* Adjust to match screenshot blue */
+}
+
+input:checked+.slider:before {
+  transform: translateX(14px);
+}
+
+/* AI Badge */
+.aiBadge {
+  background: #e6f0ff;
+  color: #0b70ec;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 4px;
+  border-radius: 4px;
+  margin-left: 4px;
+}
+
+
+.filterSection {
+  padding: 10px;
+}
+
+.filterTitle {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.filterOptions {
+  display: flex;
+  gap: 15px;
+}
+
+.filterOption {
+  border: 3px solid transparent;
+  padding: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.filterOptionActive {
+  border-color: #005bff;
+  position: relative;
+}
+
+.filterLabel {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #333;
+}
+
+.filterOptionActive .filterLabel {
+  color: #005bff;
+  font-weight: bold;
+  border-top: 2px solid #005bff;
+  padding-top: 4px;
+}
+
+.filterImage {
+  width: 60px;
+  height: 80px;
+  object-fit: contain;
+}

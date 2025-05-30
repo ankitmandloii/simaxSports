@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import './ProductAvailableColor.css';
 import { getHexFromName } from '../../utils/colorUtils';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
+import style from './ProductAvailableColor.module.css'
 
 const ProductAvailableColor = ({
   product,
@@ -31,17 +31,17 @@ const ProductAvailableColor = ({
 
   return (
     <div className="color-popup-overlay"> {/* Add a dimmed background if needed */}
-      <div className="color-popup-container-span_box" ref={popupRef}>
-        <span onClick={onClose} className='crossProdIConn'>
+      <div className={style.colorPopupContainerSpanBox} ref={popupRef}>
+        <span onClick={onClose} className={style.crossProdIConn}>
           <CrossIcon />
         </span>
         <p>Select a Color for {product.name || product.title}</p>
         {colorsToShow.length > 0 ? (
-          <div className="color-options-grid">
+          <div className={style.colorOptionsGrid}>
             {colorsToShow.map((color, idx) => (
               <div
                 key={idx}
-                className="color-option-card"
+                className={style.colorOptionCard}
                 onClick={() => onAddColor(product, color)}
                 onMouseEnter={() => onHoverColor && onHoverColor(color)}
                 onMouseLeave={() => onLeaveColor && onLeaveColor()}
