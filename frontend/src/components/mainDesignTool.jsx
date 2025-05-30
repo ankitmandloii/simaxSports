@@ -32,11 +32,22 @@ const MainDesignTool = ({
   setPreviewForCurrentSide
 }) => {
 
-  const activeSide = useSelector(
-    (state) => state.TextFrontendDesignSlice.activeSide
-  );
-  const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
-  const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
+const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+const currentProductId = useSelector((state) => state.TextFrontendDesignSlice.currentProductId);
+const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
+
+console.log("currentProductId",currentProductId);
+// Safely access product state
+const productState = useSelector(
+  (state) => state.TextFrontendDesignSlice.products?.[currentProductId]
+);
+
+const nameAndNumberDesignState = productState?.present?.[activeSide]?.nameAndNumberDesignState;
+
+// console.log("nameAndNumberDesignState for main ",nameAndNumberDesignState)
+const textContaintObject = productState?.present?.[activeSide]?.texts || [];
+const isRender = productState?.present?.[activeSide]?.setRendering;
+const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
 
 
   // const image = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images[0]);
@@ -54,15 +65,7 @@ const MainDesignTool = ({
   // }, [image?.src]);
 
   // const [lastTranform, setLastTranform] = useState(null);
-  const textContaintObject = useSelector(
-    (state) => state.TextFrontendDesignSlice.present[activeSide].texts
-  );
-  const isRender = useSelector(
-    (state) => state.TextFrontendDesignSlice.present[activeSide].setRendering
-  );
-  // console.log("nameAndNumberDesignState", nameAndNumberDesignState);
 
-  const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId)
   // const isLocked = selectedTextId && textContaintObject.find((obj) => obj.id === selectedTextId).locked;
   // console.log("locked value", isLocked);
   const canvasRef = useRef(null);
@@ -403,9 +406,9 @@ const MainDesignTool = ({
     };
 
 
-    console.log("activeSide inside", activeSide);
+    // console.log("activeSide inside", activeSide);
     if (activeSide == "front") {
-      console.log("active side", activeSide, "changing front")
+      // console.log("active side", activeSide, "changing front")
       setFrontPreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
     }
     else if (activeSide == "back") {
@@ -767,7 +770,7 @@ const MainDesignTool = ({
       // mirrorCanvasRef.current.dispose();
       // mirrorCanvasRef.current = null;
     };
-  }, [iconImages, id, backgroundImage, activeSide]);
+  }, [iconImages, id, backgroundImage, activeSide,currentProductId]);
 
 
   const renderCurveTextObjects = () => {
@@ -940,7 +943,7 @@ const MainDesignTool = ({
     // console.log("renderiing on layer index changed");
     renderCurveTextObjects();
 
-  }, [activeSide, isRender, dispatch, id, textContaintObject]);
+  }, [activeSide, isRender, dispatch, id, textContaintObject,currentProductId]);
 
 
   // useEffect(() => {

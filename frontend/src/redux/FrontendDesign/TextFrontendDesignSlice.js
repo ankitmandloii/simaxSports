@@ -1,241 +1,3 @@
-// import { createSlice, nanoid } from '@reduxjs/toolkit';
-
-// // Helper to create a new text object
-// const createNewText = ({ value, id }, length) => ({
-//   id: id,
-//   content: value || 'New Text',
-//   fontFamily: 'Montserrat',
-//   textColor: '#000000',
-//   outline: 'none',
-//   size: 1,
-//   scaleX: 1,
-//   scaleY: 1,
-//   originalScaleX: 1,
-//   originalScaleY: 1,
-//   scaledValue: 1,
-//   rotate: 0,
-//   spacing: 1,
-//   arc: 0,
-//   outLineColor: "",
-//   outLineSize: 0.5,
-//   center: "center",
-//   flipX: false,
-//   flipY: false,
-//   width: 150,
-//   height: 50,
-//   fontSize: 20,
-//   position: { x: 320, y: 300 },
-//   locked: false,
-//   layerIndex: length
-// });
-
-// // ---- Initial State with per-side history tracking ----
-// const initialState = {
-//   activeSide: 'front',
-//   past: {
-//     front: [],
-//     back: [],
-//     leftSleeve: [],
-//     rightSleeve: []
-//   },
-//   present: {
-//     front: { selectedTextId: null, texts: [], setRendering: false },
-//     back: { selectedTextId: null, texts: [], setRendering: false },
-//     leftSleeve: { selectedTextId: null, texts: [], setRendering: false },
-//     rightSleeve: { selectedTextId: null, texts: [], setRendering: false }
-//   },
-//   future: {
-//     front: [],
-//     back: [],
-//     leftSleeve: [],
-//     rightSleeve: []
-//   }
-// };
-
-// const TextFrontendDesignSlice = createSlice({
-//   name: 'TextFrontendDesignSlice',
-//   initialState,
-//   reducers: {
-//     // Set the current editing side
-//     setActiveSide: (state, action) => {
-//       state.activeSide = action.payload;
-//     },
-
-//     // Add a new text object
-//     addTextState: (state, action) => {
-//       const { value, id, side = state.activeSide } = action.payload;
-//       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-//       const newText = createNewText({ value, id }, state.present[side].texts.length);
-//       state.present[side].texts.push(newText);
-//       state.present[side].selectedTextId = newText.id;
-//       state.future[side] = [];
-//       state.present[side].setRendering = !state.present[side].setRendering;
-//     },
-
-//     // Duplicate an existing text object
-//     duplicateTextState: (state, action) => {
-//       const side = state.activeSide;
-//       const idToDuplicate = action.payload;
-//       const textToDuplicate = state.present[side].texts.find(t => t.id === idToDuplicate);
-
-//       if (!textToDuplicate) return; // Exit early if text doesn't exist
-
-//       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-
-//       const newText = {
-//         ...JSON.parse(JSON.stringify(textToDuplicate)),
-//         id: nanoid(),
-//         position: {
-//           x: textToDuplicate.position.x + 20,
-//           y: textToDuplicate.position.y + 20
-//         },
-//         layerIndex: state.present[side].texts.length
-//       };
-
-//       state.present[side].texts.push(newText);
-//       state.present[side].selectedTextId = newText.id;
-//       state.future[side] = [];
-//       state.present[side].setRendering = !state.present[side].setRendering;
-//     },
-
-//     // Update a text object
-//     updateTextState: (state, action) => {
-//       const { id, changes, side = state.activeSide, isRenderOrNot } = action.payload;
-//       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-//       const text = state.present[side].texts.find(t => t.id === id);
-//       if (text && !text.locked) Object.assign(text, changes);
-//       if (isRenderOrNot) {
-//         state.present[side].setRendering = !state.present[side].setRendering;
-//       }
-//       state.future[side] = [];
-//     },
-
-//     // Delete a text object
-//     deleteTextState: (state, action) => {
-//       const side = state.activeSide;
-//       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-//       state.present[side].texts = state.present[side].texts.filter(t => t.id !== action.payload);
-//       state.future[side] = [];
-//     },
-
-//     // Move text object forward (up layer)
-//     moveTextForwardState: (state, action) => {
-//       const side = state.activeSide;
-//       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-//       const texts = state.present[side].texts;
-//       const index = texts.findIndex(t => t.id === action.payload);
-//       if (index !== -1 && index < texts.length - 1) {
-//         [texts[index], texts[index + 1]] = [texts[index + 1], texts[index]];
-//       }
-//       texts.forEach((text, i) => text.layerIndex = i);
-//       state.present[side].setRendering = !state.present[side].setRendering;
-//       state.future[side] = [];
-//     },
-
-//     // Move text object backward (down layer)
-//     moveTextBackwardState: (state, action) => {
-//       const side = state.activeSide;
-//       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-//       const texts = state.present[side].texts;
-//       const index = texts.findIndex(t => t.id === action.payload);
-//       if (index > 0) {
-//         [texts[index], texts[index - 1]] = [texts[index - 1], texts[index]];
-//       }
-//       texts.forEach((text, i) => text.layerIndex = i);
-//       state.present[side].setRendering = !state.present[side].setRendering;
-//       state.future[side] = [];
-//     },
-
-//     // Lock or unlock a text object
-//     toggleLockState: (state, action) => {
-//       const side = state.activeSide;
-//       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-//       const text = state.present[side].texts.find(t => t.id === action.payload);
-//       if (text) text.locked = !text.locked;
-//       state.present[side].setRendering = !state.present[side].setRendering;
-//       state.future[side] = [];
-//     },
-
-//     // Set which text is currently selected
-//     setSelectedTextState: (state, action) => {
-//       const side = state.activeSide;
-//       state.present[side].selectedTextId = action.payload;
-//     },
-
-//      setRendering:(state,action) =>{
-//         const side = state.activeSide;
-//         state.present[side].setRendering = !(state.present[side].setRendering);
-//     },
-//     // ----------- Undo / Redo per side ------------
-//     undo: (state) => {
-//       const side = state.activeSide;
-//       if (state.past[side].length === 0) return;
-//       const previous = state.past[side].pop();
-//       state.future[side].unshift(JSON.parse(JSON.stringify(state.present[side])));
-//       state.present[side] = previous;
-
-//       state.present[side].setRendering = !state.present[side].setRendering;
-//     },
-
-//     redo: (state) => {
-//       const side = state.activeSide;
-//       if (state.future[side].length === 0) return;
-//       const next = state.future[side].shift();
-//       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-//       state.present[side] = next;
-//       state.present[side].setRendering = !state.present[side].setRendering;
-//     },
-
-//     // Reset canvas state for all sides
-//     resetCanvasState: (state) => {
-//       const side = state.activeSide;
-//       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-//       state.present = {
-//         front: { selectedTextId: null, texts: [], setRendering: false },
-//         back: { selectedTextId: null, texts: [], setRendering: false },
-//         leftSleeve: { selectedTextId: null, texts: [], setRendering: false },
-//         rightSleeve: { selectedTextId: null, texts: [], setRendering: false }
-//       };
-//       state.future = {
-//         front: [],
-//         back: [],
-//         leftSleeve: [],
-//         rightSleeve: []
-//       };
-//       state.present[side].setRendering = !(state.present[side].setRendering);
-//     }
-//   }
-// });
-// export const selectActiveSide = (state) => state.TextFrontendDesignSlice.activeSide;
-
-// export const selectCanUndo = (state) => {
-//   const side = state.TextFrontendDesignSlice.activeSide;
-//   return state.TextFrontendDesignSlice.past[side]?.length > 0;
-// };
-
-// export const selectCanRedo = (state) => {
-//   const side = state.TextFrontendDesignSlice.activeSide;
-//   return state.TextFrontendDesignSlice.future[side]?.length > 0;
-// };
-
-// export const {
-//   addTextState,
-//   setSelectedTextState,
-//   updateTextState,
-//   moveTextForwardState,
-//   moveTextBackwardState,
-//   toggleLockState,
-//   deleteTextState,
-//   undo,
-//   redo,
-//   resetCanvasState,
-//   duplicateTextState,
-//   setActiveSide,
-//   setRendering
-// } = TextFrontendDesignSlice.actions;
-
-// export default TextFrontendDesignSlice.reducer;
-
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 
 const createNewText = ({ value, id }, length) => ({
@@ -263,11 +25,10 @@ const createNewText = ({ value, id }, length) => ({
   width: 150,
   height: 50,
   fontSize: 20,
- position: { x: 280, y: 200 },
+  position: { x: 280, y: 200 },
   locked: false,
   layerIndex: length,
 });
-
 
 const createNewImage = ({ id, src }, length) => ({
   id: id,
@@ -281,85 +42,81 @@ const createNewImage = ({ id, src }, length) => ({
   flipY: false,
   width: 150,
   height: 150,
-   position: { x: 280, y: 200 },
+  position: { x: 280, y: 200 },
   locked: false,
   layerIndex: length,
 });
 
-
+const createProductDesign = () => {
+  return {
+    past: {
+      front: [],
+      back: [],
+      leftSleeve: [],
+      rightSleeve: [],
+    },
+    present: {
+      front: {
+        selectedTextId: null,
+        texts: [],
+        images: [],
+        setRendering: false,
+        nameAndNumberDesignState: {
+          id: "front",
+          name: "NAME",
+          number: "00",
+          fontColor: "#000000",
+          fontFamily: "Oswald",
+          fontSize: "small",
+          position: { x: 280, y: 200 },
+        },
+        nameAndNumberProductList: [],
+      },
+      back: {
+        selectedTextId: null,
+        texts: [],
+        images: [],
+        setRendering: false,
+        nameAndNumberDesignState: {
+          id: "back",
+          name: "NAME",
+          number: "00",
+          fontColor: "#000000",
+          fontFamily: "Oswald",
+          fontSize: "small",
+          position: { x: 280, y: 200 },
+        },
+        nameAndNumberProductList: [],
+      },
+      leftSleeve: {
+        selectedTextId: null,
+        texts: [],
+        images: [],
+        setRendering: false,
+      },
+      rightSleeve: {
+        selectedTextId: null,
+        texts: [],
+        images: [],
+        setRendering: false,
+      },
+    },
+    future: {
+      front: [],
+      back: [],
+      leftSleeve: [],
+      rightSleeve: [],
+    },
+  };
+};
 
 const initialState = {
-  activeSide: "front",
-  past: {
-    front: [],
-    back: [],
-    leftSleeve: [],
-    rightSleeve: [],
+  currentProductId: null, // active product being customized
+  products: {
+    // Example structure:
+    // "product-1": { past, present, future }
   },
-  present: {
-    front: {
-      selectedTextId: null,
-      texts: [],
-      images: [],
-      setRendering: false,
-
-      // 🆕 Design settings for Name & Number (front)
-      nameAndNumberDesignState: {
-        id: "front",
-        name: "NAME",
-        number: "00",
-        fontColor: "#000000",
-        fontFamily: "Oswald",
-        fontSize: "small",
-        position: { x: 280, y: 200 },
-      },
-
-      // 🆕 Product list for Name & Number (front)
-      nameAndNumberProductList: [
-        // productId: [{ colorVariant, size, name, number }]
-      ],
-    },
-    back: {
-      selectedTextId: null,
-      texts: [],
-      images: [],
-      setRendering: false,
-
-      // 🆕 Design settings for Name & Number (back)
-      nameAndNumberDesignState: {
-        id: "back",
-        name: "NAME",
-        number: "00",
-        fontColor: "#000000",
-        fontFamily: "Oswald",
-        fontSize: "small",
-        position: { x: 280, y: 200 },
-      },
-
-      // 🆕 Product list for Name & Number (back)
-      nameAndNumberProductList: [
-        // productId: [{ colorVariant, size, name, number }]
-      ],
-    },
-    leftSleeve: {
-      selectedTextId: null,
-      texts: [],
-      setRendering: false,
-    },
-    rightSleeve: {
-      selectedTextId: null,
-      texts: [],
-      setRendering: false,
-    },
-  },
-  future: {
-    front: [],
-    back: [],
-    leftSleeve: [],
-    rightSleeve: [],
-  },
-
-  // 🆕 Global state
+  activeSide: "front", // front | back | leftSleeve | rightSleeve
   addNumber: false,
   addName: false,
 };
@@ -373,31 +130,101 @@ const TextFrontendDesignSlice = createSlice({
       state.activeSide = action.payload;
     },
 
-    // Add a new text object
+    addProductDesignState: (state, action) => {
+      // Generate a new unique product ID or accept one from action.payload
+      const productId = action.payload?.productId || nanoid();
+
+      // Initialize design state for this product
+      const newProductDesign = createProductDesign();
+
+      // Add new product design state under products
+      state.products[productId] = newProductDesign;
+
+      // Set currentProductId to the new product
+      if(state.currentProductId == null){
+        state.currentProductId = productId;
+      }
+
+      // Reset active side to front for the new product
+      state.activeSide = "front";
+
+      // Optionally reset global flags if needed
+      state.addName = false;
+      state.addNumber = false;
+    },
+    removeProductDesignState: (state, action) => {
+      const productIdToRemove = action.payload;
+      const productIds = Object.keys(state.products);
+
+      // If only one product exists, do NOT delete it
+      if (productIds.length <= 1) {
+        return; // skip deletion
+      }
+
+      // Remove the product if it exists
+      if (state.products[productIdToRemove]) {
+        delete state.products[productIdToRemove];
+      }
+
+      // If the removed product was the current active one, switch to another product
+      if (state.currentProductId === productIdToRemove) {
+        const remainingProductIds = Object.keys(state.products);
+        state.currentProductId =
+          remainingProductIds.length > 0 ? remainingProductIds[0] : null;
+      }
+    },
+    setCurrentProductId: (state, action) => {
+      state.currentProductId = action.payload;
+    },
+
     addTextState: (state, action) => {
-      const { value, id, side = state.activeSide } = action.payload;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+      const productId = state.currentProductId;
+      const side = action.payload.side || state.activeSide;
+
+      if (!productId || !state.products[productId]) return;
+
+      const product = state.products[productId];
+
+      const { value, id } = action.payload;
+
+      // Save current state to past
+      product.past[side].push(
+        JSON.parse(JSON.stringify(product.present[side]))
+      );
+
+      // Create and add new text
       const newText = createNewText(
         { value, id },
-        state.present[side].texts.length
+        product.present[side].texts.length
       );
-      state.present[side].texts.push(newText);
-      state.present[side].selectedTextId = newText.id;
-      state.future[side] = [];
-      state.present[side].setRendering = !state.present[side].setRendering;
+      product.present[side].texts.push(newText);
+      product.present[side].selectedTextId = newText.id;
+
+      // Clear future and trigger rendering
+      product.future[side] = [];
+      product.present[side].setRendering = !product.present[side].setRendering;
     },
 
     // Duplicate an existing text object
     duplicateTextState: (state, action) => {
+      const productId = state.currentProductId;
       const side = state.activeSide;
+
+      if (!productId || !state.products[productId]) return;
+
+      const product = state.products[productId];
       const idToDuplicate = action.payload;
-      const textToDuplicate = state.present[side].texts.find(
+
+      const textToDuplicate = product.present[side].texts.find(
         (t) => t.id === idToDuplicate
       );
 
       if (!textToDuplicate) return; // Exit early if text doesn't exist
 
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+      // Save current state to history
+      product.past[side].push(
+        JSON.parse(JSON.stringify(product.present[side]))
+      );
 
       const newText = {
         ...JSON.parse(JSON.stringify(textToDuplicate)),
@@ -406,121 +233,226 @@ const TextFrontendDesignSlice = createSlice({
           x: textToDuplicate.position.x + 20,
           y: textToDuplicate.position.y + 20,
         },
-        layerIndex: state.present[side].texts.length,
+        layerIndex: product.present[side].texts.length,
       };
 
-      state.present[side].texts.push(newText);
-      state.present[side].selectedTextId = newText.id;
-      state.future[side] = [];
-      state.present[side].setRendering = !state.present[side].setRendering;
+      product.present[side].texts.push(newText);
+      product.present[side].selectedTextId = newText.id;
+      product.future[side] = [];
+      product.present[side].setRendering = !product.present[side].setRendering;
     },
 
-    // Update a text object
     updateTextState: (state, action) => {
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
+
       const {
         id,
         changes,
         side = state.activeSide,
         isRenderOrNot,
       } = action.payload;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      const text = state.present[side].texts.find((t) => t.id === id);
-      if (text && !text.locked) Object.assign(text, changes);
-      if (isRenderOrNot) {
-        state.present[side].setRendering = !state.present[side].setRendering;
+
+      const product = state.products[productId];
+
+      // Save current state to past history for undo
+      product.past[side].push(
+        JSON.parse(JSON.stringify(product.present[side]))
+      );
+
+      // Find the text object by id and update if not locked
+      const text = product.present[side].texts.find((t) => t.id === id);
+      if (text && !text.locked) {
+        Object.assign(text, changes);
       }
-      state.future[side] = [];
+
+      // Optionally toggle rendering flag to force UI update
+      if (isRenderOrNot) {
+        product.present[side].setRendering =
+          !product.present[side].setRendering;
+      }
+
+      // Clear redo future history after change
+      product.future[side] = [];
     },
 
     // Delete a text object
     deleteTextState: (state, action) => {
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
+
       const side = state.activeSide;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      state.present[side].texts = state.present[side].texts.filter(
+      const product = state.products[productId];
+
+      // Save current state for undo
+      product.past[side].push(
+        JSON.parse(JSON.stringify(product.present[side]))
+      );
+
+      // Remove the text by id
+      product.present[side].texts = product.present[side].texts.filter(
         (t) => t.id !== action.payload
       );
-      state.future[side] = [];
+
+      // Clear redo history
+      product.future[side] = [];
     },
 
     // Move text object forward (up layer)
     moveTextForwardState: (state, action) => {
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
+
       const side = state.activeSide;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      const texts = state.present[side].texts;
+      const product = state.products[productId];
+
+      // Save current state for undo
+      product.past[side].push(
+        JSON.parse(JSON.stringify(product.present[side]))
+      );
+
+      const texts = product.present[side].texts;
       const index = texts.findIndex((t) => t.id === action.payload);
+
       if (index !== -1 && index < texts.length - 1) {
+        // Swap the selected text with the next one to move it forward
         [texts[index], texts[index + 1]] = [texts[index + 1], texts[index]];
       }
+
+      // Update layerIndex for all texts
       texts.forEach((text, i) => (text.layerIndex = i));
-      state.present[side].setRendering = !state.present[side].setRendering;
-      state.future[side] = [];
+
+      // Toggle rendering to force UI update
+      product.present[side].setRendering = !product.present[side].setRendering;
+
+      // Clear redo history
+      product.future[side] = [];
     },
 
     // Move text object backward (down layer)
     moveTextBackwardState: (state, action) => {
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
+
       const side = state.activeSide;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      const texts = state.present[side].texts;
+      const product = state.products[productId];
+
+      // Save current state for undo
+      product.past[side].push(
+        JSON.parse(JSON.stringify(product.present[side]))
+      );
+
+      const texts = product.present[side].texts;
       const index = texts.findIndex((t) => t.id === action.payload);
+
       if (index > 0) {
+        // Swap the selected text with the previous one to move it backward
         [texts[index], texts[index - 1]] = [texts[index - 1], texts[index]];
       }
+
+      // Update layerIndex for all texts
       texts.forEach((text, i) => (text.layerIndex = i));
-      state.present[side].setRendering = !state.present[side].setRendering;
-      state.future[side] = [];
+
+      // Toggle rendering to force UI update
+      product.present[side].setRendering = !product.present[side].setRendering;
+
+      // Clear redo history
+      product.future[side] = [];
     },
 
     // Lock or unlock a text object
     toggleLockState: (state, action) => {
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
+
       const side = state.activeSide;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      const text = state.present[side].texts.find(
+      const product = state.products[productId];
+
+      product.past[side].push(
+        JSON.parse(JSON.stringify(product.present[side]))
+      );
+
+      const text = product.present[side].texts.find(
         (t) => t.id === action.payload
       );
       if (text) text.locked = !text.locked;
-      state.present[side].setRendering = !state.present[side].setRendering;
-      state.future[side] = [];
+
+      product.present[side].setRendering = !product.present[side].setRendering;
+      product.future[side] = [];
     },
 
-    // Set which text is currently selected
     setSelectedTextState: (state, action) => {
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
+
       const side = state.activeSide;
-      state.present[side].selectedTextId = action.payload;
+      const product = state.products[productId];
+
+      product.present[side].selectedTextId = action.payload;
     },
 
     setRendering: (state, action) => {
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
+
       const side = state.activeSide;
-      state.present[side].setRendering = !state.present[side].setRendering;
+      const product = state.products[productId];
+
+      product.present[side].setRendering = !product.present[side].setRendering;
     },
+
     // ----------- Undo / Redo per side ------------
     undo: (state) => {
-      const side = state.activeSide;
-      if (state.past[side].length === 0) return;
-      const previous = state.past[side].pop();
-      state.future[side].unshift(
-        JSON.parse(JSON.stringify(state.present[side]))
-      );
-      state.present[side] = previous;
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
 
-      state.present[side].setRendering = !state.present[side].setRendering;
+      const side = state.activeSide;
+      const product = state.products[productId];
+
+      if (product.past[side].length === 0) return;
+
+      const previous = product.past[side].pop();
+      product.future[side].unshift(
+        JSON.parse(JSON.stringify(product.present[side]))
+      );
+      product.present[side] = previous;
+      product.present[side].setRendering = !product.present[side].setRendering;
     },
 
     redo: (state) => {
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
+
       const side = state.activeSide;
-      if (state.future[side].length === 0) return;
-      const next = state.future[side].shift();
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      state.present[side] = next;
-      state.present[side].setRendering = !state.present[side].setRendering;
+      const product = state.products[productId];
+
+      if (product.future[side].length === 0) return;
+
+      const next = product.future[side].shift();
+      product.past[side].push(
+        JSON.parse(JSON.stringify(product.present[side]))
+      );
+      product.present[side] = next;
+      product.present[side].setRendering = !product.present[side].setRendering;
     },
 
-    // Reset canvas state for all sides
     resetCanvasState: (state) => {
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
+
       const side = state.activeSide;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      state.present = {
+      const product = state.products[productId];
+
+      product.past[side].push(
+        JSON.parse(JSON.stringify(product.present[side]))
+      );
+
+      product.present = {
         front: {
-          selectedTextId: null, texts: [], nameAndNumberDesignState: {
+          selectedTextId: null,
+          texts: [],
+          images: [],
+          nameAndNumberDesignState: {
             id: "front",
             name: "NAME",
             number: "00",
@@ -528,179 +460,237 @@ const TextFrontendDesignSlice = createSlice({
             fontFamily: "Oswald",
             fontSize: "small",
             position: { x: 325, y: 300 },
-          }, setRendering: false
+          },
+          nameAndNumberProductList: [],
+          setRendering: false,
         },
         back: {
-          selectedTextId: null, texts: [], nameAndNumberDesignState: {
-            id: "front",
+          selectedTextId: null,
+          texts: [],
+          images: [],
+          nameAndNumberDesignState: {
+            id: "back",
             name: "NAME",
             number: "00",
             fontColor: "#000000",
             fontFamily: "Oswald",
             fontSize: "small",
             position: { x: 325, y: 300 },
-          }, setRendering: false
+          },
+          nameAndNumberProductList: [],
+          setRendering: false,
         },
-        leftSleeve: { selectedTextId: null, texts: [], setRendering: false },
-        rightSleeve: { selectedTextId: null, texts: [], setRendering: false },
-
+        leftSleeve: {
+          selectedTextId: null,
+          texts: [],
+          images: [],
+          setRendering: false,
+        },
+        rightSleeve: {
+          selectedTextId: null,
+          texts: [],
+          images: [],
+          setRendering: false,
+        },
       };
-      state.future = {
+
+      product.future = {
         front: [],
         back: [],
         leftSleeve: [],
         rightSleeve: [],
       };
-      state.present[side].setRendering = !state.present[side].setRendering;
+
+      product.present[side].setRendering = !product.present[side].setRendering;
       state.addName = false;
       state.addNumber = false;
-    },
-    setRendering: (state, action) => {
-      const side = state.activeSide;
-      state.present[side].setRendering = !state.present[side].setRendering;
     },
 
     // ************************************ 🆕 Name/Number Flags and states ******************************************************************
 
     setAddNumber: (state, action) => {
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
+
       const side = state.activeSide;
-      state.addNumber = action.payload;
-      state.present[side].setRendering = !state.present[side].setRendering;
+      const product = state.products[productId];
+
+      // product.addNumber = action.payload;
+      state.addNumber = !state.addNumber; 
+      product.present[side].setRendering = !product.present[side].setRendering;
     },
+
     setAddName: (state, action) => {
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
+
       const side = state.activeSide;
-      state.addName = action.payload;
-      state.present[side].setRendering = !state.present[side].setRendering;
+      const product = state.products[productId];
+
+      // product.addName = action.payload;
+      state.addName = !state.addName;
+      product.present[side].setRendering = !product.present[side].setRendering;
     },
 
-    // 🆕 Update design state (front/back)
     updateNameAndNumberDesignState: (state, action) => {
-      const { side = state.activeSide, changes } = action.payload;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      if (state.present[side]?.nameAndNumberDesignState) {
-        Object.assign(state.present[side].nameAndNumberDesignState, changes);
-      }
-      state.present[side].setRendering = nanoid();
-      state.future[side] = [];
-    },
-    // Assuming: state.present[side].nameAndNumberProductList is now an ARRAY, not an object
 
-    addNameAndNumberProduct: (state, action) => {
-      const { side = state.activeSide, productData } = action.payload;
-      const list = state.present[side]?.nameAndNumberProductList;
-      if (!list) return;
+    
+      const { side = state.activeSide, changes,productId = state.currentProductId } = action.payload;
+        if (!productId || !state.products[productId]) return;
+      const product = state.products[productId];
 
-      // Check if product entry already exists
-      let product = list.find((p) => p.id === productData.id);
-
-      if (!product) {
-        // Add new product with first variant
-        list.push(productData);
-        console.log("product added succesfully");
-      }
-    },
-    UpdateNameAndNumberProduct: (state, action) => {
-      const {
-        id,
-        newSelections = [], // Array of { selectionId, name, number, size }
-        side = state.activeSide,
-        isRenderOrNot,
-      } = action.payload;
-
-      // Save to undo history
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-
-      const list = state.present[side]?.nameAndNumberProductList;
-      if (!list) return;
-
-      const product = list.find((p) => p.id === id);
-      if (!product) {
-        console.log("Product not found:", id);
-        return;
-      }
-
-      // Create a map of new selectionIds
-      const incomingMap = new Map(
-        newSelections.map((sel) => [sel.selectionId, sel])
+      product.past[side].push(
+        JSON.parse(JSON.stringify(product.present[side]))
       );
 
-      // Filter out selections not in the incoming list
-      product.selections = product.selections.filter((existing) => {
-        const incoming = incomingMap.get(existing.selectionId);
-        if (incoming) {
-          // Only update if not locked
-          if (!existing.locked) {
-            Object.assign(existing, incoming);
-          }
-          // Keep it
-          return true;
-        }
-        // Remove if not present in new list
-        return false;
-      });
-
-      // Add any new selectionIds that didn't already exist
-      const existingIds = new Set(product.selections.map((s) => s.selectionId));
-      newSelections.forEach((sel) => {
-        if (!existingIds.has(sel.selectionId)) {
-          product.selections.push(sel);
-        }
-      });
-
-      // Optional render flag toggle
-      if (isRenderOrNot) {
-        state.present[side].setRendering = !state.present[side].setRendering;
+      if (product.present[side]?.nameAndNumberDesignState) {
+        Object.assign(product.present[side].nameAndNumberDesignState, changes);
       }
-
-      // Clear redo history
-      state.future[side] = [];
+      product.present[side].setRendering = !  product.present[side].setRendering;
+      console.log("updated name and number design 90 ",product.present[side]);
+      product.future[side] = [];
     },
+
+    addNameAndNumberProduct: (state, action) => {
+      // if (!productId || !state.products[productId]) return;
+      
+      const { side = state.activeSide, productData } = action.payload;
+      console.log("product data",productData);
+      const productId = productData.id;
+      
+      const product = state.products[productId];
+
+      // const list = product.present[side]?.nameAndNumberProductList;
+      // if (!list) return;
+
+      //  if (!existingProduct) {
+      //   list.push(productData);
+      //   console.log("product added successfully",list);
+        
+      // }
+    },
+
+UpdateNameAndNumberProduct: (state, action) => {
+  // if (!productId || !state.products[productId]) return;
+  
+  const {
+    id,
+    newSelections = [],
+    side = "front",
+    isRenderOrNot,
+  } = action.payload;
+  
+  const productId = id;
+  const productState = state.products[id];
+  // Ensure structure is initialized
+  // if (!productState.past[side]) productState.past[side] = [];
+  // if (!productState.future[side]) productState.future[side] = [];
+  // if (!productState.present[side]) productState.present[side] = {};
+  // if (!productState.present[side].nameAndNumberProductList) {
+  //   productState.present[side].nameAndNumberProductList = [];
+  // }
+
+  // Save current state to past
+  // productState.past[side].push(JSON.parse(JSON.stringify(productState.present[side])));
+
+  // Update the list directly
+  productState.present[side].nameAndNumberProductList = newSelections;
+  console.log("new selection updated");
+  productState.present[side].nameAndNumberProductList.forEach(sl => console.log(sl));
+
+  // Toggle render flag
+  if (isRenderOrNot) {
+    productState.present[side].setRendering = !productState.present[side].setRendering;
+  }
+
+  // Clear future for undo/redo
+  productState.future[side] = [];
+},
 
     removeNameAndNumberProduct: (state, action) => {
-      const { side = state.activeSide, id } = action.payload;
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
 
-      if (!state.present[side]) return;
+      const productState = state.products[productId];
+      const { side = productState.activeSide, id } = action.payload;
 
-      state.present[side].nameAndNumberProductList = state.present[
-        side
-      ].nameAndNumberProductList.filter((product) => product.id !== id);
+      if (!productState.present[side]) return;
+
+      productState.present[side].nameAndNumberProductList =
+        productState.present[side].nameAndNumberProductList.filter(
+          (p) => p.id !== id
+        );
     },
 
-
-
     addImageState: (state, action) => {
-      const { src, id, side = state.activeSide } = action.payload;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      const newImage = createNewImage({ src, id }, state.present[side].images.length);
-      state.present[side].images.push(newImage);
-      state.future[side] = [];
-      state.present[side].setRendering = !state.present[side].setRendering;
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
+
+      const {
+        src,
+        id,
+        side = state.products[productId].activeSide,
+      } = action.payload;
+      const productState = state.products[productId];
+
+      productState.past[side].push(
+        JSON.parse(JSON.stringify(productState.present[side]))
+      );
+      const newImage = createNewImage(
+        { src, id },
+        productState.present[side].images.length
+      );
+      productState.present[side].images.push(newImage);
+      productState.future[side] = [];
+      productState.present[side].setRendering =
+        !productState.present[side].setRendering;
     },
 
     updateImageState: (state, action) => {
-      const { id, changes, side = state.activeSide, isRenderOrNot } = action.payload;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      const image = state.present[side].images.find((img) => img.id === id);
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
+
+      const {
+        id,
+        changes,
+        side = state.products[productId].activeSide,
+        isRenderOrNot,
+      } = action.payload;
+      const productState = state.products[productId];
+
+      productState.past[side].push(
+        JSON.parse(JSON.stringify(productState.present[side]))
+      );
+      const image = productState.present[side].images.find(
+        (img) => img.id === id
+      );
       if (image && !image.locked) Object.assign(image, changes);
-      if (isRenderOrNot) {
-        state.present[side].setRendering = !state.present[side].setRendering;
-      }
-      state.future[side] = [];
+      if (isRenderOrNot)
+        productState.present[side].setRendering =
+          !productState.present[side].setRendering;
+      productState.future[side] = [];
     },
 
     deleteImageState: (state, action) => {
-      const side = state.activeSide;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      state.present[side].images = state.present[side].images.filter(
-        (img) => img.id !== action.payload
+      const productId = state.currentProductId;
+      if (!productId || !state.products[productId]) return;
+
+      const productState = state.products[productId];
+      const side = productState.activeSide;
+
+      productState.past[side].push(
+        JSON.parse(JSON.stringify(productState.present[side]))
       );
-      state.future[side] = [];
+      productState.present[side].images = productState.present[
+        side
+      ].images.filter((img) => img.id !== action.payload);
+      productState.future[side] = [];
     },
 
-    restoreDesignFromSavedState(state, action) {
+    restoreDesignFromSavedState: (state, action) => {
+      // This might need to be adapted depending on the multi-product shape
       return { ...state, ...action.payload };
     },
-
   },
 });
 
@@ -728,24 +718,45 @@ export const {
   addImageState,
   updateImageState,
   deleteImageState,
-  restoreDesignFromSavedState
+  restoreDesignFromSavedState,
+  removeProductDesignState,
+  addProductDesignState,
+  setCurrentProductId
 } = TextFrontendDesignSlice.actions;
 
-// ✅ Export Selectors
 export const selectActiveSide = (state) =>
-  state.TextFrontendDesignSlice.activeSide;
+  state.TextFrontendDesignSlice.products[
+    state.TextFrontendDesignSlice.currentProductId
+  ]?.activeSide;
+
 export const selectCanUndo = (state) => {
-  const side = state.TextFrontendDesignSlice.activeSide;
-  return state.TextFrontendDesignSlice.past[side]?.length > 0;
+  const product =
+    state.TextFrontendDesignSlice.products[
+      state.TextFrontendDesignSlice.currentProductId
+    ];
+  if (!product) return false;
+  const side = product.activeSide;
+  return product.past[side]?.length > 0;
 };
+
 export const selectCanRedo = (state) => {
-  const side = state.TextFrontendDesignSlice.activeSide;
-  return state.TextFrontendDesignSlice.future[side]?.length > 0;
+  const product =
+    state.TextFrontendDesignSlice.products[
+      state.TextFrontendDesignSlice.currentProductId
+    ];
+  if (!product) return false;
+  const side = product.activeSide;
+  return product.future[side]?.length > 0;
 };
+
 export const selectCanStartOver = (state) => {
-  const side = state.TextFrontendDesignSlice.activeSide;
-  return state.TextFrontendDesignSlice.present[side]?.texts?.length > 0;
-  // return state.TextFrontendDesignSlice.present[side]?.length > 0;
+  const product =
+    state.TextFrontendDesignSlice.products[
+      state.TextFrontendDesignSlice.currentProductId
+    ];
+  if (!product) return false;
+  const side = product.activeSide;
+  return product.present[side]?.texts?.length > 0;
 };
 
 // ✅ Export Reducer

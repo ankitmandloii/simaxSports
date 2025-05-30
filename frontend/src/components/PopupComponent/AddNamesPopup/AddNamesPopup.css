@@ -145,9 +145,9 @@
 }
 
 .addNames-popup-box .table-header,
-.table-row {
+.table-row {  
   display: grid;
-  grid-template-columns: 1fr 2fr 2fr 30px;
+  grid-template-columns: 1fr 2fr 2fr 30px 30px;
   gap: 10px;
   align-items: center;
 }

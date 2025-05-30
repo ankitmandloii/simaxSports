@@ -18,13 +18,40 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const NamesToolbar = () => {
-  const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
-  const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
-  const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
-  // console.log(addNumber,addName,nameAndNumberDesign,"values");
-  const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
 
+const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+const currentProductId = useSelector((state) => state.TextFrontendDesignSlice.currentProductId);
+const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
 
+  
+  const allNameAndNumberLists = useSelector((state) => {
+  const products = state.TextFrontendDesignSlice.products || {};
+  const side = state.TextFrontendDesignSlice.activeSide;
+
+  return Object.entries(products).reduce((acc, [productId, productData]) => {
+    const list = productData.present?.[side]?.nameAndNumberProductList || [];
+    acc[productId] = list;
+    return acc;
+  }, {});
+});
+
+  console.log(allNameAndNumberLists, "allNameAndNumberLists")
+// console.log("currentProductId",currentProductId);
+// Safely access product state
+const productState = useSelector(
+  (state) => state.TextFrontendDesignSlice.products?.[currentProductId]
+);
+
+const nameAndNumberDesign = productState?.present?.[activeSide]?.nameAndNumberDesignState;
+const textContaintObject = productState?.present?.[activeSide]?.texts || [];
+const isRender = productState?.present?.[activeSide]?.setRendering;
+const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
+  
+console.log("nameAndNumberDesign",nameAndNumberDesign)
+
+const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
+
+const [previewSelectionByProduct, setPreviewSelectionByProduct] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showAddnamesPopup, setshowAddnamesPopup] = useState(false);
@@ -55,7 +82,8 @@ const NamesToolbar = () => {
     dispatch(setActiveSide(value))
   }
   const handleColorChange = (color) => {
-    dispatch(updateNameAndNumberDesignState({ changes: { fontColor: color } }));
+    dispatch(updateNameAndNumberDesignState({ changes: { fontColor: color },side:"front" }));
+    dispatch(updateNameAndNumberDesignState({ changes: { fontColor: color },side:"back" }));
     setActiveColor(color);
   };
 
@@ -81,7 +109,8 @@ const NamesToolbar = () => {
   // ************************************************* WE HAVE TO CHANGE THIS DYNAMICALLY LATER ***********************************************************************************
 
   const sizeHandler = (value) => {
-    dispatch(updateNameAndNumberDesignState({ changes: { fontSize: value } }));
+    dispatch(updateNameAndNumberDesignState({ changes: { fontSize: value },side:"front" }));
+    dispatch(updateNameAndNumberDesignState({ changes: { fontSize: value },side:"back" }));
     // if (value == "small") {
     //   if (activeSide === 'front') {
     //     dispatch(updateNameAndNumberDesignState({ changes: { position: { x: 393, y: 272 } } }));
@@ -97,7 +126,8 @@ const NamesToolbar = () => {
   }
 
   const fontHandler = (value) => {
-    dispatch(updateNameAndNumberDesignState({ changes: { fontFamily: value } }));
+    dispatch(updateNameAndNumberDesignState({ changes: { fontFamily: value },side:"front"}));
+    dispatch(updateNameAndNumberDesignState({ changes: { fontFamily: value },side:"back"}));
     // const cle = setTimeout(() => {
     //   dispatch(updateNameAndNumberDesignState({ changes: { fontFamily: value } }));
     // }, 50);
@@ -236,7 +266,7 @@ const NamesToolbar = () => {
         </div>
 
       </div>
-      {showAddnamesPopup && <AddNamesPopup showAddnamesPopupHAndler={showAddnamesPopupHAndler} />}
+      {showAddnamesPopup && <AddNamesPopup showAddnamesPopupHAndler={showAddnamesPopupHAndler} previewSelectionByProduct={previewSelectionByProduct} setPreviewSelectionByProduct={setPreviewSelectionByProduct} />}
     </div>
   );
 };

@@ -25,13 +25,28 @@ import { duplicateTextState, addTextState, updateTextState, toggleLockState, mov
 
 const AddTextToolbar = () => {
   // const outlineBoxRef = useRef(null);
+
   const dispatch = useDispatch();
+
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
-  const [currentTextToolbarId, setCurrentTextToolbarId] = useState(String(Date.now()));  // current id of toolbar
-  const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
+  const currentProductId = useSelector((state) => state.TextFrontendDesignSlice.currentProductId);
+  const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
+
+  const productState = useSelector(
+    (state) => state.TextFrontendDesignSlice.products?.[currentProductId]
+  );
+
+  const nameAndNumberDesignState = productState?.present?.[activeSide]?.nameAndNumberDesignState;
+  const isRender = productState?.present?.[activeSide]?.setRendering;
+  const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
+
+  const [currentTextToolbarId, setCurrentTextToolbarId] = useState(String(Date.now()));
+
+  const allTextInputData = productState?.present?.[activeSide]?.texts || [];
+
   let textContaintObject = allTextInputData.find((text) => text.id === currentTextToolbarId);
+
   // console.log(allTextInputData, textContaintObject, "render data");
-  const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
   const isLocked = textContaintObject?.locked;
   const [prevSize, setPrevSize] = useState(1);
   const textareaRef = useRef(null)
@@ -83,13 +98,13 @@ const AddTextToolbar = () => {
     </span>
   );
 
-const colorClassNameForBold = fontweightValue === 'bold' 
-  ? 'toolbar-icon active' 
-  : 'toolbar-icon';
+  const colorClassNameForBold = fontweightValue === 'bold'
+    ? 'toolbar-icon active'
+    : 'toolbar-icon';
 
-const colorClassNameForItalic = fontStyleValue === 'italic' 
-  ? 'toolbar-icon active' 
-  : 'toolbar-icon';
+  const colorClassNameForItalic = fontStyleValue === 'italic'
+    ? 'toolbar-icon active'
+    : 'toolbar-icon';
 
 
   const italicIcon = (

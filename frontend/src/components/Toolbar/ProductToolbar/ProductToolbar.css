@@ -16,15 +16,14 @@
   height: 9.44rem; */
   width: 100%;
   border-radius: 5px;
-
 }
 
 .toolbar-product-head {
   padding-bottom: 7px;
   /* border-bottom: 2px solid black; */
-  background: #F6F6F6;
+  background: #f6f6f6;
   padding: 15px 18px 15px 9px;
-  border: 1px solid #E3E7EB;
+  border: 1px solid #e3e7eb;
   border-radius: 5px;
   margin-bottom: 16px;
 }
@@ -33,7 +32,7 @@
   margin: 8px 0;
   font-size: 14px;
   display: flex;
-  gap: 12px
+  gap: 12px;
 }
 
 /* .toolbar-main-heading .Toolbar-badge {
@@ -73,7 +72,6 @@
   /* width: 24.69rem; */
   /* height: 25rem;
     width: 20.69rem; */
-
 }
 
 /* .add-color-btn-main-container {
@@ -109,7 +107,6 @@
 } */
 
 .mini-prod-img-container {
-
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -124,15 +121,19 @@
   position: relative;
   padding-top: 4px;
 }
+.mini-prod-img-container.active {
+  border: 2px solid #005bff;
+}
 
 .mini-prod-img-container:hover {
-  border: 2px solid #005BFF;
+  border: 2px solid #005bff;
 }
 
 .product-mini-img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+
   /* Ensures image keeps aspect ratio */
 }
 
@@ -143,9 +144,7 @@
   /* background-color: #f1f1f1; */
   margin-bottom: 1rem;
   position: relative;
-
 }
-
 
 .crossProdICon {
   position: absolute;
@@ -172,8 +171,8 @@
   padding: inherit;
   /* margin: 1rem 0; */
   font-size: 14px;
-  color: #8D9095;
-  border: 1.5px dashed #8D9095;
+  color: #8d9095;
+  border: 1.5px dashed #8d9095;
   background: transparent;
   border-radius: 100px;
   padding-block: 15px;
@@ -202,7 +201,7 @@ Border
   padding: 8px;
   color: black;
   /* margin-top: 1rem; */
-  border: 2px solid #F0F6FE;
+  border: 2px solid #f0f6fe;
   border-radius: 8px;
   font-size: small;
   display: flex;
@@ -214,7 +213,7 @@ Border
 
 .common-btn.active {
   border: 2px solid var(--red);
-  background-color: #F0F6FE;
+  background-color: #f0f6fe;
   border-radius: 100px;
   padding-left: 28px;
 }
@@ -233,7 +232,7 @@ Border
   outline: none;
   cursor: pointer;
   border-radius: 100px;
-  border: 1px solid #D2D5D9;
+  border: 1px solid #d2d5d9;
   padding-left: 14px;
   margin-top: 10px;
   position: absolute;
@@ -284,9 +283,6 @@ Border
 
   gap: 0.5rem;
   /* margin-top: 1rem; */
-
-
-
 }
 
 .addCart-button p {
@@ -305,16 +301,20 @@ Border
   position: absolute;
   display: flex;
   justify-content: center;
-  height: 1rem;
-  width: 1rem;
+  height: 1.5rem;
+  width: 1.5rem;
   align-items: center;
-  top: 0;
-  right: 0;
+  top: -10px; 
+  right: -9px;
   border-radius: 100%;
-  background-color: #F6F6F6;
+  background-color: #f6f6f6;
   /* margin: 2px; */
   cursor: pointer;
   border: 1px solid #888;
+  transition: all 0.2s ease-in-out  ;
+}
+.crossProdIConofSingleProduct.active{
+  display: flex;
 }
 
 .crossProdIConofSingleProduct svg {

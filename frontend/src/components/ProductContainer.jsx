@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setActiveSide, setRendering } from '../redux/FrontendDesign/TextFrontendDesignSlice';
+import { addProductDesignState, setActiveSide, setCurrentProductId, setRendering } from '../redux/FrontendDesign/TextFrontendDesignSlice';
 import MainDesignTool from './mainDesignTool';
 import { GrZoomOut } from "react-icons/gr";
 import { BsZoomIn } from "react-icons/bs";
@@ -129,11 +129,13 @@ function ProductContainer() {
     if(Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
     const productId = searchParams.get("productId"); // "8847707537647"
     const title = searchParams.get("title");         // "Dusty Rose / S"
-    console.log("productId", productId);
-    console.log(rawProducts, "productId")
+    // console.log("productId", productId);
+    // console.log(rawProducts, "productId")
     const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/${productId}`);
-    console.log("initiale Product", initialProduct);
+    // console.log("initiale Product", initialProduct);
     dispatch(setSelectedProducts(initialProduct));
+    dispatch(setCurrentProductId(initialProduct[0]?.id));
+    dispatch(addProductDesignState({productId:initialProduct[0]?.id}))
     if (initialProduct.length > 0) {
       const img = initialProduct[0].imgurl;
       setFrontBgImage(img);
@@ -169,6 +171,7 @@ function ProductContainer() {
   //   </div>
   // );
   // }
+  
 
   return (
     <div className="ProductContainerMainDiv">

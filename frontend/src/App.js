@@ -68,7 +68,7 @@ function App() {
       // Create the query string
       const queryString = new URLSearchParams({ productId, title }).toString();
       navigate(`/product?${queryString}`);
-      dispatch(fetchProducts("8847707537647"));
+      dispatch(fetchProducts());
     });
   }, []);
 

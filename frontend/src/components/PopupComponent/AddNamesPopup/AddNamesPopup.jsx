@@ -8,18 +8,46 @@ import { getHexFromName } from '../../utils/colorUtils.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
-  const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+const AddNamesPopup = ({ showAddnamesPopupHAndler ,previewSelectionByProduct,setPreviewSelectionByProduct}) => {
+  const activeSide = "front";
+  const currentProductId = useSelector((state) => state.TextFrontendDesignSlice.currentProductId);
   const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
-  const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
-  console.log("---------addnamedesignSlice", nameAndNumberDesign)
-  const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberProductList);
+
+  // console.log("currentProductId",currentProductId);
+  // Safely access product state
+  const productState = useSelector(
+    (state) => state.TextFrontendDesignSlice.products?.[currentProductId]
+  );
+  const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.products?.[currentProductId].present[activeSide].nameAndNumberProductList);
+
+  const allNameAndNumberLists = useSelector((state) => {
+    const products = state.TextFrontendDesignSlice.products || {};
+    const side = "front";
+
+    return Object.entries(products).reduce((acc, [productId, productData]) => {
+      const list = productData.present?.[side]?.nameAndNumberProductList || [];
+      acc[productId] = list;
+      return acc;
+    }, {});
+  });
+
+
+  console.log(nameAndNumberProductList, "nameAndNumberProductList single");
+  console.log(allNameAndNumberLists, "allNameAndNumberLists")
+
+
+
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  console.log(selectedProducts);  
+  console.log(selectedProducts);
 
   const [allProducts, setAllProducts] = useState(nameAndNumberProductList);
-  
+
+
+  const nameAndNumberDesign = productState?.present?.[activeSide]?.nameAndNumberDesignState;
+  const textContaintObject = productState?.present?.[activeSide]?.texts || [];
+  const isRender = productState?.present?.[activeSide]?.setRendering;
+  const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
 
   // console.log(nameAndNumberProductList, "nameAndNumberProductList")
 
@@ -36,8 +64,10 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
     return obj;
   };
 
-  const [rowsByKey, setRowsByKey] = useState(getObjectTypeData(nameAndNumberProductList));
+  const [rowsByKey, setRowsByKey] = useState(allNameAndNumberLists);
   const [activeRowId, setActiveRowId] = useState(null);
+
+  console.log("rows by key", rowsByKey);
 
 
   // const getSizeOptions = (product) => {
@@ -105,7 +135,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
       const consistentTitle = product?.title || product?.name || product?.handle || 'Product';
 
       const extraProducts = addedColors.map((variantProduct) => ({
-        id: variantProduct?.variant?.id?.split("/")?.reverse()[0],
+        id: variantProduct?.variant?.id,
         imgurl: variantProduct?.img,
         color: variantProduct?.name,
         size: variantProduct?.variant?.selectedOptions[1]?.value,
@@ -117,7 +147,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
 
       const mainProduct = {
         name: product.name || product.title,
-        id: product.id.split("/").reverse()[0],
+        id: product.id,
         imgurl: product?.imgurl,
         color: product?.selectedColor?.name,
         size: product.selectedColor?.variant?.selectedOptions[1]?.value,
@@ -144,7 +174,6 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
         ];
       }
     });
-
     // Merge existing rowsByKey with any newly created default rows
     if (Object.keys(initialRows).length > 0) {
       setRowsByKey(prev => ({
@@ -152,6 +181,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
         ...initialRows
       }));
     }
+    setActiveRowId(previewSelectionByProduct?.[currentProductId]);
 
   }, [selectedProducts]);
 
@@ -159,44 +189,68 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
 
 
 
-  const saveAndExit = () => {
-    const selectionsRows = Object.entries(rowsByKey);
+ const saveAndExit = () => {
+  const selectionsRows = Object.entries(rowsByKey).filter(([key,rows]) => (key.split("/")[0] == "gid:"));
+  console.log("filtered row ",selectionsRows)
 
-    const isValid = selectionsRows.every(([key, rows]) =>
-      rows.every(row => {
-        const product = allProducts.find(p => `${p.id}` === key);
-        const isSizeFilled =
-          product?.sizes?.length === 0 || (row.size && row.size.trim() !== '');
-        const isNameFilled = !addName || row.name !== '';
-        const isNumberFilled = !addNumber || row.number !== '';
-        return isSizeFilled && isNameFilled && isNumberFilled;
-      })
-    );
+  const isValid = selectionsRows.every(([key, rows]) =>
+    rows.every(row => {
+      const product = allProducts.find(p => `${p.id}` === key);
+      const isSizeFilled =
+        product?.sizes?.length === 0 || (row.size && row.size.trim() !== '');
+      const isNameFilled = !addName || row.name !== '';
+      const isNumberFilled = !addNumber || row.number !== '';
+      const isPreview = !previewSelectionByProduct;
+      return isSizeFilled && isNameFilled && isNumberFilled;
+    })
+  );
 
-    if (!isValid) {
-      toast.error("All required fields (Size, Name, Number) must be filled.");
-      // alert("All required fields must be filled.");
-    } else {
-      selectionsRows.forEach(([id, rows]) => {
-        dispatch(UpdateNameAndNumberProduct({
-          id,
-          newSelections: rows,
-          isRenderOrNot: true
-        }));
-      });
+  if (!isValid) {
+    toast.error("All required fields (Size, Name, Number) must be filled.");
+    return;
+  }
 
-      showAddnamesPopupHAndler();
-    }
-  };
+  selectionsRows.forEach(([id, rows]) => {
+    const selectedRowId = previewSelectionByProduct?.[id];
+    // if(!selectedRowId) return; 
+    const previewRow = rows.find(row => row.selectionId === selectedRowId) || rows[0];
+
+    dispatch(UpdateNameAndNumberProduct({
+      id,
+      newSelections: rows,
+      isRenderOrNot: true
+    }));
+
+    dispatch(updateNameAndNumberDesignState({
+      changes: {
+        name: previewRow?.name || "NAME",
+        number: previewRow?.number || "00"
+      },
+      productId: id,
+      side: "front"
+    }));
+
+    dispatch(updateNameAndNumberDesignState({
+      changes: {
+        name: previewRow?.name || "NAME",
+        number: previewRow?.number || "00"
+      },
+      productId: id,
+      side: "back"
+    }));
+  });
+
+  showAddnamesPopupHAndler();
+};
 
 
   const activeProduct = allProducts.find(product =>
     (rowsByKey[product.id] || []).some(row => row.selectionId === activeRowId)
   );
-  console.log("------activee", activeProduct)
+  // console.log("------activee", activeProduct)
   const canvasBgColor = getHexFromName(activeProduct?.color) || "#f5f5f5";
 
-  console.log("--canvass", canvasBgColor)
+  // console.log("--canvass", canvasBgColor)
   return (
     <div className="addNames-popup-box">
       <div className="popup-overlay">
@@ -232,6 +286,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
                       <span>Size</span>
                       <span className={`${!addName ? "Deactive" : ""}`}>Name</span>
                       <span className={`${!addNumber ? "Deactive" : ""}`}>Number</span>
+                      <span className={`${!addNumber || !addName ? "Deactive" : ""}`}>Preview</span>
                       <span></span>
                     </div>
 
@@ -284,6 +339,20 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
                           onFocus={() => setActiveRowId(row.selectionId)}
                           onChange={(e) => updateRow(`${product.id}`, row.selectionId, 'number', e.target.value.toUpperCase())}
                         />
+                           <input
+                          type="radio"
+                          name={`preview-selection-${product.id}`} // unique per product
+                          checked={previewSelectionByProduct[product.id] === row.selectionId}
+                          onChange={() =>
+                            
+                          { setActiveRowId(row.selectionId);
+                             setPreviewSelectionByProduct((prev) => ({
+                              ...prev,
+                              [product.id]: row.selectionId,
+                            }))}
+                          }
+                          title="Set as Preview"
+                        />
 
                         <button className="trash-btn" onClick={() => removeRow(`${product.id}`, row.selectionId)}><DeleteIcon /></button>
                       </div>
@@ -295,87 +364,6 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
                     </p> */}
                     <hr className="hr-underline" />
                   </div>
-
-                  {/* {(product.addedColors || []).map((color, cIdx) => { 
-                    const key = `${pIdx}-${cIdx}`;
-                    const rows = rowsByKey[key] || [];
-
-                    return (
-                      <div key={key} className="color-block">
-                        <div className="product-details">
-                          <div className="mini-prod-img-container">
-                            <img src={color.img} className="product-mini-img" alt="mini" />
-                          </div>
-                          <div>
-                            <h4>{product.name || product?.handle}</h4>
-                            <p className="toolbar-span">{product?.colors?.map((c) => c.name).join(', ')}</p>
-                            <h5 className="product-color-span-name">{color?.name}</h5>
-                          </div>
-                        </div>
-
-                        <div className="names-list">
-                          <div className="table-header">
-                            <span>Size</span>
-                            <span>Name</span>
-                            <span>Number</span>
-                            <span></span>
-                          </div>
-
-                          {rows.map((row) => (
-                            <div key={row.id} className="table-row">
-                              <select
-                                value={row.size}
-                                onChange={e => {
-                                  const selectedSize = e.target.value;
-                                  const variant = getSizeOptions(product).find(opt => opt.size === selectedSize);
-                                  console.log(`Selected size: ${selectedSize}, Variant ID: ${variant?.variantId}`);
-                                  updateRow(`${pIdx}`, row.id, 'size', selectedSize);
-                                }}
-                                disabled={getSizeOptions(product).length === 0}
-                              >
-                                {getSizeOptions(product).length === 0 ? (
-                                  <option value="">Not Available</option>
-                                ) : (
-                                  <>
-                                    <option value="" disabled>Select Size</option>
-                                    {getSizeOptions(product).map(({ size, variantId }) => (
-                                      <option key={variantId} value={size}>{size}</option>
-                                    ))}
-                                  </>
-                                )}
-                              </select>
-
-                              <input
-                                type="text"
-                                placeholder="Name"
-                                maxLength={25}
-                                value={row.name}
-                                onFocus={() => setActiveRowId(row.id)}
-                                onChange={(e) => updateRow(key, row.id, 'name', e.target.value.toUpperCase())}
-                              />
-
-                              <input
-                                type="text"
-                                placeholder="Number"
-                                maxLength={4}
-                                value={row.number}
-                                onFocus={() => setActiveRowId(row.id)}
-                                onChange={(e) => updateRow(key, row.id, 'number', e.target.value.toUpperCase())}
-                              />
-
-                              <button className="trash-btn" onClick={() => removeRow(key, row.id)}><DeleteIcon /></button>
-                            </div>
-                          ))}
-
-                          <p className="add-another" onClick={() => addRow(key)}>+ Add Another</p>
-                          <p className="total-show-box">
-                            Totals: {rows.filter((r) => r.name).length} with Names | {rows.filter((r) => r.number).length} with Numbers
-                          </p>
-                          <hr className="hr-underline" />
-                        </div>
-                      </div>
-                    );
-                  })} */}
                 </div>
               ))}
             </div>
@@ -414,6 +402,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
                 <button className="link-btn" onClick={showAddnamesPopupHAndler}>Exit Without Saving</button>
               </div>
             </div>
+
           </div>
         </div>
       </div>
