@@ -116,12 +116,13 @@ exports.login = async (email, password) => {
       user: {
         id: user._id,
         email: user.email,
-        name: user.name,
+        name: user.userName,
       },
       token,
     };
 
   } catch (error) {
+    console.error('Login error:', error);
     return false;
   }
 };
