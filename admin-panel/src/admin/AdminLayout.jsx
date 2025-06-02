@@ -2,6 +2,7 @@ import {
     AppProvider, Frame, TopBar, Navigation, Page, Box, Text
 } from '@shopify/polaris';
 import {
+  DnsSettingsIcon,
     HomeIcon, ListNumberedIcon, OrderIcon, ProductIcon, SettingsIcon
 } from '@shopify/polaris-icons';
 import { useState } from 'react';
@@ -84,23 +85,49 @@ const navigationMarkup = (
 
     {/* Render sub-navigation under Settings only when path matches */}
     {location.pathname.startsWith('/admin/setting') && (
-  <Box paddingInlineStart="600" className="submenu">
-    <Navigation.Section
-      label="Settings"
-      items={[
-        {
-          label: 'General Settings',
-          selected: location.pathname === '/admin/setting',
-          onClick: () => navigate('/admin/setting'),
-        },
-        {
-          label: 'Account Settings',
-          selected: location.pathname === '/admin/setting/account-settings',
-          onClick: () => navigate('/admin/setting/account-settings'),
-        },
-      ]}
-    />
-  </Box>
+ <Box paddingInlineStart="600" className="submenu" paddingBlock="200">
+  
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <div
+      onClick={() => navigate('/admin/setting')}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+        fontWeight: location.pathname === '/admin/setting' ? 'bold' : 'normal',
+        color: location.pathname === '/admin/setting' ? '#000' : '#666',
+        padding: '6px 12px',
+        borderRadius: '6px',
+        backgroundColor: location.pathname === '/admin/setting' ? '#F1F1F1' : 'transparent',
+      }}
+    >
+      <span style={{ width: '16px', marginRight: '8px' }}>
+        {location.pathname === '/admin/setting' ? '→' : ''}
+      </span>
+      <span>General Settings</span>
+    </div>
+
+    <div
+      onClick={() => navigate('/admin/setting/account-settings')}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+        fontWeight: location.pathname === '/admin/setting/account-settings' ? 'bold' : 'normal',
+        color: location.pathname === '/admin/setting/account-settings' ? '#000' : '#666',
+        padding: '6px 12px',
+        borderRadius: '6px',
+        backgroundColor: location.pathname === '/admin/setting/account-settings' ? '#F1F1F1' : 'transparent',
+      }}
+    >
+      <span style={{ width: '16px', marginRight: '8px' }}>
+        {location.pathname === '/admin/setting/account-settings' ? '→' : ''}
+      </span>
+      <span>Account Settings</span>
+    </div>
+  </div>
+</Box>
+
 )}
 
   </Navigation>
