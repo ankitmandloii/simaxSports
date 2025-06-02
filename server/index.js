@@ -75,6 +75,8 @@ const cors = require('cors');
 const routes = require("./routes/index.js");
 const { dbConnection } = require('./config/db');
 const dotenv = require('dotenv');
+const { initSocket } = require('./socket'); // adjust path
+initSocket(server);
 
 dotenv.config();
 
@@ -95,33 +97,7 @@ app.use("/", (req, res) => {
   res.send("Yes, now you hit APIs");
 });
 
-// Setup Socket.IO
-const io = new Server(server, {
-  cors: {
-    origin: "*", // You can restrict this to your frontend URL
-    methods: ["GET", "POST"]
-  }
-});
 
-// Store global socket instance
-global._io = io;
-
-// Socket.IO real-time handler
-io.on("connection", (socket) => {
-  console.log("Client connected:", socket.id);
-
-  // Receive real-time setting change from admin panel
-  socket.on("updateAdminSetting", (data) => {
-    console.log("Setting updated:", data);
-
-    // Broadcast the new setting to all other clients
-    socket.broadcast.emit("AdminSettingChanged", data);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
-  });
-});
 
 // Start the server
 server.listen(PORT, () => {
