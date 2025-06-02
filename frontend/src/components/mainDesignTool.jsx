@@ -403,18 +403,18 @@ const MainDesignTool = ({
     };
 
 
-    console.log("activeSide inside", activeSide);
+    // console.log("activeSide inside", activeSide);
     if (activeSide == "front") {
-      console.log("active side", activeSide, "changing front")
+      // console.log("active side", activeSide, "changing front")
       setFrontPreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
     }
     else if (activeSide == "back") {
       setBackPreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
     }
-    else if(activeSide == "leftSleeve"){
+    else if (activeSide == "leftSleeve") {
       setLeftSleevePreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
     }
-    else if(activeSide == "rightSleeve"){
+    else if (activeSide == "rightSleeve") {
       setRightSleevePreviewImage(await getImageFromCanvas(fabricCanvasRef.current))
     }
 
@@ -704,17 +704,17 @@ const MainDesignTool = ({
     };
 
     const events = [
-      ["object:added", handleObjectAdded],   
+      ["object:added", handleObjectAdded],
       ["object:removed", handleObjectAdded],
       ["object:modified", handleObjectModified],
       ["object:moving", updateBoundaryVisibility],
       ["object:scaling", updateBoundaryVisibility],
       ["selection:created", handleSelection],
-      ["selection:updated", handleSelection],  
+      ["selection:updated", handleSelection],
       ["selection:cleared", handleSelectionCleared],
       ["editing:exited", updateBoundaryVisibility],
       ["text:cut", updateBoundaryVisibility],
-      ["text:changed", handleObjectAdded],    
+      ["text:changed", handleObjectAdded],
       // ["object:moving", moveHandler], // Uncomment if needed
     ];
 
@@ -810,7 +810,7 @@ const MainDesignTool = ({
           });
           existingObj.set({
             text: textInput.content,
-             fontWeight: textInput.fontWeight || "normal",
+            fontWeight: textInput.fontWeight || "normal",
             fontStyle: textInput.fontStyle || "normal",
             warp: Number(textInput.arc),
             spacing: textInput.spacing,
@@ -899,7 +899,7 @@ const MainDesignTool = ({
 
           });
 
-          curved.on("update",() =>{
+          curved.on("update", () => {
             alert("ok");
           })
           //                     });
@@ -1191,7 +1191,7 @@ const MainDesignTool = ({
     group._calcBounds();
     group._updateObjectsCoords();
     group.set({
-      width: fontSize == "small" ? 60 : 190,  
+      width: fontSize == "small" ? 60 : 190,
       left: position?.x || canvas.getWidth() / 2,
       top: position?.y || canvas.getHeight() / 2,
       // originX: 'center',
@@ -1287,14 +1287,14 @@ const MainDesignTool = ({
   };
 
 
-// useEffect(() =>{
-//   const st = setTimeout(() =>{
-//    syncMirrorCanvas(activeSide);
-//   },3000);
-// },[textContaintObject,activeSide])
+  // useEffect(() =>{
+  //   const st = setTimeout(() =>{
+  //    syncMirrorCanvas(activeSide);
+  //   },3000);
+  // },[textContaintObject,activeSide])
 
   return (
-    <div style={{ position: "relative" ,top:5}}  id="canvas">
+    <div style={{ position: "relative", top: 5 }} id="canvas">
       <canvas ref={canvasRef} />
       <LayerModal
         isOpen={isModalOpen}

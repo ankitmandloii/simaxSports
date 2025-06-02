@@ -314,7 +314,7 @@ hr {
 
 .loader {
   border: 6px solid #f3f3f3;
-  border-top: 6px solid #005BFF;
+  border-top: 6px solid black;
   /* Blue */
   border-radius: 50%;
   width: 40px;
@@ -386,6 +386,24 @@ hr {
   right: 0;
   top: 0;
   background: transparent;
+  cursor: pointer;
+  background-color: #f6f6f6;
+  padding: 2px;
+  border-radius: 100%;
+  border: 1px solid #888;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 1rem;
+
+  width: 1rem;
+
+
+}
+
+
+.close-popup-btn svg {
+  height: 8px;
 }
 
 .color-swatch-list {
@@ -415,6 +433,7 @@ hr {
   border-radius: 8px;
   position: relative;
   padding-top: 4px;
+  cursor: pointer;
 }
 
 .mini-prod-img-container:hover {

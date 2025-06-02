@@ -151,7 +151,7 @@ const NamesToolbar = () => {
           </label>
         </div>
         {/* ***************************show only when either number or name checked************ */}
-        <div className={`${(activeName || activeNumber) ? "Active" : "Deactive"} step-toggle-container`}>
+        <div className={`${(activeName || activeNumber) ? style.Active : style.Deactive} step-toggle-container`}>
           {/* Side */}
           <div className={style.addNamesNumberrsRow}>
             <h5>Side</h5>
@@ -236,7 +236,7 @@ const NamesToolbar = () => {
             </button> */}
             </div>
           </div>
-          <button className='black-button' onClick={showAddnamesPopupHAndler}>Add Names/Numbers</button>
+          <button className={style.blackButton} onClick={showAddnamesPopupHAndler}>Add Names/Numbers</button>
 
         </div>
 

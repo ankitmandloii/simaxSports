@@ -44,6 +44,7 @@
 
 .namescheckboxDiv input[type='checkbox'] {
   accent-color: #0000;
+  margin-right: 5px;
 }
 
 .namesButtonMainContainer .colorNamesBox {
@@ -102,4 +103,20 @@
 
 .NamesToolbarBox {
   position: relative;
+}
+
+.blackButton {
+  background-color: #000000;
+  color: white;
+  border: none;
+  height: 27px;
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  border-radius: 100px;
+  align-items: center;
+  padding: 6px 10px;
+  cursor: pointer;
 }

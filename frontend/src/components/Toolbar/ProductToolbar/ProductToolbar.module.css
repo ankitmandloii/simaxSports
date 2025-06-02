@@ -137,7 +137,7 @@
 .addProductBtn {
   width: 100%;
   padding: inherit;
-  /* margin: 1rem 0; */
+  margin: 1rem 0;
   font-size: 14px;
   color: #8D9095;
   border: 1.5px dashed #8D9095;
@@ -323,4 +323,17 @@ Border
 } */
 .relative {
   position: relative;
+}
+
+.toolbarBox {
+  /* width: 22rem; */
+  /* height: 22rem; */
+  height: 500px;
+  padding: 10px 15px;
+  /* overflow-y: auto; */
+
+  /* margin-top: 15px; */
+  border-radius: 10px;
+
+
 }

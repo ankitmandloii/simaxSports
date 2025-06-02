@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import logo from '../images/Logo.png'
+import logo from '../images/SimaxApparel_Logo.png'
 import { CartIcon, UserIcon } from '../iconsSvg/CustomIcon';
 import style from './Header.module.css'
 

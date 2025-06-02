@@ -45,7 +45,7 @@ const CollectionPopupList = ({ onCollectionSelect }) => {
         {collections.map((collection) => (
           <li
             key={collection.id}
-            className={`${styles.collectionCard} ${styles.collectionLi}`}
+            className={`${styles.collectionCard} ${styles.collectionLi} ${selected?.id === collection.id ? styles.active : ''}`}
             onClick={() => handleSelect(collection)}
           >
             <span>{collection.title}</span>

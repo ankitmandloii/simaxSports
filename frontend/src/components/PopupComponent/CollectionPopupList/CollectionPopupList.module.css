@@ -25,6 +25,8 @@
   border-bottom: 1px solid black;
 }
 
+
+
 /* Dropdown toggle (mobile only) */
 .dropdownToggle {
   display: none;
@@ -50,6 +52,22 @@
 .down svg {
   transform: rotate(0deg);
   transition: transform 0.3s ease;
+}
+
+.active {
+  background-color: #f0f0f0;
+  /* Highlight color */
+  border-left: 4px solid #000;
+  /* Indicator */
+  font-weight: bold;
+}
+
+.active {
+  background-color: #f0f0f0;
+  /* Highlight color */
+  border-left: 4px solid #000;
+  /* Indicator */
+  font-weight: bold;
 }
 
 /* ===== RESPONSIVE STYLES ===== */

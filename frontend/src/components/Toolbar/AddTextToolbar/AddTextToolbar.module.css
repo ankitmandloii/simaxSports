@@ -3,6 +3,8 @@
     display: flex;
     flex-direction: column;
     position: relative;
+    background: #f6f6f6;
+    padding: 10px;
 
 }
 
@@ -57,6 +59,13 @@
     border: 1px solid #cccfd6;
     border-radius: 4px;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toolbarBoxIconsContainer:hover {
+    transform: scale(1.06);
+    background-color: #a9a6a6;
+    color: #fff;
 }
 
 .toolbarBoxIconsContainerLayering1 {
@@ -313,6 +322,16 @@
     border: 1px solid #D2D5D9;
     cursor: pointer;
     margin-bottom: 5px;
+    transition: all 0.2s ease;
+
+}
+
+.toolbarIcon:hover {
+    transform: scale(1.06);
+    background-color: #a9a6a6;
+    color: #fff;
+
+
 }
 
 .toolbarIconActive {
@@ -323,4 +342,11 @@
     border: 1px solid #D2D5D9;
     cursor: pointer;
     margin-bottom: 5px;
+}
+
+.toolbarBoxIconsContainerFlip1:hover,
+.toolbarBoxIconsContainerFlip2:hover {
+    transform: scale(1.06);
+    background-color: #a9a6a6;
+    color: #fff;
 }

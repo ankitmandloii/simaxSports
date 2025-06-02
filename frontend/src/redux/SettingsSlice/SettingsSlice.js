@@ -10,7 +10,7 @@ export const fetchAdminSettings = createAsyncThunk(
       method: 'GET',
     });
     const data = await response.json();
-    return data.result; // Assuming 'result' holds the settings object
+    return data.result;
   }
 );
 const adminSettingsSlice = createSlice({
