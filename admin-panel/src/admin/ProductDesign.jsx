@@ -53,7 +53,7 @@ export default function ProductDesignList() {
     <Page fullWidth title="Product Design List" subtitle="Manage your design templates here.">
       <Card sectioned>
         {loading ? (
-          <BlockStack align="center" inlineAlign="center" minHeight="200px">
+          <BlockStack align="center" inlineAlign="center" >
             <Spinner accessibilityLabel="Loading designs" size="large" />
             <Text variant="bodyMd" tone="subdued">Loading product designs...</Text>
           </BlockStack>
