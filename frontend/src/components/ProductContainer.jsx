@@ -12,6 +12,7 @@ import { fetchProducts } from '../redux/ProductSlice/ProductSlice';
 import { setSelectedProducts } from '../redux/ProductSlice/SelectedProductSlice';
 import { useSearchParams } from 'react-router-dom';
 import style from './ProductContainer.module.css'
+import RedoundoComponent from './RedoundoComponent/redoundo';
 
 function ProductContainer() {
   const dispatch = useDispatch();
@@ -175,7 +176,7 @@ function ProductContainer() {
   return (
     <div className={style.ProductContainerMainDiv}>
       <div className={style.flex}>
-
+        <RedoundoComponent />
         {/* Render Active Canvas Side */}
         <div style={{ display: activeSide === "front" ? "block" : "none" }}>
           <MainDesignTool

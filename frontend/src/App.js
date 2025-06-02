@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ContinueEditPopup from "./components/PopupComponent/ContinueEditPopup/ContinueEditPopup";
 import { ToastContainer } from "react-toastify";
 import { fetchProducts } from "./redux/ProductSlice/ProductSlice";
+import BottomBar from "./components/bottomBar/BottomBar";
 
 function App() {
   const location = useLocation();
@@ -142,6 +143,7 @@ function App() {
         {continueEditPopup && (
           <ContinueEditPopup handleContinuePopup={handleContinuePopup} />
         )}
+        <BottomBar></BottomBar>
       </div>
     </>
   );

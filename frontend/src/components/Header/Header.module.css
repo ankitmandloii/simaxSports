@@ -9,6 +9,7 @@
   padding-right: 30px;
   border-bottom: 1px solid #ddd;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
 }
 
 .navSpanNumber {
@@ -27,13 +28,12 @@ a.step:first-child:after {
   content: "";
   width: 298px;
   height: 1px;
-  background: #D9D9D9;
+  background: #d9d9d9;
   top: 31%;
   position: absolute;
   transform: translateY(-50%);
   left: 78.8%;
   max-width: 298px;
-
 }
 
 .leftSection {
@@ -63,7 +63,6 @@ a.step:first-child:after {
 
 .navSteps a {
   color: #888;
-
 }
 
 .step {
@@ -85,9 +84,8 @@ a.step:first-child:after {
   right: 0;
 } */
 
-
 .stepActive {
-  color: #005BFF;
+  color: #005bff;
   /* border-bottom: 2px solid red; */
   padding-bottom: 2px;
   position: relative;
@@ -96,11 +94,10 @@ a.step:first-child:after {
   align-items: center;
   text-align: center;
   gap: 3px;
-
 }
 
 .stepActive .navSpanNumber {
-  background-color: #005BFF;
+  background-color: #005bff;
 }
 
 .rightSection {
@@ -109,7 +106,6 @@ a.step:first-child:after {
   gap: 22px;
   font-size: 16px;
   color: #424447;
-
 }
 
 .headerBtn {
@@ -122,10 +118,18 @@ a.step:first-child:after {
   display: flex;
   gap: 5px;
   align-items: center;
-
 }
 
 .headerBtn svg {
   width: 32px;
   height: 32px;
+}
+
+@media screen and (max-width: 980px) {
+  .navSteps {
+    display: none;
+  }
+  .rightSection p{
+    display: none;
+  }
 }

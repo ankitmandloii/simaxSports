@@ -1,5 +1,5 @@
 .ProductContainerMainDiv {
-  width: 70%;
+  width: 100%;
   /* border: 2px solid black; */
   /* background-color: aqua; */
 }
@@ -216,7 +216,11 @@ canvas#mirrorCanvasBack {
 .flex {
   margin-top: 18px;
   display: flex;
-  justify-content: space-between;
+  align-items: start  ;
+  width: 100%;
+  justify-content: center;
+  background-color: white;
+  justify-content: space-evenly;
 }
 
 .mainSleveContainer {
@@ -305,5 +309,17 @@ canvas#mirrorCanvasBack {
 
   100% {
     transform: rotate(360deg);
+  }
+}
+
+
+@media screen and (max-width:1200px) {
+  .ProuductMirrorContainer{
+    display: none;
+    
+  }
+  .flex{
+      margin-top: 0px;
+       justify-content: center;
   }
 }

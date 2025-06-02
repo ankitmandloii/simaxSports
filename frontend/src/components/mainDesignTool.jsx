@@ -4,7 +4,7 @@ import icons from "../data/icons";
 // import { TbArrowForwardUp } from "react-icons/tb";
 // import { TbArrowBack } from "react-icons/tb";
 // import { VscZoomIn } from "react-icons/vsc";
-import "./MainDesigntool.css";
+import style from "./MainDesignTool.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteTextState,
@@ -1294,7 +1294,7 @@ const MainDesignTool = ({
   // },[textContaintObject,activeSide])
 
   return (
-    <div style={{ position: "relative", top: 5 }} id="canvas">
+    <div id={style.canvas} style = {{position:"relative",top:5}} >
       <canvas ref={canvasRef} />
       <LayerModal
         isOpen={isModalOpen}

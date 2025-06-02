@@ -43,11 +43,11 @@ const Header = () => {
       <div className={style.rightSection}>
         <button className={style.headerBtn}>
           <CartIcon />
-          Cart
+        <p>Cart</p>
         </button>
         <button className={style.headerBtn}>
           <UserIcon />
-          Login
+          <p>Login</p>
         </button>
       </div>
     </header>
