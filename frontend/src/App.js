@@ -49,7 +49,9 @@ function App() {
     const textObjects = present?.[activeSide]?.texts || [];
 
     if ((textObjects && textObjects.length > 0) || addName || addNumber) {
-      if (rawProducts.length !== 0) {
+
+      if (!willRenderContinue && rawProducts.length !== 0) {
+        setWillRenderContinue(true);
         setContinueEditPopup(true);
       }
     }
@@ -63,13 +65,11 @@ function App() {
     window.addEventListener("load", () => {
       const productId = "8847707537647";
       const title = "Dusty Rose / S";
-
       // Create the query string
       const queryString = new URLSearchParams({ productId, title }).toString();
       navigate(`/product?${queryString}`);
-      dispatch(fetchProducts("8847707537647"));
-    })
-
+      dispatch(fetchProducts());
+    });
   }, []);
 
   const dispatch = useDispatch();
@@ -124,7 +124,7 @@ function App() {
               </Route>
               <Route path="review" element={<Review />} />
             </Routes>
-            <Footer />
+            {/* <Footer /> */}
           </div>
         </div>
 
