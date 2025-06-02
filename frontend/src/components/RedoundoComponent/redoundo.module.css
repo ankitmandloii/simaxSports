@@ -22,6 +22,17 @@
     font-weight: 600;
     width: 89px;
     white-space: nowrap;
+
+    &:hover {
+        background-color: black;
+        color: #fff;
+    }
+
+    &:active {
+        background-color: #888 !important;
+        color: #fff;
+    }
+
 }
 
 .productContainerButton span {
@@ -50,3 +61,13 @@
     pointer-events: none;
     user-select: none;
 }
+
+
+/* .productContainerButton:hover {
+    background-color: black;
+    color: #fff;
+}
+
+.productContainerButton:active {
+    background-color: red !important;
+} */

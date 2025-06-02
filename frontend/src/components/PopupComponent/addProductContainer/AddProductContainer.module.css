@@ -1,4 +1,4 @@
-.modalOverlay {
+/* .modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -157,4 +157,264 @@
   background: transparent;
   border: none;
   cursor: pointer;
+} */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modalContent {
+  background: white;
+  padding: 20px;
+  width: 70%;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.modalClose {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.productList {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  list-style: none;
+  padding-left: 100px;
+  padding-right: 100px;
+  margin-top: 20px;
+}
+
+/* .modalProduct {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+} */
+
+.modalProduct:hover {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+}
+
+.modalProductImg {
+  width: 100%;
+  height: auto;
+  align-self: center;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  object-fit: cover;
+}
+
+.modalProductName {
+  margin: 4px 0;
+  font-size: clamp(12px, 2vw, 14px);
+}
+
+.modalProductColorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.modalProductColorImg {
+  height: 20px;
+  cursor: pointer;
+}
+
+.modalProduct {
+  position: relative;
+  /* key to anchor popup to this card */
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+}
+
+.colorPopup {
+  position: absolute;
+  /* positioned inside modalProduct */
+  /* top: 100%; */
+  /* place just below the product */
+  left: 0;
+  z-index: 1000;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  /* width: max-content; */
+  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* .colorPopup {
+  background: #fff;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  position: absolute;
+  z-index: 1000;
+  margin-top: 10px;
+  width: 300px;
+} */
+
+.colorPopupHeader {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.colorSwatch {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.selected {
+  border: 2px solid black !important;
+}
+
+.popupActions {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.addProductBtnPopup {
+  background: black;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 14px;
+}
+
+.addProductBtnPopup:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.modalAllProductButtonContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalAllProductButton {
+  background-color: black;
+  width: 50%;
+  padding: 8px;
+  color: white;
+  margin-top: 1rem;
+  border: 2px solid #F0F6FE;
+  border-radius: 8px;
+  font-size: small;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.closePopupBtn svg {
+  height: 10px;
+  margin: 2px;
+  cursor: pointer;
+}
+
+.closePopupBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* ======================= */
+/* ✅ Responsive Media Queries */
+/* ======================= */
+
+@media (max-width: 1024px) {
+  .modalContent {
+    width: 85%;
+  }
+
+  .productList {
+    grid-template-columns: repeat(3, 1fr);
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .modalContent {
+    width: 90%;
+    padding: 16px;
+  }
+
+  .productList {
+    grid-template-columns: repeat(2, 1fr);
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .modalProductImg {
+    /* height: 6rem; */
+  }
+
+  .modalAllProductButton {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .colorPopup {
+    width: 90%;
+    left: 5%;
+  }
+}
+
+@media (max-width: 480px) {
+  .productList {
+    grid-template-columns: 1fr;
+    padding: 0 10px;
+  }
+
+  .modalProduct {
+    padding: 8px;
+  }
+
+  .modalProductName {
+    font-size: 12px;
+  }
+
+  /* .modalHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  } */
+
+  .addProductBtnPopup {
+    width: 100%;
+    font-size: 14px;
+  }
 }
