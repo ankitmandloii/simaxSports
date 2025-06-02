@@ -2,6 +2,7 @@ const User = require("../model/userSchema");
 
 //Success messages
 module.exports.SuccessMessage = {
+  
   DATA_FETCHED: "Data Fetched Successfully.",
   SHOP_DETAILS: "Shop Details Fetched.",
   DESIGN_SAVED: "Desings Saved Successfully.",
