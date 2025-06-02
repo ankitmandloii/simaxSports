@@ -107,9 +107,9 @@ export default function Login() {
                                 style={{ maxWidth: '100%', padding: '0 16px' }}
                               />
                             </Box>
-                        <Text as="h1" variant="headingLg" alignment='center'>
+                        {/* <Text as="h1" variant="headingLg" alignment='center'>
                             Admin Login
-                        </Text>
+                        </Text> */}
                         <form onKeyDown={handleKeyDown}>
                             <FormLayout>
                                 <TextField
