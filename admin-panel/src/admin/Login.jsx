@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Page, FormLayout, TextField, Button, Card } from '@shopify/polaris';
+import { Page, FormLayout, TextField, Button, Card, Text, Box } from '@shopify/polaris';
 
 export default function Login() {
 
@@ -88,31 +88,54 @@ export default function Login() {
     };
 
     return (
-        <Page title="Admin Login">
-            <Card sectioned>
-                <form onKeyDown={handleKeyDown}>
-                    <FormLayout>
-                        <TextField
-                            label="Email"
-                            value={email}
-                            onChange={handleEmailChange}
-                            autoComplete="email"
-                            type="email"
-                            error={emailError}
-                        />
-                        <TextField
-                            label="Password"
-                            value={password}
-                            onChange={handlePasswordChange}
-                            type="password"
-                            error={passwordError}
-                        />
-                        <Button onClick={handleLogin} primary loading={loading}>
-                            Login
-                        </Button>
-                    </FormLayout>
-                </form>
-            </Card>
+        <Page>
+            <div style={{
+                minHeight: '100vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                // backgroundColor: '#f6f6f7',
+                padding: '1rem',
+            }}>
+                <div style={{ width: '100%', maxWidth: '380px' }}>
+
+                    <Card sectioned>
+                          <Box padding="400">
+                              <img
+                                src="https://simaxapparel.com/cdn/shop/files/SimaxApparel_Logo.png?v=1734029356&width=340"
+                                alt="Logo"
+                                style={{ maxWidth: '100%', padding: '0 16px' }}
+                              />
+                            </Box>
+                        <Text as="h1" variant="headingLg" alignment='center'>
+                            Admin Login
+                        </Text>
+                        <form onKeyDown={handleKeyDown}>
+                            <FormLayout>
+                                <TextField
+                                    label="Email"
+                                    value={email}
+                                    onChange={handleEmailChange}
+                                    autoComplete="email"
+                                    type="email"
+                                    error={emailError}
+                                />
+                                <TextField
+                                    label="Password"
+                                    value={password}
+                                    onChange={handlePasswordChange}
+                                    type="password"
+                                    error={passwordError}
+                                />
+                                <Button onClick={handleLogin} primary fullWidth loading={loading}>
+                                    Login
+                                </Button>
+                            </FormLayout>
+                        </form>
+                    </Card>
+                </div>
+            </div>
         </Page>
     );
+
 }
