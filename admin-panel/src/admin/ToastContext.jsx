@@ -26,14 +26,14 @@ export const ToastProvider = ({ children }) => {
                     transition: 'opacity 0.3s ease-in-out'
                 }}>
                     <div style={{
-                        backgroundColor: toast.error ? '#fdecea' : '#e6f7ec',
-                        color: toast.error ? '#a61b1b' : '#067f3c',
+                        backgroundColor: '#000000', // Black background to match the "Save Settings" button
+                        color: toast.error ? '#E32727FF' :'#ffffff', // White text to match the "Save Settings" button
                         padding: '12px 20px',
                         borderRadius: '6px',
                         boxShadow: '0px 4px 12px rgba(0,0,0,0.15)',
                         minWidth: '250px'
                     }}>
-                        {toast.content}
+                        {toast.content} 
                     </div>
                 </div>
             )}
