@@ -1,5 +1,74 @@
+// const express = require('express');
+// const app = express();
+// const PORT = 3000;
+// const bodyParser = require("body-parser");
+// const cors = require('cors');
+// const routes = require("./routes/index.js");
+// const { dbConnection } = require('./config/db');
+// const dotenv = require('dotenv');
+
+// dotenv.config();
+
+
+
+
+
+
+
+
+
+// app.use(express.json());
+
+
+
+
+
+
+// dbConnection();
+// app.use(express.json());
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(cors());
+
+
+// // If you are adding routes outside of the /api path, remember to
+// // also add a proxy rule for them in web/frontend/vite.config.js
+// //add route for maintenance api without authentication
+// // app.use("/public/",maintenanceRoutes);
+// // app.use("/api/*",shopify.validateAuthenticatedSession(), authenticateUser);
+// app.use("/api", routes);
+
+// app.use("/",(req,res)=>{
+// res.send("yes Now you hit APis");
+// });
+
+
+// // app.use("/external/*",authenticateUser);
+// // app.use("/external/",routes);
+
+
+// app.listen(PORT, console.log("server is on port ", PORT));
+
+
+// // app.listen(PORT, (err)=> {
+// //     if (err) //console.log(err);
+// //     {
+// //         console.log(`SomeThing went wrong", ${err}`);
+// //     } else {
+// //         console.log("Server listening on PORT", PORT);
+
+// //     }
+// // });
+
+
+
+
 const express = require('express');
 const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require('socket.io');
+
 const PORT = 3000;
 const bodyParser = require("body-parser");
 const cors = require('cors');
@@ -9,54 +78,52 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-
-
-
-
-
-
-
-
-app.use(express.json());
-
-
-
-
-
-
-dbConnection();
+// Setup middlewares
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
+// Connect to DB
+dbConnection();
 
-// If you are adding routes outside of the /api path, remember to
-// also add a proxy rule for them in web/frontend/vite.config.js
-//add route for maintenance api without authentication
-// app.use("/public/",maintenanceRoutes);
-// app.use("/api/*",shopify.validateAuthenticatedSession(), authenticateUser);
+// Routes
 app.use("/api", routes);
 
-app.use("/",(req,res)=>{
-res.send("yes Now you hit APis");
+// Test route
+app.use("/", (req, res) => {
+  res.send("Yes, now you hit APIs");
 });
 
+// Setup Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: "*", // You can restrict this to your frontend URL
+    methods: ["GET", "POST"]
+  }
+});
 
-// app.use("/external/*",authenticateUser);
-// app.use("/external/",routes);
+// Store global socket instance
+global._io = io;
 
+// Socket.IO real-time handler
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
 
-app.listen(PORT, console.log("server is on port ", PORT));
+  // Receive real-time setting change from admin panel
+  socket.on("updateAdminSetting", (data) => {
+    console.log("Setting updated:", data);
 
+    // Broadcast the new setting to all other clients
+    socket.broadcast.emit("AdminSettingChanged", data);
+  });
 
-// app.listen(PORT, (err)=> {
-//     if (err) //console.log(err);
-//     {
-//         console.log(`SomeThing went wrong", ${err}`);
-//     } else {
-//         console.log("Server listening on PORT", PORT);
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
+  });
+});
 
-//     }
-// });
-
+// Start the server
+server.listen(PORT, () => {
+  console.log("Server is running on port", PORT);
+});
