@@ -202,7 +202,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
 
           {hasNextPage && (
             <button
-              className="load-more"
+              className={style.loadMore}
               onClick={() => fetchProducts(true)}
               disabled={loading}
             >

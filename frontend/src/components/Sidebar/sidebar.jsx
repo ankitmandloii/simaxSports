@@ -94,7 +94,7 @@ const AdminSidebar = () => {
                 >
                   {item.icon}
                 </span>
-                {item.path === "/addArt" && (
+                {item.path === "/addArt?productId=8847707537647&title=Dusty%20Rose%20/%20S" && (
                   <span className={styles.spannAi}>AI</span>
                 )}
                 {!collapsed && (

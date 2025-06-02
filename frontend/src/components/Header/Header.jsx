@@ -8,7 +8,7 @@ const Header = () => {
   const location = useLocation();
 
   // Group of routes that map to "DESIGN"
-  const designRoutes = ['/product?productId=8847707537647&title=Dusty%20Rose%20/%20S', '/addArt?productId=8847707537647&title=Dusty%20Rose%20/%20S', '/uploadArt?productId=8847707537647&title=Dusty%20Rose%20/%20S', '/addNames?productId=8847707537647&title=Dusty%20Rose%20/%20S', '/addText?productId=8847707537647&title=Dusty%20Rose%20/%20S'];
+  const designRoutes = ['/product', '/addArt', '/uploadArt', '/addNames', '/addText'];
 
   return (
     <header className={style.appHeader}>
@@ -19,6 +19,7 @@ const Header = () => {
           <Link
             to="/product?productId=8847707537647&title=Dusty%20Rose%20/%20S"
             className={`${style.step} ${designRoutes.includes(location.pathname) ? style.stepActive : ''}`}
+
           >
             <span className={style.navSpanNumber}>1</span> DESIGN
           </Link>

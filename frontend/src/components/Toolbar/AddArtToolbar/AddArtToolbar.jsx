@@ -22,7 +22,7 @@ const AddArtToolbar = () => {
       <div className="toolbar-main-heading ai-relative">
         <h5 className="Toolbar-badge">Art Powered By AI</h5>
         <h2 >Add Art</h2>
-        <span className={style.aiSpannn}>AI</span>
+        {/* <span className={style.aiSpannn}>AI</span> */}
         <p>Add your own artwork or choose from our library to personalize your design.</p>
       </div>
       {subArt ? <SubArtBox category={category} goBack={() => setSubArt(false)} /> : <div className="toolbar-box">

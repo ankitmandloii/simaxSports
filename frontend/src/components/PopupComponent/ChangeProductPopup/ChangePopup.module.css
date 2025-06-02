@@ -223,3 +223,108 @@
   flex-wrap: wrap;
   gap: 1rem;
 }
+
+/* === popup.responsive.css === */
+
+/* Tablets and below */
+@media (max-width: 1024px) {
+  .popupContainer {
+    width: 95%;
+    height: 90%;
+  }
+
+  .popupBodyLayout {
+    flex-direction: column;
+  }
+
+  .popupSidebar,
+  .changProductPopup .sidebarr,
+  .collectionSidebar {
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .popupProducts,
+  .changProductPopup .productGrid {
+    width: 100%;
+  }
+
+  .popupOverlay .productCard,
+  .modalProduct {
+    width: 45%;
+    margin: auto;
+  }
+
+  .popupOverlay .productCardContainer,
+  .productListCollection {
+    justify-content: center;
+  }
+}
+
+/* Mobile (phones) */
+@media (max-width: 768px) {
+  .popupHeader h3 {
+    font-size: 1.2rem;
+  }
+
+  .popupOverlay .productCard,
+  .modalProduct {
+    width: 90%;
+  }
+
+  .productListCollection {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .collectionLi {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .colorPopup {
+    flex-direction: column;
+  }
+
+  .loadMore {
+    width: 90%;
+    font-size: 0.9rem;
+  }
+}
+
+/* Very small devices */
+@media (max-width: 480px) {
+  .popupHeader h3 {
+    font-size: 1rem;
+  }
+
+  .closeBtn {
+    font-size: 20px;
+  }
+
+  .popupOverlay .productCard,
+  .modalProduct {
+    width: 100%;
+    height: auto;
+  }
+
+  .imgProContainer {
+    height: auto;
+  }
+
+  .modalProductcolorContainer {
+    flex-wrap: wrap;
+  }
+
+  .collectionSidebar li {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .loadMore {
+    padding: 0.5rem;
+  }
+}

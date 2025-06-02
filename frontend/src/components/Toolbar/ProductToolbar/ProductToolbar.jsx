@@ -20,8 +20,14 @@ import { removeNameAndNumberProduct, setRendering } from '../../../redux/Fronten
 import ContinueEditPopup from '../../PopupComponent/ContinueEditPopup/ContinueEditPopup';
 import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesignSlice';
 import { fetchProducts } from '../../../redux/ProductSlice/ProductSlice';
+import io from 'socket.io-client';
+import { updateAdminSettingsFromSocket } from '../../../redux/SettingsSlice/SettingsSlice';
+const socket = io(process.env.REACT_APP_BASE_URL, {
+  transports: ["websocket"], // ensure real WebSocket connection
+});
 
 const ProductToolbar = () => {
+  console.log("socket---", socket)
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
@@ -167,6 +173,24 @@ const ProductToolbar = () => {
 
   useEffect(() => {
     dispatch(fetchProducts());
+  }, [dispatch]);
+  // ----
+  useEffect(() => {
+    console.log("-----running");
+    console.log("Socket connected:", socket.connected);
+
+    socket.on("connect", () => {
+      console.log("Socket connected to server, ID:", socket.id);
+    });
+
+    socket.on("adminSettingUpdate", (newSettings) => {
+      console.log("Received AdminSettingChanged event with data:", newSettings);
+      dispatch(updateAdminSettingsFromSocket(newSettings));
+    });
+
+    return () => {
+      socket.off("adminSettingUpdate");
+    };
   }, [dispatch]);
 
   // useEffect(() => {

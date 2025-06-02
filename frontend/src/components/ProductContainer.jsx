@@ -129,11 +129,13 @@ function ProductContainer() {
     if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
     const productId = searchParams.get("productId"); // "8847707537647"
     const title = searchParams.get("title");         // "Dusty Rose / S"
-    console.log("productId", productId);
-    console.log(rawProducts, "productId")
+    // console.log("productId", productId);
+    // console.log(rawProducts, "productId")
     const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/${productId}`);
-    console.log("initiale Product", initialProduct);
+    // console.log("initiale Product", initialProduct);
     dispatch(setSelectedProducts(initialProduct));
+    // dispatch(setCurrentProductId(initialProduct[0]?.id));
+    // dispatch(addProductDesignState({ productId: initialProduct[0]?.id }))
     if (initialProduct.length > 0) {
       const img = initialProduct[0].imgurl;
       setFrontBgImage(img);
@@ -161,14 +163,14 @@ function ProductContainer() {
 
   }, [frontImage]);
 
-  if (rawProducts.length == 0) {
-    return (
-      <div className={style.fullscreenLoader} style={{ flexDirection: 'column' }}>
-        <p style={{ marginBottom: 20, fontSize: 15, color: '#555', fontWeight: "700" }}>Let's create something greate today</p>
-        <div className={style.loaderSpinner}></div>
-      </div>
-    );
-  }
+  // if (rawProducts.length == 0) {
+  //  return (
+  //   <div className="fullscreen-loader" style={{ flexDirection: 'column' }}>
+  //     <p style={{ marginBottom: 20, fontSize: 15, color: '#555',fontWeight:"700" }}>Let's create something greate today</p>
+  //     <div className="loader-spinner"></div>
+  //   </div>
+  // );
+  // }
 
   return (
     <div className={style.ProductContainerMainDiv}>
