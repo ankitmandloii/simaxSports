@@ -170,7 +170,7 @@ export default function GeneralSettings() {
     const fetchSettings = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${BASE_URL}/design/admin-get-settings`);
+        const response = await fetch(`${BASE_URL}design/admin-get-settings`);
         if (!response.ok) {
           throw new Error('Failed to fetch settings');
         }
@@ -244,7 +244,7 @@ export default function GeneralSettings() {
       dispatch(setAllSettings(settings));
 
 
-      const res = await fetch(`${BASE_URL}/design/admin-savesettings`, {
+      const res = await fetch(`${BASE_URL}design/admin-savesettings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings),

@@ -38,72 +38,73 @@ export default function AdminLayout({ children }) {
         />
     );
 
-    const navigationMarkup = (
-        <Navigation location={location.pathname}>
-            <Box padding="400">
-                <img
-                    src="https://simaxapparel.com/cdn/shop/files/SimaxApparel_Logo.png?v=1734029356&width=340"
-                    alt="Logo"
-                    style={{ maxWidth: '100%', padding: '0 16px' }}
-                />
-            </Box>
-            <Navigation.Section
-                items={[
-                    {
-                        label: 'Dashboard',
-                        icon: HomeIcon,
-                        selected: location.pathname === '/admin/dashboard',
-                        onClick: () => navigate('/admin/dashboard')
-                    },
-                    {
-                        label: 'Product Design List',
-                        icon: ListNumberedIcon,
-                        selected: location.pathname === '/admin/product-design',
-                        onClick: () => navigate('/admin/product-design')
-                    },
-                    {
-                        label: 'Product List',
-                        icon: ProductIcon,
-                        selected: location.pathname === '/admin/product-list',
-                        onClick: () => navigate('/admin/product-list')
-                    },
-                     {
-                        label: 'Order List',
-                        icon: OrderIcon,
-                        selected: location.pathname === '/admin/orders',
-                        onClick: () => navigate('/admin/orders')
-                    },
-                    {
-                        label: 'Settings',
-                        icon: SettingsIcon,
-                        selected: location.pathname === '/admin/setting',
-                        onClick: () => navigate('/admin/setting')
-                    },
-                   
-                   
-                ]}
-            />
+const navigationMarkup = (
+  <Navigation location={location.pathname}>
+    <Box padding="400">
+      <img
+        src="https://simaxapparel.com/cdn/shop/files/SimaxApparel_Logo.png?v=1734029356&width=340"
+        alt="Logo"
+        style={{ maxWidth: '100%', padding: '0 16px' }}
+      />
+    </Box>
+    <Navigation.Section
+      items={[
+        {
+          label: 'Dashboard',
+          icon: HomeIcon,
+          selected: location.pathname === '/admin/dashboard',
+          onClick: () => navigate('/admin/dashboard'),
+        },
+        {
+          label: 'Product Design List',
+          icon: ListNumberedIcon,
+          selected: location.pathname === '/admin/product-design',
+          onClick: () => navigate('/admin/product-design'),
+        },
+        {
+          label: 'Product List',
+          icon: ProductIcon,
+          selected: location.pathname === '/admin/product-list',
+          onClick: () => navigate('/admin/product-list'),
+        },
+        {
+          label: 'Order List',
+          icon: OrderIcon,
+          selected: location.pathname === '/admin/orders',
+          onClick: () => navigate('/admin/orders'),
+        },
+        {
+          label: 'Settings',
+          icon: SettingsIcon,
+          selected: location.pathname.startsWith('/admin/setting'),
+          onClick: () => navigate('/admin/setting'),
+        },
+      ]}
+    />
 
-            {location.pathname.startsWith('/admin/setting') && (
-            <Navigation.Section
-                label="Settings"
-                items={[
-                    {
-                        label: 'General Settings',
-                        selected: location.pathname === '/admin/setting',
-                        onClick: () => navigate('/admin/setting')
-                    },
-                    {
-                        label: 'Account Settings',
-                        selected: location.pathname === '/admin/setting/account-settings',
-                        onClick: () => navigate('/admin/setting/account-settings')
-                    },
-                   
-                ]}
-            />
-        )}
-        </Navigation>
-    );
+    {/* Render sub-navigation under Settings only when path matches */}
+    {location.pathname.startsWith('/admin/setting') && (
+  <Box paddingInlineStart="600" className="submenu">
+    <Navigation.Section
+      label="Settings"
+      items={[
+        {
+          label: 'General Settings',
+          selected: location.pathname === '/admin/setting',
+          onClick: () => navigate('/admin/setting'),
+        },
+        {
+          label: 'Account Settings',
+          selected: location.pathname === '/admin/setting/account-settings',
+          onClick: () => navigate('/admin/setting/account-settings'),
+        },
+      ]}
+    />
+  </Box>
+)}
+
+  </Navigation>
+);
 
     return (
         <AppProvider i18n={{}}>
