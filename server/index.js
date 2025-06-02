@@ -61,23 +61,24 @@
 // // });
 
 
-// index.js
+
 
 const express = require('express');
-const http = require('http');
 const app = express();
-
+const http = require('http');
 const server = http.createServer(app);
 const { Server } = require('socket.io');
-const dotenv = require('dotenv');
-const cors = require('cors');
+
+const PORT = 3000;
 const bodyParser = require("body-parser");
+const cors = require('cors');
 const routes = require("./routes/index.js");
 const { dbConnection } = require('./config/db');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
-// Middleware
+// Setup middlewares
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -86,40 +87,43 @@ app.use(cors());
 // Connect to DB
 dbConnection();
 
-// API Routes
+// Routes
 app.use("/api", routes);
 
-app.get("/", (req, res) => res.send("Yes, now you hit APIs"));
+// Test route
+app.use("/", (req, res) => {
+  res.send("Yes, now you hit APIs");
+});
 
 // Setup Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: "*", // Should be frontend domain in prod
+    origin: "*", // You can restrict this to your frontend URL
     methods: ["GET", "POST"]
-}});
+  }
+});
 
+// Store global socket instance
+global._io = io;
+
+// Socket.IO real-time handler
 io.on("connection", (socket) => {
-  console.log("🔌 Client connected:", socket.id);
+  console.log("Client connected:", socket.id);
+
+  // Receive real-time setting change from admin panel
+  socket.on("updateAdminSetting", (data) => {
+    console.log("Setting updated:", data);
+
+    // Broadcast the new setting to all other clients
+    socket.broadcast.emit("AdminSettingChanged", data);
+  });
 
   socket.on("disconnect", () => {
-    console.log("❌ Client disconnected:", socket.id);
+    console.log("Client disconnected:", socket.id);
   });
 });
 
-// Emit helper
-function emitSettingUpdate(data) {
-  console.log("📢 Emitting: settings:update", data);
-  io.emit("settings:update", data); // emit to all connected clients
-}
-
-module.exports = {
-  server,
-  emitSettingUpdate
-};
-
-
-
-const PORT = process.env.PORT || 3000;
+// Start the server
 server.listen(PORT, () => {
-  console.log("🚀 Server listening on port", PORT);
+  console.log("Server is running on port", PORT);
 });
