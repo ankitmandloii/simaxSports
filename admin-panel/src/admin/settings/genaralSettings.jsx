@@ -11,14 +11,20 @@ import {
   Divider,
   Toast,
 } from '@shopify/polaris';
-import {  useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useToast } from '../ToastContext';
+import { useDispatch } from 'react-redux';
+import { setAllSettings } from '../../redux/settings/settingsSlice';
+
 
 
 export default function GeneralSettings() {
 
   const { showToast } = useToast();
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
 
   const [settingsForTextSection, setSettingsForTextSection] = useState({
     sideBarTextSection: true,
@@ -160,18 +166,101 @@ export default function GeneralSettings() {
   //   setToastActive(true);
   // }
 
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${BASE_URL}/design/admin-get-settings`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch settings');
+        }
+        const data = await response.json();
 
-  const handleSaveAllSettings = () => {
-    console.log('Settings saved:');
-    console.log({
-      settingsForTextSection,
-      settingsforAddNamesAndNumbers,
-      settingsforAddArtSection,
-      uploadSettings,
-      artworkEditorSettings,
-      otherSettings
-    });
-    showToast({ content: 'Settings updated successfully!' });
+        setSettingsForTextSection(data.settingsForTextSection || {});
+        setSettingsforAddNamesAndNumbers(data.settingsforAddNamesAndNumbers || {});
+        setSettingsforAddArtSection(data.settingsforAddArtSection || {});
+        setUploadSettings(data.uploadSettings || {});
+        setArtworkEditorSettings(data.artworkEditorSettings || {});
+        setOtherSettings(data.otherSettings || {});
+
+        dispatch(setAllSettings(data)); // Optional: update redux state too
+
+      } catch (error) {
+        console.error('Error fetching settings:', error);
+        showToast({ content: "Failed to load settings", error: true });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  function checkIfAnyTrueExists(settings) {
+    let hasAnyTrue = false;
+
+    function recursiveCheck(obj) {
+      for (const value of Object.values(obj)) {
+        if (typeof value === 'object' && value !== null) {
+          recursiveCheck(value);
+        } else if (value === true) {
+          hasAnyTrue = true;
+          return;
+        }
+      }
+    }
+
+    recursiveCheck(settings);
+
+    if (hasAnyTrue) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  const handleSaveAllSettings = async () => {
+
+
+    const settings = {
+      settingsForTextSection: settingsForTextSection,
+      settingsforAddNamesAndNumbers: settingsforAddNamesAndNumbers,
+      settingsforAddArtSection: settingsforAddArtSection,
+      uploadSettings: uploadSettings,
+      artworkEditorSettings: artworkEditorSettings,
+      otherSettings: otherSettings
+    }
+    const valid = checkIfAnyTrueExists(settings);
+    if (!valid) {
+
+      showToast({ content: "You have to enable something", error: true });
+      return;
+
+    }
+
+
+    try {
+      setLoading(true);
+
+      dispatch(setAllSettings(settings));
+
+
+      const res = await fetch(`${BASE_URL}/design/admin-savesettings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      });
+
+      if (res.ok) {
+        showToast({ content: "Settings Updated!" });
+      } else {
+        showToast({ content: "Failed to save settings", error: true });
+      }
+    } catch (error) {
+      showToast({ content: "Error saving settings", error: true });
+    } finally {
+      setLoading(false);
+    }
+
   };
 
   return (
@@ -347,9 +436,9 @@ export default function GeneralSettings() {
           </InlineStack> */}
           </BlockStack>
         </Card>
-        <Box  padding="1000">
+        <Box padding="1000">
           <InlineStack  >
-            <Button variant="primary" size="large" onClick={handleSaveAllSettings}>
+            <Button variant="primary" size="large" onClick={handleSaveAllSettings} loading={loading}>
               Save Settings
             </Button>
           </InlineStack>
@@ -358,8 +447,8 @@ export default function GeneralSettings() {
 
 
 
-     
-     
+
+
 
 
     </Page>
