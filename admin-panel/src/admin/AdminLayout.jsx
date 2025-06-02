@@ -7,6 +7,7 @@ import {
 } from '@shopify/polaris-icons';
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { MdSubdirectoryArrowRight } from "react-icons/md";
 
 export default function AdminLayout({ children }) {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -102,7 +103,7 @@ const navigationMarkup = (
       }}
     >
       <span style={{ width: '16px', marginRight: '8px' }}>
-        {location.pathname === '/admin/setting' ? '→' : ''}
+        {location.pathname === '/admin/setting' ? <MdSubdirectoryArrowRight /> : ''}
       </span>
       <span>General Settings</span>
     </div>
@@ -121,7 +122,7 @@ const navigationMarkup = (
       }}
     >
       <span style={{ width: '16px', marginRight: '8px' }}>
-        {location.pathname === '/admin/setting/account-settings' ? '→' : ''}
+        {location.pathname === '/admin/setting/account-settings' ? <MdSubdirectoryArrowRight /> : ''}
       </span>
       <span>Account Settings</span>
     </div>
