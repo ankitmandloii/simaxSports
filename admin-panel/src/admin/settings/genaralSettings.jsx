@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import { useToast } from '../ToastContext';
 import { useDispatch } from 'react-redux';
 import { setAllSettings } from '../../redux/settings/settingsSlice';
+import { SwitchToggle } from '../switchToggle';
 
 
 
@@ -283,7 +284,7 @@ export default function GeneralSettings() {
             <Box paddingBlock="300">
               <BlockStack gap="200">
                 {Object.entries(settingsForTextSection).map(([key, value]) => (
-                  <Checkbox
+                  <SwitchToggle
                     key={key}
                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     checked={value}
@@ -309,7 +310,7 @@ export default function GeneralSettings() {
             <Box paddingBlock="300">
               <BlockStack gap="200">
                 {Object.entries(settingsforAddNamesAndNumbers).map(([key, value]) => (
-                  <Checkbox
+                  <SwitchToggle
                     key={key}
                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     checked={value}
@@ -335,7 +336,7 @@ export default function GeneralSettings() {
             <Box paddingBlock="300">
               <BlockStack gap="200">
                 {Object.entries(settingsforAddArtSection).map(([key, value]) => (
-                  <Checkbox
+                  <SwitchToggle
                     key={key}
                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     checked={value}
@@ -364,7 +365,7 @@ export default function GeneralSettings() {
             <Box paddingBlock="300">
               <BlockStack gap="200">
                 {Object.entries(artworkEditorSettings).map(([key, value]) => (
-                  <Checkbox
+                  <SwitchToggle
                     key={key}
                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     checked={value}
@@ -393,7 +394,7 @@ export default function GeneralSettings() {
             <Box paddingBlock="300">
               <BlockStack gap="200">
                 {Object.entries(uploadSettings).map(([key, value]) => (
-                  <Checkbox
+                  <SwitchToggle
                     key={key}
                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     checked={value}
@@ -420,7 +421,7 @@ export default function GeneralSettings() {
             <Box paddingBlock="300">
               <BlockStack gap="200">
                 {Object.entries(otherSettings).map(([key, value]) => (
-                  <Checkbox
+                  <SwitchToggle
                     key={key}
                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     checked={value}
