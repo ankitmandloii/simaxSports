@@ -70,13 +70,13 @@ exports.login = async (req, res) => {
       return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.USER_NOT_FOUND);
     }
 
-    const result = await services.passwordComapreForLogin(user, password);
+    const loginResult  = await services.passwordCompareForLogin(user, password);
 
-    if (!result) {
+    if (!loginResult ) {
       return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.WRONG_EMAIL_OR_PASSWORD);
     }
 
-    return sendResponse(res, statusCode.OK, true, SuccessMessage.LOGIN_SUCCESS, result);
+    return sendResponse(res, statusCode.OK, true, SuccessMessage.LOGIN_SUCCESS, loginResult );
 
   } catch (error) {
     return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);

@@ -96,16 +96,15 @@ const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
 
 exports.findUserForLogin = async (email) => {
   try {
-    const user = await User.findOne({ email });
-    if (!user) return false;
-
-    return user;
+    const user = await User.findOne({ email }).lean(); // lean() returns plain JS object, faster if no methods needed
+    return user || null;
   } catch (error) {
-    return false;
+    console.error("Find User Error:", error);
+    throw error;
   }
 };
 
-exports.passwordComapreForLogin = async (user, password) => {
+exports.passwordCompareForLogin = async (user, password) => {
   try {
     
 
@@ -131,7 +130,7 @@ exports.passwordComapreForLogin = async (user, password) => {
 
   } catch (error) {
     console.error('Login error:', error);
-    return false;
+    throw error; 
   }
 };
 
