@@ -19,6 +19,12 @@ export const ToastProvider = ({ children }) => {
             {children}
             {toast && (
                 <div style={{
+                    fontSize: '16px',
+                    minWidth: '320px',  
+                    padding: '20px 32px',                // Wider toast
+                    maxWidth: '480px',
+                    borderRadius: '8px',
+                  //  boxShadow: '0px 6px 18px rgba(0,0,0,0.2)',
                     position: 'fixed',
                     bottom: 20,
                     right: 20,
@@ -27,13 +33,13 @@ export const ToastProvider = ({ children }) => {
                 }}>
                     <div style={{
                         backgroundColor: '#000000', // Black background to match the "Save Settings" button
-                        color: toast.error ? '#E32727FF' :'#ffffff', // White text to match the "Save Settings" button
+                        color: toast.error ? '#E32727FF' : '#ffffff', // White text to match the "Save Settings" button
                         padding: '12px 20px',
                         borderRadius: '6px',
                         boxShadow: '0px 4px 12px rgba(0,0,0,0.15)',
                         minWidth: '250px'
                     }}>
-                        {toast.content} 
+                        {toast.content}
                     </div>
                 </div>
             )}

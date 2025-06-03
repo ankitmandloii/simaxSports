@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Page, FormLayout, TextField, Button, Card, Text, Box } from '@shopify/polaris';
+import { Page, FormLayout, TextField, Button, Card, Box } from '@shopify/polaris';
 
 export default function Login() {
 

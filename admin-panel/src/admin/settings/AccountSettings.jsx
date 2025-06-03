@@ -30,6 +30,7 @@ export default function AccountSettings() {
 
 
   const validateEmail = useCallback((value) => {
+    if(value.trim() == '') return 'Email is required';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!value) return 'Email is required';
     else if (!emailRegex.test(value)) return 'Please enter a valid email address';
@@ -37,6 +38,7 @@ export default function AccountSettings() {
   }, []);
 
   const validatePassword = useCallback((value) => {
+    if(value.trim() == '') return 'Password is required';
     if (!value) return 'Password is required';
     else if (value.length < 5) return 'Password must be at least 5 characters long';
     return '';
@@ -65,7 +67,7 @@ export default function AccountSettings() {
       const token = localStorage.getItem('admin-token');
 
 
-      const response = await fetch(`${BASE_URL}/auth/admin-change-password`, {
+      const response = await fetch(`${BASE_URL}auth/admin-change-password`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
