@@ -100,13 +100,13 @@ export default function Login() {
                 <div style={{ width: '100%', maxWidth: '380px' }}>
 
                     <Card sectioned>
-                          <Box padding="400">
-                              <img
+                        <Box padding="400">
+                            <img
                                 src="https://simaxapparel.com/cdn/shop/files/SimaxApparel_Logo.png?v=1734029356&width=340"
                                 alt="Logo"
                                 style={{ maxWidth: '100%', padding: '0 16px' }}
-                              />
-                            </Box>
+                            />
+                        </Box>
                         {/* <Text as="h1" variant="headingLg" alignment='center'>
                             Admin Login
                         </Text> */}
