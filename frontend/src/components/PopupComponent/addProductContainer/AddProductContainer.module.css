@@ -417,7 +417,7 @@
 
 @media (max-width: 480px) {
   .productList {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     padding: 0 10px;
   }
 

@@ -140,6 +140,11 @@
   cursor: pointer;
 }
 
+.addProductBtnPopup:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
 .colorSwatch.selected {
   border: 2px solid #000;
   box-shadow: 0 0 0 2px white;

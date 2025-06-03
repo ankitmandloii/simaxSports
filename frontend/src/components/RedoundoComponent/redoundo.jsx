@@ -19,36 +19,40 @@ function RedoundoComponent() {
   };
 
   return (
-    <ul className={`${styles.redoundoContainer}`}>
-      <li>
-        <button
-          className={styles.productContainerButton}
-          onClick={() => dispatch(undo())}
-          disabled={!canUndo}
-        >
-          <span><TbArrowBack /></span>UNDO
-        </button>
-      </li>
-      <li>
-        <button
-          className={styles.productContainerButton}
-          onClick={() => dispatch(redo())}
-          disabled={!canRedo}
-        >
-          <span><TbArrowForwardUp /></span>REDO
-        </button>
-      </li>
-      <li>
-        <button
-          className={styles.productContainerButton}
-          onClick={() => setStartOverPopup(!startOverPopup)}
-          disabled={!canStartOver}
-        >
-          <span><StartOverIcon /></span>START OVER
-        </button>
-      </li>
+    <>
+      <ul className={`${styles.redoundoContainer}`}>
+        <li className={styles.redoundoLi} onClick={() => dispatch(undo())}>
+          <button
+            className={styles.productContainerButton}
+
+            disabled={!canUndo}
+          >
+            <span><TbArrowBack /></span>UNDO
+          </button>
+        </li>
+        <li className={styles.redoundoLi} onClick={() => dispatch(redo())}>
+          <button
+            className={styles.productContainerButton}
+
+            disabled={!canRedo}
+          >
+            <span><TbArrowForwardUp /></span>REDO
+          </button>
+        </li>
+        <li className={styles.redoundoLi} onClick={() => setStartOverPopup(!startOverPopup)}>
+          <button
+            className={styles.productContainerButton}
+
+            disabled={!canStartOver}
+          >
+            <span><StartOverIcon /></span>START OVER
+          </button>
+        </li>
+      </ul>
       {startOverPopup && <StartOverConfirmationPopup onCancel={closeStartOverPopup} />}
-    </ul>
+
+    </>
+
   );
 }
 

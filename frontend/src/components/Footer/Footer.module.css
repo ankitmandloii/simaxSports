@@ -121,12 +121,18 @@
     padding: 3.5px 10px !important;
   }
 }
+
 @media screen and (max-width: 500px) {
   .footerBtn {
     padding: 1.5px 4px !important;
   }
+
   .footerContainer {
     margin: -8px -10px;
     gap: 6px;
   }
+}
+
+.fab-container {
+  z-index: 1000 !important;
 }

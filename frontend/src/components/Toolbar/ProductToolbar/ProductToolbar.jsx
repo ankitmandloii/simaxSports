@@ -30,7 +30,8 @@ const ProductToolbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  const { setActiveProduct } = useOutletContext();
+  // const { setActiveProduct } = useOutletContext();
+
 
   const [changeProductPopup, setChangeProductPopup] = useState(false);
   const [editingProductIndex, setEditingProductIndex] = useState(null);
@@ -244,7 +245,7 @@ const ProductToolbar = () => {
                             selectedColor: safeCloneColor(clickedColor, product.imgurl),
                             imgurl: clickedColor?.img || product.imgurl,
                           };
-                          setActiveProduct(updatedActiveProduct);
+                          // setActiveProduct(updatedActiveProduct);
                           setTimeout(() => dispatch(setRendering()), 10);
                           setActiveThumbnail((prev) =>
                             prev.productIndex === index && prev.colorIndex === i
@@ -275,6 +276,7 @@ const ProductToolbar = () => {
                             >
                               Change
                             </button>
+
                           </div>
                         )}
                         <div className={style.imgThumbnaillContainer}>

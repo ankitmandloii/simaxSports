@@ -5,6 +5,7 @@
   margin-top: 0;
   border-radius: 8px;
   margin-left: 10px;
+  z-index: 1000;
 }
 
 .redoundoContainer li {
@@ -12,27 +13,27 @@
 }
 
 .productContainerButton {
-    background-color: #fff;
-    border: 1px solid #fff;
-    flex-direction: column;
-    padding: 11px 9px 21px 10px;
-    border-radius: 0px;
-    color: #7f7f7f;
-    font-size: 12px;
-    font-weight: 600;
-    width: 89px;
-    white-space: nowrap;
+  background-color: #fff;
+  border: 1px solid #fff;
+  flex-direction: column;
+  padding: 11px 9px 21px 10px;
+  border-radius: 0px;
+  color: #7f7f7f;
+  font-size: 12px;
+  font-weight: 600;
+  width: 89px;
+  white-space: nowrap;
 
-    &:hover {
-        background-color: black;
-        color: #fff;
-        cursor: pointer;
-    }
+  &:hover {
+    background-color: black;
+    color: #fff;
+    cursor: pointer;
+  }
 
-    &:active {
-        background-color: #888 !important;
-        color: #fff;
-    }
+  &:active {
+    background-color: #888 !important;
+    color: #fff;
+  }
 
 }
 
@@ -71,7 +72,15 @@
     left: 59px;
     top: 15%;
   }
-  li {
+
+  .redoundoLi {
     transform: rotateZ(-270deg);
+  }
+
+  .productContainerButton {
+    width: auto;
+    min-width: 80px;
+    padding: 10px 10px;
+    font-size: 11px;
   }
 }

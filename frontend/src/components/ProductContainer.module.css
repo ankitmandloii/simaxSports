@@ -216,10 +216,10 @@ canvas#mirrorCanvasBack {
 .flex {
   margin-top: 18px;
   display: flex;
-  align-items: start  ;
+  align-items: start;
   width: 100%;
   justify-content: center;
-  background-color: white;
+  /* background-color: white; */
   justify-content: space-evenly;
 }
 
@@ -314,12 +314,13 @@ canvas#mirrorCanvasBack {
 
 
 @media screen and (max-width:1200px) {
-  .ProuductMirrorContainer{
+  .ProuductMirrorContainer {
     display: none;
-    
+
   }
-  .flex{
-      margin-top: 0px;
-       justify-content: center;
+
+  .flex {
+    margin-top: 0px;
+    justify-content: center;
   }
 }
