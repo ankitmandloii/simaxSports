@@ -13,6 +13,7 @@ import { setSelectedProducts } from '../redux/ProductSlice/SelectedProductSlice'
 import { useSearchParams } from 'react-router-dom';
 import style from './ProductContainer.module.css'
 import RedoundoComponent from './RedoundoComponent/redoundo';
+import ViewControlButtons from './controls/ViewControlButtons';
 
 function ProductContainer() {
   const dispatch = useDispatch();
@@ -70,8 +71,8 @@ function ProductContainer() {
 
   const toggleZoom = () => {
     if (isZoomedIn) {
-      setLogo(<BsZoomIn />);
       setZoomLevel(1);
+      setLogo(<BsZoomIn />);
       setIsZoomedIn(false);
     } else {
       setLogo(<GrZoomOut />);
@@ -176,7 +177,17 @@ function ProductContainer() {
   return (
     <div className={style.ProductContainerMainDiv}>
       <div className={style.flex}>
-        <RedoundoComponent />
+       <div className={style.controllContainer}>
+         <RedoundoComponent />
+        <ViewControlButtons  
+        ShowBack={ShowBack}
+        ShowFront={ShowFront}
+        ShowLeftSleeve={ShowLeftSleeve}
+        ShowRightSleeve={ShowRightSleeve}
+        toggleZoom={toggleZoom}
+        logo={logo}
+        ></ViewControlButtons>
+       </div>
         {/* Render Active Canvas Side */}
         <div style={{ display: activeSide === "front" ? "block" : "none" }}>
           <MainDesignTool

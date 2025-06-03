@@ -486,6 +486,42 @@ hr {
   background-color: black;
 }
 
+.fullscreen-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: transparent;
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999999;
+}
+
+.loader-spinner {
+  border: 8px solid #f3f3f3;
+  /* Light gray */
+  border-top: 8px solid #005BFF;
+  /* Blue */
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
   #canvas,
   .upper-canvas,
   .lower-canvas,
@@ -509,9 +545,9 @@ hr {
   .canvas-container {
     width: 90vw !important;
     height: 87vh !important;
-    max-width: 500px !important;
-    min-height: 300px !important;
-    min-width: 300px !important;
+    max-width: 700px !important;
+    min-height: 500px !important;
+    min-width: 500px !important;
     max-height: 700px !important;
     position: relative;
     /* margin: 0 auto !important; */
@@ -540,7 +576,7 @@ hr {
   .upper-canvas,
   .lower-canvas,
   .canvas-container {
-    height: 87vh !important;
+    height: 70vh !important;
     object-fit: contain;
     /* top: 70px; */
   }

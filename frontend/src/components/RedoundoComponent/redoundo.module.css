@@ -34,7 +34,6 @@
     background-color: #888 !important;
     color: #fff;
   }
-
 }
 
 .productContainerButton span {
@@ -66,15 +65,69 @@
 
 @media screen and (max-width: 1200px) {
   .redoundoContainer {
-    margin-top: -70px;
-    transform: rotateZ(270deg);
-    position: fixed;
-    left: 59px;
-    top: 15%;
+    /* margin-top: -70px; */
+    /* transform: rotateZ(270deg); */
+    /* position: fixed; */
+    /* left: 15px; */
+    /* top: 190px; */
+    z-index: 99999;
+    /* background-color: gray; */
   }
 
   .redoundoLi {
-    transform: rotateZ(-270deg);
+    /* transform: rotateZ(-270deg); */
+  }
+  .productContainerButton {
+    background-color: #fff;
+    border: 1px solid #fff;
+    flex-direction: column;
+    padding: 11px 9px 21px 10px;
+    border-radius: 0px;
+    color: #7f7f7f;
+    font-size: 12px;
+    font-weight: 600;
+    width: 89px;
+    white-space: nowrap;
+
+    &:hover {
+      background-color: black;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    &:active {
+      background-color: #888 !important;
+      color: #fff;
+    }
+  }
+}
+@media screen and (max-width: 500px) {
+  .productContainerButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background-color: #fff;
+    border: 1px solid #fff;
+    flex-direction: column;
+    padding: 0px 9px 2px 9px;
+    border-radius: 5px;
+    color: #7f7f7f;
+    font-size: 7px;
+    font-weight: 600;
+    width: 48px;
+    white-space: nowrap;
+
+    &:hover {
+      background-color: black;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    &:active {
+      background-color: #888 !important;
+      color: #fff;
+    }
   }
 
   .productContainerButton {

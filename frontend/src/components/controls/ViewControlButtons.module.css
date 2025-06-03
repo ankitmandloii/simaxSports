@@ -1,0 +1,48 @@
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background-color: #fff;
+  border: 1px solid #fff;
+  flex-direction: column;
+  padding: 0px 6px 2px 9px;
+  border-radius: 5px;
+  color: #7f7f7f;
+  font-size: 9px;
+  font-weight: 600;
+  width: 48px;
+  white-space: nowrap;
+}
+
+.iconButton:hover {
+  background-color: black;
+  color: black;
+  cursor: pointer;
+}
+
+.iconButton:active {
+  background-color: #888 !important;
+  color: #fff;
+}
+
+.iconButton:hover {
+  background-color: #e0e0e0;
+}
+.iconButton span {
+  color: black;
+  font-size: 25px;
+}
+
+.iconButton img {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s ease;
+}
