@@ -1,20 +1,25 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Page, FormLayout, TextField, Button, Card, Box } from '@shopify/polaris';
+import {
+    Page,
+    FormLayout,
+    TextField,
+    Button,
+    Card,
+    Box,
+    Icon
+} from '@shopify/polaris';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export default function Login() {
-
-
-
-
     const BASE_URL = process.env.REACT_APP_BASE_URL;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
 
     useEffect(() => {
         if (localStorage.getItem('admin-token')) {
@@ -82,7 +87,7 @@ export default function Login() {
     // Detect Enter key press
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
-            e.preventDefault(); // prevent default form submission
+            e.preventDefault();
             handleLogin();
         }
     };
@@ -94,11 +99,9 @@ export default function Login() {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                // backgroundColor: '#f6f6f7',
                 padding: '1rem',
             }}>
                 <div style={{ width: '100%', maxWidth: '380px' }}>
-
                     <Card sectioned>
                         <Box padding="400">
                             <img
@@ -107,9 +110,6 @@ export default function Login() {
                                 style={{ maxWidth: '100%', padding: '0 16px' }}
                             />
                         </Box>
-                        {/* <Text as="h1" variant="headingLg" alignment='center'>
-                            Admin Login
-                        </Text> */}
                         <form onKeyDown={handleKeyDown}>
                             <FormLayout>
                                 <TextField
@@ -120,13 +120,26 @@ export default function Login() {
                                     type="email"
                                     error={emailError}
                                 />
-                                <TextField
-                                    label="Password"
-                                    value={password}
-                                    onChange={handlePasswordChange}
-                                    type="password"
-                                    error={passwordError}
-                                />
+                               <TextField
+  label="Password"
+  value={password}
+  onChange={handlePasswordChange}
+  type={showPassword ? 'text' : 'password'}
+  error={passwordError}
+  suffix={
+    <span
+      onClick={() => setShowPassword(!showPassword)}
+      style={{
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 8px',
+      }}
+    >
+      {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+    </span>
+  }
+/>
                                 <Button onClick={handleLogin} primary fullWidth loading={loading}>
                                     Login
                                 </Button>
@@ -137,5 +150,4 @@ export default function Login() {
             </div>
         </Page>
     );
-
 }

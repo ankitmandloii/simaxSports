@@ -7,29 +7,29 @@ import {
   Page,
   Text,
   InlineStack,
-  Spinner,
-  BlockStack
+  BlockStack,
+  SkeletonBodyText,
+  SkeletonDisplayText,
 } from '@shopify/polaris';
 
 export default function OrderList() {
   const [allProducts, setAllProducts] = useState([]);
   const [rows, setRows] = useState([]);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true); // ⬅️ Track loading state
+  const [loading, setLoading] = useState(true);
   const perPage = 10;
 
   useEffect(() => {
-    // ✅ Real API call
-    setLoading(true); // Start loading
+    setLoading(true);
     fetch('https://fakestoreapi.com/products')
       .then(res => res.json())
       .then(data => {
         setAllProducts(data);
-        setLoading(false); // Done loading
+        setLoading(false);
       })
       .catch(error => {
         console.error('API fetch failed:', error);
-        setLoading(false); // Even on error, stop loading
+        setLoading(false);
       });
   }, []);
 
@@ -52,10 +52,13 @@ export default function OrderList() {
     <Page fullWidth title="Order List" subtitle="A table of orders will be displayed here in future.">
       <Card sectioned>
         {loading ? (
-          // 🔄 Show Spinner while loading
-          <BlockStack align="center" inlineAlign="center" minHeight="200px">
-            <Spinner accessibilityLabel="Loading products" size="large" />
-            <Text variant="bodyMd" tone="subdued">Loading products...</Text>
+          // 🔄 Skeleton UI instead of spinner
+          <BlockStack gap="300">
+            <SkeletonDisplayText size="medium" />
+            <SkeletonBodyText lines={12} />
+            <InlineStack align="center" gap="400" wrap={false}>
+              <SkeletonBodyText lines={1} />
+            </InlineStack>
           </BlockStack>
         ) : (
           <>
@@ -79,4 +82,3 @@ export default function OrderList() {
     </Page>
   );
 }
-
