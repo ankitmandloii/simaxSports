@@ -1,7 +1,6 @@
 // src/admin/ProductList.js
 import { useEffect, useState } from 'react';
 import {
-  Box,
   Button,
   Card,
   DataTable,
@@ -11,7 +10,7 @@ import {
   BlockStack,
   SkeletonBodyText,
   SkeletonDisplayText,
-  SkeletonPage
+  
 } from '@shopify/polaris';
 
 export default function ProductList() {

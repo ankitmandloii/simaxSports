@@ -2,15 +2,12 @@ import {
   Page,
   Card,
   Text,
-  TextField,
   InlineStack,
   Button,
   Box,
-  Checkbox,
   BlockStack,
   Divider,
-  Toast,
-} from '@shopify/polaris';
+  } from '@shopify/polaris';
 import { useEffect, useState } from 'react';
 import { useToast } from '../ToastContext';
 import { useDispatch } from 'react-redux';
@@ -194,7 +191,7 @@ export default function GeneralSettings() {
       }
     };
     fetchSettings();
-  }, []);
+  }, [BASE_URL, dispatch ,showToast]);
 
   function checkIfAnyTrueExists(settings) {
     let hasAnyTrue = false;

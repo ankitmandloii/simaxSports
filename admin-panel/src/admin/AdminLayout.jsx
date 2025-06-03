@@ -2,8 +2,7 @@ import {
     AppProvider, Frame, TopBar, Navigation, Page, Box, Text
 } from '@shopify/polaris';
 import {
-  DnsSettingsIcon,
-    HomeIcon, ListNumberedIcon, OrderIcon, ProductIcon, SettingsIcon
+     HomeIcon, ListNumberedIcon, OrderIcon, ProductIcon, SettingsIcon
 } from '@shopify/polaris-icons';
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, } from 'react';
 
 const ToastContext = createContext();
 
@@ -12,7 +12,7 @@ export const ToastProvider = ({ children }) => {
         }, duration); // Auto-dismiss after `duration` ms
     };
 
-    const dismissToast = () => setToast(null);
+
 
     return (
         <ToastContext.Provider value={{ showToast }}>

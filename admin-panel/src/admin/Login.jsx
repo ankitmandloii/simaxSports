@@ -8,7 +8,6 @@ import {
     Card,
     Box,
     Text,
-    Icon
 } from '@shopify/polaris';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useToast } from './ToastContext';
@@ -76,7 +75,7 @@ export default function Login() {
         } finally {
             setLoading(false);
         }
-    }, [email, password, navigate, validateEmail, validatePassword, BASE_URL]);
+    }, [email, password, navigate, validateEmail, validatePassword, BASE_URL, showToast]);
 
     const handleEmailChange = useCallback((value) => {
         setEmail(value);
