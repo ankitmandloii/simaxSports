@@ -94,12 +94,20 @@ const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
 //   }
 // };
 
-
-
-exports.login = async (email, password) => {
+exports.findUserForLogin = async (email) => {
   try {
     const user = await User.findOne({ email });
     if (!user) return false;
+
+    return user;
+  } catch (error) {
+    return false;
+  }
+};
+
+exports.passwordComapreForLogin = async (user, password) => {
+  try {
+    
 
     const passwordsMatch = await bcrypt.compare(password, user.password);
     if (!passwordsMatch) return false;
