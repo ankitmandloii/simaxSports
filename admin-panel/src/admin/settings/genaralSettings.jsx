@@ -7,12 +7,14 @@ import {
   Box,
   BlockStack,
   Divider,
-  } from '@shopify/polaris';
+} from '@shopify/polaris';
+
 import { useEffect, useState } from 'react';
 import { useToast } from '../ToastContext';
 import { useDispatch } from 'react-redux';
 import { setAllSettings } from '../../redux/settings/settingsSlice';
 import { SwitchToggle } from '../switchToggle';
+import { SettingsSkeleton } from './SettingsSkeleton'
 
 
 
@@ -21,6 +23,7 @@ export default function GeneralSettings() {
   const { showToast } = useToast();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [loadingDataForGet, setLoadingDataForGet] = useState(false);
 
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -167,7 +170,7 @@ export default function GeneralSettings() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        setLoading(true);
+        setLoadingDataForGet(true);
         const response = await fetch(`${BASE_URL}design/admin-get-settings`);
         if (!response.ok) {
           throw new Error('Failed to fetch settings');
@@ -187,11 +190,11 @@ export default function GeneralSettings() {
         console.error('Error fetching settings:', error);
         showToast({ content: "Failed to load settings", error: true });
       } finally {
-        setLoading(false);
+        setLoadingDataForGet(false);
       }
     };
     fetchSettings();
-  }, [BASE_URL, dispatch ,showToast]);
+  }, [BASE_URL, dispatch, showToast]);
 
   function checkIfAnyTrueExists(settings) {
     let hasAnyTrue = false;
@@ -261,7 +264,8 @@ export default function GeneralSettings() {
 
   };
 
-  return (
+  return loadingDataForGet ? <SettingsSkeleton /> : (
+
     <Page title="Settings" fullWidth subtitle="Manage your product gadget settings here for visible to the user.">
       {/* GRID WRAPPER FOR CARDS */}
       <Box

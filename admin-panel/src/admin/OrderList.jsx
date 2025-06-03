@@ -9,6 +9,7 @@ import {
   BlockStack,
   SkeletonBodyText,
   SkeletonDisplayText,
+  Modal 
 } from '@shopify/polaris';
 
 export default function OrderList() {
@@ -16,6 +17,7 @@ export default function OrderList() {
   const [rows, setRows] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(null);
   const perPage = 10;
 
   useEffect(() => {
@@ -23,6 +25,7 @@ export default function OrderList() {
     fetch('https://fakestoreapi.com/products')
       .then(res => res.json())
       .then(data => {
+        console.log("dataaaaaaaaaa",data);
         setAllProducts(data);
         setLoading(false);
       })
@@ -41,6 +44,7 @@ export default function OrderList() {
       product.title,
       `$${product.price}`,
       product.category,
+      <img src={product.image} alt="product" style={{ height: '40px', objectFit: 'contain' ,cursor : 'pointer'}}  onClick={() => setSelectedImage(product.image)}/>,
     ]);
     setRows(formatted);
   }, [allProducts, page]);
@@ -63,10 +67,10 @@ export default function OrderList() {
           <>
             <div style={{ overflowX: 'auto', maxHeight: '600px' }}>
               <DataTable
-                columnContentTypes={['text', 'text', 'text', 'text']}
-                headings={['ID', 'Title', 'Price', 'Category']}
+                columnContentTypes={['text', 'text', 'text', 'text', 'text']}
+                headings={['ID',  'Title', 'Price', 'Category', 'Image']}
                 rows={rows}
-                footerContent={`Page ${page} of ${totalPages}`}
+                footerContent={`${page}`}
               />
             </div>
 
@@ -77,6 +81,24 @@ export default function OrderList() {
             </InlineStack>
           </>
         )}
+        {selectedImage && (
+        <Modal
+          open={true}
+          onClose={() => setSelectedImage(null)}
+          title="Product Image"
+          large
+        >
+          <Modal.Section>
+            <div style={{ textAlign: 'center' }}>
+              <img
+                src={selectedImage}
+                alt="Product"
+                style={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain' }}
+              />
+            </div>
+          </Modal.Section>
+        </Modal>
+      )}
       </Card>
     </Page>
   );

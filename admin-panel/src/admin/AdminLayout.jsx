@@ -142,8 +142,9 @@ const navigationMarkup = (
                 onNavigationDismiss={toggleSidebar}
             >
                 <Page fullWidth>
+                      <div style={{ paddingBottom: '80px' }}>
                     {children}
-                    
+                    </div>
                 </Page>
 
                 <footer

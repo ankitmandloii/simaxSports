@@ -67,7 +67,7 @@ export default function ProductDesignList() {
                 columnContentTypes={['text', 'text', 'text', 'text']}
                 headings={['ID', 'Title', 'Category', 'Price']}
                 rows={rows}
-                footerContent={`Page ${page} of ${totalPages}`}
+                footerContent={`${page}`}
               />
             </div>
 
