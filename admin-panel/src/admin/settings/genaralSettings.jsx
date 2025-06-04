@@ -194,7 +194,7 @@ export default function GeneralSettings() {
       }
     };
     fetchSettings();
-  }, [BASE_URL, dispatch, showToast]);
+  }, []);
 
   function checkIfAnyTrueExists(settings) {
     let hasAnyTrue = false;
