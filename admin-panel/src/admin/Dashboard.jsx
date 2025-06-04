@@ -1,24 +1,24 @@
 // src/admin/Dashboard.js
 import {
   Page,
-  Box,
-  Text,
-  Card,
-  InlineStack,
-  TextField,
-  Icon,
-  Button,
+  // Box,
+  // Text,
+  // Card,
+  // InlineStack,
+  // TextField,
+  // Icon,
+  // Button,
 } from '@shopify/polaris';
-import { useState } from 'react';
+// import { useState } from 'react';
 
 export default function Dashboard() {
-  const [searchValue, setSearchValue] = useState('');
+  // const [searchValue, setSearchValue] = useState('');
 
   return (
     <Page fullWidth title="Dashboard" subtitle="Manage your subscriptions and products here.">
-     
+     This feature will be implemented in the future
 
-
+{/* 
       {[1, 2, 3, 4].map((_, index) => (
         <Card key={index}>
           <Box padding="500">
@@ -66,7 +66,7 @@ export default function Dashboard() {
         <Text variant="bodySm" tone="subdued">
           (Add Polaris DataTable here for listing subscriptions)
         </Text>
-      </Card>
+      </Card> */}
     </Page>
   );
 }

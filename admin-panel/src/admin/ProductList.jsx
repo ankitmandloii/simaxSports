@@ -1,36 +1,36 @@
 // src/admin/ProductList.js
 import { useEffect, useState } from 'react';
 import {
-  Box,
   Button,
   Card,
   DataTable,
   Page,
   Text,
   InlineStack,
-  Spinner,
-  BlockStack
+  BlockStack,
+  SkeletonBodyText,
+  SkeletonDisplayText,
+  
 } from '@shopify/polaris';
 
 export default function ProductList() {
   const [allProducts, setAllProducts] = useState([]);
   const [rows, setRows] = useState([]);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true); // ⬅️ Track loading state
+  const [loading, setLoading] = useState(true);
   const perPage = 10;
 
   useEffect(() => {
-    // ✅ Real API call
-    setLoading(true); // Start loading
+    setLoading(true);
     fetch('https://fakestoreapi.com/products')
       .then(res => res.json())
       .then(data => {
         setAllProducts(data);
-        setLoading(false); // Done loading
+        setLoading(false);
       })
       .catch(error => {
         console.error('API fetch failed:', error);
-        setLoading(false); // Even on error, stop loading
+        setLoading(false);
       });
   }, []);
 
@@ -53,10 +53,13 @@ export default function ProductList() {
     <Page fullWidth title="Product List" subtitle="Manage your products from here.">
       <Card sectioned>
         {loading ? (
-          // 🔄 Show Spinner while loading
-          <BlockStack align="center" inlineAlign="center" minHeight="200px">
-            <Spinner accessibilityLabel="Loading products" size="large" />
-            <Text variant="bodyMd" tone="subdued">Loading products...</Text>
+          // 🔄 Skeleton UI
+          <BlockStack gap="300">
+            <SkeletonDisplayText size="medium" />
+            <SkeletonBodyText lines={12} />
+            <InlineStack align="center" gap="400" wrap={false}>
+              <SkeletonBodyText lines={1} />
+            </InlineStack>
           </BlockStack>
         ) : (
           <>
@@ -65,7 +68,7 @@ export default function ProductList() {
                 columnContentTypes={['text', 'text', 'text', 'text']}
                 headings={['ID', 'Title', 'Price', 'Category']}
                 rows={rows}
-                footerContent={`Page ${page} of ${totalPages}`}
+                footerContent={`${page}`}
               />
             </div>
 

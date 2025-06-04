@@ -2,19 +2,19 @@ import {
   Page,
   Card,
   Text,
-  TextField,
   InlineStack,
   Button,
   Box,
-  Checkbox,
   BlockStack,
   Divider,
-  Toast,
 } from '@shopify/polaris';
+
 import { useEffect, useState } from 'react';
 import { useToast } from '../ToastContext';
 import { useDispatch } from 'react-redux';
 import { setAllSettings } from '../../redux/settings/settingsSlice';
+import { SwitchToggle } from '../switchToggle';
+import { SettingsSkeleton } from './SettingsSkeleton'
 
 
 
@@ -23,6 +23,7 @@ export default function GeneralSettings() {
   const { showToast } = useToast();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [loadingDataForGet, setLoadingDataForGet] = useState(false);
 
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -169,8 +170,8 @@ export default function GeneralSettings() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        setLoading(true);
-        const response = await fetch(`${BASE_URL}/design/admin-get-settings`);
+        setLoadingDataForGet(true);
+        const response = await fetch(`${BASE_URL}design/admin-get-settings`);
         if (!response.ok) {
           throw new Error('Failed to fetch settings');
         }
@@ -189,11 +190,11 @@ export default function GeneralSettings() {
         console.error('Error fetching settings:', error);
         showToast({ content: "Failed to load settings", error: true });
       } finally {
-        setLoading(false);
+        setLoadingDataForGet(false);
       }
     };
     fetchSettings();
-  }, []);
+  }, [BASE_URL, dispatch, showToast]);
 
   function checkIfAnyTrueExists(settings) {
     let hasAnyTrue = false;
@@ -244,7 +245,7 @@ export default function GeneralSettings() {
       dispatch(setAllSettings(settings));
 
 
-      const res = await fetch(`${BASE_URL}/design/admin-savesettings`, {
+      const res = await fetch(`${BASE_URL}design/admin-savesettings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings),
@@ -263,7 +264,8 @@ export default function GeneralSettings() {
 
   };
 
-  return (
+  return loadingDataForGet ? <SettingsSkeleton /> : (
+
     <Page title="Settings" fullWidth subtitle="Manage your product gadget settings here for visible to the user.">
       {/* GRID WRAPPER FOR CARDS */}
       <Box
@@ -283,7 +285,7 @@ export default function GeneralSettings() {
             <Box paddingBlock="300">
               <BlockStack gap="200">
                 {Object.entries(settingsForTextSection).map(([key, value]) => (
-                  <Checkbox
+                  <SwitchToggle
                     key={key}
                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     checked={value}
@@ -309,7 +311,7 @@ export default function GeneralSettings() {
             <Box paddingBlock="300">
               <BlockStack gap="200">
                 {Object.entries(settingsforAddNamesAndNumbers).map(([key, value]) => (
-                  <Checkbox
+                  <SwitchToggle
                     key={key}
                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     checked={value}
@@ -335,7 +337,7 @@ export default function GeneralSettings() {
             <Box paddingBlock="300">
               <BlockStack gap="200">
                 {Object.entries(settingsforAddArtSection).map(([key, value]) => (
-                  <Checkbox
+                  <SwitchToggle
                     key={key}
                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     checked={value}
@@ -364,7 +366,7 @@ export default function GeneralSettings() {
             <Box paddingBlock="300">
               <BlockStack gap="200">
                 {Object.entries(artworkEditorSettings).map(([key, value]) => (
-                  <Checkbox
+                  <SwitchToggle
                     key={key}
                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     checked={value}
@@ -393,7 +395,7 @@ export default function GeneralSettings() {
             <Box paddingBlock="300">
               <BlockStack gap="200">
                 {Object.entries(uploadSettings).map(([key, value]) => (
-                  <Checkbox
+                  <SwitchToggle
                     key={key}
                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     checked={value}
@@ -420,7 +422,7 @@ export default function GeneralSettings() {
             <Box paddingBlock="300">
               <BlockStack gap="200">
                 {Object.entries(otherSettings).map(([key, value]) => (
-                  <Checkbox
+                  <SwitchToggle
                     key={key}
                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     checked={value}

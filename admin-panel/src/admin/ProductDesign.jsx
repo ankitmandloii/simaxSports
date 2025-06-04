@@ -1,15 +1,15 @@
 // src/admin/ProductDesignList.js
 import { useEffect, useState } from 'react';
 import {
-  Box,
   Button,
   Card,
   DataTable,
   Page,
   Text,
   InlineStack,
-  Spinner,
   BlockStack,
+  SkeletonBodyText,
+  SkeletonDisplayText,
 } from '@shopify/polaris';
 
 export default function ProductDesignList() {
@@ -20,7 +20,6 @@ export default function ProductDesignList() {
   const perPage = 10;
 
   useEffect(() => {
-    // ✅ Simulated API call using fake store as a placeholder
     setLoading(true);
     fetch('https://fakestoreapi.com/products?limit=100') // Replace with real Product Design API
       .then((res) => res.json())
@@ -53,9 +52,13 @@ export default function ProductDesignList() {
     <Page fullWidth title="Product Design List" subtitle="Manage your design templates here.">
       <Card sectioned>
         {loading ? (
-          <BlockStack align="center" inlineAlign="center" minHeight="200px">
-            <Spinner accessibilityLabel="Loading designs" size="large" />
-            <Text variant="bodyMd" tone="subdued">Loading product designs...</Text>
+          // 🧱 Skeleton instead of Spinner
+          <BlockStack gap="300">
+            <SkeletonDisplayText size="medium" />
+            <SkeletonBodyText lines={12} />
+            <InlineStack align="center" gap="400" wrap={false}>
+              <SkeletonBodyText lines={1} />
+            </InlineStack>
           </BlockStack>
         ) : (
           <>
@@ -64,7 +67,7 @@ export default function ProductDesignList() {
                 columnContentTypes={['text', 'text', 'text', 'text']}
                 headings={['ID', 'Title', 'Category', 'Price']}
                 rows={rows}
-                footerContent={`Page ${page} of ${totalPages}`}
+                footerContent={`${page}`}
               />
             </div>
 

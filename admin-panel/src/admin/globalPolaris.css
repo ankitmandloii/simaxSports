@@ -1,5 +1,13 @@
 .Polaris-Navigation__Section {
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 2px;
+}
+
+
+.submenu {
+    position: relative;
+    left: 14%;
+    width: 86%;
+    top: 0%;
 }

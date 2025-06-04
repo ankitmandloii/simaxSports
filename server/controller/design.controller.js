@@ -3,7 +3,7 @@ const { sendResponse } = require("../utils/sendResponse.js");
 const { SuccessMessage, ErrorMessage } = require("../constant/messages.js");
 const { statusCode } = require("../constant/statusCodes.js");
 const { default: AdminSettings } = require("../schema/adminSettingsSchema.js");
-const { emitSettingUpdate } = require('../index.js');
+const { emitSettingUpdate } = require('../socket.js');
 
 
 exports.sendEmailDesign = async (req, res) => {
@@ -40,15 +40,16 @@ exports.sendEmailDesign = async (req, res) => {
 
 exports.saveSettings = async (req, res) => {
     try {
-        console.log("body", req.body);
+        
         const existing = await AdminSettings.findOne();
 
-        console.log("existing", existing);
+      
 
 
         if (existing) {
             await AdminSettings.updateOne({}, { $set: req.body });
             emitSettingUpdate(req.body);
+           
             return sendResponse(res, statusCode.OK, true, "Settings updated");
         } else {
             await AdminSettings.create(req.body);

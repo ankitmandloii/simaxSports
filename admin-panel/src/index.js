@@ -17,7 +17,9 @@ root.render(
 
   <Provider store={store}>
     <AppProvider i18n={{}}>
-      <App />
+      <StrictMode>
+        <App />
+      </StrictMode>
     </AppProvider>
   </Provider>
 
