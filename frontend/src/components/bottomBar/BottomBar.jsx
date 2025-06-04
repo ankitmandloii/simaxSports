@@ -21,16 +21,17 @@ import AddImageToolbar from '../Toolbar/AddImageToolbar/AddImageToolbar';
 import NamesToolbar from '../Toolbar/NamesToolbar/NamesToolbar';
 import ProductToolbar from '../Toolbar/ProductToolbar/ProductToolbar';
 import AddTextToolbar from '../Toolbar/AddTextToolbar/AddTextToolbar';
+import UploadArtToolbar from '../Toolbar/UploadArtToolbar/UploadArtToolbar';
 
 const menuItems = [
-  { path: "/product", icon: <RiTShirt2Line />, label: "Products" ,data:<ProductToolbar/> },
-  { path: "/addText", icon: <AddProductIcon />, label: "Text",data:<AddTextToolbar/> },
-  { path: "/uploadArt", icon: <LuHardDriveUpload />, label: "Upload",data:<AddImageToolbar/> },
-  { path: "/addArt", icon: <PiCameraPlusFill />, label: "Add Art",data:<AddArtToolbar/> },
-  { path: "/addNames", icon: <PiListNumbersBold />, label: "Names & Numbers" ,data:<NamesToolbar/>},
+  { path: "/product", icon: <RiTShirt2Line />, label: "Products", data: <ProductToolbar /> },
+  { path: "/addText", icon: <AddProductIcon />, label: "Text", data: <AddTextToolbar /> },
+  { path: "/uploadArt", icon: <LuHardDriveUpload />, label: "Upload", data: <UploadArtToolbar /> },
+  { path: "/addArt", icon: <PiCameraPlusFill />, label: "Add Art", data: <AddArtToolbar /> },
+  { path: "/addNames", icon: <PiListNumbersBold />, label: "Names & Numbers", data: <NamesToolbar /> },
 ];
 
-const BottomBar = () => { 
+const BottomBar = () => {
   const [card, setCard] = useState(2);
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
@@ -65,10 +66,10 @@ const BottomBar = () => {
               to={item.path}
               className={`${styles.menuItem} ${location.pathname.startsWith(item.path) ? styles.active : ''
                 }`}
-                onClick={() => {
-                  setSheetContaint(item.data);
-                  setIsOpen(true);
-                }}
+              onClick={() => {
+                setSheetContaint(item.data);
+                setIsOpen(true);
+              }}
             >
               <div className={`${styles.bottomBarIcon} ${location.pathname.startsWith(item.path) ? styles.active : ''
                 }`}>{item.icon}
@@ -82,7 +83,7 @@ const BottomBar = () => {
           </SwiperSlide>
         ))}
       </Swiper>
-      <AddTextSheet isOpen = {isOpen} setIsOpen = {setIsOpen} sheetContaint={sheetContaint}></AddTextSheet>
+      <AddTextSheet isOpen={isOpen} setIsOpen={setIsOpen} sheetContaint={sheetContaint}></AddTextSheet>
     </div>
   );
 };

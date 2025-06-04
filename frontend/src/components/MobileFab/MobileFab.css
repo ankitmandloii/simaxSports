@@ -8,6 +8,7 @@
   z-index: 1000;
 }
 
+/* Main Floating Button */
 .fab-main {
   background-color: #000;
   color: #fff;
@@ -22,24 +23,25 @@
   align-items: center;
   justify-content: center;
   transition: transform 0.3s ease;
-  margin-bottom: 10px;
+  position: fixed;
 }
 
-.fab-main:hover {
-  transform: scale(1.1) rotate(45deg);
+.fab-main.rotate {
+  transform: rotate(45deg);
 }
 
-/* 
-
+/* Actions container */
 .fab-actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  align-items: flex-end;
   margin-bottom: 10px;
+  pointer-events: none;
+  position: absolute;
+  bottom: 40px;
 }
 
-/* Child buttons start invisible and shifted down with smaller scale */
-.fab-button {
+.fab-actions .fab-button {
   background-color: #fff;
   color: #000;
   border: 1.5px solid #000;
@@ -53,32 +55,28 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  margin: 10px 0;
   transform: translateY(20px);
-  /* start down */
-  pointer-events: none;
+  margin: 8px 0;
   transition:
-    opacity 300ms ease-in-out,
-    transform 300ms ease-in-out,
+    opacity 300ms ease,
+    transform 300ms ease,
     box-shadow 0.3s ease;
 }
 
-.fab-button.show {
+/* Show when container is open */
+.fab-actions.open .fab-button {
   opacity: 1;
   transform: translateY(0);
-  /* move up to normal */
   pointer-events: auto;
 }
 
+/* Hover */
 .fab-button:hover {
   transform: translateY(-3px) scale(1.1);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-
-
-
+/* Tooltip styling */
 .fab-tooltip-wrapper {
   position: relative;
 }
@@ -101,5 +99,5 @@
 
 .fab-tooltip-wrapper:hover .fab-tooltip {
   opacity: 1;
-  transform: translateX(0);
+  /* transform: translateX(0); */
 }

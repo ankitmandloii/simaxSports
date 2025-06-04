@@ -20,11 +20,13 @@ import { removeNameAndNumberProduct, setRendering } from '../../../redux/Fronten
 import ContinueEditPopup from '../../PopupComponent/ContinueEditPopup/ContinueEditPopup';
 import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesignSlice';
 import { fetchProducts } from '../../../redux/ProductSlice/ProductSlice';
+import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSlice';
 // import io from 'socket.io-client';
 import { updateAdminSettingsFromSocket } from '../../../redux/SettingsSlice/SettingsSlice';
 // const socket = io(process.env.REACT_APP_BASE_URL, {
 //   transports: ["websocket"], // ensure real WebSocket connection
 // });
+
 
 const ProductToolbar = () => {
   const dispatch = useDispatch();
@@ -245,7 +247,7 @@ const ProductToolbar = () => {
                             selectedColor: safeCloneColor(clickedColor, product.imgurl),
                             imgurl: clickedColor?.img || product.imgurl,
                           };
-                          // setActiveProduct(updatedActiveProduct);
+                          dispatch(setActiveProduct(updatedActiveProduct));
                           setTimeout(() => dispatch(setRendering()), 10);
                           setActiveThumbnail((prev) =>
                             prev.productIndex === index && prev.colorIndex === i
@@ -361,6 +363,7 @@ const ProductToolbar = () => {
                 </div>
               </div>
             </div>
+
           ))}
 
           <button className={style.addProductBtn} onClick={addProductPopup}>

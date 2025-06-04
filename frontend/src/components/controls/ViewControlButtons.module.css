@@ -1,5 +1,5 @@
 .buttonContainer {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 16px;
   padding: 16px;
@@ -36,6 +36,7 @@
 .iconButton:hover {
   background-color: #e0e0e0;
 }
+
 .iconButton span {
   color: black;
   font-size: 25px;
@@ -45,4 +46,11 @@
   width: 24px;
   height: 24px;
   transition: transform 0.3s ease;
+}
+
+@media screen and (max-width: 800px) {
+  .buttonContainer {
+    display: flex;
+  }
+
 }

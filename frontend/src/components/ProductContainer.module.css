@@ -281,10 +281,10 @@ canvas#mirrorCanvasBack {
 
 
 @media screen and (max-width:1200px) {
-  .ProuductMirrorContainer{
-   position: absolute;
-   right: 0;
-   top: 10%;
+  .ProuductMirrorContainer {
+    position: absolute;
+    right: 0;
+    top: 10%;
   }
 
   .flex {
@@ -294,12 +294,21 @@ canvas#mirrorCanvasBack {
 }
 
 @media screen and (max-width:800px) {
-  .ProuductMirrorContainer{
-   display: none;
+  .ProuductMirrorContainer {
+    display: none;
   }
-  .controllContainer{
+
+  .controllContainer {
     position: fixed;
     left: 0;
     z-index: 999;
+    display: flex;
+    position: fixed;
+    left: 0;
+    z-index: 999;
+    flex-direction: column;
+    gap: 13rem;
+    /* justify-content: center; */
+    height: 100%;
   }
 }

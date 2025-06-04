@@ -45,7 +45,7 @@ function RedoundoComponent() {
 
             disabled={!canStartOver}
           >
-            <span><StartOverIcon /></span>START OVER
+            <span><StartOverIcon /></span>RESET
           </button>
         </li>
       </ul>

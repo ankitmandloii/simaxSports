@@ -65,7 +65,7 @@ import { FiSave } from "react-icons/fi";
 import { FaArrowRightLong } from "react-icons/fa6";
 import SaveDesignPopup from '../PopupComponent/SaveDesignPopup/SaveDesignPopup.jsx';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { requestExport } from '../../redux/CanvasExportDesign/canvasExportSlice.js';
 import MobileFAB from '../MobileFab/MobileFab.jsx';
 const Footer = () => {
@@ -73,7 +73,7 @@ const Footer = () => {
   const [isMobile, setIsMobile] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     handleResize();
@@ -92,7 +92,8 @@ const Footer = () => {
 
   return (
     <>
-      {!isMobile ? (
+      {/* Desktop View */}
+      {!isMobile && !sleevedesignn && (
         <div className={footerStyle.footerContainer}>
           <button className={footerStyle.footerBtn} onClick={setSavedesignPopupHandler}>
             <IoShareSocialOutline /> SHARE
@@ -107,7 +108,10 @@ const Footer = () => {
             NEXT STEP <FaArrowRightLong />
           </button>
         </div>
-      ) : (
+      )}
+
+      {/* Show MobileFAB if isMobile OR sleeveDesign is true */}
+      {(isMobile || sleevedesignn) && (
         <MobileFAB
           onShare={setSavedesignPopupHandler}
           onSave={setSavedesignPopupHandler}
@@ -116,11 +120,13 @@ const Footer = () => {
         />
       )}
 
+      {/* Show Save Design Popup */}
       {savedesignpopup && (
         <SaveDesignPopup setSavedesignPopupHandler={setSavedesignPopupHandler} />
       )}
     </>
   );
+
 };
 
 export default Footer;
