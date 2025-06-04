@@ -81,7 +81,7 @@
   background: white;
   height: max-content;
   border-radius: 10px;
-  gap: 20px;
+  gap: 10px;
   /* width: 104px; */
   align-items: center;
   justify-content: center;
@@ -167,7 +167,7 @@
 
 .cornerImgCanvaContainer {
   object-fit: contain;
-  height: 86px;
+  /* height: 86px; */
   width: 86px;
   margin-bottom: 0px;
   border-radius: 10px;

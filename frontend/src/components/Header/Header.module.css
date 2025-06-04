@@ -81,7 +81,7 @@ a.step:first-child:after {
 
 
 .stepActive {
-  color: #005bff;
+  color: #005bff !important;
   /* border-bottom: 2px solid red; */
   padding-bottom: 2px;
   position: relative;

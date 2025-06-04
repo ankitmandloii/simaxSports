@@ -553,7 +553,7 @@ const MainDesignTool = ({
     const canvas = new fabric.Canvas(canvasRef.current, {
       width: 550,
       height: 450,
-      // backgroundColor: "gray"  
+      // backgroundColor: "gray"
     });
 
     canvas.preserveObjectStacking = true;
