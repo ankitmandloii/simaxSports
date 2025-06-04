@@ -1,51 +1,40 @@
-import React, { useState, useRef, useEffect } from 'react';
-import './MobileFab.css';
+import React, { useState, useRef } from 'react';
 import { IoShareSocialOutline, IoPricetagOutline } from 'react-icons/io5';
 import { FiSave } from 'react-icons/fi';
 import { FaPlus } from 'react-icons/fa';
 import { FaArrowRightLong } from 'react-icons/fa6';
+import style from './MobileFab.module.css'
 
 const MobileFAB = ({ onShare, onSave, onPrice, onNext }) => {
   const [open, setOpen] = useState(false);
   const fabRef = useRef(null); // reference to the entire FAB
 
-  // Close on outside click
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (fabRef.current && !fabRef.current.contains(event.target)) {
-  //       setOpen(false);
-  //     }
-  //   };
-
-  //   document.addEventListener('mousedown', handleClickOutside);
-  //   return () => document.removeEventListener('mousedown', handleClickOutside);
-  // }, []);
 
   return (
-    <div className="fab-container" ref={fabRef}>
+    <div className={style.fabContainer} ref={fabRef}>
       {/* Action Buttons */}
-      <div className={`fab-actions ${open ? 'open' : ''}`}>
-        <div className="fab-tooltip-wrapper">
-          <span className="fab-tooltip">Share</span>
-          <button className="fab-button" onClick={onShare}>
+      <div className={`${style.fabActions} ${open ? style.open : ''}`}>
+        <div className={style.fabTooltipWrapper}>
+          <span className={style.fabTooltip}>Share</span>
+          <button className={style.fabButton} onClick={onShare}>
             <IoShareSocialOutline />
           </button>
         </div>
-        <div className="fab-tooltip-wrapper">
-          <span className="fab-tooltip">Get Price</span>
-          <button className="fab-button" onClick={onPrice}>
+        <div className={style.fabTooltipWrapper}>
+          <span className={style.fabTooltip}>Get Price</span>
+          <button className={style.fabButton} onClick={onPrice}>
             <IoPricetagOutline />
           </button>
         </div>
-        <div className="fab-tooltip-wrapper">
-          <span className="fab-tooltip">Save Design</span>
-          <button className="fab-button" onClick={onSave}>
+        <div className={style.fabTooltipWrapper}>
+          <span className={style.fabTooltip}>Save Design</span>
+          <button className={style.fabButton} onClick={onSave}>
             <FiSave />
           </button>
         </div>
-        <div className="fab-tooltip-wrapper">
-          <span className="fab-tooltip">Next Step</span>
-          <button className="fab-button" onClick={onNext}>
+        <div className={style.fabTooltipWrapper}>
+          <span className={style.fabTooltip}>Next Step</span>
+          <button className={style.fabButton} onClick={onNext}>
             <FaArrowRightLong />
           </button>
         </div>
@@ -53,7 +42,7 @@ const MobileFAB = ({ onShare, onSave, onPrice, onNext }) => {
 
       {/* Main FAB Button */}
       <button
-        className={`fab-main ${open ? 'rotate' : ''}`}
+        className={`${style.fabMain} ${open ? style.rotate : ''}`}
         onClick={() => setOpen(!open)}
         title="Toggle Menu"
       >

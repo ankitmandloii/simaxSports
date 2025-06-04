@@ -27,8 +27,6 @@ function App() {
   const reduxState = useSelector((state) => state); // whole state
   const {
     list: rawProducts,
-    loading,
-    error,
   } = useSelector((state) => state.products);
   // Save Redux state to localStorage on unload
   useEffect(() => {
@@ -103,7 +101,7 @@ function App() {
                       fontWeight: "700",
                     }}
                   >
-                    Let's create something greate today
+                    Let's create something great today
                   </p>
                   <div className="loader-spinner"></div>
                 </div>

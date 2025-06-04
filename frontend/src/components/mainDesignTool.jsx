@@ -166,7 +166,7 @@ const MainDesignTool = ({
 
   const isLocked = (_eventData, transform) => {
     const id = transform.target.id;
-    const foundObject = textContaintObject?.find((obj) => obj.id == id);
+    const foundObject = textContaintObject?.find((obj) => obj.id === id);
     const isLocked = foundObject?.locked ?? false;
     return isLocked;
   }
@@ -404,17 +404,17 @@ const MainDesignTool = ({
 
 
     // console.log("activeSide inside", activeSide);
-    if (activeSide == "front") {
+    if (activeSide === "front") {
       // console.log("active side", activeSide, "changing front")
       setFrontPreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
     }
-    else if (activeSide == "back") {
+    else if (activeSide === "back") {
       setBackPreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
     }
-    else if (activeSide == "leftSleeve") {
+    else if (activeSide === "leftSleeve") {
       setLeftSleevePreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
     }
-    else if (activeSide == "rightSleeve") {
+    else if (activeSide === "rightSleeve") {
       setRightSleevePreviewImage(await getImageFromCanvas(fabricCanvasRef.current))
     }
 
@@ -772,7 +772,7 @@ const MainDesignTool = ({
 
   const renderCurveTextObjects = () => {
     const canvas = fabricCanvasRef.current;
-    if (textContaintObject && textContaintObject.length == 0) {
+    if (textContaintObject && textContaintObject.length === 0) {
       let existingTextbox = canvas.getObjects().filter((obj) => obj.type === "curved-text" || obj.type === "textbox");
       existingTextbox.forEach((obj) => canvas.remove(obj));
       return;
@@ -1115,7 +1115,7 @@ const MainDesignTool = ({
     const baseFontSize = fontSizeMap[fontSize] || 80;
 
     // Remove old group if it exists
-    const oldGroup = canvas.getObjects().filter(obj => obj.isDesignGroup == true);
+    const oldGroup = canvas.getObjects().filter(obj => obj.isDesignGroup === true);
     oldGroup.forEach((oldGroup) => canvas.remove(oldGroup));
 
     const textObjects = [];
@@ -1147,7 +1147,7 @@ const MainDesignTool = ({
       if (textObjects.length > 0) {
         const previous = textObjects[textObjects.length - 1];
         numberText.top = previous.top + previous.height + 5;
-        numberText.left = ((-previous.width) / 2) - (fontSize == "small" ? 12 : 30);
+        numberText.left = ((-previous.width) / 2) - (fontSize === "small" ? 12 : 30);
       }
       textObjects.push(numberText);
     }
@@ -1191,7 +1191,7 @@ const MainDesignTool = ({
     group._calcBounds();
     group._updateObjectsCoords();
     group.set({
-      width: fontSize == "small" ? 60 : 190,
+      width: fontSize === "small" ? 60 : 190,
       left: position?.x || canvas.getWidth() / 2,
       top: position?.y || canvas.getHeight() / 2,
       // originX: 'center',
@@ -1294,7 +1294,7 @@ const MainDesignTool = ({
   // },[textContaintObject,activeSide])
 
   return (
-    <div id={style.canvas} style = {{position:"relative",top:5}} >
+    <div id={style.canvas} style={{ position: "relative", top: 5 }} >
       <canvas ref={canvasRef} />
       <LayerModal
         isOpen={isModalOpen}

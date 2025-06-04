@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-// import '../ProductToolbar/ProductToolbar.css';
 import { SearchIcon } from '../../iconsSvg/CustomIcon';
 import { aiContent } from '../../json/aiicontent';
 import SubArtBox from './SubArtBox';

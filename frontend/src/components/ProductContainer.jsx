@@ -24,7 +24,6 @@ function ProductContainer() {
   const frontImage = useSelector(state => state?.selectedProducts?.activeProduct?.imgurl);
   const backImage = useSelector(state => state?.selectedProducts?.activeProduct?.colors?.[1]?.img);
 
-  console.log("------------ssssss", sleevedesignn)
 
   function invertHexColor(hex) {
     try {

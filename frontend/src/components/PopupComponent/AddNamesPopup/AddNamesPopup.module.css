@@ -264,6 +264,12 @@ select:disabled {
   font-size: 1rem;
 }
 
+.totalCount {
+  background-color: #f0f2f5;
+  padding: 10px;
+  margin-top: 10px;
+}
+
 /* Refined medium screen support */
 @media (max-width: 1024px) {
   .popupContainer {

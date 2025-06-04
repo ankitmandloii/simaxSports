@@ -13,16 +13,15 @@ import {
   updateProduct as updateProductAction,
   deleteProduct as deleteProductAction,
   setSelectedProducts as setSelectedProductsAction,
-  setSelectedProducts,
 } from '../../../redux/ProductSlice/SelectedProductSlice';
-import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { removeNameAndNumberProduct, setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
-import ContinueEditPopup from '../../PopupComponent/ContinueEditPopup/ContinueEditPopup';
-import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesignSlice';
+// import ContinueEditPopup from '../../PopupComponent/ContinueEditPopup/ContinueEditPopup';
+// import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesignSlice';
 import { fetchProducts } from '../../../redux/ProductSlice/ProductSlice';
 import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSlice';
 // import io from 'socket.io-client';
-import { updateAdminSettingsFromSocket } from '../../../redux/SettingsSlice/SettingsSlice';
+// import { updateAdminSettingsFromSocket } from '../../../redux/SettingsSlice/SettingsSlice';
 // const socket = io(process.env.REACT_APP_BASE_URL, {
 //   transports: ["websocket"], // ensure real WebSocket connection
 // });

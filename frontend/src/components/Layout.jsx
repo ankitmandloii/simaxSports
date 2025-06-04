@@ -2,16 +2,15 @@ import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import AdminSidebar from './Sidebar/sidebar';
 import ProductContainer from './ProductContainer';
-import RedoundoComponent from './RedoundoComponent/redoundo';
 
 import { useMediaQuery } from 'react-responsive'
 
 const Layout = () => {
-  const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1023px)' })
+  // const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1023px)' })
   const isDesktopOrLaptop = useMediaQuery({ query: '(min-width: 1200px)' })
   const location = useLocation();
   const isQuantityPage = location.pathname === "/quantity";
-  const isProductPage = location.pathname === "/product";
+  // const isProductPage = location.pathname === "/product";
 
 
 

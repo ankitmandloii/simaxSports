@@ -22,7 +22,6 @@ import { useDispatch, useSelector } from 'react-redux';
 // import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
 // import { duplicateTextState, addTextState, updateTextState, toggleLockState, moveTextForwardState, moveTextBackwardState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 // import { setSelectedBackTextState } from '../../../redux/BackendDesign/TextBackendDesignSlice.js';
-import { useLocation } from "react-router-dom";
 
 
 const filters = [

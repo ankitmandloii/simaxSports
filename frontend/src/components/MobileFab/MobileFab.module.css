@@ -1,4 +1,4 @@
-.fab-container {
+.fabContainer {
   position: fixed;
   bottom: 84px;
   right: 20px;
@@ -9,7 +9,7 @@
 }
 
 /* Main Floating Button */
-.fab-main {
+.fabMain {
   background-color: #000;
   color: #fff;
   border: none;
@@ -26,12 +26,12 @@
   position: fixed;
 }
 
-.fab-main.rotate {
+.fabMain.rotate {
   transform: rotate(45deg);
 }
 
 /* Actions container */
-.fab-actions {
+.fabActions {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -41,14 +41,14 @@
   bottom: 40px;
 }
 
-.fab-actions .fab-button {
+.fabActions .fabButton {
   background-color: #fff;
   color: #000;
   border: 1.5px solid #000;
   border-radius: 50%;
   width: 48px;
   height: 48px;
-  font-size: 20px;
+  font-size: clamp(12px, 2vw, 14px);
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -64,24 +64,24 @@
 }
 
 /* Show when container is open */
-.fab-actions.open .fab-button {
+.fabActions.open .fabButton {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
 
 /* Hover */
-.fab-button:hover {
+.fabButton:hover {
   transform: translateY(-3px) scale(1.1);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
 }
 
 /* Tooltip styling */
-.fab-tooltip-wrapper {
+.fabTooltipWrapper {
   position: relative;
 }
 
-.fab-tooltip {
+.fabTooltip {
   position: absolute;
   right: 110%;
   margin-right: 8px;
@@ -97,7 +97,7 @@
   pointer-events: none;
 }
 
-.fab-tooltip-wrapper:hover .fab-tooltip {
+.fabTooltipWrapper:hover .fabTooltip {
   opacity: 1;
   /* transform: translateX(0); */
 }

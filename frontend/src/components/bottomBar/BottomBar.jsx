@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, FreeMode, Pagination } from "swiper/modules";
+import { FreeMode, Pagination } from "swiper/modules";
 import styles from './BottomBar.module.css';
 import { Link, useLocation } from "react-router-dom";
 import { RiTShirt2Line } from "react-icons/ri";
@@ -11,9 +11,7 @@ import "swiper/css";
 import 'swiper/css/bundle';
 import {
   AddProductIcon,
-  AddArtIcon,
-  SelectArtIcon,
-  NumberArtIcon,
+
 } from "../iconsSvg/CustomIcon";
 import AddTextSheet from '../mobileView/AddTextSheetMobile/AddTextSheet';
 import AddArtToolbar from '../Toolbar/AddArtToolbar/AddArtToolbar';

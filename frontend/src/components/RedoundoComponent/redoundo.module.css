@@ -65,18 +65,10 @@
 
 @media screen and (max-width: 1200px) {
   .redoundoContainer {
-    /* margin-top: -70px; */
-    /* transform: rotateZ(270deg); */
-    /* position: fixed; */
-    /* left: 15px; */
-    /* top: 190px; */
+
     z-index: 99999;
-    /* background-color: gray; */
   }
 
-  .redoundoLi {
-    /* transform: rotateZ(-270deg); */
-  }
 
   .productContainerButton {
     background-color: #fff;

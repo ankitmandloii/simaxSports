@@ -24,6 +24,10 @@
   margin-right: 5px;
 }
 
+.navSpanNumberActive {
+  color: #005bff;
+}
+
 a.step:first-child:after {
   content: "";
   width: 298px;
@@ -74,15 +78,7 @@ a.step:first-child:after {
   gap: 3px;
 }
 
-/* .step.active::after {
-  content: "";
-  position: absolute;
-  background-color: #000000;
-  height: 3px;
-  bottom: -20px;
-  left: 0;
-  right: 0;
-} */
+
 
 .stepActive {
   color: #005bff;
@@ -129,7 +125,8 @@ a.step:first-child:after {
   .navSteps {
     display: none;
   }
-  .rightSection p{
+
+  .rightSection p {
     display: none;
   }
 }

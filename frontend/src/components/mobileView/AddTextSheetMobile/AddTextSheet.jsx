@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
 import { Sheet } from 'react-modal-sheet';
-import AddTextToolbar from '../../Toolbar/AddTextToolbar/AddTextToolbar';
+// import AddTextToolbar from '../../Toolbar/AddTextToolbar/AddTextToolbar';
 import { IoClose } from 'react-icons/io5';
 
 export default function AddTextSheet({ isOpen, setIsOpen, sheetContaint }) {
