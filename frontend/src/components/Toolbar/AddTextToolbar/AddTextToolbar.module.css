@@ -1,352 +1,336 @@
 .toolbarBox {
-    gap: 12px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background: #f6f6f6;
-    padding: 10px;
-
+  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: #f6f6f6;
+  padding: 10px;
 }
 
 .toolbarBoxTextarea {
-    font-family: "Montserrat", sans-serif;
-    width: 100%;
-    height: 100px;
-    /* Set a fixed height */
-    resize: none;
-    outline: none;
-    font-size: 16px;
-    color: #555;
-    border-radius: 4px;
-    padding: 6px;
-    overflow-y: auto;
-    /* Show vertical scrollbar when needed */
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  height: 100px;
+  /* Set a fixed height */
+  resize: none;
+  outline: none;
+  font-size: 16px;
+  color: #555;
+  border-radius: 4px;
+  padding: 6px;
+  overflow-y: auto;
+  /* Show vertical scrollbar when needed */
 }
 
-
 .AddTextToolbarMainContainer {
-    position: relative;
+  position: relative;
 }
 
 .addTextFirstToolbarBoxContainer {
-    display: flex;
-    justify-content: space-around;
-    gap: 10px;
+  display: flex;
+  justify-content: space-around; /* use flex-start to allow natural overflow */
+  gap: 10px;
+
+  white-space: nowrap; /* prevent child items from wrapping */
+
+  padding: 10px; /* optional: spacing inside the container */
 }
 
 .toolbarBoxIconsAndHeadingForTogether {
-    display: flex;
+  display: flex;
 }
 
-
 .toolbarBoxIconsAndHeadingContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: 10px;
-    font-weight: 600;
-    line-height: 17px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 17px;
 }
 
 .toolbarBoxIconsContainer {
-
-    padding: 3px 8px;
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #cccfd6;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  padding: 3px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #cccfd6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .toolbarBoxIconsContainer:hover {
-    transform: scale(1.06);
-    background-color: #a9a6a6;
-    color: #fff;
+  transform: scale(1.06);
+  background-color: #a9a6a6;
+  color: #fff;
 }
 
 .toolbarBoxIconsContainerLayering1 {
-
-    padding: 3px 8px;
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-top: 1px solid #cccfd6;
-    border-bottom: 1px solid #cccfd6;
-    border-left: 1px solid #cccfd6;
-    border-right: 1px solid #cccfd6;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    cursor: pointer;
-
+  padding: 3px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #cccfd6;
+  border-bottom: 1px solid #cccfd6;
+  border-left: 1px solid #cccfd6;
+  border-right: 1px solid #cccfd6;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  cursor: pointer;
 }
 
 .toolbarBoxIconsContainerLayering1Active {
-
-    padding: 3px 8px;
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-top: 1px solid #cccfd6;
-    border-bottom: 1px solid #cccfd6;
-    border-left: 1px solid #cccfd6;
-    border-right: 1px solid #cccfd6;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    cursor: pointer;
-    background-color: black;
-    color: white;
-
+  padding: 3px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #cccfd6;
+  border-bottom: 1px solid #cccfd6;
+  border-left: 1px solid #cccfd6;
+  border-right: 1px solid #cccfd6;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  cursor: pointer;
+  background-color: black;
+  color: white;
 }
 
 .toolbarBoxIconsContainerLayering2 {
-
-    padding: 3px 8px;
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-top: 1px solid #cccfd6;
-    border-bottom: 1px solid #cccfd6;
-    border-right: 1px solid #cccfd6;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-    cursor: pointer;
-
-
+  padding: 3px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #cccfd6;
+  border-bottom: 1px solid #cccfd6;
+  border-right: 1px solid #cccfd6;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  cursor: pointer;
 }
 
 .toolbarBoxIconsContainerLayering2Active {
-    padding: 3px 8px;
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-top: 1px solid #cccfd6;
-    border-bottom: 1px solid #cccfd6;
-    border-right: 1px solid #cccfd6;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-    cursor: pointer;
-    background-color: black;
-    color: white;
-
-
+  padding: 3px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #cccfd6;
+  border-bottom: 1px solid #cccfd6;
+  border-right: 1px solid #cccfd6;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  cursor: pointer;
+  background-color: black;
+  color: white;
 }
 
 .toolbarBoxIconsContainerFlip1 {
-
-    padding: 3px 8px;
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #cccfd6;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    cursor: pointer;
+  padding: 3px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #cccfd6;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  cursor: pointer;
 }
 
 .toolbarBoxIconsContainerClickStyleFlip1 span {
-
-    padding: 6px 8px;
-    margin-bottom: 4px;
-    display: flex;
-    color: white;
-    background-color: black;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #cccfd6;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    cursor: pointer;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  color: white;
+  background-color: black;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #cccfd6;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  cursor: pointer;
 }
 
 .toolbarBoxIconsContainerClickStyleFlip2 span {
-
-    padding: 6px 8px;
-    margin-bottom: 4px;
-    display: flex;
-    color: white;
-    background-color: black;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #cccfd6;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-    cursor: pointer;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  color: white;
+  background-color: black;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #cccfd6;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  cursor: pointer;
 }
 
 .toolbarBoxIconsContainerActive {
-    color: white;
-    background-color: black;
+  color: white;
+  background-color: black;
 }
 
 .toolbarBoxIconsContainerFlip2 {
-
-    padding: 3px 8px;
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-top: 1px solid #cccfd6;
-    border-bottom: 1px solid #cccfd6;
-    border-left: 1px solid #cccfd6;
-    border-right: 1px solid #cccfd6;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-    cursor: pointer;
-
+  padding: 3px 8px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #cccfd6;
+  border-bottom: 1px solid #cccfd6;
+  border-left: 1px solid #cccfd6;
+  border-right: 1px solid #cccfd6;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  cursor: pointer;
 }
-
 
 /* secondtoolBartoolStyle */
 .toolbarBoxIconsContainerForTogether {
-    display: flex;
+  display: flex;
 }
 
 .toolbarBoxFontValueSetInnerContainer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
 }
 
 .toolbarBoxFontValueSetInnerActionLogo {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .toolbarBoxFontValueSetInnerActionLogo span {
-    /* margin-left: 11px; */
-    /* padding:5px; */
-    display: inline-block;
-    text-align: center;
-
+  /* margin-left: 11px; */
+  /* padding:5px; */
+  display: inline-block;
+  text-align: center;
 }
 
 .spanValueBoxInput {
-    /* padding: 0px 5px; */
-    border: 1px solid #cccfd6;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 500;
-    color: #555;
-    width: 50px;
-    text-align: center;
+  /* padding: 0px 5px; */
+  border: 1px solid #cccfd6;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #555;
+  width: 50px;
+  text-align: center;
 }
 
-
-
-
 .toolbarBoxFontValueSetInnerActionHeading {
-    font-weight: 500;
-    font-size: 12px;
-    cursor: pointer;
-    /* position: relative; */
-    display: flex;
-    align-items: center;
-    gap: 7px;
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+  /* position: relative; */
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }
 
 .noneSvgIcon {
-    width: 15px;
-    align-items: center;
-    height: 18px;
-    justify-content: center;
-    border: 2px solid #D2D5D9;
-    display: flex;
-    /* background-color: black; */
+  width: 15px;
+  align-items: center;
+  height: 18px;
+  justify-content: center;
+  border: 2px solid #d2d5d9;
+  display: flex;
+  /* background-color: black; */
 }
 
 .addTextInnerMainContainerr {
-    color: #000;
-    gap: 12px;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
+  color: #000;
+  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
 .lockedToolbar {
-    opacity: 0.4;
-    pointer-events: none;
-    /* Prevent interaction */
-    user-select: none;
-    /* Prevent text selection */
+  opacity: 0.4;
+  pointer-events: none;
+  /* Prevent interaction */
+  user-select: none;
+  /* Prevent text selection */
 }
 
-
-
 .addTextInnerMainContainerr::-webkit-scrollbar {
-    /* color: red; */
-    background-color: #888;
-    color: #fff;
-    width: 5px;
-    height: 3px;
+  /* color: red; */
+  background-color: #888;
+  color: #fff;
+  width: 5px;
+  height: 3px;
 }
 
 .colorrrrr {
-    position: absolute;
-    top: 0;
-    left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .colorr2 {
-    position: absolute;
-    top: 0;
-    left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .center-btn:active {
-    color: white;
-    background-color: black;
+  color: white;
+  background-color: black;
 }
 
 .duplicateBtn:active {
-    color: white;
-    background-color: black;
+  color: white;
+  background-color: black;
 }
 
 .toolbarIcon {
-    background-color: transparent;
-    color: black;
-    padding: 4px 4px;
-    border-radius: 4px;
-    border: 1px solid #D2D5D9;
-    cursor: pointer;
-    margin-bottom: 5px;
-    transition: all 0.2s ease;
-
+  background-color: transparent;
+  color: black;
+  padding: 4px 4px;
+  border-radius: 4px;
+  border: 1px solid #d2d5d9;
+  cursor: pointer;
+  margin-bottom: 5px;
+  transition: all 0.2s ease;
 }
 
 .toolbarIcon:hover {
-    transform: scale(1.06);
-    background-color: #a9a6a6;
-    color: #fff;
-
-
+  transform: scale(1.06);
+  background-color: #a9a6a6;
+  color: #fff;
 }
 
 .toolbarIconActive {
-    background-color: black;
-    color: white;
-    padding: 4px 4px;
-    border-radius: 4px;
-    border: 1px solid #D2D5D9;
-    cursor: pointer;
-    margin-bottom: 5px;
+  background-color: black;
+  color: white;
+  padding: 4px 4px;
+  border-radius: 4px;
+  border: 1px solid #d2d5d9;
+  cursor: pointer;
+  margin-bottom: 5px;
 }
 
 .toolbarBoxIconsContainerFlip1:hover,
 .toolbarBoxIconsContainerFlip2:hover {
-    transform: scale(1.06);
-    background-color: #a9a6a6;
-    color: #fff;
+  transform: scale(1.06);
+  background-color: #a9a6a6;
+  color: #fff;
+}
+
+@media screen and(max-width:900) {
+  .addTextFirstToolbarBoxContainer {
+    overflow-x: scroll !important; /* 'auto' works better with dynamic content */
+    white-space: nowrap; /* prevent child items from wrapping */
+    scroll-behavior: smooth; /* optional: smooth scrolling */
+  }
 }

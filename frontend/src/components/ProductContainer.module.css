@@ -1,6 +1,8 @@
 .ProductContainerMainDiv {
   width: 100%;
+  /* height: calc(100vh - 50px); */
   position: relative;
+
   /* border: 2px solid black; */
   /* background-color: aqua; */
 }
@@ -17,8 +19,8 @@
   font-size: 11px;
   font-weight: 600;
   padding: 8px 20px;
-  justify-content: center;
-  align-items: center;
+  justify-content: start;
+  align-items: start;
   text-align: center;
   /* margin: 20px 5px; */
   cursor: pointer;
@@ -27,13 +29,11 @@
 .ProductContainerButton:hover {
   background-color: #5f5757;
   color: #fff;
-
 }
 
 .ProductContainerButton:active {
   background-color: #888;
   color: #fff;
-
 }
 
 .ProductContainerButton span {
@@ -106,14 +106,14 @@
   /* margin:5px;   */
   border-radius: 10px;
   background-color: white;
-  box-shadow: 0 0 0 1px #D2D5D9;
+  box-shadow: 0 0 0 1px #d2d5d9;
   padding: 10px;
   margin-bottom: 2px;
   transition: all 0.5s ease -in -out;
 }
 
 .ProductContainerSmallImage:hover {
-  box-shadow: 0 0 0 2px #005BFF;
+  box-shadow: 0 0 0 2px #005bff;
 }
 
 .ProductContainerSmallImage p {
@@ -121,8 +121,6 @@
 }
 
 .ProductContainerSmallImageZoomButton {
-
-
   background-color: white;
   color: black;
   display: flex;
@@ -178,7 +176,7 @@
 }
 
 .hoverActive {
-  box-shadow: 0 0 0 2px #005BFF;
+  box-shadow: 0 0 0 2px #005bff;
 }
 
 /* canvas#mirrorCanvasFront {
@@ -193,7 +191,7 @@
 canvas#mirrorCanvasBack {
   width: 86px !important;
   height: 90px !important;
-  border: 1px solid #D2D5D9;
+  border: 1px solid #d2d5d9;
   border-radius: 10px;
   margin: 0px 5px 5px 5px;
   padding: 9px;
@@ -211,18 +209,21 @@ canvas#mirrorCanvasBack {
 
 #mirrorCanvas {
   border-radius: 10px;
-
 }
 
 .flex {
-  margin-top: 18px;
   display: flex;
   align-items: start;
   width: 100%;
+  /* margin-top: 0px; */
+  height: calc(100vh - 40px);
   justify-content: center;
-  /* background-color: white; */
-  justify-content: space-evenly;
+  background-color: transparent;
+  justify-content: space-around;
+  padding: 10px;
   position: relative;
+  overflow: hidden;
+  /* background-color: green; */
 }
 
 .mainSleveContainer {
@@ -260,7 +261,7 @@ canvas#mirrorCanvasBack {
   justify-content: center;
   align-items: center;
   gap: 10px;
-  border: 1px solid #D2D5D9;
+  border: 1px solid #d2d5d9;
   background: #fff;
   padding: 8px 20px;
   border-radius: 10px;
@@ -271,7 +272,7 @@ canvas#mirrorCanvasBack {
 }
 
 .zoomContainer:hover {
-  box-shadow: 0 0 0 2px #005BFF;
+  box-shadow: 0 0 0 2px #005bff;
 }
 
 .zoomContainer svg {
@@ -279,21 +280,23 @@ canvas#mirrorCanvasBack {
   min-height: 18px;
 }
 
-
-@media screen and (max-width:1200px) {
+@media screen and (max-width: 1200px) {
   .ProuductMirrorContainer {
-    position: absolute;
-    right: 0;
-    top: 10%;
+    /* display: none; */
+    /* position: absolute; */
+    /* right: 0; */
+    /* top: 10%; */
   }
 
   .flex {
-    margin-top: 0px;
-    justify-content: center;
+    /* margin-top: 80px; */
+    /* align-items: center; */
+      align-items: center;
+    justify-content:center;
   }
 }
 
-@media screen and (max-width:800px) {
+@media screen and (max-width: 1024px) {
   .ProuductMirrorContainer {
     display: none;
   }
@@ -303,12 +306,17 @@ canvas#mirrorCanvasBack {
     left: 0;
     z-index: 999;
     display: flex;
+    top: 25px;
     position: fixed;
     left: 0;
     z-index: 999;
     flex-direction: column;
-    gap: 13rem;
-    /* justify-content: center; */
+    justify-content: center;
     height: 100%;
+  }
+   .flex {
+    /* margin-top: 0px; */
+    /* align-items: center; */
+    justify-content: center;
   }
 }

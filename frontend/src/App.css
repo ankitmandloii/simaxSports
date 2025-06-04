@@ -66,6 +66,7 @@ h4 {
   /* width: 100%; */
   /* max-width: 1400px; */
   /* display: flex; */
+  position: relative;
   margin: 0 auto;
 }
 
@@ -77,7 +78,8 @@ h4 {
 .main-layout-container {
   /* width: calc(100% - 270px); */
   width: 100%;
-  height: 87vh;
+  height: 100vh;
+  /* margin-top: 5px; */
   overflow-y: auto;
   background-color: #f1f1f1;
   position: relative;
@@ -104,12 +106,14 @@ h4 {
 .flex {
   display: flex;
   justify-content: space-between;
+  position: relative;
 }
 
 .page-content {
   display: flex;
   max-width: 1901px;
   margin: 0 auto;
+  margin-top: 90px;
 }
 
 .layout-toolbar {
@@ -118,9 +122,9 @@ h4 {
   width: 100%;
   padding: 10px;
   max-height: 680px;
+  max-width: 600px;
   height: 680px;
   margin-left: 21px;
-  margin-top: 22px;
 }
 
 .layout-product {
@@ -258,6 +262,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 100%;
   background: #fff;
   max-height: 680px;
+  min-width: 400px;
   height: 680px;
   border-radius: 0px 20px 20px 0px;
   padding-inline: 30px;
@@ -386,10 +391,7 @@ hr {
   height: 1rem;
 
   width: 1rem;
-
-
 }
-
 
 .close-popup-btn svg {
   height: 8px;
@@ -503,7 +505,7 @@ hr {
 .loader-spinner {
   border: 8px solid #f3f3f3;
   /* Light gray */
-  border-top: 8px solid #005BFF;
+  border-top: 8px solid #005bff;
   /* Blue */
   border-radius: 50%;
   width: 80px;
@@ -521,63 +523,75 @@ hr {
   }
 }
 
+/* #canvas,
+.upper-canvas,
+.lower-canvas,
+.canvas-container {
+  width: 110vw !important;
+  height: 87vh !important;
+  max-width: 500px !important;
+  min-height: 300px !important;
+  min-width: 300px !important;
+  max-height: 700px !important;
+  position: relative;
+  top: 40px;
+  object-fit: contain;
+} */
 
-  #canvas,
+/* Base style */
+#canvas,
+.upper-canvas,
+.lower-canvas,
+.canvas-container {
+  width: 40vw !important;
+  height: 40vh !important;
+  max-width: 700px !important;
+  min-width: 400px !important;
+  max-height: 700px !important;
+  min-height: 400px !important;
+  object-fit:scale-down ;
+  /* position: relative !important; */
+  object-fit: contain !important;
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+/* Main layout container */
+/* .main-layout-container {
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+} */
+
+/* ≤ 1200px: Adjust layout and scale canvas */
+@media (max-width: 1200px) {
+  /* #canvas,
   .upper-canvas,
   .lower-canvas,
   .canvas-container {
-    width: 90vw !important;
-    height: 87vh !important;
-    max-width: 500px !important;
+    height: 60vh !important;
+    width: auto !important;
+    max-width: 110vw !important;  
     min-height: 300px !important;
-    min-width: 300px !important;
-    max-height: 700px !important;
+    min-width: 250px !important;
+    object-fit: cover !important;
+    display: block !important;
+    position:absolute !important;
+
+    margin-left: auto !important;  
+    margin-right: 65vw !important; 
+    margin: 0 auto !important;
+  } */
+  .page-content {
+    margin-top: 0px;
+  }
+  .toolbar-main-container {
+    /* min-width: 300px; */
+    padding: 1px;
+    width: 300px;
+    margin: 0 auto;
     position: relative;
-    /* margin: 0 auto !important; */
-    top: 40px;
-    object-fit: contain;
-  }
-
-@media only screen and (max-width: 1800px) {
-  #canvas,
-  .upper-canvas,
-  .lower-canvas,
-  .canvas-container {
-    width: 90vw !important;
-    height: 87vh !important;
-    max-width: 700px !important;
-    min-height: 500px !important;
-    min-width: 500px !important;
-    max-height: 700px !important;
-    position: relative;
-    /* margin: 0 auto !important; */
-    top: 40px;
-    object-fit: contain;
-  }
-}
-
-@media only screen and (max-width: 1200px) {
-  .main-layout-container {
-    height: 83vh;
-
-  }
-   #canvas,
-  .upper-canvas,
-  .lower-canvas,
-  .canvas-container {
-    height: 87vh !important;
-    object-fit: contain;
-    /* top: 70px; */
-  }
-}
-
-@media only screen and (max-width: 500px) {
-  #canvas,
-  .upper-canvas,
-  .lower-canvas,
-  .canvas-container {
-    height: 70vh !important;
-    object-fit: contain;
-    /* top: 70px; */
+    overflow: hidden;
   }
 }
