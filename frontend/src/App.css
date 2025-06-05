@@ -543,15 +543,15 @@ hr {
 .upper-canvas,
 .lower-canvas,
 .canvas-container {
-  width: 40vw !important;
-  height: 40vh !important;
-  max-width: 700px !important;
-  min-width: 400px !important;
-  max-height: 700px !important;
-  min-height: 400px !important;
-  object-fit:scale-down ;
-  /* position: relative !important; */
-  object-fit: contain !important;
+  width: 35vw !important;
+  /* height: 40vh !important; */
+  max-width: 500px !important;
+  /* min-width: 400px !important; */
+  /* max-height: 700px !important; */
+  /* min-height: 400px !important; */
+  /* object-fit:scale-down ; */
+  /* position: relative; */
+  /* object-fit: contain !important; */
   margin: 0 auto !important;
   display: block !important;
 }
@@ -566,26 +566,24 @@ hr {
 
 /* ≤ 1200px: Adjust layout and scale canvas */
 @media (max-width: 1200px) {
+
   /* #canvas,
   .upper-canvas,
   .lower-canvas,
   .canvas-container {
     height: 60vh !important;
-    width: auto !important;
-    max-width: 110vw !important;  
-    min-height: 300px !important;
+    width: 100vw !important;
+    max-width: 50vw !important;
+    min-height: 250px !important;
     min-width: 250px !important;
-    object-fit: cover !important;
     display: block !important;
-    position:absolute !important;
-
-    margin-left: auto !important;  
-    margin-right: 65vw !important; 
     margin: 0 auto !important;
   } */
+
   .page-content {
     margin-top: 0px;
   }
+
   .toolbar-main-container {
     /* min-width: 300px; */
     padding: 1px;
@@ -593,5 +591,42 @@ hr {
     margin: 0 auto;
     position: relative;
     overflow: hidden;
+  }
+}
+
+
+/* Tablet: up to 1024px */
+@media (max-width: 1024px) {
+
+  #canvas,
+  .upper-canvas,
+  .lower-canvas,
+  .canvas-container {
+    width: 90vw !important;
+    height: 60vh !important;
+    min-width: 300px !important;
+    min-height: 250px !important;
+    margin: 0 auto !important;
+    display: block !important;
+    aspect-ratio: 4 / 3 !important;
+  }
+}
+
+/* Mobile: up to 767px */
+@media (max-width: 767px) {
+
+  #canvas,
+  .upper-canvas,
+  .lower-canvas,
+  .canvas-container {
+    width: 100vw !important;
+    height: 70vh !important;
+    min-width: 100vw !important;
+    min-height: 200px !important;
+    /* max-width: 70vw !important; */
+    margin: 0 auto !important;
+    display: block !important;
+    aspect-ratio: auto;
+    /* object-fit: cover; */
   }
 }
