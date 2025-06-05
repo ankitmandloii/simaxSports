@@ -596,37 +596,20 @@ hr {
 
 
 /* Tablet: up to 1024px */
-@media (max-width: 1024px) {
-
-  #canvas,
-  .upper-canvas,
-  .lower-canvas,
-  .canvas-container {
-    width: 90vw !important;
-    height: 60vh !important;
-    min-width: 300px !important;
-    min-height: 250px !important;
-    margin: 0 auto !important;
-    display: block !important;
-    aspect-ratio: 4 / 3 !important;
-  }
-}
-
-/* Mobile: up to 767px */
-@media (max-width: 767px) {
+@media (max-width: 1200px) {
 
   #canvas,
   .upper-canvas,
   .lower-canvas,
   .canvas-container {
     width: 100vw !important;
-    height: 70vh !important;
-    min-width: 100vw !important;
-    min-height: 200px !important;
-    /* max-width: 70vw !important; */
+    height: 60vh !important;
+    min-width: 300px !important;
+    min-height: 250px !important;
+    max-height: 50vh !important;
     margin: 0 auto !important;
     display: block !important;
-    aspect-ratio: auto;
-    /* object-fit: cover; */
+    aspect-ratio: 4 / 3 !important;
   }
 }
+
