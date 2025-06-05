@@ -1,4 +1,3 @@
-import icons from '../../../data/icons';
 import BringFront from '../../images/bring-to-front.png'
 import BringBack from '../../images/send-backwards.png'
 import SendBack from '../../images/send-to-back.png'

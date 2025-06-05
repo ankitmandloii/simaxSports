@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setActiveSide, setRendering } from '../redux/FrontendDesign/TextFrontendDesignSlice';
+import { setActiveSide, setRendering, toggleSleeveDesign } from '../redux/FrontendDesign/TextFrontendDesignSlice';
 import MainDesignTool from './mainDesignTool';
 import { GrZoomOut } from "react-icons/gr";
 import { BsZoomIn } from "react-icons/bs";
@@ -12,15 +12,17 @@ import { fetchProducts } from '../redux/ProductSlice/ProductSlice';
 import { setSelectedProducts } from '../redux/ProductSlice/SelectedProductSlice';
 import { useSearchParams } from 'react-router-dom';
 import style from './ProductContainer.module.css'
+import RedoundoComponent from './RedoundoComponent/redoundo';
+import ViewControlButtons from './controls/ViewControlButtons';
 
 function ProductContainer() {
   const dispatch = useDispatch();
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+  const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   const exportRequested = useSelector((state) => state.canvasExport.exportRequested);
   const selectedProducts = useSelector(state => state.selectedProducts.selectedProducts);
   const frontImage = useSelector(state => state?.selectedProducts?.activeProduct?.imgurl);
   const backImage = useSelector(state => state?.selectedProducts?.activeProduct?.colors?.[1]?.img);
-
 
 
   function invertHexColor(hex) {
@@ -69,8 +71,8 @@ function ProductContainer() {
 
   const toggleZoom = () => {
     if (isZoomedIn) {
-      setLogo(<BsZoomIn />);
       setZoomLevel(1);
+      setLogo(<BsZoomIn />);
       setIsZoomedIn(false);
     } else {
       setLogo(<GrZoomOut />);
@@ -104,6 +106,8 @@ function ProductContainer() {
   };
 
   const onAddDesign = () => {
+    dispatch(toggleSleeveDesign());
+
     setAddSleeves(true);
     onClose();
   };
@@ -175,7 +179,17 @@ function ProductContainer() {
   return (
     <div className={style.ProductContainerMainDiv}>
       <div className={style.flex}>
-
+        <div className={style.controllContainer}>
+          <RedoundoComponent />
+          <ViewControlButtons
+            ShowBack={ShowBack}
+            ShowFront={ShowFront}
+            ShowLeftSleeve={ShowLeftSleeve}
+            ShowRightSleeve={ShowRightSleeve}
+            toggleZoom={toggleZoom}
+            logo={logo}
+          ></ViewControlButtons>
+        </div>
         {/* Render Active Canvas Side */}
         <div style={{ display: activeSide === "front" ? "block" : "none" }}>
           <MainDesignTool

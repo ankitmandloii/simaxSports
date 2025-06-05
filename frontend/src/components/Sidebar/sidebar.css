@@ -44,10 +44,10 @@
   max-width: 70px;
 }
 
-@media (max-width: 1024px) {
-  .sidebarToggleBtn {
+@media (max-width: 1200px) {
+  /* .sidebarToggleBtn {
     display: block;
-  }
+  } */
 
   .sidebar {
     position: fixed;

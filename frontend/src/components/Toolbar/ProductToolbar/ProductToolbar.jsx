@@ -13,25 +13,26 @@ import {
   updateProduct as updateProductAction,
   deleteProduct as deleteProductAction,
   setSelectedProducts as setSelectedProductsAction,
-  setSelectedProducts,
 } from '../../../redux/ProductSlice/SelectedProductSlice';
-import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { removeNameAndNumberProduct, setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
-import ContinueEditPopup from '../../PopupComponent/ContinueEditPopup/ContinueEditPopup';
-import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesignSlice';
+// import ContinueEditPopup from '../../PopupComponent/ContinueEditPopup/ContinueEditPopup';
+// import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesignSlice';
 import { fetchProducts } from '../../../redux/ProductSlice/ProductSlice';
-import io from 'socket.io-client';
-import { updateAdminSettingsFromSocket } from '../../../redux/SettingsSlice/SettingsSlice';
-const socket = io(process.env.REACT_APP_BASE_URL, {
-  transports: ["websocket"], // ensure real WebSocket connection
-});
+import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSlice';
+// import io from 'socket.io-client';
+// import { updateAdminSettingsFromSocket } from '../../../redux/SettingsSlice/SettingsSlice';
+// const socket = io(process.env.REACT_APP_BASE_URL, {
+//   transports: ["websocket"], // ensure real WebSocket connection
+// });
+
 
 const ProductToolbar = () => {
-  console.log("socket---", socket)
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  const { setActiveProduct } = useOutletContext();
+  // const { setActiveProduct } = useOutletContext();
+
 
   const [changeProductPopup, setChangeProductPopup] = useState(false);
   const [editingProductIndex, setEditingProductIndex] = useState(null);
@@ -175,23 +176,23 @@ const ProductToolbar = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
   // ----
-  useEffect(() => {
-    console.log("-----running");
-    console.log("Socket connected:", socket.connected);
+  // useEffect(() => {
+  //   console.log("-----running");
+  //   console.log("Socket connected:", socket.connected);
 
-    socket.on("connect", () => {
-      console.log("Socket connected to server, ID:", socket.id);
-    });
+  //   socket.on("connect", () => {
+  //     console.log("Socket connected to server, ID:", socket.id);
+  //   });
 
-    socket.on("adminSettingUpdate", (newSettings) => {
-      console.log("Received AdminSettingChanged event with data:", newSettings);
-      dispatch(updateAdminSettingsFromSocket(newSettings));
-    });
+  //   socket.on("adminSettingUpdate", (newSettings) => {
+  //     console.log("Received AdminSettingChanged event with data:", newSettings);
+  //     dispatch(updateAdminSettingsFromSocket(newSettings));
+  //   });
 
-    return () => {
-      socket.off("adminSettingUpdate");
-    };
-  }, [dispatch]);
+  //   return () => {
+  //     socket.off("adminSettingUpdate");
+  //   };
+  // }, [dispatch]);
 
   // useEffect(() => {
   //   const productId = searchParams.get("productId"); // "8847707537647"
@@ -212,7 +213,7 @@ const ProductToolbar = () => {
           <p>You can select multiple products and colors</p>
         </div>
 
-        <div className="toolbar-box">
+        <div className={style.toolbarBox}>
           {selectedProducts.map((product, index) => (
             <div className={style.toolbarProductHead} key={index}>
               <div className={style.toolbarHead}>
@@ -245,7 +246,7 @@ const ProductToolbar = () => {
                             selectedColor: safeCloneColor(clickedColor, product.imgurl),
                             imgurl: clickedColor?.img || product.imgurl,
                           };
-                          setActiveProduct(updatedActiveProduct);
+                          dispatch(setActiveProduct(updatedActiveProduct));
                           setTimeout(() => dispatch(setRendering()), 10);
                           setActiveThumbnail((prev) =>
                             prev.productIndex === index && prev.colorIndex === i
@@ -276,6 +277,7 @@ const ProductToolbar = () => {
                             >
                               Change
                             </button>
+
                           </div>
                         )}
                         <div className={style.imgThumbnaillContainer}>
@@ -360,6 +362,7 @@ const ProductToolbar = () => {
                 </div>
               </div>
             </div>
+
           ))}
 
           <button className={style.addProductBtn} onClick={addProductPopup}>

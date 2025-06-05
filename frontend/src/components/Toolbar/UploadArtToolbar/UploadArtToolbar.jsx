@@ -98,7 +98,7 @@ const UploadArtToolbar = () => {
             onDragOver={(e) => e.preventDefault()}
           >
             <p>Drag & drop files here</p>
-            <p>or</p>
+            <p className={style.marginTop}>or</p>
             <button className={style.uploadFileBtn} onClick={handleClick}>
               <ChooseFileIcon />
               SHARE
