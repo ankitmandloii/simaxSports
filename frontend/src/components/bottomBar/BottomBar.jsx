@@ -27,6 +27,8 @@ const menuItems = [
   { path: "/uploadArt", icon: <LuHardDriveUpload />, label: "Upload", data: <UploadArtToolbar /> },
   { path: "/addArt", icon: <PiCameraPlusFill />, label: "Add Art", data: <AddArtToolbar /> },
   { path: "/addNames", icon: <PiListNumbersBold />, label: "Names & Numbers", data: <NamesToolbar /> },
+  { path: "/addImage", icon: <PiListNumbersBold />, label: "Add Image", data: <AddImageToolbar /> },
+
 ];
 
 const BottomBar = () => {
@@ -47,6 +49,14 @@ const BottomBar = () => {
     window.addEventListener('resize', updateCardCount);
     return () => window.removeEventListener('resize', updateCardCount);
   }, []);
+
+  useEffect(() => {
+    const matchedItem = menuItems.find(item => location.pathname.startsWith(item.path));
+    if (matchedItem) {
+      setSheetContaint(matchedItem.data);
+      setIsOpen(true);
+    }
+  }, [location.pathname]);
 
   return (
     <div className={styles.wrapper}>
