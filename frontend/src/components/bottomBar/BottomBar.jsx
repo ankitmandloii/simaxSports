@@ -22,26 +22,27 @@ import AddTextToolbar from '../Toolbar/AddTextToolbar/AddTextToolbar';
 import UploadArtToolbar from '../Toolbar/UploadArtToolbar/UploadArtToolbar';
 
 const menuItems = [
-  { path: "/product", icon: <RiTShirt2Line />, label: "Products", data: <ProductToolbar /> },
-  { path: "/addText", icon: <AddProductIcon />, label: "Text", data: <AddTextToolbar /> },
-  { path: "/uploadArt", icon: <LuHardDriveUpload />, label: "Upload", data: <UploadArtToolbar /> },
-  { path: "/addArt", icon: <PiCameraPlusFill />, label: "Add Art", data: <AddArtToolbar /> },
-  { path: "/addNames", icon: <PiListNumbersBold />, label: "Names & Numbers", data: <NamesToolbar /> },
-  { path: "/addImage", icon: <PiListNumbersBold />, label: "Add Image", data: <AddImageToolbar /> },
+  { path: "/product", icon: <RiTShirt2Line />, label: "Products", data: <ProductToolbar />, snap: 1200 },
+  { path: "/addText", icon: <AddProductIcon />, label: "Text", data: <AddTextToolbar />, snap: 300 },
+  { path: "/uploadArt", icon: <LuHardDriveUpload />, label: "Upload", data: <UploadArtToolbar />, snap: 1200 },
+  { path: "/addArt", icon: <PiCameraPlusFill />, label: "Add Art", data: <AddArtToolbar />, snap: 1200 },
+  { path: "/addNames", icon: <PiListNumbersBold />, label: "Names & Numbers", data: <NamesToolbar />, snap: 1200 },
+  { path: "/addImage", icon: <PiListNumbersBold />, label: "Add Image", data: <AddImageToolbar />, snap: 1200 },
 
 ];
 
 const BottomBar = () => {
-  const [card, setCard] = useState(2);
+  const [card, setCard] = useState(5);
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [sheetSnapPoint, setSheetSnapPoint] = useState(900); // Default to 900
+
   const [sheetContaint, setSheetContaint] = useState(<ProductToolbar></ProductToolbar>);
   useEffect(() => {
     const updateCardCount = () => {
       const width = window.innerWidth;
       if (width < 300) setCard(3);
-      else if (width < 500) setCard(4);
-      else if (width < 800) setCard(5);
+      else if (width < 500) setCard(5);
       else setCard(5);
     };
 
@@ -50,22 +51,23 @@ const BottomBar = () => {
     return () => window.removeEventListener('resize', updateCardCount);
   }, []);
 
-  useEffect(() => {
-    const matchedItem = menuItems.find(item => location.pathname.startsWith(item.path));
-    if (matchedItem) {
-      setSheetContaint(matchedItem.data);
-      setIsOpen(true);
-    }
-  }, [location.pathname]);
+  // useEffect(() => {
+  //   const matchedItem = menuItems.find(item => location.pathname.startsWith(item.path));
+  //   if (matchedItem) {
+  //     setSheetContaint(matchedItem.data);
+  //     setIsOpen(true);
+  //   }
+  // }, [location.pathname]);
 
   return (
     <div className={styles.wrapper}>
       <Swiper
         slidesPerView={card}
         spaceBetween={15}
-        loop={false}
-        freeMode={true}
-        autoplay={{ delay: 5000 }}
+        loop={true} // Enables infinite looping
+        freeMode={false} // Usually false for loop to behave correctly
+        // centeredSlides={true} // Optional: Centers the active slide
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
         modules={[FreeMode, Pagination]}
       >
         {menuItems.map((item, index) => (
@@ -77,6 +79,7 @@ const BottomBar = () => {
               onClick={() => {
                 setSheetContaint(item.data);
                 setIsOpen(true);
+                setSheetSnapPoint(item.snap);
               }}
             >
               <div className={`${styles.bottomBarIcon} ${location.pathname.startsWith(item.path) ? styles.active : ''
@@ -91,7 +94,7 @@ const BottomBar = () => {
           </SwiperSlide>
         ))}
       </Swiper>
-      <AddTextSheet isOpen={isOpen} setIsOpen={setIsOpen} sheetContaint={sheetContaint}></AddTextSheet>
+      <AddTextSheet isOpen={isOpen} setIsOpen={setIsOpen} sheetContaint={sheetContaint} snap={sheetSnapPoint} ></AddTextSheet>
     </div>
   );
 };

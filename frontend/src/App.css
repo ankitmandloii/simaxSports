@@ -533,7 +533,7 @@ hr {
   }
 
   .toolbar-main-container {
-    /* min-width: 300px; */
+    min-width: 350px;
     padding: 1px;
     width: 300px;
     margin: 0 auto;
@@ -545,10 +545,13 @@ hr {
 /* Tablet: up to 1024px */
 @media (max-width: 1200px) {
   .canvas-container {
-    height: 70vh !important; /* Height is based on viewport height */
-    width: calc(70vh * (3 / 3)) !important; /* Width is calculated from height */
-    max-width: 900px !important; /* Limit max width */
-    margin: 0 auto; 
+    height: 70vh !important;
+    /* Height is based on viewport height */
+    width: calc(70vh * (3 / 3)) !important;
+    /* Width is calculated from height */
+    max-width: 900px !important;
+    /* Limit max width */
+    margin: 0 auto;
   }
 
   #canvas,
@@ -556,5 +559,17 @@ hr {
   .lower-canvas {
     width: 100% !important;
     height: 100% !important;
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+  .toolbar-main-container {
+    /* min-width: 750px !important; */
+    max-width: 100%;
+    padding: 20px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    /* overflow: hidden; */
   }
 }

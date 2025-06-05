@@ -41,13 +41,13 @@
   text-decoration: none;
   color: #ccc;
   transition: all 0.3s ease;
-  padding: 1px;
+  padding: 5px;
   height: 100%;
   width: 100%;
 }
 
 .bottomBarIcon {
-  font-size: 1.1rem;
+  font-size: 1.7rem;
   margin-bottom: 0.2rem;
   transition: color 0.3s ease;
   color: white;

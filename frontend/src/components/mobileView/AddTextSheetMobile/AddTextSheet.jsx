@@ -2,10 +2,10 @@ import { Sheet } from 'react-modal-sheet';
 // import AddTextToolbar from '../../Toolbar/AddTextToolbar/AddTextToolbar';
 import { IoClose } from 'react-icons/io5';
 
-export default function AddTextSheet({ isOpen, setIsOpen, sheetContaint }) {
+export default function AddTextSheet({ isOpen, setIsOpen, sheetContaint, snap }) {
     // const [isOpen, setIsOpen] = useState(true);
     return (
-        <Sheet isOpen={isOpen} onClose={() => setIsOpen(false)} snapPoints={[900, 500, 200, 0]}>
+        <Sheet isOpen={isOpen} onClose={() => setIsOpen(false)} snapPoints={[snap]} disableDrag>
             <Sheet.Container>
                 <Sheet.Header />
                 <button

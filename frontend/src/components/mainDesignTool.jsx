@@ -560,17 +560,19 @@ const MainDesignTool = ({
     fabricCanvasRef.current = canvas;
     // mirrorCanvasRef.current = new fabric.StaticCanvas(id);
 
-    const boxWidth = 220;
+    const boxWidth = 270;
     const boxHeight = 355;
     const canvasWidth = canvas.getWidth();
     const canvasHeight = canvas.getHeight();
 
+    const boxLeft = (canvasWidth - boxWidth) / 2;
+    const boxTop = (canvasHeight - boxHeight) / 2;
 
     const boundaryBox = new fabric.Rect({
-      left: (canvasWidth - boxWidth) / 2,
-      top: (canvasHeight - boxHeight) / 2,
-      width: 220,
-      height: 355,
+      left: boxLeft,
+      top: boxTop,
+      width: boxWidth,
+      height: boxHeight,
       fill: "transparent",
       stroke: warningColor || "skyblue",
       strokeWidth: 2,
@@ -581,16 +583,19 @@ const MainDesignTool = ({
     });
 
     const warningText = new fabric.Text("Please keep design inside the box", {
-      left: boundaryBox.left + 2,
-      top: boundaryBox.top,
+      left: boxLeft + boxWidth / 2, // center horizontally
+      top: boxTop + 5, // add padding from top
       fontSize: 16,
-      // fontFamily: "montserrat",
       fill: warningColor || "#00F8E7FF",
       selectable: false,
       evented: false,
       visible: false,
-      isSync: false
+      isSync: false,
+      originX: "center",
+      originY: "top", // align top edge (with padding)
+      textAlign: "center",
     });
+
 
 
     canvas.add(boundaryBox);

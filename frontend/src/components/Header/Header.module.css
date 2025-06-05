@@ -123,12 +123,16 @@ a.step:first-child:after {
   height: 32px;
 }
 
-@media screen and (max-width: 980px) {
+@media screen and (max-width: 750px) {
   .navSteps {
     display: none;
   }
 
   .rightSection p {
+    display: none;
+  }
+
+  .navSpanHeading {
     display: none;
   }
 }
