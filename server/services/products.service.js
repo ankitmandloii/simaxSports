@@ -123,7 +123,7 @@
 // };
 
 //using Fetch
-export const getProductsList = async (limit, cursor = null) => {
+exports.getProductsList = async (limit, cursor = null) => {
   const S_STORE = `${process.env.STORE}`;
   const A_TOKEN = `${process.env.TOKEN}`;
 
@@ -198,7 +198,7 @@ export const getProductsList = async (limit, cursor = null) => {
 
 
 
-export const getProductFilter = async (title, limit, isCursor) => {
+exports.getProductFilter = async (title, limit, isCursor) => {
   const S_STORE = `${process.env.STORE}`;
   const A_TOKEN = `${process.env.TOKEN}`;
 
@@ -428,7 +428,7 @@ export const getProductFilter = async (title, limit, isCursor) => {
 // };
 
 //using fetch 
-export const getAllCollectionList = async (limit = 50, cursor = null) => {
+exports.getAllCollectionList = async (limit = 50, cursor = null) => {
   const S_STORE = `${process.env.STORE}`;
   const A_TOKEN = `${process.env.TOKEN}`;
 
@@ -584,7 +584,7 @@ export const getAllCollectionList = async (limit = 50, cursor = null) => {
 
 
 //using fetch 
-export const getProductsByCollectionId = async (limit, collectionId, cursor) => {
+exports.getProductsByCollectionId = async (limit, collectionId, cursor) => {
   const S_STORE = `${process.env.STORE}`;
   const A_TOKEN = `${process.env.TOKEN}`;
 
