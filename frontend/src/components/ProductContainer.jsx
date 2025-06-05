@@ -131,8 +131,8 @@ function ProductContainer() {
 
   useEffect(() => {
     if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
-    const productId = searchParams.get("productId"); // "8847707537647"
-    const title = searchParams.get("title");         // "Dusty Rose / S"
+
+    const productId = "8847707537647"; // "8847707537647"
     // console.log("productId", productId);
     // console.log(rawProducts, "productId")
     const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/${productId}`);

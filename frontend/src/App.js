@@ -65,8 +65,8 @@ function App() {
       const productId = "8847707537647";
       const title = "Dusty Rose / S";
       // Create the query string
-      const queryString = new URLSearchParams({ productId, title }).toString();
-      navigate(`/product?${queryString}`);
+      // const queryString = new URLSearchParams({ productId, title }).toString();
+      // navigate(`/product?${queryString}`);
       dispatch(fetchProducts());
     });
   }, []);
@@ -128,7 +128,7 @@ function App() {
         </div>
 
         <ToastContainer
-         style={{"zIndex": "99999"}}
+          style={{ "zIndex": "99999" }}
           position="bottom-center"
           autoClose={3000}
           hideProgressBar={false}
