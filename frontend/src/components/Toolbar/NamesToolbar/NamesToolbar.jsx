@@ -31,7 +31,7 @@ const NamesToolbar = () => {
   const [showColorpopup, setshowcolorpopup] = useState(false);
 
   const showAddnamesPopupHAndler = () => {
-    if (!selectedProducts || selectedProducts.length == 0) {
+    if (!selectedProducts || selectedProducts.length === 0) {
       toast.info("Please Add Product First");      // Orange
       navigate("/product?productId=8847707537647&title=Dusty%20Rose%20/%20S");
       return;
@@ -133,9 +133,7 @@ const NamesToolbar = () => {
             <input
               type="checkbox"
               checked={activeName}
-              value={activeName}
               onChange={handleAddNames}
-              readOnly
             />
             <span>Add Names</span>
           </label>
@@ -144,7 +142,6 @@ const NamesToolbar = () => {
               type="checkbox"
               checked={activeNumber}
               onChange={handleAddNumber}
-              readOnly
             />
             <span>Add Numbers</span>
           </label>

@@ -254,16 +254,16 @@ function ProductContainer() {
             <div className={style.cornerImgCanvaContainer} onClick={ShowFront}>
               <img
                 src={frontPreviewImage}
-                className={`${style.ProductContainerSmallImage} ${activeSide === "front" ? style["hover-active"] : ""}`}
+                className={`${style.ProductContainerSmallImage} ${activeSide === "front" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
               />
 
               <p>Front</p>
             </div>
 
-            <div className={style.cornerImgCanvaContainer} onClick={ShowBack}>
+            <div className={style.cornerImgCanvaContainer} onClick={ShowBack} >
               <img
                 src={backPreviewImage}
-                className={`${style.ProductContainerSmallImage} ${activeSide === "back" ? style["hover-active"] : ""}`}
+                className={`${style.ProductContainerSmallImage} ${activeSide === "back" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
               />
               <p>Back</p>
             </div>
@@ -274,14 +274,14 @@ function ProductContainer() {
                 <div className={style.cornerImgCanvaContainer} onClick={ShowRightSleeve}  >
                   <img
                     src={rightSleevePreviewImage}
-                    className={`${style.ProductContainerSmallImage} ${activeSide === "rightSleeve" ? style["hover-active"] : ""}`}
+                    className={`${style.ProductContainerSmallImage} ${activeSide === "rightSleeve" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
                   />
                   <p>Right Sleeve</p>
                 </div>
                 <div className={style.cornerImgCanvaContainer} onClick={ShowLeftSleeve}  >
                   <img
                     src={leftSleevePreviewImage}
-                    className={`${style.ProductContainerSmallImage} ${activeSide === "leftSleeve" ? style["hover-active"] : ""}`}
+                    className={`${style.ProductContainerSmallImage} ${activeSide === "leftSleeve" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
                   />
                   <p>Left Sleeve</p>
                 </div>
