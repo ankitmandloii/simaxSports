@@ -263,7 +263,7 @@ const createNewText = ({ value, id }, length) => ({
   width: 150,
   height: 50,
   fontSize: 20,
- position: { x: 280, y: 200 },
+  position: { x: 280, y: 200 },
   locked: false,
   layerIndex: length,
 });
@@ -281,7 +281,7 @@ const createNewImage = ({ id, src }, length) => ({
   flipY: false,
   width: 150,
   height: 150,
-   position: { x: 280, y: 200 },
+  position: { x: 280, y: 200 },
   locked: false,
   layerIndex: length,
 });
@@ -362,6 +362,7 @@ const initialState = {
   // 🆕 Global state
   addNumber: false,
   addName: false,
+  sleeveDesign: false,
 };
 
 const TextFrontendDesignSlice = createSlice({
@@ -512,6 +513,10 @@ const TextFrontendDesignSlice = createSlice({
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       state.present[side] = next;
       state.present[side].setRendering = !state.present[side].setRendering;
+    },
+    toggleSleeveDesign: (state) => {
+      state.sleeveDesign = !state.sleeveDesign;
+
     },
 
     // Reset canvas state for all sides
@@ -728,7 +733,8 @@ export const {
   addImageState,
   updateImageState,
   deleteImageState,
-  restoreDesignFromSavedState
+  restoreDesignFromSavedState,
+  toggleSleeveDesign
 } = TextFrontendDesignSlice.actions;
 
 // ✅ Export Selectors
@@ -747,6 +753,8 @@ export const selectCanStartOver = (state) => {
   return state.TextFrontendDesignSlice.present[side]?.texts?.length > 0;
   // return state.TextFrontendDesignSlice.present[side]?.length > 0;
 };
+// export const toggleSleeveDesign = (state) => {
+//   return state.sleeveDesign = !state.sleeveDesign;
 
-// ✅ Export Reducer
+// }
 export default TextFrontendDesignSlice.reducer;

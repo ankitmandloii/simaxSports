@@ -188,6 +188,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
                             onProductSelect({ ...product, selectedColor, selectedImage });
                             onClose();
                           }}
+                          disabled={!selectedColorByProduct[product.id]}
                         >
                           Add Product
                         </button>

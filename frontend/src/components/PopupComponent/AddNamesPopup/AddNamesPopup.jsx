@@ -16,10 +16,10 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
   const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberProductList);
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  console.log(selectedProducts);  
+  console.log(selectedProducts);
 
   const [allProducts, setAllProducts] = useState(nameAndNumberProductList);
-  
+
 
   // console.log(nameAndNumberProductList, "nameAndNumberProductList")
 
@@ -190,6 +190,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
   const canvasBgColor = getHexFromName(activeProduct?.color) || "#f5f5f5";
 
   console.log("--canvass", canvasBgColor)
+
   return (
 
     <div className={styles.popupOverlay}>
@@ -224,8 +225,8 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
                 <div className={styles.namesList}>
                   <div className={styles.tableHeader}>
                     <span>Size</span>
-                    <span className={!addName ? styles.deactive : ""}>Name</span>
-                    <span className={!addNumber ? styles.deactive : ""}>Number</span>
+                    <span className={!addName ? styles.Deactive : ""}>Name</span>
+                    <span className={!addNumber ? styles.Deactive : ""}>Number</span>
                     <span></span>
                   </div>
 
@@ -258,7 +259,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
                         placeholder="Name"
                         maxLength={15}
                         value={row.name}
-                        className={!addName ? styles.deactive : ""}
+                        className={!addName ? styles.Deactive : ""}
                         onFocus={() => setActiveRowId(row.selectionId)}
                         onChange={(e) => updateRow(`${product.id}`, row.selectionId, 'name', e.target.value.toUpperCase())}
                       />
@@ -268,7 +269,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
                         placeholder="Number"
                         maxLength={4}
                         value={row.number}
-                        className={!addNumber ? styles.deactive : ""}
+                        className={!addNumber ? styles.Deactive : ""}
                         onFocus={() => setActiveRowId(row.selectionId)}
                         onChange={(e) => updateRow(`${product.id}`, row.selectionId, 'number', e.target.value.toUpperCase())}
                       />
@@ -278,6 +279,18 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
                   ))}
 
                   <p className={styles.addAnother} onClick={() => addRow(`${product.id}`)}>+ Add Another</p>
+                  {(() => {
+                    const rows = rowsByKey[product.id] || [];
+                    const productTotal = rows.length;
+                    const productNameCount = rows.filter((r) => r.name?.trim()).length;
+                    const productNumberCount = rows.filter((r) => r.number?.trim()).length;
+
+                    return (
+                      <p className={styles.totalCount}>
+                        Totals: {productNameCount} out of {productTotal} have Names | {productNumberCount} out of {productTotal} have Numbers
+                      </p>
+                    );
+                  })()}
                   <hr className={styles.hrUnderline} />
                 </div>
               </div>

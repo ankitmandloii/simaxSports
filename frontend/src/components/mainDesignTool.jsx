@@ -4,7 +4,7 @@ import icons from "../data/icons";
 // import { TbArrowForwardUp } from "react-icons/tb";
 // import { TbArrowBack } from "react-icons/tb";
 // import { VscZoomIn } from "react-icons/vsc";
-import "./MainDesigntool.css";
+import style from "./MainDesignTool.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteTextState,
@@ -166,7 +166,7 @@ const MainDesignTool = ({
 
   const isLocked = (_eventData, transform) => {
     const id = transform.target.id;
-    const foundObject = textContaintObject?.find((obj) => obj.id == id);
+    const foundObject = textContaintObject?.find((obj) => obj.id === id);
     const isLocked = foundObject?.locked ?? false;
     return isLocked;
   }
@@ -403,18 +403,18 @@ const MainDesignTool = ({
     };
 
 
-    console.log("activeSide inside", activeSide);
-    if (activeSide == "front") {
-      console.log("active side", activeSide, "changing front")
+    // console.log("activeSide inside", activeSide);
+    if (activeSide === "front") {
+      // console.log("active side", activeSide, "changing front")
       setFrontPreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
     }
-    else if (activeSide == "back") {
+    else if (activeSide === "back") {
       setBackPreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
     }
-    else if(activeSide == "leftSleeve"){
+    else if (activeSide === "leftSleeve") {
       setLeftSleevePreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
     }
-    else if(activeSide == "rightSleeve"){
+    else if (activeSide === "rightSleeve") {
       setRightSleevePreviewImage(await getImageFromCanvas(fabricCanvasRef.current))
     }
 
@@ -553,7 +553,7 @@ const MainDesignTool = ({
     const canvas = new fabric.Canvas(canvasRef.current, {
       width: 550,
       height: 450,
-      // backgroundColor: "gray"  
+      // backgroundColor: "gray"
     });
 
     canvas.preserveObjectStacking = true;
@@ -704,17 +704,17 @@ const MainDesignTool = ({
     };
 
     const events = [
-      ["object:added", handleObjectAdded],   
+      ["object:added", handleObjectAdded],
       ["object:removed", handleObjectAdded],
       ["object:modified", handleObjectModified],
       ["object:moving", updateBoundaryVisibility],
       ["object:scaling", updateBoundaryVisibility],
       ["selection:created", handleSelection],
-      ["selection:updated", handleSelection],  
+      ["selection:updated", handleSelection],
       ["selection:cleared", handleSelectionCleared],
       ["editing:exited", updateBoundaryVisibility],
       ["text:cut", updateBoundaryVisibility],
-      ["text:changed", handleObjectAdded],    
+      ["text:changed", handleObjectAdded],
       // ["object:moving", moveHandler], // Uncomment if needed
     ];
 
@@ -772,7 +772,7 @@ const MainDesignTool = ({
 
   const renderCurveTextObjects = () => {
     const canvas = fabricCanvasRef.current;
-    if (textContaintObject && textContaintObject.length == 0) {
+    if (textContaintObject && textContaintObject.length === 0) {
       let existingTextbox = canvas.getObjects().filter((obj) => obj.type === "curved-text" || obj.type === "textbox");
       existingTextbox.forEach((obj) => canvas.remove(obj));
       return;
@@ -810,7 +810,7 @@ const MainDesignTool = ({
           });
           existingObj.set({
             text: textInput.content,
-             fontWeight: textInput.fontWeight || "normal",
+            fontWeight: textInput.fontWeight || "normal",
             fontStyle: textInput.fontStyle || "normal",
             warp: Number(textInput.arc),
             spacing: textInput.spacing,
@@ -899,7 +899,7 @@ const MainDesignTool = ({
 
           });
 
-          curved.on("update",() =>{
+          curved.on("update", () => {
             alert("ok");
           })
           //                     });
@@ -1115,7 +1115,7 @@ const MainDesignTool = ({
     const baseFontSize = fontSizeMap[fontSize] || 80;
 
     // Remove old group if it exists
-    const oldGroup = canvas.getObjects().filter(obj => obj.isDesignGroup == true);
+    const oldGroup = canvas.getObjects().filter(obj => obj.isDesignGroup === true);
     oldGroup.forEach((oldGroup) => canvas.remove(oldGroup));
 
     const textObjects = [];
@@ -1147,7 +1147,7 @@ const MainDesignTool = ({
       if (textObjects.length > 0) {
         const previous = textObjects[textObjects.length - 1];
         numberText.top = previous.top + previous.height + 5;
-        numberText.left = ((-previous.width) / 2) - (fontSize == "small" ? 12 : 30);
+        numberText.left = ((-previous.width) / 2) - (fontSize === "small" ? 12 : 30);
       }
       textObjects.push(numberText);
     }
@@ -1191,7 +1191,7 @@ const MainDesignTool = ({
     group._calcBounds();
     group._updateObjectsCoords();
     group.set({
-      width: fontSize == "small" ? 60 : 190,  
+      width: fontSize === "small" ? 60 : 190,
       left: position?.x || canvas.getWidth() / 2,
       top: position?.y || canvas.getHeight() / 2,
       // originX: 'center',
@@ -1287,14 +1287,14 @@ const MainDesignTool = ({
   };
 
 
-// useEffect(() =>{
-//   const st = setTimeout(() =>{
-//    syncMirrorCanvas(activeSide);
-//   },3000);
-// },[textContaintObject,activeSide])
+  // useEffect(() =>{
+  //   const st = setTimeout(() =>{
+  //    syncMirrorCanvas(activeSide);
+  //   },3000);
+  // },[textContaintObject,activeSide])
 
   return (
-    <div style={{ position: "relative" ,top:5}}  id="canvas">
+    <div id={style.canvas} style={{ position: "relative", top: 5 }} >
       <canvas ref={canvasRef} />
       <LayerModal
         isOpen={isModalOpen}

@@ -14,7 +14,6 @@ import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox.jsx'
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox.jsx'
 import { useDispatch, useSelector } from 'react-redux';
 import { removeNameAndNumberProduct, setActiveSide, setAddName, UpdateNameAndNumberProduct, setAddNumber, updateNameAndNumberDesignState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
-import { RxFontFamily } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -151,7 +150,7 @@ const NamesToolbar = () => {
           </label>
         </div>
         {/* ***************************show only when either number or name checked************ */}
-        <div className={`${(activeName || activeNumber) ? "Active" : "Deactive"} step-toggle-container`}>
+        <div className={`${(activeName || activeNumber) ? style.Active : style.Deactive} step-toggle-container`}>
           {/* Side */}
           <div className={style.addNamesNumberrsRow}>
             <h5>Side</h5>
@@ -236,7 +235,7 @@ const NamesToolbar = () => {
             </button> */}
             </div>
           </div>
-          <button className='black-button' onClick={showAddnamesPopupHAndler}>Add Names/Numbers</button>
+          <button className={style.blackButton} onClick={showAddnamesPopupHAndler}>Add Names/Numbers</button>
 
         </div>
 
