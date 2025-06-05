@@ -1,14 +1,25 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { IoShareSocialOutline, IoPricetagOutline } from 'react-icons/io5';
 import { FiSave } from 'react-icons/fi';
 import { FaPlus } from 'react-icons/fa';
 import { FaArrowRightLong } from 'react-icons/fa6';
-import style from './MobileFab.module.css'
+import style from './MobileFab.module.css';
 
 const MobileFAB = ({ onShare, onSave, onPrice, onNext }) => {
   const [open, setOpen] = useState(false);
-  const fabRef = useRef(null); // reference to the entire FAB
+  const fabRef = useRef(null);
 
+  // Close FAB when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (fabRef.current && !fabRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className={style.fabContainer} ref={fabRef}>
