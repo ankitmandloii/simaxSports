@@ -523,63 +523,11 @@ hr {
   }
 }
 
-/* #canvas,
-.upper-canvas,
-.lower-canvas,
-.canvas-container {
-  width: 110vw !important;
-  height: 87vh !important;
-  max-width: 500px !important;
-  min-height: 300px !important;
-  min-width: 300px !important;
-  max-height: 700px !important;
-  position: relative;
-  top: 40px;
-  object-fit: contain;
-} */
 
-/* Base style */
-#canvas,
-.upper-canvas,
-.lower-canvas,
-.canvas-container {
-  width: 35vw !important;
-  /* height: 40vh !important; */
-  max-width: 500px !important;
-  /* min-width: 400px !important; */
-  /* max-height: 700px !important; */
-  /* min-height: 400px !important; */
-  /* object-fit:scale-down ; */
-  /* position: relative; */
-  /* object-fit: contain !important; */
-  margin: 0 auto !important;
-  display: block !important;
-}
 
-/* Main layout container */
-/* .main-layout-container {
-  height: 100vh !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-} */
 
 /* ≤ 1200px: Adjust layout and scale canvas */
 @media (max-width: 1200px) {
-
-  /* #canvas,
-  .upper-canvas,
-  .lower-canvas,
-  .canvas-container {
-    height: 60vh !important;
-    width: 100vw !important;
-    max-width: 50vw !important;
-    min-height: 250px !important;
-    min-width: 250px !important;
-    display: block !important;
-    margin: 0 auto !important;
-  } */
-
   .page-content {
     margin-top: 0px;
   }
@@ -594,22 +542,19 @@ hr {
   }
 }
 
-
 /* Tablet: up to 1024px */
 @media (max-width: 1200px) {
+  .canvas-container {
+    height: 70vh !important; /* Height is based on viewport height */
+    width: calc(70vh * (3 / 3)) !important; /* Width is calculated from height */
+    max-width: 900px !important; /* Limit max width */
+    margin: 0 auto; 
+  }
 
   #canvas,
   .upper-canvas,
-  .lower-canvas,
-  .canvas-container {
-    width: 100vw !important;
-    height: 60vh !important;
-    min-width: 300px !important;
-    min-height: 250px !important;
-    max-height: 50vh !important;
-    margin: 0 auto !important;
-    display: block !important;
-    aspect-ratio: 4 / 3 !important;
+  .lower-canvas {
+    width: 100% !important;
+    height: 100% !important;
   }
 }
-
