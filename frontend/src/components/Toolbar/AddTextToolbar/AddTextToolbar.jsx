@@ -721,7 +721,7 @@ const AddTextToolbar = () => {
 
                     </div>
                   </div>
-
+    <hr></hr>
                 </div>
 
               </>

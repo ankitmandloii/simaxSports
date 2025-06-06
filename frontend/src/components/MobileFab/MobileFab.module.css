@@ -101,3 +101,42 @@
   opacity: 1;
   /* transform: translateX(0); */
 }
+
+/* @media screen and (max-width: 768px) {
+  .fabContainer {
+    bottom: 84px;
+    right: 20px;
+  }
+
+  .fabMain {
+    width: 35px;
+    height: 35px;
+    font-size: 24px;
+  }
+
+  .fabActions .fabButton {
+   width: 35px;
+    height: 35px;
+    font-size: clamp(0.4rem, 3vh, 1.25rem);
+  }
+  
+} */
+
+@media screen and (max-width: 768px) {
+  .fabContainer {
+      bottom: 84px;
+      right: 20px;
+  }
+
+  .fabMain {
+    width: 5vh;
+    height: 5vh;
+    font-size: 3vh; /* Size relative to screen height */
+  }
+
+  .fabActions .fabButton {
+    width: 5vh;
+    height: 5vh;
+    font-size: clamp(1vh, 3vh, 2.5vh); /* Ensures scaling with height but not too small or large */
+  }
+}

@@ -23,7 +23,7 @@ import UploadArtToolbar from '../Toolbar/UploadArtToolbar/UploadArtToolbar';
 
 const menuItems = [
   { path: "/product", icon: <RiTShirt2Line />, label: "Products", data: <ProductToolbar />, snap: 1200 },
-  { path: "/addText", icon: <AddProductIcon />, label: "Text", data: <AddTextToolbar />, snap: 300 },
+  { path: "/addText", icon: <AddProductIcon />, label: "Text", data: <AddTextToolbar />, snap: 600 },
   { path: "/uploadArt", icon: <LuHardDriveUpload />, label: "Upload", data: <UploadArtToolbar />, snap: 1200 },
   { path: "/addArt", icon: <PiCameraPlusFill />, label: "Add Art", data: <AddArtToolbar />, snap: 1200 },
   { path: "/addNames", icon: <PiListNumbersBold />, label: "Names & Numbers", data: <NamesToolbar />, snap: 1200 },

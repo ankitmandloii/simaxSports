@@ -323,14 +323,28 @@
 .toolbarBoxIconsContainerFlip1:hover,
 .toolbarBoxIconsContainerFlip2:hover {
   transform: scale(1.06);
+
   background-color: #a9a6a6;
   color: #fff;
 }
-
-@media screen and(max-width:900) {
+@media screen and (max-width: 1200px) {
   .addTextFirstToolbarBoxContainer {
-    overflow-x: scroll !important; /* 'auto' works better with dynamic content */
-    white-space: nowrap; /* prevent child items from wrapping */
-    scroll-behavior: smooth; /* optional: smooth scrolling */
+    overflow-x: auto !important; /* 'auto' avoids unnecessary scrollbars */
+    white-space: nowrap;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; /* for iOS smooth scrolling */
   }
+
+  /* .toolbarBox {
+    overflow: scroll;
+    height: 100vh; 
+  }
+.addTextInnerMainContainerr {
+  color: #000;
+  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+   */
 }
