@@ -5,6 +5,7 @@
   position: relative;
   background: #f6f6f6;
   padding: 10px;
+  max-height: 556px;
 }
 
 .toolbarBoxTextarea {
