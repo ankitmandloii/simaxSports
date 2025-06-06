@@ -27,7 +27,7 @@ const menuItems = [
   { path: "/uploadArt", icon: <LuHardDriveUpload />, label: "Upload", data: <UploadArtToolbar />, snap: 1200 },
   { path: "/addArt", icon: <PiCameraPlusFill />, label: "Add Art", data: <AddArtToolbar />, snap: 1200 },
   { path: "/addNames", icon: <PiListNumbersBold />, label: "Names & Numbers", data: <NamesToolbar />, snap: 1200 },
-  { path: "/addImage", icon: <PiListNumbersBold />, label: "Add Image", data: <AddImageToolbar />, snap: 1200 },
+  // { path: "/addImage", icon: <PiListNumbersBold />, label: "Add Image", data: <AddImageToolbar />, snap: 1200 },
 
 ];
 

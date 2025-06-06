@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveSide, setRendering, toggleSleeveDesign } from '../redux/FrontendDesign/TextFrontendDesignSlice';
 import MainDesignTool from './mainDesignTool';
@@ -16,6 +16,11 @@ import RedoundoComponent from './RedoundoComponent/redoundo';
 import ViewControlButtons from './controls/ViewControlButtons';
 
 function ProductContainer() {
+  const FrontImgRef = useRef(null);
+  const BackImgRef = useRef(null);
+  const LeftImgRef = useRef(null);
+  const RightImgRef = useRef(null);
+
   const dispatch = useDispatch();
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
@@ -176,6 +181,49 @@ function ProductContainer() {
   // );
   // }
 
+  // const handleDownload = () => {
+  //   const imgElement1 = FrontImgRef.current;
+  //   const imgElement2 = BackImgRef.current;
+  //   const imgElement3 = LeftImgRef.current;
+  //   const imgElement4 = RightImgRef.current;
+
+  //   if (!imgElement1 || !imgElement2 || !imgElement3 || !imgElement4) return;
+
+  //   const base64Image = imgElement1.src;
+  //   const base64Image2 = imgElement2.src;
+  //   const base64Image3 = imgElement3.src;
+  //   const base64Image4 = imgElement4.src;
+
+  //   // Create object with images
+  //   const imagePayload = {
+  //     front: base64Image,
+  //     back: base64Image2,
+  //     leftSleeve: base64Image3,
+  //     rightSleeve: base64Image4
+  //   };
+
+  //   // Dispatch to Redux
+  //   dispatch(setExportedImages(imagePayload));
+  //   console.log("-----------------imagePayload", imagePayload)
+  // };
+  useEffect(() => {
+    if (exportRequested) {
+      const front = FrontImgRef.current?.src || null;
+      const back = BackImgRef.current?.src || null;
+      const left = LeftImgRef.current?.src || null;
+      const right = RightImgRef.current?.src || null;
+
+      const exportData = {
+        front,
+        back,
+        leftSleeve: left,
+        rightSleeve: right,
+      };
+
+      dispatch(setExportedImages(exportData));
+    }
+  }, [exportRequested]);
+
   return (
     <div className={style.ProductContainerMainDiv}>
       <div className={style.flex}>
@@ -253,6 +301,7 @@ function ProductContainer() {
 
             <div className={style.cornerImgCanvaContainer} onClick={ShowFront}>
               <img
+                ref={FrontImgRef}
                 src={frontPreviewImage}
                 className={`${style.ProductContainerSmallImage} ${activeSide === "front" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
               />
@@ -262,6 +311,7 @@ function ProductContainer() {
 
             <div className={style.cornerImgCanvaContainer} onClick={ShowBack} >
               <img
+                ref={BackImgRef}
                 src={backPreviewImage}
                 className={`${style.ProductContainerSmallImage} ${activeSide === "back" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
               />
@@ -273,6 +323,7 @@ function ProductContainer() {
               <>
                 <div className={style.cornerImgCanvaContainer} onClick={ShowRightSleeve}  >
                   <img
+                    ref={LeftImgRef}
                     src={rightSleevePreviewImage}
                     className={`${style.ProductContainerSmallImage} ${activeSide === "rightSleeve" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
                   />
@@ -280,6 +331,7 @@ function ProductContainer() {
                 </div>
                 <div className={style.cornerImgCanvaContainer} onClick={ShowLeftSleeve}  >
                   <img
+                    ref={RightImgRef}
                     src={leftSleevePreviewImage}
                     className={`${style.ProductContainerSmallImage} ${activeSide === "leftSleeve" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
                   />
@@ -308,6 +360,7 @@ function ProductContainer() {
           </div>
         </div>
       </div>
+      {/* <button onClick={handleDownload}>Click</button> */}
     </div>
   );
 }

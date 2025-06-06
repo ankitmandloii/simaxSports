@@ -101,8 +101,9 @@
 
 .ProductContainerSmallImage {
   /* object-fit:cc; */
-  height: 100px;
-  width: 90px;
+  height: 70px;
+  width: 70px;
+  /* object-fit: cover; */
   /* margin:5px;   */
   border-radius: 10px;
   background-color: white;
@@ -121,8 +122,8 @@
 }
 
 .activeBorder {
- box-shadow: 0 0 0 2px #005bff;
- 
+  box-shadow: 0 0 0 2px #005bff;
+
 }
 
 .ProductContainerSmallImageZoomButton {
@@ -171,7 +172,7 @@
 .cornerImgCanvaContainer {
   object-fit: contain;
   /* height: 86px; */
-  width: 86px;
+  /* width: 86px; */
   margin-bottom: 0px;
   border-radius: 10px;
   background-color: white;
@@ -296,8 +297,8 @@ canvas#mirrorCanvasBack {
   .flex {
     /* margin-top: 80px; */
     /* align-items: center; */
-      align-items: center;
-    justify-content:center;
+    align-items: center;
+    justify-content: center;
   }
 }
 
@@ -319,7 +320,8 @@ canvas#mirrorCanvasBack {
     justify-content: center;
     height: 100%;
   }
-   .flex {
+
+  .flex {
     /* margin-top: 0px; */
     /* align-items: center; */
     justify-content: center;

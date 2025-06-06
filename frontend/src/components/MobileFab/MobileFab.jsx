@@ -2,13 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { IoShareSocialOutline, IoPricetagOutline } from 'react-icons/io5';
 import { FiSave } from 'react-icons/fi';
 import { FaPlus } from 'react-icons/fa';
-import { FaArrowRightLong } from 'react-icons/fa6';
+import { FaArrowLeftLong, FaArrowRightLong } from 'react-icons/fa6';
 import style from './MobileFab.module.css';
+import { useNavigate } from 'react-router-dom';
 
 const MobileFAB = ({ onShare, onSave, onPrice, onNext }) => {
   const [open, setOpen] = useState(false);
   const fabRef = useRef(null);
-
+  const navigate = useNavigate();
   // Close FAB when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -20,6 +21,9 @@ const MobileFAB = ({ onShare, onSave, onPrice, onNext }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+  const onPrevious = () => {
+    navigate(-1);
+  }
 
   return (
     <div className={style.fabContainer} ref={fabRef}>
@@ -47,6 +51,12 @@ const MobileFAB = ({ onShare, onSave, onPrice, onNext }) => {
           <span className={style.fabTooltip}>Next Step</span>
           <button className={style.fabButton} onClick={onNext}>
             <FaArrowRightLong />
+          </button>
+        </div>
+        <div className={style.fabTooltipWrapper}>
+          <span className={style.fabTooltip}>Prev Step</span>
+          <button className={style.fabButton} onClick={onPrevious}>
+            <FaArrowLeftLong />
           </button>
         </div>
       </div>
