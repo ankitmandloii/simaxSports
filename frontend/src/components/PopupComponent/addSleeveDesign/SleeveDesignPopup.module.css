@@ -107,7 +107,7 @@
 
 /* Add Design Button */
 .addDesignButton {
-  background-color: #005BFF;
+  background-color: #000000;
   /* Orange color */
   color: white;
   border: none;
@@ -131,7 +131,7 @@
 .noThanksButton {
   background: none;
   border: none;
-  color: #005BFF;
+  color: #000000a1;
   /* Reddish/orange color for consistency */
   font-size: 0.9em;
   cursor: pointer;
@@ -139,6 +139,6 @@
 }
 
 .noThanksButton:hover {
-  color: #005BFF;
+  color: #000000;
   /* Darker on hover */
 }

@@ -195,8 +195,12 @@ export default function Login() {
                                             </span>
                                         }
                                     />
-                                    <Button onClick={handleLogin} primary fullWidth loading={loading}>
-                                        Login
+                                    <span>      </span>
+                                    <Button onClick={handleLogin} primary fullWidth loading={loading} >
+                                        <h5 style={{
+
+                                            padding: '4px 0px',
+                                        }}>Login</h5>
                                     </Button>
                                 </FormLayout>
                             </form>
