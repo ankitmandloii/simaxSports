@@ -548,6 +548,35 @@ const MainDesignTool = ({
 
   //     }
 
+  const checkBoundary = (e) => {
+    const obj = e.target;
+    const canvas = fabricCanvasRef.current;
+    const canvasWidth = canvas.getWidth();
+    const canvasHeight = canvas.getHeight();
+
+    obj.setCoords(); // Make sure aCoords is updated
+    const bounds = obj.aCoords;
+
+    // Left boundary
+    if (bounds.tl.x < 0) {
+      obj.left -= bounds.tl.x;
+    }
+
+    // Top boundary
+    if (bounds.tl.y < 0) {
+      obj.top -= bounds.tl.y;
+    }
+
+    // Right boundary
+    if (bounds.tr.x > canvasWidth) {
+      obj.left -= bounds.tr.x - canvasWidth;
+    }
+
+    // Bottom boundary
+    if (bounds.bl.y > canvasHeight) {
+      obj.top -= bounds.bl.y - canvasHeight;
+    }
+  };
 
   useEffect(() => {
     const canvas = new fabric.Canvas(canvasRef.current, {
@@ -708,11 +737,16 @@ const MainDesignTool = ({
       handleScale(e);
     };
 
+    const handleMoving = (e) => {
+      checkBoundary(e);
+      updateBoundaryVisibility(e);
+    }
+
     const events = [
       ["object:added", handleObjectAdded],
       ["object:removed", handleObjectAdded],
       ["object:modified", handleObjectModified],
-      ["object:moving", updateBoundaryVisibility],
+      ["object:moving", handleMoving],
       ["object:scaling", updateBoundaryVisibility],
       ["selection:created", handleSelection],
       ["selection:updated", handleSelection],
@@ -938,6 +972,7 @@ const MainDesignTool = ({
       });
 
       canvas.renderAll();
+      updateBoundaryVisibility();
     }
   }
 
