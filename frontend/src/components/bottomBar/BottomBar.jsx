@@ -51,8 +51,12 @@ const BottomBar = () => {
     return () => window.removeEventListener('resize', updateCardCount);
   }, []);
   useEffect(() => {
-    // Only handle special case like "/addImage"
-    if (location.pathname === "/addImage") {
+    const width = window.innerWidth;
+
+    // Adjust the breakpoint as needed (e.g., 1024 for tablets or 768 for mobile only)
+    const isMobileOrTablet = width <= 1024;
+
+    if (isMobileOrTablet && location.pathname === "/addImage") {
       setSheetContaint(<AddImageToolbar />);
       setSheetSnapPoint(1200); // or your desired snap height
       setIsOpen(true);

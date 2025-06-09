@@ -8,6 +8,8 @@ import style from "./MainDesignTool.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteTextState,
+  moveTextBackwardState,
+  moveTextForwardState,
   setSelectedTextState,
   updateNameAndNumberDesignState,
   updateTextState,
@@ -1302,22 +1304,28 @@ const MainDesignTool = ({
   const [selectedObject, setSelectedObject] = useState(null);
   const handleLayerAction = (action) => {
     if (selectedObject) {
+      const objectId = selectedObject.id;
       switch (action) {
         case "bringForward":
           selectedObject.bringForward();
+          dispatch(moveTextForwardState(objectId));
           selectedObject.canvas.requestRenderAll(); // Add this line
           setSelectedpopup(!selectedpopup);
           break;
         case "sendBackward":
           selectedObject.sendBackwards();
+          dispatch(moveTextBackwardState(objectId));
           selectedObject.canvas.requestRenderAll(); // Add this line
           break;
         case "bringToFront":
           selectedObject.bringToFront();
+          dispatch(moveTextForwardState(objectId));
           selectedObject.canvas.requestRenderAll(); // Add this line
           break;
         case "sendToBack":
           selectedObject.sendToBack();
+          dispatch(moveTextBackwardState(objectId));
+
           selectedObject.canvas.requestRenderAll(); // Add this line
           break;
         default:

@@ -336,6 +336,7 @@ input:checked+.slider:before {
 .filterOptions {
   display: flex;
   gap: 15px;
+  justify-content: space-evenly;
 }
 
 .filterOption {

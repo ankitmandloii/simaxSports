@@ -130,19 +130,35 @@ const NamesToolbar = () => {
         <div className={style.addNamesNumberrsRow}>
           <h5>Step1</h5>
           <label className={style.namescheckboxDiv} >
-            <input
+            {/* <input
               type="checkbox"
               checked={activeName}
               onChange={handleAddNames}
-            />
+            /> */}
+            <label className={style.switch}>
+              <input
+                type="checkbox"
+                checked={activeName}
+                onChange={handleAddNames}
+              />
+              <span className={style.slider}></span>
+            </label>
             <span>Add Names</span>
           </label>
           <label className={style.namescheckboxDiv}>
-            <input
+            <label className={style.switch}>
+              <input
+                type="checkbox"
+                checked={activeNumber}
+                onChange={handleAddNumber}
+              />
+              <span className={style.slider}></span>
+            </label>
+            {/* <input
               type="checkbox"
               checked={activeNumber}
               onChange={handleAddNumber}
-            />
+            /> */}
             <span>Add Numbers</span>
           </label>
         </div>
