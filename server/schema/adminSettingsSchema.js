@@ -69,4 +69,8 @@ const SettingsSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-module.exports = mongoose.model('AdminSettings', SettingsSchema);
+
+const AdminSettings = mongoose.model('AdminSettings', SettingsSchema);
+module.exports = AdminSettings;
+
+
