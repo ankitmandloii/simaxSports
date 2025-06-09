@@ -50,7 +50,14 @@ const BottomBar = () => {
     window.addEventListener('resize', updateCardCount);
     return () => window.removeEventListener('resize', updateCardCount);
   }, []);
-
+  useEffect(() => {
+    // Only handle special case like "/addImage"
+    if (location.pathname === "/addImage") {
+      setSheetContaint(<AddImageToolbar />);
+      setSheetSnapPoint(1200); // or your desired snap height
+      setIsOpen(true);
+    }
+  }, [location.pathname]);
   // useEffect(() => {
   //   const matchedItem = menuItems.find(item => location.pathname.startsWith(item.path));
   //   if (matchedItem) {

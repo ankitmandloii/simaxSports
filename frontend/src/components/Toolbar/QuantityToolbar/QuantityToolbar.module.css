@@ -44,7 +44,7 @@
   width: 100%;
   padding: 12px;
   background: black;
-
+  margin-top: 10px;
   color: white;
   border: none;
   font-weight: bold;
@@ -106,7 +106,7 @@
   overflow: visible;
   width: 100%;
   max-height: 680px;
-  min-width: 400px;
+  min-width: 345px;
   height: 680px;
   border-radius: 0px 20px 20px 0px;
   /* padding-inline: 30px; */
@@ -210,5 +210,9 @@
 @media (max-width:1200px) {
   .toolbarMargin {
     margin-top: 5.5rem;
+  }
+
+  .toolbarMainContainer {
+    padding: 10px;
   }
 }
