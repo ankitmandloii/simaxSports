@@ -10,12 +10,9 @@ const Layout = () => {
   const location = useLocation();
   const isQuantityPage = location.pathname === "/quantity";
   const isProductPage = location.pathname === "/product";
-  const dispatch = useDispatch();
 
 
-  const handleSetActiveProduct = (product) => {
-    dispatch(setActiveProduct(product));
-  };
+
 
 
   return (
@@ -27,7 +24,7 @@ const Layout = () => {
         <div className="page-content">
           <div className="layout-toolbar">
             {!isQuantityPage && <AdminSidebar />}
-            <Outlet context={{ setActiveProduct: handleSetActiveProduct }} />
+            <Outlet />
             {/* {!isQuantityPage && !isProductPage&&<RedoundoComponent />} */}
             <RedoundoComponent />
           </div>

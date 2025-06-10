@@ -14,6 +14,7 @@ import {
   deleteProduct as deleteProductAction,
   setSelectedProducts as setSelectedProductsAction,
   setSelectedProducts,
+  setActiveProduct,
 } from '../../../redux/ProductSlice/SelectedProductSlice';
 import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { addProductDesignState, removeNameAndNumberProduct, setCurrentProductId, setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
@@ -22,11 +23,13 @@ import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesi
 import { fetchProducts } from '../../../redux/ProductSlice/ProductSlice';
 import { toast } from 'react-toastify';
 
+
 const ProductToolbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  const { setActiveProduct } = useOutletContext();
+
+
   const currentProductId = useSelector((state) => state.TextFrontendDesignSlice.currentProductId);
   const [changeProductPopup, setChangeProductPopup] = useState(false);
   const [editingProductIndex, setEditingProductIndex] = useState(null);
@@ -146,7 +149,7 @@ const ProductToolbar = () => {
     const addedColors = product.addedColors;
 
     const isMainColor = colorIndex === 0;
-   console.log("color index",colorIndex);
+    console.log("color index", colorIndex);
     const clickedColor = isMainColor
       ? addedColors[0]
       : addedColors[colorIndex - 2] || addedColors[colorIndex] || null;
@@ -156,12 +159,12 @@ const ProductToolbar = () => {
       selectedColor: safeCloneColor(clickedColor, product.imgurl),
       imgurl: clickedColor?.img || product.imgurl,
     };
-
-    setActiveProduct(updatedActiveProduct);
+    dispatch(setActiveProduct(updatedActiveProduct));
+    // setActiveProduct(updatedActiveProduct);
     // dispatch()
 
-    console.log(clickedColor,"clickedColor");
-    console.log(updatedActiveProduct,"updatedActiveProduct");
+    console.log(clickedColor, "clickedColor");
+    console.log(updatedActiveProduct, "updatedActiveProduct");
     if (clickedColor) {
       if (isMainColor) {
         dispatch(setCurrentProductId(product?.id));
@@ -169,8 +172,8 @@ const ProductToolbar = () => {
         dispatch(setCurrentProductId(clickedColor?.variant?.id));
       }
     }
-    else{
-          dispatch(setCurrentProductId(updatedActiveProduct?.id));
+    else {
+      dispatch(setCurrentProductId(updatedActiveProduct?.id));
     }
 
     if (product.id) {
@@ -263,12 +266,12 @@ const ProductToolbar = () => {
                   ].map((color, i) => {
                     const isHovered = hoveredThumbnail.productIndex === index && hoveredThumbnail.colorIndex === i;
                     const imgSrc = isHovered ? hoveredThumbnail.color.img : color.img;
- 
+
                     return (
                       <div
                         key={i}
-                        className={`mini-prod-img-container ${(activeThumbnail.productIndex === index && activeThumbnail.colorIndex === i)?"active":""}`}
-                        
+                        className={`mini-prod-img-container ${(activeThumbnail.productIndex === index && activeThumbnail.colorIndex === i) ? "active" : ""}`}
+
                         onClick={() => {
                           const clickedColor = i === 0 ? product.selectedColor : product.addedColors?.[i - 1];
                           console.log("clickedColor", clickedColor)
@@ -281,7 +284,8 @@ const ProductToolbar = () => {
                           // dispatch(setCurrentProductId(clickedColor.variant.id));
                           // console.log("id which want to add",clickedColor.variant.id)
                           // console.log("variant id ",currentProductId)
-                          setActiveProduct(updatedActiveProduct);
+                          dispatch(setActiveProduct(updatedActiveProduct))
+                          // setActiveProduct(updatedActiveProduct);
                           if (i == 0) {
                             dispatch(setCurrentProductId(product?.id));
                           }

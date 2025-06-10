@@ -8,7 +8,7 @@ const ImageGallery = require("../model/imageGallery.model.js");
 
 
 const aws = require("aws-sdk");
-const {v4: uuidv4} = require("uuid");
+const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 
 
@@ -83,7 +83,7 @@ exports.fileUpload = async (request, response) => {
                             reject(err);
                         } else {
                             const fileUrl = `${process.env.S3_BASEURL}/${shop}/${key}`;
-                            resolve({id: storageUuid, url: fileUrl});
+                            resolve({ id: storageUuid, url: fileUrl });
                         }
                     });
                 });
@@ -124,7 +124,7 @@ exports.fileDelete = async (request, response) => {
     try {
         const session = response.locals.shopify.session || response.locals.shopify
         const shop = session.shop.split(".")[0];
-        const imageKey = request.query.imageKey; 
+        const imageKey = request.query.imageKey;
         s3.deleteObject({
             Bucket: `${process.env.S3_BUCKET}/${shop}`, //'your-bucket-name',
             Key: imageKey   //(path) of the file to delete
@@ -157,10 +157,10 @@ exports.deleteFolder = async (domain) => {
         // Create a list of objects to delete
         const deleteParams = {
             Bucket: process.env.S3_BUCKET,
-            Delete: {Objects: []}
+            Delete: { Objects: [] }
         };
-        listedObjects.Contents.forEach(({Key}) => {
-            deleteParams.Delete.Objects.push({Key});
+        listedObjects.Contents.forEach(({ Key }) => {
+            deleteParams.Delete.Objects.push({ Key });
         });
         // Delete the listed objects
         await s3.deleteObjects(deleteParams).promise();
@@ -179,7 +179,7 @@ exports.deleteFolder = async (domain) => {
 exports.getImageGalleryList = async (request, response) => {
     try {
         const partnerId = request.body.partnerId
-        const result = await ImageGallery.find({partnerId}).limit(request.body.limit).skip(request.body.offset)
+        const result = await ImageGallery.find({ partnerId }).limit(request.body.limit).skip(request.body.offset)
         return sendResponse(response, statusCode.OK, true, SuccessMessage.DATA_FETCHED, result);
     } catch (error) {
         return sendResponse(response, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
