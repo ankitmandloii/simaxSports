@@ -7,7 +7,7 @@ const PORT = process.env.SERVER_PORT || 8080;
 const cors = require('cors');
 const routes = require("./routes/index.js");
 const { dbConnection } = require('./config/db');
-const { initSocket } = require('./socket'); // adjust path
+// const { initSocket } = require('./socket'); // adjust path
 const helmet = require('helmet');
 
 
@@ -50,7 +50,7 @@ const startServer = async () => {
       console.log(`Server is ready to listen on port ${PORT}`);
     });
     //for real sync
-    initSocket(server);
+    // initSocket(server);
   } catch (err) {
     console.error(`Someting Went Wrong in Start Server, Error is  ${err}`);
     process.exit(1);
