@@ -4,12 +4,15 @@ import { FiSave } from 'react-icons/fi';
 import { FaPlus } from 'react-icons/fa';
 import { FaArrowLeftLong, FaArrowRightLong } from 'react-icons/fa6';
 import style from './MobileFab.module.css';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const MobileFAB = ({ onShare, onSave, onPrice, onNext }) => {
+const MobileFAB = ({ onShare, onSave, onPrice }) => {
   const [open, setOpen] = useState(false);
   const fabRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const steps = ['/product', '/quantity', '/review'];
+  const currentIndex = steps.indexOf(location.pathname);
   // Close FAB when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -21,8 +24,19 @@ const MobileFAB = ({ onShare, onSave, onPrice, onNext }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+  // const onPrevious = () => {
+  //   navigate(-1);
+  // }
+  const onNext = () => {
+    if (currentIndex < steps.length - 1) {
+      navigate(steps[currentIndex + 1]);
+    }
+  };
+
   const onPrevious = () => {
-    navigate(-1);
+    if (currentIndex > 0) {
+      navigate(steps[currentIndex - 1]);
+    }
   }
 
   return (

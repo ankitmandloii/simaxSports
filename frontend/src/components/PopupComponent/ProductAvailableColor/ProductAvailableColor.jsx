@@ -9,11 +9,12 @@ const ProductAvailableColor = ({
   onAddColor,
   availableColors,
   onHoverColor,
-  onLeaveColor
+  onLeaveColor,
+  actionType
 }) => {
   const colorsToShow = availableColors || product.colors || [];
   const popupRef = useRef(null);
-
+  console.log("actionType", actionType)
   // Close popup on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -31,7 +32,9 @@ const ProductAvailableColor = ({
 
   return (
     <div className="color-popup-overlay"> {/* Add a dimmed background if needed */}
-      <div className={style.colorPopupContainerSpanBox} ref={popupRef}>
+      <div className={style.colorPopupContainerSpanBox} ref={popupRef} style={{
+        ...(actionType === 'change' ? { left: '0' } : { right: '0' })
+      }}>
         <span onClick={onClose} className={style.crossProdIConn}>
           <CrossIcon />
         </span>
@@ -74,7 +77,7 @@ const ProductAvailableColor = ({
           </p>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 

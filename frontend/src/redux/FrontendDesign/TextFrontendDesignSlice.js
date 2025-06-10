@@ -694,6 +694,31 @@ const TextFrontendDesignSlice = createSlice({
       // This might need to be adapted depending on the multi-product shape
       return { ...state, ...action.payload };
     },
+    copyTextToSide: (state, action) => {
+      const { fromSide, toSide, textId } = action.payload;
+      const textToCopy = state.present[fromSide].texts.find(t => t.id === textId);
+
+      if (!textToCopy) return;
+
+      state.past[toSide].push(JSON.parse(JSON.stringify(state.present[toSide])));
+
+      const newText = {
+        ...JSON.parse(JSON.stringify(textToCopy)),
+        id: nanoid(),
+        position: {
+          x: textToCopy.position.x + 20, // Offset to avoid overlap
+          y: textToCopy.position.y + 20,
+        },
+        layerIndex: state.present[toSide].texts.length,
+      };
+
+      state.present[toSide].texts.push(newText);
+      state.present[toSide].selectedTextId = newText.id;
+      state.present[toSide].setRendering = !state.present[toSide].setRendering;
+      state.future[toSide] = [];
+    },
+
+
   },
 });
 
@@ -725,7 +750,8 @@ export const {
   removeProductDesignState,
   addProductDesignState,
   setCurrentProductId,
-  toggleSleeveDesign
+  toggleSleeveDesign,
+  copyTextToSide
 } = TextFrontendDesignSlice.actions;
 
 export const selectActiveSide = (state) =>
