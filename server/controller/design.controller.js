@@ -68,7 +68,7 @@ exports.getSettings = async (req, res) => {
     try {
         const settings = await AdminSettings.findOne(); 
       
-        return sendResponse(res, statusCode.OK, true, SuccessMessage.DATA_FETCHED, res.json(settings || {}));
+        return sendResponse(res, statusCode.OK, true, SuccessMessage.DATA_FETCHED, settings || {});
      
     } catch (error) {
         console.log(error)
