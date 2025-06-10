@@ -1,62 +1,62 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
-const PORT = 3000;
-const bodyParser = require("body-parser");
+const http = require('http');
+const server = http.createServer(app);
+const PORT = process.env.SERVER_PORT || 8080;
 const cors = require('cors');
 const routes = require("./routes/index.js");
 const { dbConnection } = require('./config/db');
-const dotenv = require('dotenv');
-
-dotenv.config();
-
+const { initSocket } = require('./socket'); // adjust path
+const helmet = require('helmet');
 
 
 
 
 
 
-
-
+// Setup middlewares
+app.use(helmet());
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+}));
 
 
 
 
+if (process.env.NODE_ENV !== 'production') {
+  app.use((req, res, next) => {
+    console.log(`[${req.method}] ${req.url}`);
+    next();
+  });
+}
 
-
-dbConnection();
-app.use(express.json());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
-
-
-// If you are adding routes outside of the /api path, remember to
-// also add a proxy rule for them in web/frontend/vite.config.js
-//add route for maintenance api without authentication
-// app.use("/public/",maintenanceRoutes);
-// app.use("/api/*",shopify.validateAuthenticatedSession(), authenticateUser);
+// Routes
 app.use("/api", routes);
 
-app.use("/",(req,res)=>{
-res.send("yes Now you hit APis");
-});
+// Test route
+app.use("/", (req, res) =>  res.send("Yes, Now you can hit APIs"));
 
 
-// app.use("/external/*",authenticateUser);
-// app.use("/external/",routes);
 
+const startServer = async () => {
+  try {
+    await dbConnection();
+    server.listen(PORT, () => {
+      console.log(`Server is ready to listen on port ${PORT}`);
+    });
+    //for real sync
+    initSocket(server);
+  } catch (err) {
+    console.error(`Someting Went Wrong in Start Server, Error is  ${err}`);
+    process.exit(1);
+  }
+}
 
-app.listen(PORT, console.log("server is on port ", PORT));
+startServer();
 
-
-// app.listen(PORT, (err)=> {
-//     if (err) //console.log(err);
-//     {
-//         console.log(`SomeThing went wrong", ${err}`);
-//     } else {
-//         console.log("Server listening on PORT", PORT);
-
-//     }
-// });
 

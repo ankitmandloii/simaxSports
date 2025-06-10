@@ -8,7 +8,7 @@ import { getHexFromName } from '../../utils/colorUtils.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const AddNamesPopup = ({ showAddnamesPopupHAndler ,previewSelectionByProduct,setPreviewSelectionByProduct}) => {
+const AddNamesPopup = ({ showAddnamesPopupHAndler, previewSelectionByProduct, setPreviewSelectionByProduct }) => {
   const activeSide = "front";
   const currentProductId = useSelector((state) => state.TextFrontendDesignSlice.currentProductId);
   const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
@@ -68,8 +68,8 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler ,previewSelectionByProduct,set
   const [activeRowId, setActiveRowId] = useState(null);
 
   console.log("rows by key", rowsByKey);
-  
-// const getSizeOptions = (product) => {
+
+  // const getSizeOptions = (product) => {
   //   if (!product?.allVariants) return [];
   //   const sizeVariantPairs = product.allVariants.flatMap((variant) => {
   //     const sizeOption = variant.selectedOptions.find((option) => option.name === 'Size');
@@ -192,59 +192,59 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler ,previewSelectionByProduct,set
 
 
 
- const saveAndExit = () => {
-  const selectionsRows = Object.entries(rowsByKey).filter(([key,rows]) => (key.split("/")[0] == "gid:"));
-  console.log("filtered row ",selectionsRows)
+  const saveAndExit = () => {
+    const selectionsRows = Object.entries(rowsByKey).filter(([key, rows]) => (key.split("/")[0] == "gid:"));
+    console.log("filtered row ", selectionsRows)
 
-  const isValid = selectionsRows.every(([key, rows]) =>
-    rows.every(row => {
-      const product = allProducts.find(p => `${p.id}` === key);
-      const isSizeFilled =
-        product?.sizes?.length === 0 || (row.size && row.size.trim() !== '');
-      const isNameFilled = !addName || row.name !== '';
-      const isNumberFilled = !addNumber || row.number !== '';
-      const isPreview = !previewSelectionByProduct;
-      return isSizeFilled && isNameFilled && isNumberFilled;
-    })
-  );
+    const isValid = selectionsRows.every(([key, rows]) =>
+      rows.every(row => {
+        const product = allProducts.find(p => `${p.id}` === key);
+        const isSizeFilled =
+          product?.sizes?.length === 0 || (row.size && row.size.trim() !== '');
+        const isNameFilled = !addName || row.name !== '';
+        const isNumberFilled = !addNumber || row.number !== '';
+        const isPreview = !previewSelectionByProduct;
+        return isSizeFilled && isNameFilled && isNumberFilled;
+      })
+    );
 
-  if (!isValid) {
-    toast.error("All required fields (Size, Name, Number) must be filled.");
-    return;
-  }
+    if (!isValid) {
+      toast.error("All required fields (Size, Name, Number) must be filled.");
+      return;
+    }
 
-  selectionsRows.forEach(([id, rows]) => {
-    const selectedRowId = previewSelectionByProduct?.[id];
-    // if(!selectedRowId) return; 
-    const previewRow = rows.find(row => row.selectionId === selectedRowId) || rows[0];
+    selectionsRows.forEach(([id, rows]) => {
+      const selectedRowId = previewSelectionByProduct?.[id];
+      // if(!selectedRowId) return; 
+      const previewRow = rows.find(row => row.selectionId === selectedRowId) || rows[0];
 
-    dispatch(UpdateNameAndNumberProduct({
-      id,
-      newSelections: rows,
-      isRenderOrNot: true
-    }));
+      dispatch(UpdateNameAndNumberProduct({
+        id,
+        newSelections: rows,
+        isRenderOrNot: true
+      }));
 
-    dispatch(updateNameAndNumberDesignState({
-      changes: {
-        name: previewRow?.name || "NAME",
-        number: previewRow?.number || "00"
-      },
-      productId: id,
-      side: "front"
-    }));
+      dispatch(updateNameAndNumberDesignState({
+        changes: {
+          name: previewRow?.name || "NAME",
+          number: previewRow?.number || "00"
+        },
+        productId: id,
+        side: "front"
+      }));
 
-    dispatch(updateNameAndNumberDesignState({
-      changes: {
-        name: previewRow?.name || "NAME",
-        number: previewRow?.number || "00"
-      },
-      productId: id,
-      side: "back"
-    }));
-  });
+      dispatch(updateNameAndNumberDesignState({
+        changes: {
+          name: previewRow?.name || "NAME",
+          number: previewRow?.number || "00"
+        },
+        productId: id,
+        side: "back"
+      }));
+    });
 
-  showAddnamesPopupHAndler();
-};
+    showAddnamesPopupHAndler();
+  };
 
 
   const activeProduct = allProducts.find(product =>
@@ -290,7 +290,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler ,previewSelectionByProduct,set
                     <span>Size</span>
                     <span className={!addName ? styles.deactive : ""}>Name</span>
                     <span className={!addNumber ? styles.deactive : ""}>Number</span>
-                      <span className={`${!addNumber || !addName ? styles.deactive : ""}`}>Preview</span>
+                    <span className={`${!addNumber || !addName ? styles.deactive : ""}`}>Preview</span>
                     <span></span>
                   </div>
 
@@ -323,7 +323,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler ,previewSelectionByProduct,set
                         placeholder="Name"
                         maxLength={15}
                         value={row.name}
-                        className={!addName ? styles.deactive : ""}
+                        className={!addName ? styles.Deactive : ""}
                         onFocus={() => setActiveRowId(row.selectionId)}
                         onChange={(e) => updateRow(`${product.id}`, row.selectionId, 'name', e.target.value.toUpperCase())}
                       />
@@ -333,33 +333,42 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler ,previewSelectionByProduct,set
                         placeholder="Number"
                         maxLength={4}
                         value={row.number}
-                        className={!addNumber ? styles.deactive : ""}
+                        className={!addNumber ? styles.Deactive : ""}
                         onFocus={() => setActiveRowId(row.selectionId)}
                         onChange={(e) => updateRow(`${product.id}`, row.selectionId, 'number', e.target.value.toUpperCase())}
                       />
-                           <input
-                          type="radio"
-                          name={`preview-selection-${product.id}`} // unique per product
-                          checked={previewSelectionByProduct[product.id] === row.selectionId}
-                          onChange={() =>
-                            
-                          { setActiveRowId(row.selectionId);
-                             setPreviewSelectionByProduct((prev) => ({
-                              ...prev,
-                              [product.id]: row.selectionId,
-                            }))}
-                          }
-                          title="Set as Preview"
-                        />
+                      <input
+                        type="radio"
+                        name={`preview-selection-${product.id}`} // unique per product
+                        checked={previewSelectionByProduct[product.id] === row.selectionId}
+                        onChange={() => {
+                          setActiveRowId(row.selectionId);
+                          setPreviewSelectionByProduct((prev) => ({
+                            ...prev,
+                            [product.id]: row.selectionId,
+                          }))
+                        }
+                        }
+                        title="Set as Preview"
+                      />
 
                       <button className={styles.trashBtn} onClick={() => removeRow(`${product.id}`, row.selectionId)}><DeleteIcon /></button>
                     </div>
                   ))}
 
                   <p className={styles.addAnother} onClick={() => addRow(`${product.id}`)}>+ Add Another</p>
-                  {/* <p className="total-show-box">
-                      Totals: {rowsByKey[`${pIdx}`]?.filter((r) => r.name).length || 0} with Names | {rowsByKey[`${pIdx}`]?.filter((r) => r.number).length || 0} with Numbers
-                    </p> */}
+                  {(() => {
+                    const rows = rowsByKey[product.id] || [];
+                    const productTotal = rows.length;
+                    const productNameCount = rows.filter((r) => r.name?.trim()).length;
+                    const productNumberCount = rows.filter((r) => r.number?.trim()).length;
+
+                    return (
+                      <p className={styles.totalCount}>
+                        Totals: {productNameCount} out of {productTotal} have Names | {productNumberCount} out of {productTotal} have Numbers
+                      </p>
+                    );
+                  })()}
                   <hr className={styles.hrUnderline} />
                 </div>
               </div>

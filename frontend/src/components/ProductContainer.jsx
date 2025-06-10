@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addProductDesignState, setActiveSide, setCurrentProductId, setRendering } from '../redux/FrontendDesign/TextFrontendDesignSlice';
+import { addProductDesignState, setActiveSide, setCurrentProductId, setRendering, toggleSleeveDesign } from '../redux/FrontendDesign/TextFrontendDesignSlice';
 import MainDesignTool from './mainDesignTool';
 import { GrZoomOut } from "react-icons/gr";
 import { BsZoomIn } from "react-icons/bs";
@@ -12,15 +12,22 @@ import { fetchProducts } from '../redux/ProductSlice/ProductSlice';
 import { setSelectedProducts } from '../redux/ProductSlice/SelectedProductSlice';
 import { useSearchParams } from 'react-router-dom';
 import style from './ProductContainer.module.css'
+import RedoundoComponent from './RedoundoComponent/redoundo';
+import ViewControlButtons from './controls/ViewControlButtons';
 
 function ProductContainer() {
+  const FrontImgRef = useRef(null);
+  const BackImgRef = useRef(null);
+  const LeftImgRef = useRef(null);
+  const RightImgRef = useRef(null);
+
   const dispatch = useDispatch();
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+  const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   const exportRequested = useSelector((state) => state.canvasExport.exportRequested);
   const selectedProducts = useSelector(state => state.selectedProducts.selectedProducts);
   const frontImage = useSelector(state => state?.selectedProducts?.activeProduct?.imgurl);
   const backImage = useSelector(state => state?.selectedProducts?.activeProduct?.colors?.[1]?.img);
-
 
 
   function invertHexColor(hex) {
@@ -69,8 +76,8 @@ function ProductContainer() {
 
   const toggleZoom = () => {
     if (isZoomedIn) {
-      setLogo(<BsZoomIn />);
       setZoomLevel(1);
+      setLogo(<BsZoomIn />);
       setIsZoomedIn(false);
     } else {
       setLogo(<GrZoomOut />);
@@ -104,6 +111,8 @@ function ProductContainer() {
   };
 
   const onAddDesign = () => {
+    dispatch(toggleSleeveDesign());
+
     setAddSleeves(true);
     onClose();
   };
@@ -127,15 +136,18 @@ function ProductContainer() {
 
   useEffect(() => {
     if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
-    const productId = searchParams.get("productId"); // "8847707537647"
-    const title = searchParams.get("title");         // "Dusty Rose / S"
+
+    const productId = "8847707537647"; // "8847707537647"
+    // console.log("productId", productId);
+    // console.log(rawProducts, "productId")
+    // const productId = searchParams.get("productId"s    // "Dusty Rose / S"
     // console.log("productId", productId);
     // console.log(rawProducts, "productId")
     const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/${productId}`);
     // console.log("initiale Product", initialProduct);
     dispatch(setSelectedProducts(initialProduct));
     dispatch(setCurrentProductId(initialProduct[0]?.id));
-    dispatch(addProductDesignState({productId:initialProduct[0]?.id}))
+    dispatch(addProductDesignState({ productId: initialProduct[0]?.id }))
     if (initialProduct.length > 0) {
       const img = initialProduct[0].imgurl;
       setFrontBgImage(img);
@@ -171,12 +183,64 @@ function ProductContainer() {
   //   </div>
   // );
   // }
-  
+
+  // const handleDownload = () => {
+  //   const imgElement1 = FrontImgRef.current;
+  //   const imgElement2 = BackImgRef.current;
+  //   const imgElement3 = LeftImgRef.current;
+  //   const imgElement4 = RightImgRef.current;
+
+  //   if (!imgElement1 || !imgElement2 || !imgElement3 || !imgElement4) return;
+
+  //   const base64Image = imgElement1.src;
+  //   const base64Image2 = imgElement2.src;
+  //   const base64Image3 = imgElement3.src;
+  //   const base64Image4 = imgElement4.src;
+
+  //   // Create object with images
+  //   const imagePayload = {
+  //     front: base64Image,
+  //     back: base64Image2,
+  //     leftSleeve: base64Image3,
+  //     rightSleeve: base64Image4
+  //   };
+
+  //   // Dispatch to Redux
+  //   dispatch(setExportedImages(imagePayload));
+  //   console.log("-----------------imagePayload", imagePayload)
+  // };
+  useEffect(() => {
+    if (exportRequested) {
+      const front = FrontImgRef.current?.src || null;
+      const back = BackImgRef.current?.src || null;
+      const left = LeftImgRef.current?.src || null;
+      const right = RightImgRef.current?.src || null;
+
+      const exportData = {
+        front,
+        back,
+        leftSleeve: left,
+        rightSleeve: right,
+      };
+
+      dispatch(setExportedImages(exportData));
+    }
+  }, [exportRequested]);
 
   return (
     <div className={style.ProductContainerMainDiv}>
       <div className={style.flex}>
-
+        <div className={style.controllContainer}>
+          <RedoundoComponent />
+          <ViewControlButtons
+            ShowBack={ShowBack}
+            ShowFront={ShowFront}
+            ShowLeftSleeve={ShowLeftSleeve}
+            ShowRightSleeve={ShowRightSleeve}
+            toggleZoom={toggleZoom}
+            logo={logo}
+          ></ViewControlButtons>
+        </div>
         {/* Render Active Canvas Side */}
         <div style={{ display: activeSide === "front" ? "block" : "none" }}>
           <MainDesignTool
@@ -240,17 +304,19 @@ function ProductContainer() {
 
             <div className={style.cornerImgCanvaContainer} onClick={ShowFront}>
               <img
+                ref={FrontImgRef}
                 src={frontPreviewImage}
-                className={`${style.ProductContainerSmallImage} ${activeSide === "front" ? style["hover-active"] : ""}`}
+                className={`${style.ProductContainerSmallImage} ${activeSide === "front" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
               />
 
               <p>Front</p>
             </div>
 
-            <div className={style.cornerImgCanvaContainer} onClick={ShowBack}>
+            <div className={style.cornerImgCanvaContainer} onClick={ShowBack} >
               <img
+                ref={BackImgRef}
                 src={backPreviewImage}
-                className={`${style.ProductContainerSmallImage} ${activeSide === "back" ? style["hover-active"] : ""}`}
+                className={`${style.ProductContainerSmallImage} ${activeSide === "back" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
               />
               <p>Back</p>
             </div>
@@ -260,15 +326,17 @@ function ProductContainer() {
               <>
                 <div className={style.cornerImgCanvaContainer} onClick={ShowRightSleeve}  >
                   <img
+                    ref={LeftImgRef}
                     src={rightSleevePreviewImage}
-                    className={`${style.ProductContainerSmallImage} ${activeSide === "rightSleeve" ? style["hover-active"] : ""}`}
+                    className={`${style.ProductContainerSmallImage} ${activeSide === "rightSleeve" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
                   />
                   <p>Right Sleeve</p>
                 </div>
                 <div className={style.cornerImgCanvaContainer} onClick={ShowLeftSleeve}  >
                   <img
+                    ref={RightImgRef}
                     src={leftSleevePreviewImage}
-                    className={`${style.ProductContainerSmallImage} ${activeSide === "leftSleeve" ? style["hover-active"] : ""}`}
+                    className={`${style.ProductContainerSmallImage} ${activeSide === "leftSleeve" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
                   />
                   <p>Left Sleeve</p>
                 </div>
@@ -295,6 +363,7 @@ function ProductContainer() {
           </div>
         </div>
       </div>
+      {/* <button onClick={handleDownload}>Click</button> */}
     </div>
   );
 }

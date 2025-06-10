@@ -103,6 +103,7 @@
   /* background-color: aquamarine; */
   width: 10rem;
   border-radius: 30px;
+  /* padding: 0 2.5rem; */
 }
 
 .uploadOptionBtn img {
@@ -160,4 +161,8 @@
   font-size: 14px;
   color: #8A9099;
   margin-bottom: 10px;
+}
+
+.marginTop {
+  margin: 5px 0 !important;
 }

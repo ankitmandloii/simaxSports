@@ -1,12 +1,6 @@
-import env from 'dotenv'
+
 // import axios from 'axios';
 
-env.config();
-
-const S_STORE = `${process.env.STORE}`;
-const A_TOKEN = `${process.env.TOKEN}`;
-
-const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
 
 
 
@@ -43,10 +37,10 @@ const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/grap
 //           id
 //           originalSrc
 //         }
-       
-        
+
+
 //         sku
-        
+
 //         selectedOptions {
 //           name
 //           value
@@ -69,9 +63,9 @@ const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/grap
 //       }
 //     }
 //   }
-  
+
 //   description
- 
+
 //   handle
 //   id
 //   onlineStoreUrl
@@ -83,10 +77,10 @@ const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/grap
 //   vendor
 //   sellingPlanGroups(first:1){
 // nodes{
-   
+
 //     name
 //     options
-    
+
 // }
 // }
 //   images(first: 250) {
@@ -129,9 +123,16 @@ const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/grap
 // };
 
 //using Fetch
-export const getProductsList = async (limit) => {
+exports.getProductsList = async (limit, cursor = null) => {
+  const S_STORE = `${process.env.STORE}`;
+  const A_TOKEN = `${process.env.TOKEN}`;
+
+  const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
+
+  const afterClause = cursor ? `, after: "${cursor}"` : "";
+
   const query = `{
-    products(first: ${limit}) {
+    products(first: ${limit}${afterClause}) {
       pageInfo {
         startCursor
         endCursor
@@ -141,23 +142,16 @@ export const getProductsList = async (limit) => {
       edges {
         cursor
         node {
+          id
           title
-          options(first: 50) {
-            id
-            name
-            values
-          }
           variants(first: 250) {
             edges {
               node {
                 id
                 title
                 image {
-                  altText
-                  id
                   originalSrc
                 }
-                sku
                 selectedOptions {
                   name
                   value
@@ -168,39 +162,9 @@ export const getProductsList = async (limit) => {
               hasNextPage
             }
           }
-          collections(first: 250) {
+          images(first: 1) {
             edges {
               node {
-                description
-                descriptionHtml
-                id
-                handle
-                updatedAt
-                title
-              }
-            }
-          }
-          description
-          handle
-          id
-          onlineStoreUrl
-          productType
-          publishedAt
-          tags
-          title
-          updatedAt
-          vendor
-          sellingPlanGroups(first: 1) {
-            nodes {
-              name
-              options
-            }
-          }
-          images(first: 250) {
-            edges {
-              node {
-                altText
-                id
                 originalSrc
               }
             }
@@ -234,7 +198,11 @@ export const getProductsList = async (limit) => {
 
 
 
-export const getProductFilter = async (title, limit, isCursor) => {
+exports.getProductFilter = async (title, limit, isCursor) => {
+  const S_STORE = `${process.env.STORE}`;
+  const A_TOKEN = `${process.env.TOKEN}`;
+
+  const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
   try {
 
 
@@ -460,7 +428,11 @@ export const getProductFilter = async (title, limit, isCursor) => {
 // };
 
 //using fetch 
-export const getAllCollectionList = async (limit = 50, cursor = null) => {
+exports.getAllCollectionList = async (limit = 50, cursor = null) => {
+  const S_STORE = `${process.env.STORE}`;
+  const A_TOKEN = `${process.env.TOKEN}`;
+
+  const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
   try {
     const afterCursor = cursor ? `, after: "${cursor}"` : "";
 
@@ -582,7 +554,7 @@ export const getAllCollectionList = async (limit = 50, cursor = null) => {
 //                  }
 //                }
 //               }
-   
+
 //             }
 //           }
 //         }
@@ -612,7 +584,11 @@ export const getAllCollectionList = async (limit = 50, cursor = null) => {
 
 
 //using fetch 
-export const getProductsByCollectionId = async (limit, collectionId, cursor) => {
+exports.getProductsByCollectionId = async (limit, collectionId, cursor) => {
+  const S_STORE = `${process.env.STORE}`;
+  const A_TOKEN = `${process.env.TOKEN}`;
+
+  const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
   try {
     const isCursor = cursor ? `, after: "${cursor}"` : "";
 

@@ -14,7 +14,6 @@ import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox.jsx'
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox.jsx'
 import { useDispatch, useSelector } from 'react-redux';
 import { removeNameAndNumberProduct, setActiveSide, setAddName, UpdateNameAndNumberProduct, setAddNumber, updateNameAndNumberDesignState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
-import { RxFontFamily } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -59,7 +58,7 @@ const [previewSelectionByProduct, setPreviewSelectionByProduct] = useState({});
   const [showColorpopup, setshowcolorpopup] = useState(false);
 
   const showAddnamesPopupHAndler = () => {
-    if (!selectedProducts || selectedProducts.length == 0) {
+    if (!selectedProducts || selectedProducts.length === 0) {
       toast.info("Please Add Product First");      // Orange
       navigate("/product?productId=8847707537647&title=Dusty%20Rose%20/%20S");
       return;
@@ -164,9 +163,7 @@ const [previewSelectionByProduct, setPreviewSelectionByProduct] = useState({});
             <input
               type="checkbox"
               checked={activeName}
-              value={activeName}
               onChange={handleAddNames}
-              readOnly
             />
             <span>Add Names</span>
           </label>
@@ -175,13 +172,12 @@ const [previewSelectionByProduct, setPreviewSelectionByProduct] = useState({});
               type="checkbox"
               checked={activeNumber}
               onChange={handleAddNumber}
-              readOnly
             />
             <span>Add Numbers</span>
           </label>
         </div>
         {/* ***************************show only when either number or name checked************ */}
-        <div className={`${(activeName || activeNumber) ? "Active" : "Deactive"} step-toggle-container`}>
+        <div className={`${(activeName || activeNumber) ? style.Active : style.Deactive} step-toggle-container`}>
           {/* Side */}
           <div className={style.addNamesNumberrsRow}>
             <h5>Side</h5>
@@ -266,7 +262,7 @@ const [previewSelectionByProduct, setPreviewSelectionByProduct] = useState({});
             </button> */}
             </div>
           </div>
-          <button className='black-button' onClick={showAddnamesPopupHAndler}>Add Names/Numbers</button>
+          <button className={style.blackButton} onClick={showAddnamesPopupHAndler}>Add Names/Numbers</button>
 
         </div>
 

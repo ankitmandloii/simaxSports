@@ -6,6 +6,7 @@ import collectionReducer from './ProductSlice/CollectionSlice.js'
 import selectedProductsReducer from './ProductSlice/SelectedProductSlice.js'
 import ContinueDesignReducer from './ContinueDesign/ContinueDesignSlice.js'
 import canvasExportReducer from './CanvasExportDesign/canvasExportSlice.js'
+import settingsReducer from './SettingsSlice/SettingsSlice.js'
 // import TextBackendDesignSlice from "./BackendDesign/TextBackendDesignSlice.js";
 
 export const store = configureStore({
@@ -17,6 +18,7 @@ export const store = configureStore({
     selectedProducts: selectedProductsReducer,
     ContinueDesign: ContinueDesignReducer,
     canvasExport: canvasExportReducer,
+    settingsReducer: settingsReducer,
     // TextBackendDesignSlice: TextBackendDesignSlice
   },
 });

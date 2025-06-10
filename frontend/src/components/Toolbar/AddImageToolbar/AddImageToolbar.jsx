@@ -22,7 +22,6 @@ import { useDispatch, useSelector } from 'react-redux';
 // import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
 // import { duplicateTextState, addTextState, updateTextState, toggleLockState, moveTextForwardState, moveTextBackwardState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 // import { setSelectedBackTextState } from '../../../redux/BackendDesign/TextBackendDesignSlice.js';
-import { useLocation } from "react-router-dom";
 
 
 const filters = [
@@ -481,13 +480,13 @@ const AddImageToolbar = () => {
                   Inverts Colors
 
                 </div>
-                <label className="switch">
+                <label className={styles.switch}>
                   <input
                     type="checkbox"
                   // checked={"removeBackground"}
                   // onChange={"toggleRemoveBackground"}
                   />
-                  <span className="slider round"></span>
+                  <span className={styles.slider}></span>
                 </label>
               </div>
 
@@ -500,13 +499,13 @@ const AddImageToolbar = () => {
                   Make Solid
 
                 </div>
-                <label className="switch">
+                <label className={styles.switch}>
                   <input
                     type="checkbox"
                   // checked={"removeBackground"}
                   // onChange={"toggleRemoveBackground"}
                   />
-                  <span className="slider round"></span>
+                  <span className={styles.slider}></span>
                 </label>
               </div>
 
@@ -516,15 +515,15 @@ const AddImageToolbar = () => {
               <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Remove Background
-                  <span className="ai-badge">AI</span>
+                  <span className={styles.aiBadge}>AI</span>
                 </div>
-                <label className="switch">
+                <label className={styles.switch}>
                   <input
                     type="checkbox"
                   // checked={"removeBackground"}
                   // onChange={"toggleRemoveBackground"}
                   />
-                  <span className="slider round"></span>
+                  <span className={styles.slider}></span>
                 </label>
               </div>
 
@@ -535,13 +534,13 @@ const AddImageToolbar = () => {
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Crop & Trim
                 </div>
-                <label className="switch">
+                <label className={styles.switch}>
                   <input
                     type="checkbox"
                   // checked={cropAndTrim}
                   // onChange={toggleCropAndTrim}
                   />
-                  <span className="slider round"></span>
+                  <span className={styles.slider}></span>
                 </label>
               </div>
 
@@ -552,22 +551,22 @@ const AddImageToolbar = () => {
               <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Super Resolution
-                  <span className="ai-badge">AI</span>
+                  <span className={styles.aiBadge}>AI</span>
                 </div>
-                <label className="switch">
+                <label className={styles.switch}>
                   <input
                     type="checkbox"
                   // checked={superResolution}
                   // onChange={toggleSuperResolution}
                   />
-                  <span className="slider round"></span>
+                  <span className={styles.slider}></span>
                 </label>
               </div>
               <hr />
 
 
               <div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Replace Background With AI<span className="ai-badge">AI</span></div>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Replace Background With AI<span className={styles.aiBadge}>AI</span></div>
 
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleOutlineColorPopup}>
 

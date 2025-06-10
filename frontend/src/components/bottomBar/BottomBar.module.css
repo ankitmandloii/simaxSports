@@ -1,0 +1,89 @@
+.wrapper {
+  width: 100%;
+  display: none;
+  background-color: black;
+  color: white;
+  /* padding: 0.5rem 0; */
+  overflow-x: auto;
+  position: fixed;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.slide {
+  display: flex !important;
+  /* Swiper sometimes overrides this */
+  justify-content: center;
+  align-items: center;
+}
+
+.menuItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.active {
+  color: black;
+  /* Sky blue */
+  font-weight: bold;
+  background-color: white;
+}
+
+
+.menuItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #ccc;
+  transition: all 0.3s ease;
+  padding: 5px;
+  height: 100%;
+  width: 100%;
+}
+
+.bottomBarIcon {
+  font-size: 1.7rem;
+  margin-bottom: 0.2rem;
+  transition: color 0.3s ease;
+  color: white;
+  position: relative;
+}
+
+.label {
+  font-size: 0.6rem;
+  transition: color 0.3s ease;
+  text-align: center;
+}
+
+.active .bottomBarIcon {
+  color: #005BFF;
+}
+
+.active .label {
+  color: black;
+  /* Active sky blue */
+}
+
+.spannAi {
+  position: absolute;
+  background-color: #005bff;
+  color: #ffffff;
+  top: 0px;
+  font-size: 8px;
+  padding: 1px 5px;
+  right: -20px;
+  font-weight: 700;
+  border-radius: 3px;
+}
+
+@media only screen and (max-width: 1200px) {
+  .wrapper {
+    display: block;
+    /* background-color: transparent; */
+  }
+}

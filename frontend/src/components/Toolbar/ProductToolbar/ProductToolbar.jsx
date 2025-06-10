@@ -16,18 +16,16 @@ import {
   setSelectedProducts,
   setActiveProduct,
 } from '../../../redux/ProductSlice/SelectedProductSlice';
-import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { addProductDesignState, removeNameAndNumberProduct, setCurrentProductId, setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
-import ContinueEditPopup from '../../PopupComponent/ContinueEditPopup/ContinueEditPopup';
-import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesignSlice';
+// import ContinueEditPopup from '../../PopupComponent/ContinueEditPopup/ContinueEditPopup';
+// import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesignSlice';
 import { fetchProducts } from '../../../redux/ProductSlice/ProductSlice';
-import { toast } from 'react-toastify';
-
-
 const ProductToolbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
+  // const { setActiveProduct } = useOutletContext();
 
 
   const currentProductId = useSelector((state) => state.TextFrontendDesignSlice.currentProductId);
@@ -211,6 +209,24 @@ const ProductToolbar = () => {
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
+  // ----
+  // useEffect(() => {
+  //   console.log("-----running");
+  //   console.log("Socket connected:", socket.connected);
+
+  //   socket.on("connect", () => {
+  //     console.log("Socket connected to server, ID:", socket.id);
+  //   });
+
+  //   socket.on("adminSettingUpdate", (newSettings) => {
+  //     console.log("Received AdminSettingChanged event with data:", newSettings);
+  //     dispatch(updateAdminSettingsFromSocket(newSettings));
+  //   });
+
+  //   return () => {
+  //     socket.off("adminSettingUpdate");
+  //   };
+  // }, [dispatch]);
 
   // useEffect(() => {
   //   const productId = searchParams.get("productId"); // "8847707537647"
@@ -222,16 +238,18 @@ const ProductToolbar = () => {
   //   dispatch(setSelectedProducts(initialProduct))
   // }, [rawProducts])
 
+
   return (
     <div className="toolbar-main-container">
       <div className={style.productToolbar}>
+
         <div className="toolbar-main-heading">
           <h5 className="Toolbar-badge">Product</h5>
           <h2>Manage Your Products</h2>
           <p>You can select multiple products and colors</p>
         </div>
 
-        <div className="toolbar-box">
+        <div className={style.toolbarBox}>
           {selectedProducts.map((product, index) => (
             <div className={style.toolbarProductHead} key={index}>
               <div className={style.toolbarHead}>
@@ -337,6 +355,7 @@ const ProductToolbar = () => {
                             >
                               Change
                             </button>
+
                           </div>
                         )}
                         <div className={style.imgThumbnaillContainer}>
@@ -431,6 +450,7 @@ const ProductToolbar = () => {
                 </div>
               </div>
             </div>
+
           ))}
 
           <button className={style.addProductBtn} onClick={addProductPopup}>

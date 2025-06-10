@@ -11,13 +11,13 @@
   z-index: 999;
 }
 
-.popupContainer {
+/* .popupContainer {
   background: white;
   border-radius: 10px;
   padding: 26px;
   display: flex;
   flex-direction: column;
-}
+} */
 
 .popupHeader {
   display: flex;
@@ -241,4 +241,135 @@ select:disabled {
   background-color: #f5f5f5;
   color: #999;
   cursor: not-allowed;
+}
+
+/* Base changes */
+.popupContainer {
+  width: 80vw;
+  max-width: 1100px;
+  max-height: 95vh;
+  overflow: hidden;
+  /* - */
+  background: white;
+  border-radius: 10px;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tableRow input,
+.tableRow select {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+.totalCount {
+  background-color: #f0f2f5;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+/* Refined medium screen support */
+@media (max-width: 1024px) {
+  .popupContainer {
+    width: 95vw;
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  .popupBody {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .popupLeft {
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+  }
+
+  .popupRight {
+    width: 100%;
+  }
+
+  .canvasBg {
+    width: 100%;
+    max-width: 100%;
+    /* height: auto; */
+    max-height: 250px;
+  }
+
+  .textRow {
+    font-size: 0.9rem;
+  }
+
+  .tableHeader,
+  .tableRow {
+    grid-template-columns: 1fr 1.5fr 1.5fr 30px;
+  }
+
+  .popupFooter {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* Mobile-first responsiveness */
+@media (max-width: 600px) {
+  .popupContainer {
+    padding: 15px;
+    width: 98vw;
+  }
+
+  /* .popupHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  } */
+
+  .popupFooter {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tableHeader,
+  .tableRow {
+    grid-template-columns: 1fr 1fr 1fr 25px;
+  }
+
+  .productMiniImg {
+    height: 40px;
+  }
+
+  .canvasBg {
+    max-height: 180px;
+    width: 100%;
+  }
+
+  .primaryBtn,
+  .linkBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .renderBox {
+    width: 100%;
+  }
+
+  .textRow {
+    transform: translate(-50%, -50%);
+    font-size: 0.8rem;
+  }
+
+  .tableRow input,
+  .tableRow select {
+    font-size: 0.9rem;
+    padding: 4px;
+  }
+
+  .tableHeader span {
+    font-size: 11px;
+  }
 }

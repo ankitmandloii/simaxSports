@@ -1,5 +1,8 @@
 .ProductContainerMainDiv {
-  width: 70%;
+  width: 100%;
+  /* height: calc(100vh - 50px); */
+  position: relative;
+
   /* border: 2px solid black; */
   /* background-color: aqua; */
 }
@@ -16,8 +19,8 @@
   font-size: 11px;
   font-weight: 600;
   padding: 8px 20px;
-  justify-content: center;
-  align-items: center;
+  justify-content: start;
+  align-items: start;
   text-align: center;
   /* margin: 20px 5px; */
   cursor: pointer;
@@ -26,13 +29,11 @@
 .ProductContainerButton:hover {
   background-color: #5f5757;
   color: #fff;
-
 }
 
 .ProductContainerButton:active {
   background-color: #888;
   color: #fff;
-
 }
 
 .ProductContainerButton span {
@@ -80,7 +81,7 @@
   background: white;
   height: max-content;
   border-radius: 10px;
-  gap: 20px;
+  gap: 10px;
   /* width: 104px; */
   align-items: center;
   justify-content: center;
@@ -100,28 +101,32 @@
 
 .ProductContainerSmallImage {
   /* object-fit:cc; */
-  height: 100px;
-  width: 90px;
+  height: 70px;
+  width: 70px;
+  /* object-fit: cover; */
   /* margin:5px;   */
   border-radius: 10px;
   background-color: white;
-  box-shadow: 0 0 0 1px #D2D5D9;
+  box-shadow: 0 0 0 1px #d2d5d9;
   padding: 10px;
   margin-bottom: 2px;
   transition: all 0.5s ease -in -out;
 }
 
 .ProductContainerSmallImage:hover {
-  box-shadow: 0 0 0 2px #005BFF;
+  box-shadow: 0 0 0 2px #005bff;
 }
 
 .ProductContainerSmallImage p {
   text-align: center;
 }
 
+.activeBorder {
+  box-shadow: 0 0 0 2px #005bff;
+
+}
+
 .ProductContainerSmallImageZoomButton {
-
-
   background-color: white;
   color: black;
   display: flex;
@@ -166,8 +171,8 @@
 
 .cornerImgCanvaContainer {
   object-fit: contain;
-  height: 86px;
-  width: 86px;
+  /* height: 86px; */
+  /* width: 86px; */
   margin-bottom: 0px;
   border-radius: 10px;
   background-color: white;
@@ -177,7 +182,7 @@
 }
 
 .hoverActive {
-  box-shadow: 0 0 0 2px #005BFF;
+  box-shadow: 0 0 0 2px #005bff;
 }
 
 /* canvas#mirrorCanvasFront {
@@ -192,7 +197,7 @@
 canvas#mirrorCanvasBack {
   width: 86px !important;
   height: 90px !important;
-  border: 1px solid #D2D5D9;
+  border: 1px solid #d2d5d9;
   border-radius: 10px;
   margin: 0px 5px 5px 5px;
   padding: 9px;
@@ -210,13 +215,21 @@ canvas#mirrorCanvasBack {
 
 #mirrorCanvas {
   border-radius: 10px;
-
 }
 
 .flex {
-  margin-top: 18px;
   display: flex;
-  justify-content: space-between;
+  align-items: start;
+  width: 100%;
+  /* margin-top: 0px; */
+  height: calc(100vh - 40px);
+  justify-content: center;
+  background-color: transparent;
+  justify-content: space-around;
+  padding: 10px;
+  position: relative;
+  overflow: hidden;
+  /* background-color: green; */
 }
 
 .mainSleveContainer {
@@ -254,7 +267,7 @@ canvas#mirrorCanvasBack {
   justify-content: center;
   align-items: center;
   gap: 10px;
-  border: 1px solid #D2D5D9;
+  border: 1px solid #d2d5d9;
   background: #fff;
   padding: 8px 20px;
   border-radius: 10px;
@@ -265,7 +278,7 @@ canvas#mirrorCanvasBack {
 }
 
 .zoomContainer:hover {
-  box-shadow: 0 0 0 2px #005BFF;
+  box-shadow: 0 0 0 2px #005bff;
 }
 
 .zoomContainer svg {
@@ -273,37 +286,44 @@ canvas#mirrorCanvasBack {
   min-height: 18px;
 }
 
-.fullscreenLoader {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: transparent;
-  backdrop-filter: blur(4px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.loaderSpinner {
-  border: 8px solid #f3f3f3;
-  /* Light gray */
-  border-top: 8px solid #005BFF;
-  /* Blue */
-  border-radius: 50%;
-  width: 80px;
-  height: 80px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
+@media screen and (max-width: 1200px) {
+  .ProuductMirrorContainer {
+    /* display: none; */
+    /* position: absolute; */
+    /* right: 0; */
+    /* top: 10%; */
   }
 
-  100% {
-    transform: rotate(360deg);
+  .flex {
+    /* margin-top: 80px; */
+    /* align-items: center; */
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .ProuductMirrorContainer {
+    display: none;
+  }
+
+  .controllContainer {
+    position: fixed;
+    left: 0;
+    z-index: 999;
+    display: flex;
+    top: 25px;
+    position: fixed;
+    left: 0;
+    z-index: 999;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .flex {
+    /* margin-top: 0px; */
+    /* align-items: center; */
+    justify-content: center;
   }
 }

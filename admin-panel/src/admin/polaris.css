@@ -8294,7 +8294,8 @@ li:first-of-type > .Polaris-Listbox-TextOption{
   display:flex;
   align-items:stretch;
   border-inline-end:var(--p-border-width-025) solid var(--p-color-border);
-
+  max-height: 90vh !important;
+  overflow-y: auto !important;
   min-width:0;
 }
 

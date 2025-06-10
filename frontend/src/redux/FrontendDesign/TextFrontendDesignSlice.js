@@ -26,6 +26,7 @@ const createNewText = ({ value, id }, length) => ({
   height: 50,
   fontSize: 20,
   position: { x: 280, y: 200 },
+  position: { x: 280, y: 200 },
   locked: false,
   layerIndex: length,
 });
@@ -42,6 +43,7 @@ const createNewImage = ({ id, src }, length) => ({
   flipY: false,
   width: 150,
   height: 150,
+  position: { x: 280, y: 200 },
   position: { x: 280, y: 200 },
   locked: false,
   layerIndex: length,
@@ -119,6 +121,7 @@ const initialState = {
   activeSide: "front", // front | back | leftSleeve | rightSleeve
   addNumber: false,
   addName: false,
+  sleeveDesign: false,
 };
 
 const TextFrontendDesignSlice = createSlice({
@@ -141,7 +144,7 @@ const TextFrontendDesignSlice = createSlice({
       state.products[productId] = newProductDesign;
 
       // Set currentProductId to the new product
-      if(state.currentProductId == null){
+      if (state.currentProductId == null) {
         state.currentProductId = productId;
       }
 
@@ -516,7 +519,7 @@ const TextFrontendDesignSlice = createSlice({
       const product = state.products[productId];
 
       // product.addNumber = action.payload;
-      state.addNumber = !state.addNumber; 
+      state.addNumber = !state.addNumber;
       product.present[side].setRendering = !product.present[side].setRendering;
     },
 
@@ -534,9 +537,9 @@ const TextFrontendDesignSlice = createSlice({
 
     updateNameAndNumberDesignState: (state, action) => {
 
-    
-      const { side = state.activeSide, changes,productId = state.currentProductId } = action.payload;
-        if (!productId || !state.products[productId]) return;
+
+      const { side = state.activeSide, changes, productId = state.currentProductId } = action.payload;
+      if (!productId || !state.products[productId]) return;
       const product = state.products[productId];
 
       product.past[side].push(
@@ -546,18 +549,18 @@ const TextFrontendDesignSlice = createSlice({
       if (product.present[side]?.nameAndNumberDesignState) {
         Object.assign(product.present[side].nameAndNumberDesignState, changes);
       }
-      product.present[side].setRendering = !  product.present[side].setRendering;
-      console.log("updated name and number design 90 ",product.present[side]);
+      product.present[side].setRendering = !product.present[side].setRendering;
+      console.log("updated name and number design 90 ", product.present[side]);
       product.future[side] = [];
     },
 
     addNameAndNumberProduct: (state, action) => {
       // if (!productId || !state.products[productId]) return;
-      
+
       const { side = state.activeSide, productData } = action.payload;
-      console.log("product data",productData);
+      console.log("product data", productData);
       const productId = productData.id;
-      
+
       const product = state.products[productId];
 
       // const list = product.present[side]?.nameAndNumberProductList;
@@ -566,46 +569,46 @@ const TextFrontendDesignSlice = createSlice({
       //  if (!existingProduct) {
       //   list.push(productData);
       //   console.log("product added successfully",list);
-        
+
       // }
     },
 
-UpdateNameAndNumberProduct: (state, action) => {
-  // if (!productId || !state.products[productId]) return;
-  
-  const {
-    id,
-    newSelections = [],
-    side = "front",
-    isRenderOrNot,
-  } = action.payload;
-  
-  const productId = id;
-  const productState = state.products[id];
-  // Ensure structure is initialized
-  // if (!productState.past[side]) productState.past[side] = [];
-  // if (!productState.future[side]) productState.future[side] = [];
-  // if (!productState.present[side]) productState.present[side] = {};
-  // if (!productState.present[side].nameAndNumberProductList) {
-  //   productState.present[side].nameAndNumberProductList = [];
-  // }
+    UpdateNameAndNumberProduct: (state, action) => {
+      // if (!productId || !state.products[productId]) return;
 
-  // Save current state to past
-  // productState.past[side].push(JSON.parse(JSON.stringify(productState.present[side])));
+      const {
+        id,
+        newSelections = [],
+        side = "front",
+        isRenderOrNot,
+      } = action.payload;
 
-  // Update the list directly
-  productState.present[side].nameAndNumberProductList = newSelections;
-  console.log("new selection updated");
-  productState.present[side].nameAndNumberProductList.forEach(sl => console.log(sl));
+      const productId = id;
+      const productState = state.products[id];
+      // Ensure structure is initialized
+      // if (!productState.past[side]) productState.past[side] = [];
+      // if (!productState.future[side]) productState.future[side] = [];
+      // if (!productState.present[side]) productState.present[side] = {};
+      // if (!productState.present[side].nameAndNumberProductList) {
+      //   productState.present[side].nameAndNumberProductList = [];
+      // }
 
-  // Toggle render flag
-  if (isRenderOrNot) {
-    productState.present[side].setRendering = !productState.present[side].setRendering;
-  }
+      // Save current state to past
+      // productState.past[side].push(JSON.parse(JSON.stringify(productState.present[side])));
 
-  // Clear future for undo/redo
-  productState.future[side] = [];
-},
+      // Update the list directly
+      productState.present[side].nameAndNumberProductList = newSelections;
+      console.log("new selection updated");
+      productState.present[side].nameAndNumberProductList.forEach(sl => console.log(sl));
+
+      // Toggle render flag
+      if (isRenderOrNot) {
+        productState.present[side].setRendering = !productState.present[side].setRendering;
+      }
+
+      // Clear future for undo/redo
+      productState.future[side] = [];
+    },
 
     removeNameAndNumberProduct: (state, action) => {
       const productId = state.currentProductId;
@@ -721,7 +724,8 @@ export const {
   restoreDesignFromSavedState,
   removeProductDesignState,
   addProductDesignState,
-  setCurrentProductId
+  setCurrentProductId,
+  toggleSleeveDesign
 } = TextFrontendDesignSlice.actions;
 
 export const selectActiveSide = (state) =>
@@ -732,7 +736,7 @@ export const selectActiveSide = (state) =>
 export const selectCanUndo = (state) => {
   const product =
     state.TextFrontendDesignSlice.products[
-      state.TextFrontendDesignSlice.currentProductId
+    state.TextFrontendDesignSlice.currentProductId
     ];
   if (!product) return false;
   const side = product.activeSide;
@@ -742,7 +746,7 @@ export const selectCanUndo = (state) => {
 export const selectCanRedo = (state) => {
   const product =
     state.TextFrontendDesignSlice.products[
-      state.TextFrontendDesignSlice.currentProductId
+    state.TextFrontendDesignSlice.currentProductId
     ];
   if (!product) return false;
   const side = product.activeSide;
@@ -752,12 +756,12 @@ export const selectCanRedo = (state) => {
 export const selectCanStartOver = (state) => {
   const product =
     state.TextFrontendDesignSlice.products[
-      state.TextFrontendDesignSlice.currentProductId
+    state.TextFrontendDesignSlice.currentProductId
     ];
   if (!product) return false;
   const side = product.activeSide;
   return product.present[side]?.texts?.length > 0;
 };
 
-// ✅ Export Reducer
+// }
 export default TextFrontendDesignSlice.reducer;

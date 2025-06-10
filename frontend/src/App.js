@@ -17,48 +17,78 @@ import { useDispatch, useSelector } from "react-redux";
 import ContinueEditPopup from "./components/PopupComponent/ContinueEditPopup/ContinueEditPopup";
 import { ToastContainer } from "react-toastify";
 import { fetchProducts } from "./redux/ProductSlice/ProductSlice";
+import BottomBar from "./components/bottomBar/BottomBar";
 
 function App() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [continueEditPopup, setContinueEditPopup] = useState(false);
   const [willRenderContinue, setWillRenderContinue] = useState(false);
+
   const isQuantityPage = location.pathname === "/quantity";
-  const reduxState = useSelector((state) => state); // whole state
-  const {
-    list: rawProducts,
-    loading,
-    error,
-  } = useSelector((state) => state.products);
-  // Save Redux state to localStorage on unload
+  const reduxState = useSelector((state) => state); // full redux state
+  const { list: rawProducts } = useSelector((state) => state.products);
+
+  // Save Redux state to localStorage (iOS-friendly)
   useEffect(() => {
-    const handleBeforeUnload = () => {
-      localStorage.setItem("savedReduxState", JSON.stringify(reduxState));
+    const handleSaveState = () => {
+      try {
+        localStorage.setItem("savedReduxState", JSON.stringify(reduxState));
+      } catch (e) {
+        console.error("Error saving Redux state to localStorage:", e);
+      }
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    // iOS-compatible events
+    window.addEventListener("pagehide", handleSaveState);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        handleSaveState();
+      }
+    });
+
+    return () => {
+      window.removeEventListener("pagehide", handleSaveState);
+      document.removeEventListener("visibilitychange", handleSaveState);
+    };
   }, [reduxState]);
 
+  // Fetch product list on mount
   useEffect(() => {
-    const savedState = JSON.parse(localStorage.getItem("savedReduxState"));
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
-    if (!savedState || !savedState.TextFrontendDesignSlice) return;
+  // Check localStorage and show continue popup if needed
+  useEffect(() => {
+    if (!willRenderContinue && rawProducts.length > 0) {
+      let savedState = null;
+      try {
+        savedState = JSON.parse(localStorage.getItem("savedReduxState"));
+      } catch (e) {
+        console.error("Error parsing saved Redux state:", e);
+        return;
+      }
 
-    const { addName, addNumber, present, activeSide } =
-      savedState.TextFrontendDesignSlice;
-    const textObjects = present?.[activeSide]?.texts || [];
+      if (!savedState || !savedState.TextFrontendDesignSlice) return;
 
-    if ((textObjects && textObjects.length > 0) || addName || addNumber) {
-      if (rawProducts.length !== 0) {
+      const { addName, addNumber, present, activeSide } =
+        savedState.TextFrontendDesignSlice;
+      const textObjects = present?.[activeSide]?.texts || []; // also check for image objects
+
+      if ((textObjects.length > 0) || addName || addNumber) {
+        setWillRenderContinue(true);
         setContinueEditPopup(true);
       }
     }
-  }, [rawProducts]);
+  }, [rawProducts, willRenderContinue]);
 
+  // Close the continue popup
   const handleContinuePopup = () => {
     setContinueEditPopup(false);
   };
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   useEffect(() => {
     window.addEventListener("load", () => {
       const productId = "8847707537647";
@@ -71,7 +101,7 @@ function App() {
     });
   }, []);
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   useEffect(() => {
     // dispatch(fetchProducts("8847707537647")); // Initial product fetch
@@ -101,7 +131,7 @@ function App() {
                       fontWeight: "700",
                     }}
                   >
-                    Let's create something greate today
+                    Let's create something great today
                   </p>
                   <div className="loader-spinner"></div>
                 </div>
@@ -128,6 +158,7 @@ function App() {
         </div>
 
         <ToastContainer
+          style={{ zIndex: "99999" }}
           position="bottom-center"
           autoClose={3000}
           hideProgressBar={false}
@@ -141,6 +172,7 @@ function App() {
         {continueEditPopup && (
           <ContinueEditPopup handleContinuePopup={handleContinuePopup} />
         )}
+        <BottomBar></BottomBar>
       </div>
     </>
   );

@@ -9,15 +9,12 @@
   /* overflow-x: visible !important; */
 }
 
-.toolbar-box-top-content {
-  background-color: #f1f1f1;
-  padding: 10px;
-  /* width: 22.19rem;
-  height: 9.44rem; */
-  width: 100%;
-  border-radius: 5px;
+.product-mini-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  /* Ensures image keeps aspect ratio */
 }
-
 
 .toolbarProductHead {
   padding-bottom: 7px;
@@ -122,6 +119,7 @@
   position: relative;
   padding-top: 4px;
 }
+
 .mini-prod-img-container.active {
   border: 2px solid #005bff;
 }
@@ -170,7 +168,7 @@
 .addProductBtn {
   width: 100%;
   padding: inherit;
-  /* margin: 1rem 0; */
+  margin: 1rem 0;
   font-size: 14px;
   color: #8d9095;
   border: 1.5px dashed #8d9095;
@@ -305,16 +303,17 @@ Border
   height: 1.5rem;
   width: 1.5rem;
   align-items: center;
-  top: -10px; 
+  top: -10px;
   right: -9px;
   border-radius: 100%;
   background-color: #f6f6f6;
   /* margin: 2px; */
   cursor: pointer;
   border: 1px solid #888;
-  transition: all 0.2s ease-in-out  ;
+  transition: all 0.2s ease-in-out;
 }
-.crossProdIConofSingleProduct.active{
+
+.crossProdIConofSingleProduct.active {
   display: flex;
 }
 
@@ -355,3 +354,19 @@ Border
   align-items: flex-end;
   z-index: 2;
 } */
+.relative {
+  position: relative;
+}
+
+.toolbarBox {
+  /* width: 22rem; */
+  /* height: 22rem; */
+  height: 500px;
+  padding: 10px 15px;
+  /* overflow-y: auto; */
+
+  /* margin-top: 15px; */
+  border-radius: 10px;
+
+
+}

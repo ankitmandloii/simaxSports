@@ -366,6 +366,6 @@ input:checked+.slider:before {
 
 .filterImage {
   width: 60px;
-  height: 80px;
+  height: 30px;
   object-fit: contain;
 }

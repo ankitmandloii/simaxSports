@@ -4,7 +4,7 @@ import icons from "../data/icons";
 // import { TbArrowForwardUp } from "react-icons/tb";
 // import { TbArrowBack } from "react-icons/tb";
 // import { VscZoomIn } from "react-icons/vsc";
-import "./MainDesigntool.css";
+import style from "./MainDesignTool.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteTextState,
@@ -32,22 +32,22 @@ const MainDesignTool = ({
   setPreviewForCurrentSide
 }) => {
 
-const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
-const currentProductId = useSelector((state) => state.TextFrontendDesignSlice.currentProductId);
-const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
+  const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+  const currentProductId = useSelector((state) => state.TextFrontendDesignSlice.currentProductId);
+  const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
 
-console.log("currentProductId",currentProductId);
-// Safely access product state
-const productState = useSelector(
-  (state) => state.TextFrontendDesignSlice.products?.[currentProductId]
-);
+  console.log("currentProductId", currentProductId);
+  // Safely access product state
+  const productState = useSelector(
+    (state) => state.TextFrontendDesignSlice.products?.[currentProductId]
+  );
 
-const nameAndNumberDesignState = productState?.present?.[activeSide]?.nameAndNumberDesignState;
+  const nameAndNumberDesignState = productState?.present?.[activeSide]?.nameAndNumberDesignState;
 
-// console.log("nameAndNumberDesignState for main ",nameAndNumberDesignState)
-const textContaintObject = productState?.present?.[activeSide]?.texts || [];
-const isRender = productState?.present?.[activeSide]?.setRendering;
-const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
+  // console.log("nameAndNumberDesignState for main ",nameAndNumberDesignState)
+  const textContaintObject = productState?.present?.[activeSide]?.texts || [];
+  const isRender = productState?.present?.[activeSide]?.setRendering;
+  const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
 
 
   // const image = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images[0]);
@@ -169,7 +169,7 @@ const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
 
   const isLocked = (_eventData, transform) => {
     const id = transform.target.id;
-    const foundObject = textContaintObject?.find((obj) => obj.id == id);
+    const foundObject = textContaintObject?.find((obj) => obj.id === id);
     const isLocked = foundObject?.locked ?? false;
     return isLocked;
   }
@@ -407,17 +407,17 @@ const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
 
 
     // console.log("activeSide inside", activeSide);
-    if (activeSide == "front") {
+    if (activeSide === "front") {
       // console.log("active side", activeSide, "changing front")
       setFrontPreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
     }
-    else if (activeSide == "back") {
+    else if (activeSide === "back") {
       setBackPreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
     }
-    else if(activeSide == "leftSleeve"){
+    else if (activeSide === "leftSleeve") {
       setLeftSleevePreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
     }
-    else if(activeSide == "rightSleeve"){
+    else if (activeSide === "rightSleeve") {
       setRightSleevePreviewImage(await getImageFromCanvas(fabricCanvasRef.current))
     }
 
@@ -551,29 +551,60 @@ const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
 
   //     }
 
+  const checkBoundary = (e) => {
+    const obj = e.target;
+    const canvas = fabricCanvasRef.current;
+    const canvasWidth = canvas.getWidth();
+    const canvasHeight = canvas.getHeight();
+
+    obj.setCoords(); // Make sure aCoords is updated
+    const bounds = obj.aCoords;
+
+    // Left boundary
+    if (bounds.tl.x < 0) {
+      obj.left -= bounds.tl.x;
+    }
+
+    // Top boundary
+    if (bounds.tl.y < 0) {
+      obj.top -= bounds.tl.y;
+    }
+
+    // Right boundary
+    if (bounds.tr.x > canvasWidth) {
+      obj.left -= bounds.tr.x - canvasWidth;
+    }
+
+    // Bottom boundary
+    if (bounds.bl.y > canvasHeight) {
+      obj.top -= bounds.bl.y - canvasHeight;
+    }
+  };
 
   useEffect(() => {
     const canvas = new fabric.Canvas(canvasRef.current, {
       width: 550,
       height: 450,
-      // backgroundColor: "gray"  
+      // backgroundColor: "gray"
     });
 
     canvas.preserveObjectStacking = true;
     fabricCanvasRef.current = canvas;
     // mirrorCanvasRef.current = new fabric.StaticCanvas(id);
 
-    const boxWidth = 220;
+    const boxWidth = 270;
     const boxHeight = 355;
     const canvasWidth = canvas.getWidth();
     const canvasHeight = canvas.getHeight();
 
+    const boxLeft = (canvasWidth - boxWidth) / 2;
+    const boxTop = (canvasHeight - boxHeight) / 2;
 
     const boundaryBox = new fabric.Rect({
-      left: (canvasWidth - boxWidth) / 2,
-      top: (canvasHeight - boxHeight) / 2,
-      width: 220,
-      height: 355,
+      left: boxLeft,
+      top: boxTop,
+      width: boxWidth,
+      height: boxHeight,
       fill: "transparent",
       stroke: warningColor || "skyblue",
       strokeWidth: 2,
@@ -584,16 +615,19 @@ const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
     });
 
     const warningText = new fabric.Text("Please keep design inside the box", {
-      left: boundaryBox.left + 2,
-      top: boundaryBox.top,
+      left: boxLeft + boxWidth / 2, // center horizontally
+      top: boxTop + 5, // add padding from top
       fontSize: 16,
-      // fontFamily: "montserrat",
       fill: warningColor || "#00F8E7FF",
       selectable: false,
       evented: false,
       visible: false,
-      isSync: false
+      isSync: false,
+      originX: "center",
+      originY: "top", // align top edge (with padding)
+      textAlign: "center",
     });
+
 
 
     canvas.add(boundaryBox);
@@ -706,18 +740,23 @@ const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
       handleScale(e);
     };
 
+    const handleMoving = (e) => {
+      checkBoundary(e);
+      updateBoundaryVisibility(e);
+    }
+
     const events = [
-      ["object:added", handleObjectAdded],   
+      ["object:added", handleObjectAdded],
       ["object:removed", handleObjectAdded],
       ["object:modified", handleObjectModified],
-      ["object:moving", updateBoundaryVisibility],
+      ["object:moving", handleMoving],
       ["object:scaling", updateBoundaryVisibility],
       ["selection:created", handleSelection],
-      ["selection:updated", handleSelection],  
+      ["selection:updated", handleSelection],
       ["selection:cleared", handleSelectionCleared],
       ["editing:exited", updateBoundaryVisibility],
       ["text:cut", updateBoundaryVisibility],
-      ["text:changed", handleObjectAdded],    
+      ["text:changed", handleObjectAdded],
       // ["object:moving", moveHandler], // Uncomment if needed
     ];
 
@@ -770,12 +809,12 @@ const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
       // mirrorCanvasRef.current.dispose();
       // mirrorCanvasRef.current = null;
     };
-  }, [iconImages, id, backgroundImage, activeSide,currentProductId]);
+  }, [iconImages, id, backgroundImage, activeSide, currentProductId]);
 
 
   const renderCurveTextObjects = () => {
     const canvas = fabricCanvasRef.current;
-    if (textContaintObject && textContaintObject.length == 0) {
+    if (textContaintObject && textContaintObject.length === 0) {
       let existingTextbox = canvas.getObjects().filter((obj) => obj.type === "curved-text" || obj.type === "textbox");
       existingTextbox.forEach((obj) => canvas.remove(obj));
       return;
@@ -813,7 +852,7 @@ const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
           });
           existingObj.set({
             text: textInput.content,
-             fontWeight: textInput.fontWeight || "normal",
+            fontWeight: textInput.fontWeight || "normal",
             fontStyle: textInput.fontStyle || "normal",
             warp: Number(textInput.arc),
             spacing: textInput.spacing,
@@ -902,7 +941,7 @@ const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
 
           });
 
-          curved.on("update",() =>{
+          curved.on("update", () => {
             alert("ok");
           })
           //                     });
@@ -936,6 +975,7 @@ const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
       });
 
       canvas.renderAll();
+      updateBoundaryVisibility();
     }
   }
 
@@ -943,7 +983,7 @@ const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
     // console.log("renderiing on layer index changed");
     renderCurveTextObjects();
 
-  }, [activeSide, isRender, dispatch, id, textContaintObject,currentProductId]);
+  }, [activeSide, isRender, dispatch, id, textContaintObject, currentProductId]);
 
 
   // useEffect(() => {
@@ -1118,7 +1158,7 @@ const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
     const baseFontSize = fontSizeMap[fontSize] || 80;
 
     // Remove old group if it exists
-    const oldGroup = canvas.getObjects().filter(obj => obj.isDesignGroup == true);
+    const oldGroup = canvas.getObjects().filter(obj => obj.isDesignGroup === true);
     oldGroup.forEach((oldGroup) => canvas.remove(oldGroup));
 
     const textObjects = [];
@@ -1150,7 +1190,7 @@ const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
       if (textObjects.length > 0) {
         const previous = textObjects[textObjects.length - 1];
         numberText.top = previous.top + previous.height + 5;
-        numberText.left = ((-previous.width) / 2) - (fontSize == "small" ? 12 : 30);
+        numberText.left = ((-previous.width) / 2) - (fontSize === "small" ? 12 : 30);
       }
       textObjects.push(numberText);
     }
@@ -1194,7 +1234,7 @@ const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
     group._calcBounds();
     group._updateObjectsCoords();
     group.set({
-      width: fontSize == "small" ? 60 : 190,  
+      width: fontSize === "small" ? 60 : 190,
       left: position?.x || canvas.getWidth() / 2,
       top: position?.y || canvas.getHeight() / 2,
       // originX: 'center',
@@ -1290,14 +1330,14 @@ const selectedTextId = productState?.present?.[activeSide]?.selectedTextId;
   };
 
 
-// useEffect(() =>{
-//   const st = setTimeout(() =>{
-//    syncMirrorCanvas(activeSide);
-//   },3000);
-// },[textContaintObject,activeSide])
+  // useEffect(() =>{
+  //   const st = setTimeout(() =>{
+  //    syncMirrorCanvas(activeSide);
+  //   },3000);
+  // },[textContaintObject,activeSide])
 
   return (
-    <div style={{ position: "relative" ,top:5}}  id="canvas">
+    <div id={style.canvas} style={{ position: "relative", top: 5 }} >
       <canvas ref={canvasRef} />
       <LayerModal
         isOpen={isModalOpen}

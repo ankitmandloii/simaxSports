@@ -1,5 +1,5 @@
 import { restoreDesignFromSavedState } from "../../redux/FrontendDesign/TextFrontendDesignSlice";
-import { restoreDesignCollectionSlice } from "../../redux/ProductSlice/CollectionSlice";
+// import { restoreDesignCollectionSlice } from "../../redux/ProductSlice/CollectionSlice";
 import { restoreDesignSelectedProductSlice } from "../../redux/ProductSlice/SelectedProductSlice";
 
 

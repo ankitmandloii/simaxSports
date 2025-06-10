@@ -9,31 +9,31 @@ const User = require("../model/userSchema.js");
 
 
 exports.signUp = async (req, res) => {
-    try {
-      
-        const userName = req.body.userName;
-        const email = req.body.email;
-        const phoneNumber = req.body.phoneNumber;
-        const password = req.body.password;
-        const role = req.body.role;
-        
-    
-        //console.log("userName",userName);
-        //console.log("email",email);
-        //console.log("phoneNumber",phoneNumber);
-        //console.log("password",password);
-        //console.log("role",role);
-       
-        const result = await services.signUp(userName, email, phoneNumber, password, role);
-        if (!result) {
-            //console.log(result, "INTERNAL_SERVER_ERROR")
-            return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.USER_ALREADY_EXIST);
-        }
-        return sendResponse(res, statusCode.OK, true, SuccessMessage.SIGNUP_SUCCESS, result);
-    } catch (error) {
-        //console.log(error, "errrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
-        return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+  try {
+
+    const userName = req.body.userName;
+    const email = req.body.email;
+    const phoneNumber = req.body.phoneNumber;
+    const password = req.body.password;
+    const role = req.body.role;
+
+
+    //console.log("userName",userName);
+    //console.log("email",email);
+    //console.log("phoneNumber",phoneNumber);
+    //console.log("password",password);
+    //console.log("role",role);
+
+    const result = await services.signUp(userName, email, phoneNumber, password, role);
+    if (!result) {
+      //console.log(result, "INTERNAL_SERVER_ERROR")
+      return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.USER_ALREADY_EXIST);
     }
+    return sendResponse(res, statusCode.OK, true, SuccessMessage.SIGNUP_SUCCESS, result);
+  } catch (error) {
+    //console.log(error, "errrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
+    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+  }
 };
 
 
@@ -43,9 +43,9 @@ exports.signUp = async (req, res) => {
 // exports.login = async (req, res) => {
 //     try {
 //         const {email , password} = req.body;
-       
-        
-       
+
+
+
 //         const result = await services.login(email, password);
 //         if (!result) {
 //             return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.WRONG_EMAIL_OR_PASSWORD);
@@ -63,28 +63,35 @@ exports.signUp = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const result = await services.login(email, password);
+   
+    const user = await services.findUserForLogin(email);
 
-    if (!result) {
+    if (!user) {
+      return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.USER_NOT_FOUND);
+    }
+
+    const loginResult  = await services.passwordCompareForLogin(user, password);
+
+    if (!loginResult ) {
       return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.WRONG_EMAIL_OR_PASSWORD);
     }
 
-    return sendResponse(res, statusCode.OK, true, SuccessMessage.LOGIN_SUCCESS, result);
-    
+    return sendResponse(res, statusCode.OK, true, SuccessMessage.LOGIN_SUCCESS, loginResult );
+
   } catch (error) {
     return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
   }
 };
 
 
-exports.adminChangePassword = async (req,res) => {
+exports.adminChangePassword = async (req, res) => {
   try {
-     
-    const {email , oldPassword, newPassword} = req.body;
-    
+
+    const { email, oldPassword, newPassword } = req.body;
+
     // Fetch the user
-    const user = await User.findOne({email});
-    if (!user) return   sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.ADMIN_NOT_FOUND, email);
+    const user = await User.findOne({ email });
+    if (!user) return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.ADMIN_NOT_FOUND, email);
 
     // Ensure the user is the admin
     if (user.role !== 'admin') {
@@ -94,7 +101,7 @@ exports.adminChangePassword = async (req,res) => {
     // Validate current password
     const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch) return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.WRONG_EMAIL_OR_PASSWORD, email);
-   
+
     // Prevent reusing the same password
     const isSame = await bcrypt.compare(newPassword, user.password);
     if (isSame) return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.NEWPASSWORD_SAME_AS_OLD, email);

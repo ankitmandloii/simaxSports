@@ -94,12 +94,19 @@ const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
 //   }
 // };
 
-
-
-exports.login = async (email, password) => {
+exports.findUserForLogin = async (email) => {
   try {
-    const user = await User.findOne({ email });
-    if (!user) return false;
+    const user = await User.findOne({ email }).lean(); // lean() returns plain JS object, faster if no methods needed
+    return user || null;
+  } catch (error) {
+    console.error("Find User Error:", error);
+    throw error;
+  }
+};
+
+exports.passwordCompareForLogin = async (user, password) => {
+  try {
+    
 
     const passwordsMatch = await bcrypt.compare(password, user.password);
     if (!passwordsMatch) return false;
@@ -123,7 +130,7 @@ exports.login = async (email, password) => {
 
   } catch (error) {
     console.error('Login error:', error);
-    return false;
+    throw error; 
   }
 };
 

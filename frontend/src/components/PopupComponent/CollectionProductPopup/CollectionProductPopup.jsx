@@ -188,6 +188,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
                             onProductSelect({ ...product, selectedColor, selectedImage });
                             onClose();
                           }}
+                          disabled={!selectedColorByProduct[product.id]}
                         >
                           Add Product
                         </button>
@@ -202,7 +203,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
 
           {hasNextPage && (
             <button
-              className="load-more"
+              className={style.loadMore}
               onClick={() => fetchProducts(true)}
               disabled={loading}
             >

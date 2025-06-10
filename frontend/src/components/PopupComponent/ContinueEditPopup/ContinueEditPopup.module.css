@@ -189,3 +189,17 @@
   color: #333;
   /* Darker on hover */
 }
+
+@media (max-width: 900px) {
+  .continueEditPopupMainDiv {
+    padding: 1rem;
+  }
+
+  .startFromScratchPara {
+    margin-top: 10px;
+  }
+
+  .imgSmall {
+    gap: .5rem;
+  }
+}

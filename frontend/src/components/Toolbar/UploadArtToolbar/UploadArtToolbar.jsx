@@ -29,7 +29,7 @@ const UploadArtToolbar = () => {
 
       setIsLoading(true);
       setTimeout(() => {
-        navigate("/addImage?productId=8847707537647&title=Dusty%20Rose%20/%20S");
+        navigate("/addImage");
       }, 4000);
     }
   };
@@ -72,7 +72,7 @@ const UploadArtToolbar = () => {
 
           setIsLoading(true);
           setTimeout(() => {
-            navigate("/addImage?productId=8847707537647&title=Dusty%20Rose%20/%20S");
+            navigate("/addImage");
           }, 4000);
 
           setDriveFiles(data.docs);
@@ -98,7 +98,7 @@ const UploadArtToolbar = () => {
             onDragOver={(e) => e.preventDefault()}
           >
             <p>Drag & drop files here</p>
-            <p>or</p>
+            <p className={style.marginTop}>or</p>
             <button className={style.uploadFileBtn} onClick={handleClick}>
               <ChooseFileIcon />
               SHARE
@@ -196,7 +196,7 @@ const UploadArtToolbar = () => {
 
                 setIsLoading(true);
                 setTimeout(() => {
-                  navigate("/addImage?productId=8847707537647&title=Dusty%20Rose%20/%20S");
+                  navigate("/addImage");
                 }, 4000);
 
                 setDropboxFiles(files);
