@@ -9,7 +9,7 @@ module.exports.SuccessMessage = {
   GET_ACCESS_TOKEN: "Storefront Access-Token Fetched.",
   UPLOAD_FILE_SUCCESS: "File's Uploaded Successfully.",
   DATA_CREATED: "Data Created Successfully.",
-  LOGIN_SUCCESS: "Login Success.",
+  LOGIN_SUCCESS: "Login Success. Welcome To Dashboard",
   SUBSCRIPTION_DONE: "Subscription Done.",
   SUBSCRIPTION_CANCEL: "Subscription Cancel.",
   DATA_UPDATED: "Data Updated Successfully.",
