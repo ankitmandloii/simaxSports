@@ -175,7 +175,8 @@ export default function GeneralSettings() {
         if (!response.ok) {
           throw new Error('Failed to fetch settings');
         }
-        const data = await response.json();
+        const dataJson = await response.json();
+        const data = dataJson.result;
 
         setSettingsForTextSection(data.settingsForTextSection || {});
         setSettingsforAddNamesAndNumbers(data.settingsforAddNamesAndNumbers || {});

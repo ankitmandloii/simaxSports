@@ -2,7 +2,7 @@ const services = require("../services/design.service.js");
 const { sendResponse } = require("../utils/sendResponse.js");
 const { SuccessMessage, ErrorMessage } = require("../constant/messages.js");
 const { statusCode } = require("../constant/statusCodes.js");
-const { default: AdminSettings } = require("../schema/adminSettingsSchema.js");
+const AdminSettings = require("../schema/adminSettingsSchema.js");
 const { emitSettingUpdate } = require('../socket.js');
 
 
@@ -67,8 +67,8 @@ exports.saveSettings = async (req, res) => {
 exports.getSettings = async (req, res) => {
     try {
         const settings = await AdminSettings.findOne(); 
-        
-        return sendResponse(res, statusCode.OK, true, SuccessMessage.DATA_FETCHED, res.json(settings || {}));
+      
+        return sendResponse(res, statusCode.OK, true, SuccessMessage.DATA_FETCHED, settings || {});
      
     } catch (error) {
         console.log(error)
