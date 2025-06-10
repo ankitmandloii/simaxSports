@@ -43,7 +43,8 @@ const AddImageToolbar = () => {
   const [currentImageToolbarId, setCurrentImageToolbarId] = useState(String(Date.now()));  // current id of toolbar
 
 
-  const image = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images[0]);
+  const image = useSelector((state) => state?.TextFrontendDesignSlice?.present[activeSide]?.images[0]);
+
   // let imageContaintObject = image.find((image) => image.id === currentImageToolbarId);
 
   const [selectedFilter, setSelectedFilter] = useState('Normal');
