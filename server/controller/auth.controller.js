@@ -62,13 +62,18 @@ exports.signUp = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
    
     const user = await services.findUserForLogin(email);
 
     if (!user) {
       return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.USER_NOT_FOUND);
     }
+
+     if (user.role !== role) {
+      return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.NOT_AUTHORIZED);
+    }
+
 
     const loginResult  = await services.passwordCompareForLogin(user, password);
 
