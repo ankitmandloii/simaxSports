@@ -18,9 +18,10 @@ import ContinueEditPopup from "./components/PopupComponent/ContinueEditPopup/Con
 import { ToastContainer } from "react-toastify";
 import { fetchProducts } from "./redux/ProductSlice/ProductSlice";
 import BottomBar from "./components/bottomBar/BottomBar";
+import NotFound from "./pages/NotFound/NotFound";
 
 function App() {
- const location = useLocation();
+  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -95,9 +96,8 @@ function App() {
           <Header />
 
           <div
-            className={`main-layout-container ${
-              isQuantityPage ? "quantity-page" : ""
-            }`}
+            className={`main-layout-container ${isQuantityPage ? "quantity-page" : ""
+              }`}
           >
             {rawProducts.length === 0 ? (
               <>
@@ -133,8 +133,12 @@ function App() {
                 <Route path="addNames" element={<NamesToolbar />} />
                 <Route path="quantity" element={<QuantityToolbar />} />
               </Route>
-              <Route path="review" element={<Review />} />
+
+              <Route path="/review" element={<Review />} />
+              <Route path="*" element={<NotFound />} /> {/* <-- Now it's outside Layout */}
             </Routes>
+
+
             <Footer />
           </div>
         </div>
