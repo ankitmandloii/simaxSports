@@ -6,7 +6,7 @@ const { sendResponse } = require("../utils/sendResponse.js");
 const { SuccessMessage, ErrorMessage } = require("../constant/messages.js");
 const { statusCode } = require("../constant/statusCodes.js");
 const User = require("../model/userSchema.js");
-
+const client = require('../utils/redisClient.js');
 
 exports.signUp = async (req, res) => {
   try {
@@ -122,5 +122,37 @@ exports.adminChangePassword = async (req, res) => {
   } catch (error) {
     console.error('Admin change password error:', error);
     return false;
+  }
+};
+
+
+
+
+
+
+exports.trackAnonymousUser = async (req, res) => {
+  console.log("trackAnonymousUser CALLED");
+  try {
+    const { anonId } = req.body;
+    if (!anonId) return res.status(400).json({ message: 'anonId required' });
+    console.log("anonId",anonId)
+    await client.set(`activeUser:${anonId}`, 'true', { EX: 300 }); // expires in 5 minutes
+    res.status(200).json({ message: 'Activity tracked' });
+  } catch (err) {
+    console.error('Activity Error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+
+exports.getActiveUserCount = async (req, res) => {
+    console.log("getActiveUserCount called");
+  try {
+    const keys = await client.keys('activeUser:*');
+    res.status(200).json({ activeUserCount: keys.length });
+  } catch (err) {
+    console.error('Count Error:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 };

@@ -18,8 +18,10 @@ import ContinueEditPopup from "./components/PopupComponent/ContinueEditPopup/Con
 import { ToastContainer } from "react-toastify";
 import { fetchProducts } from "./redux/ProductSlice/ProductSlice";
 import BottomBar from "./components/bottomBar/BottomBar";
+import { generateUUID } from './components/utils/generateUUID';
 
 function App() {
+  const BASE_URL = process.env.REACT_APP_BASE_URL ;
  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -31,6 +33,29 @@ function App() {
   const reduxState = useSelector((state) => state); // full redux state
   const { list: rawProducts } = useSelector((state) => state.products);
 
+
+//for Track How many active users currntly
+useEffect(() => {
+  let anonId = localStorage.getItem('anon_id');
+  if (!anonId) {
+    anonId = generateUUID();
+    localStorage.setItem('anon_id', anonId);
+  }
+
+  const pingServer = () => {
+    fetch(`${BASE_URL}auth/track-anonymous-user`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ anonId }),
+    });
+  };
+
+  pingServer();
+  const interval = setInterval(pingServer, 60000); // every 60s
+  return () => clearInterval(interval);
+}, []);
+
+  
   // Save Redux state to localStorage (iOS-friendly)
   useEffect(() => {
     const handleSaveState = () => {

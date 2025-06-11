@@ -13,7 +13,8 @@ import {
 import { useCallback, useState } from 'react';
 import { useToast } from '../ToastContext';
 import {
-  PersonLockFilledIcon
+  PersonLockFilledIcon,
+  InventoryUpdatedIcon
 } from '@shopify/polaris-icons';
 
 
@@ -83,7 +84,11 @@ export default function AccountSettings() {
 
       if (!response.ok) throw new Error(data?.message || 'Something Went Wrong');
 
-      showToast({ content: `${data.message}` });
+     
+       showToast({
+                content: `${data.message}`,
+                icon: <Icon source={InventoryUpdatedIcon} tone="success" />
+            });
 
     } catch (error) {
 

@@ -3,7 +3,7 @@ import {
   Icon
 } from '@shopify/polaris';
 import {
-  HomeIcon, ListNumberedIcon, OrderIcon, ProductIcon, SettingsIcon
+  HomeIcon, ListNumberedIcon, OrderIcon, ProductIcon, SettingsIcon,PersonAddIcon
 } from '@shopify/polaris-icons';
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -108,6 +108,12 @@ export default function AdminLayout({ children }) {
             icon: OrderIcon,
             selected: location.pathname === '/admin/orders',
             onClick: () => navigate('/admin/orders'),
+          },
+          {
+            label: 'Active Users On App',
+            icon: PersonAddIcon,
+            selected: location.pathname.startsWith('/admin/activeUsers'),
+            onClick: () => navigate('/admin/activeUsers'),
           },
           {
             label: 'Settings',
