@@ -99,7 +99,7 @@ export default function ProductList() {
 
   useEffect(() => {
     const formatted = products.map(product => [
-      product.id.toString(),
+      // product.id.toString(),
       product.name,
       <img src={product.imgurl} alt="product" style={{ height: '40px', objectFit: 'contain', cursor: 'pointer' }} onClick={() => setSelectedImage(product.imgurl)}/>
     ]);
@@ -118,8 +118,8 @@ export default function ProductList() {
           <>
             <div style={{ overflowX: 'auto', maxHeight: '600px' }}>
               <DataTable
-                columnContentTypes={['text', 'text', 'text']}
-                headings={['ID', 'Title', 'Image']}
+                columnContentTypes={['text', 'text']}
+                headings={['Title', 'Image']}
                 rows={rows}
                
               />

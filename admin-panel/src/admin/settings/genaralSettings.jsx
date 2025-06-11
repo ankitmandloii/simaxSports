@@ -7,6 +7,7 @@ import {
   Box,
   BlockStack,
   Divider,
+  Icon,
 } from '@shopify/polaris';
 
 import { useEffect, useState } from 'react';
@@ -15,6 +16,14 @@ import { useDispatch } from 'react-redux';
 import { setAllSettings } from '../../redux/settings/settingsSlice';
 import { SwitchToggle } from '../switchToggle';
 import { SettingsSkeleton } from './SettingsSkeleton'
+import {
+  TextFontListIcon,
+  ListNumberedIcon,
+  CameraIcon,
+  PageUpIcon,
+  ButtonIcon,
+  InventoryUpdatedIcon
+} from '@shopify/polaris-icons';
 
 
 
@@ -253,7 +262,11 @@ export default function GeneralSettings() {
       });
 
       if (res.ok) {
-        showToast({ content: "Settings Updated!" });
+         showToast({
+                content: 'Settings Updated!',
+                icon: <Icon source={InventoryUpdatedIcon} tone="success" />
+            });
+       
       } else {
         showToast({ content: "Failed to save settings", error: true });
       }
@@ -279,6 +292,10 @@ export default function GeneralSettings() {
       >
         {/* TEXT SECTION SETTINGS */}
         <Card sectioned>
+
+          <Box style={{ width: '16px', height: '16px' }}>
+            <Icon source={TextFontListIcon} tone="base" />
+          </Box>
           <BlockStack gap="400">
             <Text variant="headingLg" as="h2">Text Section Settings</Text>
             <Text tone="subdued">Toggle features you want to enable in the text design section.</Text>
@@ -305,6 +322,9 @@ export default function GeneralSettings() {
 
         {/* NAMES & NUMBERS SETTINGS */}
         <Card sectioned>
+          <Box style={{ width: '16px', height: '16px' }}>
+            <Icon source={ListNumberedIcon} tone="base" />
+          </Box>
           <BlockStack gap="400">
             <Text variant="headingLg" as="h2">Names & Numbers Settings</Text>
             <Text tone="subdued">Enable/disable personalized name and number options.</Text>
@@ -331,6 +351,9 @@ export default function GeneralSettings() {
 
         {/* ADD ART Sectoin */}
         <Card sectioned>
+          <Box style={{ width: '16px', height: '16px' }}>
+            <Icon source={CameraIcon} tone="base" />
+          </Box>
           <BlockStack gap="400">
             <Text variant="headingLg" as="h2">Add Art Settings</Text>
             <Text tone="subdued">Enable/disable personalized ADD ART options.</Text>
@@ -360,6 +383,9 @@ export default function GeneralSettings() {
         {/* ARTWORK EDITOR SETTINGS */}
 
         <Card sectioned>
+            <Box style={{ width: '16px', height: '16px' }}>
+            <Icon source={PageUpIcon} tone="base" />
+          </Box>
           <BlockStack gap="400">
             <Text variant="headingLg" as="h2">Image Upload Sections's Edit Artwork Settings</Text>
             <Text tone="subdued">Toggle options to control artwork editing tools visible to the user.</Text>
@@ -389,6 +415,9 @@ export default function GeneralSettings() {
 
         {/* IMAGE UPLOAD SETTINGS */}
         <Card sectioned>
+           <Box style={{ width: '16px', height: '16px' }}>
+            <Icon source={PageUpIcon} tone="base" />
+          </Box>
           <BlockStack gap="400">
             <Text variant="headingLg" as="h2">Upload Art Settings</Text>
             <Text tone="subdued">Enable or disable options for the upload section.</Text>
@@ -416,6 +445,9 @@ export default function GeneralSettings() {
 
         {        /* Other SETTINGS  */}
         <Card sectioned>
+           <Box style={{ width: '16px', height: '16px' }}>
+            <Icon source={ButtonIcon} tone="base" />
+          </Box>
           <BlockStack gap="400">
             <Text variant="headingLg" as="h2">Other Settings</Text>
             <Text tone="subdued">Enable or disable options for the Other settings section.</Text>
