@@ -51,7 +51,8 @@ useEffect(() => {
   };
 
   pingServer();
-  const interval = setInterval(pingServer, 60000); // every 60s
+  const interval = setInterval(pingServer, 2 * 60 * 1000); //every 2 minutes
+  // every 60s-  60000
   return () => clearInterval(interval);
 }, []);
 

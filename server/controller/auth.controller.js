@@ -6,7 +6,8 @@ const { sendResponse } = require("../utils/sendResponse.js");
 const { SuccessMessage, ErrorMessage } = require("../constant/messages.js");
 const { statusCode } = require("../constant/statusCodes.js");
 const User = require("../model/userSchema.js");
-const client = require('../utils/redisClient.js');
+const ActiveUser = require('../model/activeUserSchema.js');
+// const client = require('../utils/redisClient.js');
 
 exports.signUp = async (req, res) => {
   try {
@@ -63,25 +64,25 @@ exports.signUp = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password, role } = req.body;
-   
+
     const user = await services.findUserForLogin(email);
 
     if (!user) {
       return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.USER_NOT_FOUND);
     }
 
-     if (user.role !== role) {
+    if (user.role !== role) {
       return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.NOT_AUTHORIZED);
     }
 
 
-    const loginResult  = await services.passwordCompareForLogin(user, password);
+    const loginResult = await services.passwordCompareForLogin(user, password);
 
-    if (!loginResult ) {
+    if (!loginResult) {
       return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.WRONG_EMAIL_OR_PASSWORD);
     }
 
-    return sendResponse(res, statusCode.OK, true, SuccessMessage.LOGIN_SUCCESS, loginResult );
+    return sendResponse(res, statusCode.OK, true, SuccessMessage.LOGIN_SUCCESS, loginResult);
 
   } catch (error) {
     return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
@@ -129,14 +130,49 @@ exports.adminChangePassword = async (req, res) => {
 
 
 
+//Using Pay (Redis ex- Upstash)
+// exports.trackAnonymousUser = async (req, res) => {
+//   console.log("trackAnonymousUser CALLED1");
+//   try {
+//     const { anonId } = req.body;
+//     if (!anonId) return res.status(400).json({ message: 'anonId required' });
+//     console.log("anonId", anonId)
+//     await client.set(`activeUser:${anonId}`, 'true', { EX: 300 }); // expires in 5 minutes
+//     res.status(200).json({ message: 'Activity tracked' });
+//   } catch (err) {
+//     console.error('Activity Error:', err);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
+
+//Using Pay (Redis ex- Upstash)
+// exports.getActiveUserCount = async (req, res) => {
+//     console.log("getActiveUserCount called1");
+//   try {
+//     const keys = await client.keys('activeUser:*');
+//     res.status(200).json({ activeUserCount: keys.length });
+//   } catch (err) {
+//     console.error('Count Error:', err);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
+
+
 
 exports.trackAnonymousUser = async (req, res) => {
-  console.log("trackAnonymousUser CALLED");
+  console.log("trackAnonymousUser CALLED2");
   try {
     const { anonId } = req.body;
     if (!anonId) return res.status(400).json({ message: 'anonId required' });
-    console.log("anonId",anonId)
-    await client.set(`activeUser:${anonId}`, 'true', { EX: 300 }); // expires in 5 minutes
+    console.log("anonId", anonId)
+
+    await ActiveUser.findOneAndUpdate(
+      { anonId },
+      { lastActive: new Date() },
+      { upsert: true }
+    );
     res.status(200).json({ message: 'Activity tracked' });
   } catch (err) {
     console.error('Activity Error:', err);
@@ -147,10 +183,11 @@ exports.trackAnonymousUser = async (req, res) => {
 
 
 exports.getActiveUserCount = async (req, res) => {
-    console.log("getActiveUserCount called");
+  console.log("getActiveUserCount called2");
   try {
-    const keys = await client.keys('activeUser:*');
-    res.status(200).json({ activeUserCount: keys.length });
+    const cutoff = new Date(Date.now() - 5 * 60 * 1000); // last 5 min
+    const activeUsersData = await ActiveUser.find({ lastActive: { $gte: cutoff } });
+    res.status(200).json({ activeUserCount: activeUsersData.length });
   } catch (err) {
     console.error('Count Error:', err);
     res.status(500).json({ message: 'Server error' });
