@@ -8,9 +8,13 @@ import {
     Card,
     Box,
     Text,
+    Icon,
 } from '@shopify/polaris';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useToast } from './ToastContext';
+import {
+  EnterIcon
+} from '@shopify/polaris-icons';
 
 export default function Login() {
     const { showToast } = useToast();
@@ -57,14 +61,18 @@ export default function Login() {
             const response = await fetch(`${BASE_URL}auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email, password, role: "admin" }),
             });
 
             const data = await response.json();
 
             if (!response.ok) throw new Error(data?.message || 'Login failed');
 
-            showToast({ content: `${data.message}` });
+          
+            showToast({
+                content: 'Welcome back!',
+                icon: <Icon source={EnterIcon} tone="success" />
+            });
             localStorage.setItem('admin-token', data.result.token);
             navigate('/admin/dashboard');
         } catch (error) {

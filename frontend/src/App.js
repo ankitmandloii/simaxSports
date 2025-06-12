@@ -18,9 +18,10 @@ import ContinueEditPopup from "./components/PopupComponent/ContinueEditPopup/Con
 import { ToastContainer } from "react-toastify";
 import { fetchProducts } from "./redux/ProductSlice/ProductSlice";
 import BottomBar from "./components/bottomBar/BottomBar";
-import NotFound from "./pages/NotFound/NotFound";
+import { getTrackingMetadata } from './components/utils/generateUUID';
 
 function App() {
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -31,6 +32,31 @@ function App() {
   const isQuantityPage = location.pathname === "/quantity";
   const reduxState = useSelector((state) => state); // full redux state
   const { list: rawProducts } = useSelector((state) => state.products);
+
+
+  //for Track How many active users currntly
+  useEffect(() => {
+
+
+
+    const pingServer = () => {
+      const metadata = getTrackingMetadata();
+      if (navigator.onLine && document.visibilityState === 'visible') {
+        fetch(`${BASE_URL}auth/track-anonymous-user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(metadata),
+        }).catch((err) => console.error("Ping failed:", err));
+      } else {
+        console.log("Skipped ping: Offline");
+      }
+    };
+
+    pingServer(); // initial call
+    const interval = setInterval(pingServer, 2 * 60 * 1000); // every 2 minutes
+
+    return () => clearInterval(interval); // cleanup
+  }, []);
 
   // Save Redux state to localStorage (iOS-friendly)
   useEffect(() => {
@@ -133,12 +159,8 @@ function App() {
                 <Route path="addNames" element={<NamesToolbar />} />
                 <Route path="quantity" element={<QuantityToolbar />} />
               </Route>
-
-              <Route path="/review" element={<Review />} />
-              <Route path="*" element={<NotFound />} /> {/* <-- Now it's outside Layout */}
+              <Route path="review" element={<Review />} />
             </Routes>
-
-
             <Footer />
           </div>
         </div>

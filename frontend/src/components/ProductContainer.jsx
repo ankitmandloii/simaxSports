@@ -4,11 +4,11 @@ import { setActiveSide, setRendering, toggleSleeveDesign } from '../redux/Fronte
 import MainDesignTool from './mainDesignTool';
 import { GrZoomOut } from "react-icons/gr";
 import { BsZoomIn } from "react-icons/bs";
-import { MagnifyGlassIcon } from './iconsSvg/CustomIcon';
+// import { MagnifyGlassIcon } from './iconsSvg/CustomIcon';
 import { setExportedImages } from '../redux/CanvasExportDesign/canvasExportSlice';
 import SleeveDesignPopup from './PopupComponent/addSleeveDesign/addSleeveDesingPopup';
 import { getHexFromName } from './utils/colorUtils';
-import { fetchProducts } from '../redux/ProductSlice/ProductSlice';
+// import { fetchProducts } from '../redux/ProductSlice/ProductSlice';
 import { setSelectedProducts } from '../redux/ProductSlice/SelectedProductSlice';
 import { useSearchParams } from 'react-router-dom';
 import style from './ProductContainer.module.css'
@@ -130,9 +130,9 @@ function ProductContainer() {
 
   const [searchParams] = useSearchParams();
 
-  useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(fetchProducts());
+  // }, [dispatch]);
 
   useEffect(() => {
     if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;

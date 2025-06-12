@@ -8,9 +8,14 @@ import {
   Box,
   BlockStack,
   Divider,
+  Icon,
   } from '@shopify/polaris';
 import { useCallback, useState } from 'react';
 import { useToast } from '../ToastContext';
+import {
+  PersonLockFilledIcon,
+  InventoryUpdatedIcon
+} from '@shopify/polaris-icons';
 
 
 export default function AccountSettings() {
@@ -79,7 +84,11 @@ export default function AccountSettings() {
 
       if (!response.ok) throw new Error(data?.message || 'Something Went Wrong');
 
-      showToast({ content: `${data.message}` });
+     
+       showToast({
+                content: `${data.message}`,
+                icon: <Icon source={InventoryUpdatedIcon} tone="success" />
+            });
 
     } catch (error) {
 
@@ -97,6 +106,9 @@ export default function AccountSettings() {
   return (
     <Page>
       <Card sectioned title="Account Settings" subtitle="Manage your account settings and preferences">
+         <Box style={{ width: '16px', height: '16px' }}>
+            <Icon source={PersonLockFilledIcon} tone="base" />
+          </Box>
         <BlockStack gap="400" >
           <Text variant="headingLg" as="h2">Change Password</Text>
           <Text tone="subdued">Update your Password And Basic contact info below.</Text>

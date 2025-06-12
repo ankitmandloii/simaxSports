@@ -1,44 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import styles from './AddProductContainer.module.css'
+import styles from './AddProductContainer.module.css';
 import { getHexFromName } from "../../utils/colorUtils";
 import colorwheel1 from "../../images/color-wheel1.png";
-import { fetchProducts } from "../../../redux/ProductSlice/ProductSlice";
 import { CrossIcon } from "../../iconsSvg/CustomIcon";
+
 const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProductPopup }) => {
-  const dispatch = useDispatch();
-  const { list: rawProducts, loading, error } = useSelector(
-    (state) => state.products
-  );
+  const { list: rawProducts, loading, error } = useSelector((state) => state.products);
 
   const [products, setProducts] = useState([]);
   const [productStates, setProductStates] = useState({});
 
   useEffect(() => {
-    if (isOpen) {
-      dispatch(fetchProducts());
-    }
-  }, [isOpen, dispatch]);
-
-  useEffect(() => {
     if (rawProducts.length > 0) {
-      // console.log(rawProducts,"rawProducts")
       const productsWithKeys = rawProducts.map((product) => ({
         ...product,
-        productKey: product.id || product.id || uuidv4(),
+        productKey: product.id || uuidv4(),
       }));
+
       setProducts(productsWithKeys);
 
-      const states = {};
-      productsWithKeys.forEach((product) => {
-        states[product.productKey] = {
-          isPopupOpen: false,
-          selectedColor: null,  // will hold full color object now
-          hoverImage: null,
-        };
-      });
-      setProductStates(states);
+      const initialStates = Object.fromEntries(
+        productsWithKeys.map((p) => [
+          p.productKey,
+          { isPopupOpen: false, selectedColor: null, hoverImage: null },
+        ])
+      );
+      setProductStates(initialStates);
     }
   }, [rawProducts]);
 
@@ -54,25 +43,41 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
     }));
   };
 
-  const handleColorWheelClick = (e, productKey) => {
+  const toggleColorPopup = (e, productKey) => {
     e.stopPropagation();
-    const updatedStates = {};
-    Object.keys(productStates).forEach((key) => {
-      updatedStates[key] = {
-        ...productStates[key],
-        isPopupOpen: key === productKey ? !productStates[key].isPopupOpen : false,
-        hoverImage: null,
-      };
-    });
-    setProductStates(updatedStates);
+    setProductStates((prev) =>
+      Object.fromEntries(
+        Object.entries(prev).map(([key, state]) => [
+          key,
+          {
+            ...state,
+            isPopupOpen: key === productKey ? !state.isPopupOpen : false,
+            hoverImage: null,
+          },
+        ])
+      )
+    );
   };
 
   const handleColorSelect = (e, productKey, color) => {
     e.stopPropagation();
+    updateProductState(productKey, { selectedColor: color, hoverImage: color.img });
+  };
+
+  const handleAddProduct = (e, product, productKey) => {
+    e.stopPropagation();
+    const state = productStates[productKey];
+    if (!state.selectedColor) return;
+
+    onProductSelect({ ...product, selectedColor: state.selectedColor });
+
     updateProductState(productKey, {
-      selectedColor: color, // store full color object now
-      hoverImage: color.img,
+      isPopupOpen: false,
+      hoverImage: null,
+      selectedColor: null,
     });
+
+    onClose();
   };
 
   return (
@@ -80,9 +85,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
           <h3>Add Product</h3>
-          <button onClick={onClose} className={styles.modalClose}>
-            &times;
-          </button>
+          <button onClick={onClose} className={styles.modalClose}>&times;</button>
         </div>
         <hr />
         <p>Select From Our Most Popular Products</p>
@@ -92,34 +95,21 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
 
         <ul className={styles.productList}>
           {products.map((product) => {
-            const productKey = product.productKey;
+            const { productKey, name, colors = [], imgurl } = product;
             const state = productStates[productKey] || {};
-            const hasColors = product.colors?.length > 0;
-            const displayImage = state.hoverImage || product.imgurl;
+            const displayImage = state.hoverImage || imgurl;
 
             return (
               <li key={productKey} className={styles.modalProduct}>
-                <div className={styles.productMain}
-                  onClick={(e) => handleColorWheelClick(e, productKey)}
-                >
-                  <img
-                    src={displayImage}
-                    alt={product.name}
-                    className={styles.modalProductImg}
-
-                  />
-                  <p>{product.name}</p>
+                <div className={styles.productMain} onClick={(e) => toggleColorPopup(e, productKey)}>
+                  <img src={displayImage} alt={name} className={styles.modalProductImg} />
+                  <p>{name}</p>
                 </div>
 
-                {hasColors && (
-                  <div className={styles.modalProductColorContainer} onClick={(e) => handleColorWheelClick(e, productKey)}>
-                    <img
-                      src={colorwheel1}
-                      alt="colors"
-                      className={styles.modalProductColorImg}
-
-                    />
-                    <p>{product.colors.length} Colors</p>
+                {colors.length > 0 && (
+                  <div className={styles.modalProductColorContainer} onClick={(e) => toggleColorPopup(e, productKey)}>
+                    <img src={colorwheel1} alt="colors" className={styles.modalProductColorImg} />
+                    <p>{colors.length} Colors</p>
 
                     {state.isPopupOpen && (
                       <div className={styles.colorPopup}>
@@ -128,10 +118,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                             className={styles.closePopupBtn}
                             onClick={(e) => {
                               e.stopPropagation();
-                              updateProductState(productKey, {
-                                isPopupOpen: false,
-                                hoverImage: null,
-                              });
+                              updateProductState(productKey, { isPopupOpen: false, hoverImage: null });
                             }}
                           >
                             <CrossIcon />
@@ -139,64 +126,34 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                         </div>
 
                         <div className="color-swatch-list">
-                          {product.colors.map((color) => (
-                            <span
-                              key={`${productKey}-${color.name}`}
-                              title={color.name}
-                              className={`color-swatch ${state.selectedColor?.name === color.name
-                                ? "selected"
-                                : ""
-                                }`}
-                              style={{
-                                backgroundColor: getHexFromName(color.name),
-                                cursor: "pointer",
-                                padding: "10px",
-                                margin: "5px",
-                                borderRadius: "50%",
-                                display: "inline-block",
-                                border:
-                                  state.selectedColor?.name === color.name
-                                    ? "2px solid black"
-                                    : "1px solid gray",
-                              }}
-                              onMouseEnter={() =>
-                                updateProductState(productKey, {
-                                  hoverImage: color.img,
-                                })
-                              }
-                              onMouseLeave={() =>
-                                updateProductState(productKey, {
-                                  hoverImage: null,
-                                })
-                              }
-                              onClick={(e) =>
-                                handleColorSelect(e, productKey, color)
-                              }
-                            />
-                          ))}
+                          {colors.map((color) => {
+                            const isSelected = state.selectedColor?.name === color.name;
+                            return (
+                              <span
+                                key={`${productKey}-${color.name}`}
+                                title={color.name}
+                                className={`color-swatch ${isSelected ? "selected" : ""}`}
+                                style={{
+                                  backgroundColor: getHexFromName(color.name),
+                                  cursor: "pointer",
+                                  padding: 10,
+                                  margin: 5,
+                                  borderRadius: "50%",
+                                  display: "inline-block",
+                                  border: isSelected ? "2px solid black" : "1px solid gray",
+                                }}
+                                onMouseEnter={() => updateProductState(productKey, { hoverImage: color.img })}
+                                onMouseLeave={() => updateProductState(productKey, { hoverImage: null })}
+                                onClick={(e) => handleColorSelect(e, productKey, color)}
+                              />
+                            );
+                          })}
                         </div>
 
                         <div className={styles.popupActions}>
                           <button
                             className={styles.addProductBtnPopup}
-                            onClick={(e) => {
-                              e.stopPropagation();
-
-                              if (!state.selectedColor) return;
-
-                              // Pass entire product with full colors & variants + selectedColor object
-                              onProductSelect({
-                                ...product,
-                                selectedColor: state.selectedColor,
-                              });
-
-                              updateProductState(productKey, {
-                                isPopupOpen: false,
-                                hoverImage: null,
-                                selectedColor: null,
-                              });
-                              onClose();
-                            }}
+                            onClick={(e) => handleAddProduct(e, product, productKey)}
                             disabled={!state.selectedColor}
                           >
                             Add Product

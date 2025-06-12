@@ -16,6 +16,7 @@ import GeneralSettings from './admin/settings/genaralSettings';
 import AccountSettings from './admin/settings/AccountSettings';
 import { ToastProvider } from './admin/ToastContext'; // Import the ToastProvider
 import NotFound from './admin/NotFound';
+import ActiveUsers from './admin/ActiveUsers';
 
 function App() {
   return (
@@ -56,6 +57,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <AdminLayout><GeneralSettings /></AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/activeUsers"
+              element={
+                <ProtectedRoute>
+                  <AdminLayout><ActiveUsers /></AdminLayout>
                 </ProtectedRoute>
               }
             />

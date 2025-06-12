@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import style from './ProductToolbar.module.css';
 import { getHexFromName } from '../../utils/colorUtils';
 import { IoAdd } from 'react-icons/io5';
@@ -14,11 +14,11 @@ import {
   deleteProduct as deleteProductAction,
   setSelectedProducts as setSelectedProductsAction,
 } from '../../../redux/ProductSlice/SelectedProductSlice';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+// import { useSearchParams } from 'react-router-dom';
 import { removeNameAndNumberProduct, setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 // import ContinueEditPopup from '../../PopupComponent/ContinueEditPopup/ContinueEditPopup';
 // import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesignSlice';
-import { fetchProducts } from '../../../redux/ProductSlice/ProductSlice';
+// import { fetchProducts } from '../../../redux/ProductSlice/ProductSlice';
 import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSlice';
 // import io from 'socket.io-client';
 // import { updateAdminSettingsFromSocket } from '../../../redux/SettingsSlice/SettingsSlice';
@@ -29,7 +29,7 @@ import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSli
 
 const ProductToolbar = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
   // const { setActiveProduct } = useOutletContext();
 
@@ -41,26 +41,26 @@ const ProductToolbar = () => {
   const [activeThumbnail, setActiveThumbnail] = useState({ productIndex: null, colorIndex: null });
   const [colorChangeTarget, setColorChangeTarget] = useState({ productIndex: null, colorIndex: null, actionType: null });
   const [hoveredThumbnail, setHoveredThumbnail] = useState({ productIndex: null, colorIndex: null, color: null });
-
+  // Clone color safely with fallback for image
   const safeCloneColor = (color, fallbackImg = '') => {
     if (!color || typeof color !== 'object' || Array.isArray(color)) {
       return { name: String(color), img: fallbackImg };
     }
     return { ...color };
   };
-
+  // Open popup for changing/adding product
   const openChangeProductPopup = (isAdd = false, index = null) => {
     setIsAddingProduct(isAdd);
     setEditingProductIndex(index);
     setChangeProductPopup(true);
   };
-
+  // Open popup for adding new product
   const addProductPopup = () => {
     setIsAddingProduct(true);
     setEditingProductIndex(null);
     setAddProduct(true);
   };
-
+  // Handle product selection and update/add it to Redux store
   const handleProductSelect = (product, selectedColor = null) => {
     const fallbackImg = product?.img || product?.imgurl || product?.selectedImage || '';
     const clonedColor = selectedColor
@@ -82,23 +82,23 @@ const ProductToolbar = () => {
     } else if (editingProductIndex !== null) {
       dispatch(updateProductAction({ index: editingProductIndex, product: updatedProduct }));
     }
-
+    // Reset all modal states
     setChangeProductPopup(false);
     setEditingProductIndex(null);
     setIsAddingProduct(false);
     setAddProduct(false);
   };
-
+  // Handle deleting a product
   const handleDeleteProduct = (indexToDelete) => {
     dispatch(deleteProductAction(indexToDelete));
   };
-
+  // Normalize variants from raw product data (e.g., Shopify)
   const normalizeVariants = (product) => {
     if (product?.allVariants?.length) return product.allVariants;
     if (product?.variants?.edges?.length) return product.variants.edges.map(edge => edge.node);
     return [];
   };
-
+  // Extract unique color options from Shopify product structure
   const normalizeColorsFromShopify = (product) => {
     if (!product?.variants?.edges) return [];
     const colorMap = new Map();
@@ -113,7 +113,7 @@ const ProductToolbar = () => {
     });
     return Array.from(colorMap.values());
   };
-
+  // Get list of colors not already used by the product
   const getAvailableColorsForProduct = (product) => {
     const allColors = product.colors?.length ? product.colors : normalizeColorsFromShopify(product);
     if (!allColors.length) return [];
@@ -125,7 +125,7 @@ const ProductToolbar = () => {
 
     return allColors.filter((color) => !selectedColorNames.has(color.name));
   };
-
+  // Delete specific color thumbnail or whole product if it's the last one
   const handleDeleteColorThumbnail = (productIndex, colorIndex) => {
     const product = selectedProducts[productIndex];
     const productid = product.id;
@@ -137,7 +137,7 @@ const ProductToolbar = () => {
       handleDeleteProduct(productIndex);
       return;
     }
-
+    // If first (selected) color is removed, replace it with the next one
     if (colorIndex === 0) {
       const updated = [...selectedProducts];
       const current = { ...updated[productIndex] };
@@ -157,6 +157,7 @@ const ProductToolbar = () => {
       setActiveThumbnail({ productIndex: null, colorIndex: null });
       return;
     }
+    // Remove added color
 
     const updated = [...selectedProducts];
     const currentProduct = { ...updated[productIndex] };
@@ -165,17 +166,18 @@ const ProductToolbar = () => {
     dispatch(setSelectedProductsAction(updated));
     setActiveThumbnail({ productIndex: null, colorIndex: null });
   };
+  // Access raw product list from store
+  // const { list: rawProducts, loading, error } = useSelector(
+  //   (state) => state.products
+  // );
 
-  const { list: rawProducts, loading, error } = useSelector(
-    (state) => state.products
-  );
-
-  const [searchParams] = useSearchParams();
-
-  useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
+  // const [searchParams] = useSearchParams();
+  // Fetch all products once on mount (Commented )
+  // useEffect(() => {
+  //   dispatch(fetchProducts());
+  // }, []);
   // ----
+
   // useEffect(() => {
   //   console.log("-----running");
   //   console.log("Socket connected:", socket.connected);
@@ -206,7 +208,7 @@ const ProductToolbar = () => {
 
 
   return (
-    <div className="toolbar-main-container">
+    <div className={style.toolbarMainContainer}>
       <div className={style.productToolbar}>
 
         <div className="toolbar-main-heading">

@@ -32,7 +32,7 @@ const categorizedFonts = [
       { name: "Rubik Microbe", fontFamily: "Rubik Microbe" },
       { name: "Hanalei", fontFamily: "Hanalei" },
       { name: "Hanalei Fill", fontFamily: "Hanalei Fill" },
-      ],
+    ],
   },
   {
     category: "Elegant",
@@ -50,10 +50,6 @@ const categorizedFonts = [
       { name: "Allura", fontFamily: "Allura, cursive" },
       { name: "Nabla", fontFamily: "Nabla" },
       { name: "Sacramento", fontFamily: "Sacramento, cursive" },
-         
-     
-     
-     
     ],
   },
   {
@@ -66,7 +62,7 @@ const categorizedFonts = [
       { name: "Amatic SC", fontFamily: "Amatic SC, cursive" },
       { name: "Caveat", fontFamily: "Caveat, cursive" },
       { name: "Patrick Hand", fontFamily: "Patrick Hand, cursive" },
-      
+
     ],
   },
   {
@@ -78,7 +74,7 @@ const categorizedFonts = [
       { name: "Baloo", fontFamily: "Baloo, cursive" },
       { name: "Bubblegum Sans", fontFamily: "Bubblegum Sans, cursive" },
       { name: "Luckiest Guy", fontFamily: "Luckiest Guy, cursive" },
-     
+
     ],
   },
   {
@@ -90,7 +86,7 @@ const categorizedFonts = [
       { name: "Source Code Pro", fontFamily: "Source Code Pro, monospace" },
       { name: "Inconsolata", fontFamily: "Inconsolata, monospace" },
       { name: "Fira Code", fontFamily: "Fira Code, monospace" },
-    
+
     ],
   },
   {
@@ -102,7 +98,7 @@ const categorizedFonts = [
       { name: "Permanent Marker", fontFamily: "Permanent Marker, cursive" },
       { name: "Satisfy", fontFamily: "Satisfy, cursive" },
       { name: "Patrick Hand", fontFamily: "Patrick Hand, cursive" },
-      
+
     ],
   },
   {
@@ -114,7 +110,7 @@ const categorizedFonts = [
       { name: "Bebas Neue", fontFamily: "Bebas Neue, sans-serif" },
       { name: "Fredoka One", fontFamily: "Fredoka One, cursive" },
       { name: "Archivo Black", fontFamily: "Archivo Black, sans-serif" },
-    
+
     ],
   },
   {
@@ -178,12 +174,6 @@ const categorizedFonts = [
       { name: "Alex Brush", fontFamily: "Alex Brush, cursive" },
     ],
   },
-
-
-
-
-
-
 ];
 
 export default categorizedFonts;

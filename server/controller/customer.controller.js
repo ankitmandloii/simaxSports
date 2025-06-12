@@ -1,20 +1,12 @@
 const services = require("../services/customer.service.js");
-const {sendResponse} = require("../utils/sendResponse.js");
-const {SuccessMessage, ErrorMessage} = require("../constant/messages.js");
-const {statusCode} = require("../constant/statusCodes.js");
-
-
-
-
-
-
+const { sendResponse } = require("../utils/sendResponse.js");
+const { SuccessMessage, ErrorMessage } = require("../constant/messages.js");
+const { statusCode } = require("../constant/statusCodes.js");
 //############################################################# Order  #########################################################
-
-
 // remove customer favorite product in list
 exports.getOrderList = async (req, res) => {
     try {
-      
+
         const result = await services.getOrderList();
         return sendResponse(res, statusCode.OK, true, SuccessMessage.DATA_FETCHED, result);
     } catch (error) {
@@ -22,7 +14,6 @@ exports.getOrderList = async (req, res) => {
         return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
     }
 }
-
 // // cancel shop order
 // exports.cancelOrder = async (req, res) => {
 //     try {

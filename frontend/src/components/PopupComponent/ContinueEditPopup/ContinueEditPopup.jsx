@@ -1,9 +1,9 @@
 import React from 'react'
 import style from './ContinueEditPopup.module.css'
 import { CrossIcon } from '../../iconsSvg/CustomIcon'
-import { restoreDesignFromSavedState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice'
+// import { restoreDesignFromSavedState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice'
 import { useDispatch } from 'react-redux'
-import { restoreDesignSelectedProductSlice } from '../../../redux/ProductSlice/SelectedProductSlice'
+// import { restoreDesignSelectedProductSlice } from '../../../redux/ProductSlice/SelectedProductSlice'
 import { restoreAllSlicesFromLocalStorage } from '../../utils/RestoreSliceStates'
 const ContinueEditPopup = ({ handleContinuePopup }) => {
   const dispatch = useDispatch();

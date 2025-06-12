@@ -1,9 +1,5 @@
 const env = require("dotenv");
-
 env.config();
-
-
-
 
 function extractName(email) {
   let namePart = email.split("@")[0];  // Get the part before '@'
@@ -11,8 +7,6 @@ function extractName(email) {
     .replace(/\b\w/g, c => c.toUpperCase()); // Capitalize first letter of each word
   return formattedName;
 }
-
-
 
 exports.sendEmailTamplate = (email, frontSrc, backSrc, designname) => {
 

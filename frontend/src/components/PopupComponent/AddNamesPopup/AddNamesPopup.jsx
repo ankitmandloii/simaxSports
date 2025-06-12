@@ -3,9 +3,9 @@ import { CrossIcon, DeleteIcon } from '../../iconsSvg/CustomIcon';
 import styles from './AddNamesPopup.module.css'
 
 import { useDispatch, useSelector } from 'react-redux';
-import { addNameAndNumberProduct, removeNameAndNumberProduct, setActiveSide, setAddName, setAddNumber, updateNameAndNumberDesignState, UpdateNameAndNumberProduct } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
+import { addNameAndNumberProduct, UpdateNameAndNumberProduct } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 import { getHexFromName } from '../../utils/colorUtils.js';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {

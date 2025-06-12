@@ -52,13 +52,13 @@
 import { Sheet } from 'react-modal-sheet';
 import { IoClose } from 'react-icons/io5';
 
-export default function AddTextSheet({ isOpen, setIsOpen, sheetContaint,snap }) {
-    const snapPoint = (snap == 600 ? [600, 500, 400, 300, 200] : [1200, 800, 700, 600, 500, 400, 300])
+export default function AddTextSheet({ isOpen, setIsOpen, sheetContaint, snap }) {
+  const snapPoint = (snap === 600 ? [600, 500, 400, 300, 200] : [1200, 800, 700, 600, 500, 400, 300])
   return (
     <Sheet
       isOpen={isOpen}
       onClose={() => setIsOpen(false)}
-       
+
       snapPoints={snapPoint}
       keyboardInset
       avoidKeyboard

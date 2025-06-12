@@ -16,11 +16,9 @@ function initSocket(server) {
 
 function emitSettingUpdate(data) {
   if (io) {
-    console.log("data of socket",data);
-    io.emit("adminSettingUpdate", data); 
+    console.log("data of socket", data);
+    io.emit("adminSettingUpdate", data);
   } else {
-    
-  
     console.warn("Socket.IO not initialized");
   }
 }

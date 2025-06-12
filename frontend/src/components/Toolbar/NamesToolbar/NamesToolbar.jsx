@@ -13,7 +13,7 @@ import { AngleActionIcon } from '../../iconsSvg/CustomIcon';
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox.jsx'
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox.jsx'
 import { useDispatch, useSelector } from 'react-redux';
-import { removeNameAndNumberProduct, setActiveSide, setAddName, UpdateNameAndNumberProduct, setAddNumber, updateNameAndNumberDesignState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
+import { setActiveSide, setAddName, setAddNumber, updateNameAndNumberDesignState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -21,7 +21,6 @@ const NamesToolbar = () => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
   const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
-  // console.log(addNumber,addName,nameAndNumberDesign,"values");
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
 
 
@@ -44,7 +43,6 @@ const NamesToolbar = () => {
   const [activeNumber, setActiveNumber] = useState(addNumber);
   const [activeName, setActiveName] = useState(addName);
 
-  // console.log(activeName,activeNumber,"local state")
 
   const [activeSize, setActiveSize] = useState(nameAndNumberDesign?.fontSize);
   const [activeFont, setActiveFont] = useState(nameAndNumberDesign?.fontFamily);

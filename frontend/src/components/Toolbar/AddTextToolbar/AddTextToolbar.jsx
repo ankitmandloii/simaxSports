@@ -11,8 +11,8 @@ import {
   AngleActionIcon,
   FlipFirstWhiteColorIcon,
   FlipSecondWhiteColorIcon,
-  LayeringFirstIconWithBlackBg,
-  LayeringSecondIconWithBlackBg,
+  // LayeringFirstIconWithBlackBg,
+  // LayeringSecondIconWithBlackBg,
 } from '../../iconsSvg/CustomIcon';
 import { FaBold } from "react-icons/fa";
 import { ImItalic } from "react-icons/im";
@@ -38,22 +38,10 @@ const AddTextToolbar = () => {
   const [prevSize, setPrevSize] = useState(1);
   const textareaRef = useRef(null)
   // console.log("-------lock", isLocked, "---", textContaintObject?.locked)
-
-
-
-
-
   // const allTextBackInputData =  useSelector((state) => state.TextBackendDesignSlice.texts); 
   // const textBackContaintObject = allTextBackInputData.find((text) => text.id == currentTextToolbarId);
   // const selectedBackTextId = useSelector((state) => state.TextBackendDesignSlice.selectedTextId); // current id of toolbar
-
-
-
-
-
   // //console.log("text", text)
-
-
   const [text, setText] = useState(textContaintObject ? textContaintObject.content : "")
   const [textColorPopup, setTextColorPopup] = useState(false);
   const [outlineColorPopup, setOutlineColorPopup] = useState(false);
@@ -721,7 +709,7 @@ const AddTextToolbar = () => {
 
                     </div>
                   </div>
-    <hr></hr>
+                  <hr></hr>
                 </div>
 
               </>

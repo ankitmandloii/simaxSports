@@ -342,3 +342,27 @@ Border
 
 
 }
+
+.toolbarMainContainer {
+  overflow: visible;
+  width: 100%;
+  background: #fff;
+  max-height: 680px;
+  min-width: 400px;
+  /* height: 100%  ; */
+  border-radius: 0px 20px 20px 0px;
+  padding-inline: 30px;
+  padding-top: 26.87px;
+}
+
+
+/* tablet */
+@media (max-width: 1200px) {
+  .productToolbar {
+    height: 100vh;
+  }
+
+  .toolbarMainContainer {
+    max-height: initial;
+  }
+}
