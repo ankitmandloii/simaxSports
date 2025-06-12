@@ -12,7 +12,7 @@ import {
     InlineStack,
     Button,
 } from '@shopify/polaris';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useToast } from '../admin/ToastContext';
 import {
     PersonLockFilledIcon,
@@ -26,6 +26,33 @@ export default function AccountSettings() {
 
     const [loading, setLoading] = useState(false);
     const [activeUserNumber, setActiveUserNumber] = useState(0);
+    const animationRef = useRef();
+    const currentNumberRef = useRef(0);
+
+    const animateNumber = (start, end, duration = 800) => {
+        const steps = 30; // total steps in animation
+        const stepDuration = duration / steps;
+        const increment = (end - start) / steps;
+
+        let current = start;
+        let stepCount = 0;
+
+        clearInterval(animationRef.current); // clear any previous animation
+
+        animationRef.current = setInterval(() => {
+            stepCount++;
+            current += increment;
+
+            if (stepCount >= steps) {
+                clearInterval(animationRef.current);
+                setActiveUserNumber(end);
+                currentNumberRef.current = end;
+            } else {
+                setActiveUserNumber(Math.floor(current));
+                currentNumberRef.current = Math.floor(current);
+            }
+        }, stepDuration);
+    };
 
 
 
@@ -50,25 +77,31 @@ export default function AccountSettings() {
 
             const data = await response.json();
             // console.log("response from API ", data.activeUserCount);
-            setActiveUserNumber(data.activeUserCount);
+            // setActiveUserNumber(data.activeUserCount);
+            const newCount = data.activeUserCount;
 
+            // Start animation from current count to new count
+            animateNumber(currentNumberRef.current, newCount);
             showToast({
                 content: `Active Users Fetched`,
                 icon: <Icon source={InventoryUpdatedIcon} tone="success" />
             });
 
         } catch (error) {
-            console.log("ERROR::::",error);
+            console.log("ERROR::::", error);
             showToast({ content: `${error.message}`, error: true });
         } finally {
             setLoading(false);
         }
 
-
-
-
-
     };
+
+
+    useEffect(() => {
+        return () => {
+            clearInterval(animationRef.current); // Clear on unmount
+        };
+    }, []);
 
     return (
         <Page>
