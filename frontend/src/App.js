@@ -43,19 +43,22 @@ useEffect(() => {
   }
 
   const pingServer = () => {
-    fetch(`${BASE_URL}auth/track-anonymous-user`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ anonId }),
-    });
+    if (navigator.onLine && document.visibilityState === 'visible') {
+      fetch(`${BASE_URL}auth/track-anonymous-user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ anonId }),
+      }).catch((err) => console.error("Ping failed:", err));
+    } else {
+      console.log("Skipped ping: Offline");
+    }
   };
 
-  pingServer();
-  const interval = setInterval(pingServer, 2 * 60 * 1000); //every 2 minutes
-  // every 60s-  60000
-  return () => clearInterval(interval);
-}, []);
+  pingServer(); // initial call
+  const interval = setInterval(pingServer, 2 * 60 * 1000); // every 2 minutes
 
+  return () => clearInterval(interval); // cleanup
+}, []);
   
   // Save Redux state to localStorage (iOS-friendly)
   useEffect(() => {
