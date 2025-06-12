@@ -164,6 +164,7 @@ exports.adminChangePassword = async (req, res) => {
 exports.trackAnonymousUser = async (req, res) => {
   console.log("trackAnonymousUser CALLED2");
   try {
+    await dbConnection();
     const { anonId } = req.body;
     if (!anonId) return res.status(400).json({ message: 'anonId required' });
     console.log("anonId", anonId)
@@ -173,6 +174,7 @@ exports.trackAnonymousUser = async (req, res) => {
       { lastActive: new Date() },
       { upsert: true }
     );
+
     res.status(200).json({ message: 'Activity tracked' });
   } catch (err) {
     console.error('Activity Error:', err);
