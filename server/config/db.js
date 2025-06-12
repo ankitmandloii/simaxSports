@@ -21,11 +21,11 @@ exports.dbConnection = async () => {
 
         //TTL is set to 5 minutes (300s), only users active in the last 5 minutes will be retained,
         const indexes = await ActiveUser.collection.indexes();
-        const hasTTL = indexes.some(index => index.expireAfterSeconds === 120);
+        const hasTTL = indexes.some(index => index.expireAfterSeconds === 300);
         if (!hasTTL) {
             await ActiveUser.collection.createIndex(
                 { lastActive: 1 },
-                { expireAfterSeconds: 120 }
+                { expireAfterSeconds: 300 }
             );
             console.log("TTL index created on 'lastActive'");
         }
