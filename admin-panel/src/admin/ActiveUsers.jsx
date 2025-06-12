@@ -58,7 +58,7 @@ export default function AccountSettings() {
             });
 
         } catch (error) {
-
+            console.log("ERROR::::",error);
             showToast({ content: `${error.message}`, error: true });
         } finally {
             setLoading(false);
@@ -78,7 +78,7 @@ export default function AccountSettings() {
                 </Box>
                 <BlockStack gap="400" >
                     <Text variant="headingLg" as="h2">Active users on our design App</Text>
-                    <Text tone="subdued">Number of User Currntly Using The App</Text>
+                    <Text tone="subdued">Number of User Currently Using The App</Text>
                     <Divider />
                     <Text variant="headingLg" as="h2" >Active users : {activeUserNumber}</Text>
 
