@@ -7,6 +7,7 @@ const { SuccessMessage, ErrorMessage } = require("../constant/messages.js");
 const { statusCode } = require("../constant/statusCodes.js");
 const User = require("../model/userSchema.js");
 const ActiveUser = require('../model/activeUserSchema.js');
+const { dbConnection } = require("../config/db.js");
 // const client = require('../utils/redisClient.js');
 
 exports.signUp = async (req, res) => {
