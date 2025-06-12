@@ -68,17 +68,18 @@ function App() {
 // }, []);
   
 useEffect(() => {
+  let interval;
+
   const trackAnonymousUser = async () => {
     try {
       const cachedId = sessionStorage.getItem("anon_id");
-
       let anonId = cachedId;
+
       if (!anonId) {
         const fp = await FingerprintJS.load();
         const result = await fp.get();
         anonId = result.visitorId;
-
-        sessionStorage.setItem("anon_id", anonId); // works even in incognito
+        sessionStorage.setItem("anon_id", anonId);
       }
 
       const pingServer = () => {
@@ -90,16 +91,19 @@ useEffect(() => {
       };
 
       pingServer();
-      const interval = setInterval(pingServer, 2 * 60 * 1000);
-
-      return () => clearInterval(interval);
+      interval = setInterval(pingServer, 2 * 60 * 1000);
     } catch (error) {
       console.error("Fingerprint error:", error);
     }
   };
 
   trackAnonymousUser();
+
+  return () => {
+    clearInterval(interval);
+  };
 }, []);
+
 
 
   // Save Redux state to localStorage (iOS-friendly)
