@@ -18,7 +18,8 @@ import ContinueEditPopup from "./components/PopupComponent/ContinueEditPopup/Con
 import { ToastContainer } from "react-toastify";
 import { fetchProducts } from "./redux/ProductSlice/ProductSlice";
 import BottomBar from "./components/bottomBar/BottomBar";
-import { generateUUID } from './components/utils/generateUUID';
+// import { generateUUID } from './components/utils/generateUUID';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 function App() {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -35,36 +36,75 @@ function App() {
 
 
   //for Track How many active users currntly
+  // useEffect(() => {
+
+
+  //  let anonId = localStorage.getItem('anon_id');
+  //   if (!anonId) {
+  //     anonId = generateUUID();
+  //     localStorage.setItem('anon_id', anonId);
+  //   }
+
+
+  //   const pingServer = () => {
+  //     //  const metadata = getTrackingMetadata();
+  //     if (navigator.onLine) {
+  //       fetch(`${BASE_URL}auth/track-anonymous-user`, {
+  //         method: 'POST',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         body: JSON.stringify( {anonId }),
+  //       }).catch((err) => console.error("Ping failed:", err));
+  //     } else {
+  //       console.log("Skipped ping: Offline");
+  //     }
+  //   };
+
+  //   pingServer(); // initial call
+
+  //   // const interval = setInterval(pingServer, 60000); // every 60sAdd commentMore actions
+  //   const interval = setInterval(pingServer, 2 * 60 * 1000); //every 2 minutes
+  //   // every 60s-  60000
+  //   return () => clearInterval(interval); // cleanup
+  // }, []);
+
   useEffect(() => {
+    let interval;
 
+    const trackAnonymousUser = async () => {
+      try {
+        const cachedId = sessionStorage.getItem("anon_id");
+        let anonId = cachedId;
 
-    let anonId = localStorage.getItem('anon_id');
-    if (!anonId) {
-      anonId = generateUUID();
-      localStorage.setItem('anon_id', anonId);
-    }
+        if (!anonId) {
+          const fp = await FingerprintJS.load();
+          const result = await fp.get();
+          anonId = result.visitorId;
+          sessionStorage.setItem("anon_id", anonId);
+        }
 
+        const pingServer = () => {
+          fetch(`${BASE_URL}auth/track-anonymous-user`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ anonId }),
+          }).catch((err) => console.error("Ping failed:", err));
+        };
 
-    const pingServer = () => {
-      //  const metadata = getTrackingMetadata();
-      if (navigator.onLine) {
-        fetch(`${BASE_URL}auth/track-anonymous-user`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ anonId }),
-        }).catch((err) => console.error("Ping failed:", err));
-      } else {
-        console.log("Skipped ping: Offline");
+        pingServer();
+        interval = setInterval(pingServer, 2 * 60 * 1000);
+      } catch (error) {
+        console.error("Fingerprint error:", error);
       }
     };
 
-    pingServer(); // initial call
+    trackAnonymousUser();
 
-    // const interval = setInterval(pingServer, 60000); // every 60sAdd commentMore actions
-    const interval = setInterval(pingServer, 2 * 60 * 1000); //every 2 minutes
-    // every 60s-  60000
-    return () => clearInterval(interval); // cleanup
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
+
+
 
   // Save Redux state to localStorage (iOS-friendly)
   useEffect(() => {

@@ -168,7 +168,8 @@ exports.trackAnonymousUser = async (req, res) => {
     await dbConnection();
     const { anonId } = req.body;
     if (!anonId) return res.status(400).json({ message: 'anonId required' });
-    console.log("anonId", anonId)
+    
+    console.log(`Tracking ping from anonId: ${anonId} at ${new Date().toISOString()}`);
 
     await ActiveUser.findOneAndUpdate(
       { anonId },
