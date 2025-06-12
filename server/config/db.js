@@ -10,11 +10,7 @@ exports.dbConnection = async () => {
     if (isConnected) return;
 
     try {
-        await mongoose.connect(process.env.DB_URL, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            bufferCommands: false,
-        });
+        await mongoose.connect(process.env.DB_URL);
 
         isConnected = true;
         console.log("--- Connected to Mongoose Successfully ---");

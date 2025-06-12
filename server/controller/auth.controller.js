@@ -161,49 +161,18 @@ exports.adminChangePassword = async (req, res) => {
 
 
 
-// working last
-// exports.trackAnonymousUser = async (req, res) => {
-//   console.log("trackAnonymousUser CALLED2");
-//   try {
-//     await dbConnection();
-//     const { anonId } = req.body;
-//     if (!anonId) return res.status(400).json({ message: 'anonId required' });
-//     console.log("anonId", anonId)
-
-//     await ActiveUser.findOneAndUpdate(
-//       { anonId },
-//       { lastActive: new Date() },
-//       { upsert: true }
-//     );
-
-//     res.status(200).json({ message: 'Activity tracked' });
-//   } catch (err) {
-//     console.error('Activity Error:', err);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
-
 
 exports.trackAnonymousUser = async (req, res) => {
+  console.log("trackAnonymousUser CALLED2");
   try {
     await dbConnection();
-
-    const { anonId, userAgent, language, timezone, screen, platform } = req.body;
+    const { anonId } = req.body;
     if (!anonId) return res.status(400).json({ message: 'anonId required' });
-
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    console.log("anonId", anonId)
 
     await ActiveUser.findOneAndUpdate(
       { anonId },
-      {
-        lastActive: new Date(),
-        userAgent,
-        language,
-        timezone,
-        screen,
-        platform,
-        ip
-      },
+      { lastActive: new Date() },
       { upsert: true }
     );
 
