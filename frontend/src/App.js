@@ -18,7 +18,7 @@ import ContinueEditPopup from "./components/PopupComponent/ContinueEditPopup/Con
 import { ToastContainer } from "react-toastify";
 import { fetchProducts } from "./redux/ProductSlice/ProductSlice";
 import BottomBar from "./components/bottomBar/BottomBar";
-import { getTrackingMetadata } from './components/utils/generateUUID';
+import { generateUUID } from './components/utils/generateUUID';
 
 function App() {
   const BASE_URL = process.env.REACT_APP_BASE_URL ;
@@ -38,14 +38,20 @@ function App() {
 useEffect(() => {
 
  
+ let anonId = localStorage.getItem('anon_id');
+  if (!anonId) {
+    anonId = generateUUID();
+    localStorage.setItem('anon_id', anonId);
+  }
+
 
   const pingServer = () => {
-     const metadata = getTrackingMetadata();
-    if (navigator.onLine && document.visibilityState === 'visible') {
+    //  const metadata = getTrackingMetadata();
+    if (navigator.onLine) {
       fetch(`${BASE_URL}auth/track-anonymous-user`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify( metadata ),
+        body: JSON.stringify( {anonId }),
       }).catch((err) => console.error("Ping failed:", err));
     } else {
       console.log("Skipped ping: Offline");
@@ -53,8 +59,10 @@ useEffect(() => {
   };
 
   pingServer(); // initial call
-  const interval = setInterval(pingServer, 2 * 60 * 1000); // every 2 minutes
 
+  // const interval = setInterval(pingServer, 60000); // every 60sAdd commentMore actions
+  const interval = setInterval(pingServer, 2 * 60 * 1000); //every 2 minutes
+  // every 60s-  60000
   return () => clearInterval(interval); // cleanup
 }, []);
   
