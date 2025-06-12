@@ -5,3 +5,20 @@ export function generateUUID() {
     return v.toString(16);
   });
 }
+
+export const getTrackingMetadata = () => {
+  let anonId = localStorage.getItem('anon_id');
+  if (!anonId) {
+    anonId = generateUUID();
+    localStorage.setItem('anon_id', anonId);
+  }
+
+  return {
+    anonId,
+    userAgent: navigator.userAgent,
+    language: navigator.language,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    screen: `${window.screen.width}x${window.screen.height}`,
+    platform: navigator.platform,
+  };
+};

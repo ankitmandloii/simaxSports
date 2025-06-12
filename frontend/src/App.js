@@ -18,7 +18,7 @@ import ContinueEditPopup from "./components/PopupComponent/ContinueEditPopup/Con
 import { ToastContainer } from "react-toastify";
 import { fetchProducts } from "./redux/ProductSlice/ProductSlice";
 import BottomBar from "./components/bottomBar/BottomBar";
-import { generateUUID } from './components/utils/generateUUID';
+import { getTrackingMetadata } from './components/utils/generateUUID';
 
 function App() {
   const BASE_URL = process.env.REACT_APP_BASE_URL ;
@@ -36,18 +36,16 @@ function App() {
 
 //for Track How many active users currntly
 useEffect(() => {
-  let anonId = localStorage.getItem('anon_id');
-  if (!anonId) {
-    anonId = generateUUID();
-    localStorage.setItem('anon_id', anonId);
-  }
+
+ 
 
   const pingServer = () => {
+     const metadata = getTrackingMetadata();
     if (navigator.onLine && document.visibilityState === 'visible') {
       fetch(`${BASE_URL}auth/track-anonymous-user`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ anonId }),
+        body: JSON.stringify( metadata ),
       }).catch((err) => console.error("Ping failed:", err));
     } else {
       console.log("Skipped ping: Offline");

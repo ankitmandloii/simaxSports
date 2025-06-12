@@ -161,18 +161,49 @@ exports.adminChangePassword = async (req, res) => {
 
 
 
+// working last
+// exports.trackAnonymousUser = async (req, res) => {
+//   console.log("trackAnonymousUser CALLED2");
+//   try {
+//     await dbConnection();
+//     const { anonId } = req.body;
+//     if (!anonId) return res.status(400).json({ message: 'anonId required' });
+//     console.log("anonId", anonId)
+
+//     await ActiveUser.findOneAndUpdate(
+//       { anonId },
+//       { lastActive: new Date() },
+//       { upsert: true }
+//     );
+
+//     res.status(200).json({ message: 'Activity tracked' });
+//   } catch (err) {
+//     console.error('Activity Error:', err);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
 
 exports.trackAnonymousUser = async (req, res) => {
-  console.log("trackAnonymousUser CALLED2");
   try {
     await dbConnection();
-    const { anonId } = req.body;
+
+    const { anonId, userAgent, language, timezone, screen, platform } = req.body;
     if (!anonId) return res.status(400).json({ message: 'anonId required' });
-    console.log("anonId", anonId)
+
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
     await ActiveUser.findOneAndUpdate(
       { anonId },
-      { lastActive: new Date() },
+      {
+        lastActive: new Date(),
+        userAgent,
+        language,
+        timezone,
+        screen,
+        platform,
+        ip
+      },
       { upsert: true }
     );
 
@@ -189,8 +220,8 @@ exports.getActiveUserCount = async (req, res) => {
   console.log("getActiveUserCount called2");
   try {
     const cutoff = new Date(Date.now() - 5 * 60 * 1000); // last 5 min
-    const activeUsersData = await ActiveUser.find({ lastActive: { $gte: cutoff } });
-    res.status(200).json({ activeUserCount: activeUsersData.length });
+    const activeUsersData = await ActiveUser.countDocuments({ lastActive: { $gte: cutoff } });
+    res.status(200).json({ activeUserCount: activeUsersData });
   } catch (err) {
     console.error('Count Error:', err);
     res.status(500).json({ message: 'Server error' });
