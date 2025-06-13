@@ -8,9 +8,9 @@ import { CrossIcon } from "../../iconsSvg/CustomIcon";
 
 const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProductPopup }) => {
   const { list: rawProducts, loading, error } = useSelector((state) => state.products);
-
   const [products, setProducts] = useState([]);
   const [productStates, setProductStates] = useState({});
+  const [imageLoadStates, setImageLoadStates] = useState({});
 
   useEffect(() => {
     if (rawProducts.length > 0) {
@@ -18,7 +18,6 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
         ...product,
         productKey: product.id || uuidv4(),
       }));
-
       setProducts(productsWithKeys);
 
       const initialStates = Object.fromEntries(
@@ -31,7 +30,17 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
     }
   }, [rawProducts]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    Object.entries(productStates).forEach(([productKey, state]) => {
+      const product = products.find((p) => p.productKey === productKey);
+      if (state.isPopupOpen && product?.colors?.length > 0) {
+        product.colors.slice(0, 3).forEach((color) => {
+          const img = new Image();
+          img.src = color.img;
+        });
+      }
+    });
+  }, [productStates, products]);
 
   const updateProductState = (productKey, newState) => {
     setProductStates((prev) => ({
@@ -40,6 +49,13 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
         ...prev[productKey],
         ...newState,
       },
+    }));
+  };
+
+  const handleImageLoad = (productKey) => {
+    setImageLoadStates((prev) => ({
+      ...prev,
+      [productKey]: true,
     }));
   };
 
@@ -80,6 +96,8 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
     onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
@@ -98,16 +116,29 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
             const { productKey, name, colors = [], imgurl } = product;
             const state = productStates[productKey] || {};
             const displayImage = state.hoverImage || imgurl;
+            const imageLoaded = imageLoadStates[productKey];
 
             return (
               <li key={productKey} className={styles.modalProduct}>
                 <div className={styles.productMain} onClick={(e) => toggleColorPopup(e, productKey)}>
-                  <img src={displayImage} alt={name} className={styles.modalProductImg} />
+                  <div className={styles.imageWrapper}>
+                    {!imageLoaded && <div className={styles.imagePlaceholder}></div>}
+                    <img
+                      src={displayImage}
+                      alt={name}
+                      loading="lazy"
+                      className={`${styles.modalProductImg} ${imageLoaded ? styles.visible : styles.hidden}`}
+                      onLoad={() => handleImageLoad(productKey)}
+                    />
+                  </div>
                   <p>{name}</p>
                 </div>
 
                 {colors.length > 0 && (
-                  <div className={styles.modalProductColorContainer} onClick={(e) => toggleColorPopup(e, productKey)}>
+                  <div
+                    className={styles.modalProductColorContainer}
+                    onClick={(e) => toggleColorPopup(e, productKey)}
+                  >
                     <img src={colorwheel1} alt="colors" className={styles.modalProductColorImg} />
                     <p>{colors.length} Colors</p>
 

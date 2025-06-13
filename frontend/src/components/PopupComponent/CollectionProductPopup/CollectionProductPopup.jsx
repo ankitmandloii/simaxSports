@@ -13,6 +13,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   const [selectedVariantImage, setSelectedVariantImage] = useState({});
   const [selectedColorByProduct, setSelectedColorByProduct] = useState({});
   const [hoverImage, setHoverImage] = useState({});
+  const [imageLoaded, setImageLoaded] = useState({});
   const [selectedProductColors, setSelectedProductColors] = useState(null);
   const [cursor, setCursor] = useState('');
   const [hasNextPage, setHasNextPage] = useState(false);
@@ -45,6 +46,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
     setSelectedVariantImage({});
     setSelectedColorByProduct({});
     setHoverImage({});
+    setImageLoaded({});
   };
 
   const fetchProducts = useCallback(async (isLoadMore = false) => {
@@ -96,6 +98,10 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
     const image = getVariantImageByColor(product, color);
     setSelectedColorByProduct(prev => ({ ...prev, [product.id]: color }));
     setSelectedVariantImage(prev => ({ ...prev, [product.id]: image }));
+  };
+
+  const handleImageLoad = (productId) => {
+    setImageLoaded(prev => ({ ...prev, [productId]: true }));
   };
 
   const renderColorSwatches = (product) =>
@@ -152,11 +158,18 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
                 }
               >
                 <div className={style.imgProContainer}>
-                  <img
-                    src={hoverImage[product.id] || getFirstVariantImage(product)}
-                    alt={product.title}
-                    className={style.modalProductcolorImg}
-                  />
+                  <div className={style.imageWrapper}>
+                    {!imageLoaded[product.id] && (
+                      <div className={style.imagePlaceholder}>Loading...</div>
+                    )}
+                    <img
+                      src={hoverImage[product.id] || getFirstVariantImage(product)}
+                      alt={product.title}
+                      className={`${style.modalProductcolorImg} ${imageLoaded[product.id] ? style.visible : style.hidden
+                        }`}
+                      onLoad={() => handleImageLoad(product.id)}
+                    />
+                  </div>
                 </div>
                 <p>{product.title}</p>
                 <div className={style.modalProductcolorContainer}>

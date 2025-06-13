@@ -3,12 +3,12 @@ import { CrossIcon } from '../../iconsSvg/CustomIcon';
 import style from './StartOverPopup.module.css'
 import { useDispatch } from 'react-redux';
 import { resetCanvasState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 
 const StartOverConfirmationPopup = ({ onCancel }) => {
   const dispatch = useDispatch()
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const resetAll = () => {
     dispatch(resetCanvasState())
 
