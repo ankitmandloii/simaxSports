@@ -57,10 +57,10 @@ useEffect(() => {
         locationData = {
           city: data.city,
           country: data.country,
-          region: data.regionName,
+          region: data.region,
           lat: data.latitude,
           lon: data.longitude,
-          ip: data.query
+          ip: data.ip
         };
         console.log('Location data:', locationData);
       } catch (locErr) {

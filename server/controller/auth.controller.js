@@ -215,7 +215,6 @@ exports.adminChangePassword = async (req, res) => {
 
 
 exports.trackActiveUsersWithLocation = async (req, res) => {
-  console.log("trackActiveUsersWithLocation CALLED");
   try {
     await dbConnection();
     const { anonId, location } = req.body;
@@ -244,9 +243,9 @@ exports.trackActiveUsersWithLocation = async (req, res) => {
       { upsert: true, new: true }
     );
 
-    res.status(200).json({ message: 'User tracked successfully' });
+    res.status(200).json({ message: 'successfully' });
   } catch (err) {
-    console.error('trackUser error:', err);
+    console.error('UserT error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -268,7 +267,6 @@ exports.trackActiveUsersWithLocation = async (req, res) => {
 
 
 exports.getActiveUsersWithLocation = async (req, res) => {
-  console.log("getActiveUsersWithLocation CALLED");
   try {
     const cutoff = new Date(Date.now() - 5 * 60 * 1000); // 5 min active window
     const users = await ActiveUser.find({ lastActive: { $gte: cutoff } })
@@ -281,7 +279,7 @@ exports.getActiveUsersWithLocation = async (req, res) => {
     });
 
   } catch (err) {
-    console.error('getActiveUsersWithLocation error:', err);
+    console.error('getActiveUsersWithL error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
