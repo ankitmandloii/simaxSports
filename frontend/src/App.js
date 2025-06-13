@@ -52,7 +52,7 @@ useEffect(() => {
       // 2 Get location data
       let locationData = null;
       try {
-        const locationRes = await fetch('https://ip-api.com/json');
+        const locationRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
         const data = await locationRes.json();
         locationData = {
           city: data.city,
