@@ -22,8 +22,8 @@ import BottomBar from "./components/bottomBar/BottomBar";
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 function App() {
-  const BASE_URL = process.env.REACT_APP_BASE_URL ;
- const location = useLocation();
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -34,13 +34,14 @@ function App() {
   const reduxState = useSelector((state) => state); // full redux state
   const { list: rawProducts } = useSelector((state) => state.products);
 
-//for track Usrs Location + User Final Code 
+  //for track Usrs Location + User Final Code 
+  
 useEffect(() => {
-  let interval;
+  let interval = null;
+  let isUnmounted = false;
 
   const initTracking = async () => {
     try {
-      // 1 Get or create anonId
       let anonId = sessionStorage.getItem("anon_id");
       if (!anonId) {
         const fp = await FingerprintJS.load();
@@ -49,7 +50,6 @@ useEffect(() => {
         sessionStorage.setItem("anon_id", anonId);
       }
 
-      // 2 Get location data
       let locationData = null;
       try {
         const locationRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
@@ -66,8 +66,8 @@ useEffect(() => {
         console.error('Failed to fetch location:', locErr);
       }
 
-      // 3 Send first ping (with location if available)
       const sendPing = (withLocation = false) => {
+        if (!navigator.onLine || document.visibilityState !== 'visible') return;
         fetch(`${BASE_URL}auth/tActiveUserL`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -78,10 +78,11 @@ useEffect(() => {
         }).catch(err => console.error("Ping failed:", err));
       };
 
-      sendPing(true);  // First ping with location
+      sendPing(true);
 
-      //4 Set interval pings (without location)
-      interval = setInterval(() => sendPing(false), 2 * 60 * 1000);
+      interval = setInterval(() => {
+        if (!isUnmounted) sendPing(false);
+      }, 2 * 60 * 1000);
 
     } catch (err) {
       console.error('Tracking error:', err);
@@ -91,10 +92,76 @@ useEffect(() => {
   initTracking();
 
   return () => {
+    isUnmounted = true;
     if (interval) clearInterval(interval);
   };
 
 }, []);
+
+
+  //last Final Code 7:41 pm
+  // useEffect(() => {
+  //   let interval;
+
+  //   const initTracking = async () => {
+  //     try {
+  //       // 1 Get or create anonId
+  //       let anonId = sessionStorage.getItem("anon_id");
+  //       if (!anonId) {
+  //         const fp = await FingerprintJS.load();
+  //         const result = await fp.get();
+  //         anonId = result.visitorId;
+  //         sessionStorage.setItem("anon_id", anonId);
+  //       }
+
+  //       // 2 Get location data
+  //       let locationData = null;
+  //       try {
+  //         const locationRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
+  //         const data = await locationRes.json();
+  //         locationData = {
+  //           city: data.city,
+  //           country: data.country,
+  //           region: data.region,
+  //           lat: data.latitude,
+  //           lon: data.longitude,
+  //           ip: data.ip
+  //         };
+  //       } catch (locErr) {
+  //         console.error('Failed to fetch location:', locErr);
+  //       }
+
+  //       // 3 Send first ping (with location if available)
+  //       const sendPing = (withLocation = false) => {
+  //         fetch(`${BASE_URL}auth/tActiveUserL`, {
+  //           method: 'POST',
+  //           headers: { 'Content-Type': 'application/json' },
+  //           body: JSON.stringify({
+  //             anonId,
+  //             ...(withLocation && locationData ? { location: locationData } : {})
+  //           })
+  //         }).catch(err => console.error("Ping failed:", err));
+  //       };
+
+  //       if (navigator.onLine && document.visibilityState === 'visible') {
+  //         sendPing(false);
+  //       }  // First ping with location
+
+  //       //4 Set interval pings (without location)
+  //       interval = setInterval(() => sendPing(false), 2 * 60 * 1000);
+
+  //     } catch (err) {
+  //       console.error('Tracking error:', err);
+  //     }
+  //   };
+
+  //   initTracking();
+
+  //   return () => {
+  //     if (interval) clearInterval(interval);
+  //   };
+
+  // }, []);
 
 
 
