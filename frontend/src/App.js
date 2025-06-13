@@ -52,7 +52,7 @@ useEffect(() => {
       // 2 Get location data
       let locationData = null;
       try {
-        const locationRes = await fetch('http://ip-api.com/json');
+        const locationRes = await fetch('https://ip-api.com/json');
         const data = await locationRes.json();
         locationData = {
           city: data.city,
@@ -69,7 +69,7 @@ useEffect(() => {
 
       // 3 Send first ping (with location if available)
       const sendPing = (withLocation = false) => {
-        fetch(`${BASE_URL}auth/trackActiveUsersWithLocation`, {
+        fetch(`${BASE_URL}auth/tActiveUserL`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

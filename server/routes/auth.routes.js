@@ -13,7 +13,7 @@ router.post('/admin-change-password',customerValidation.verifyToken, controllers
 // router.post('/track-anonymous-user', controllers.trackAnonymousUser)
 // router.get('/get-active-user-count',customerValidation.verifyToken, controllers.getActiveUserCount)
 
-router.post('/trackActiveUsersWithLocation', controllers.trackActiveUsersWithLocation)
+router.post('/tActiveUserL', controllers.trackActiveUsersWithLocation)
 router.get('/getActiveUsersWithLocation', controllers.getActiveUsersWithLocation)
 
 // router.post('/track-location', controllers.trackLocation);
