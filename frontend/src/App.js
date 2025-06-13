@@ -34,47 +34,14 @@ function App() {
   const reduxState = useSelector((state) => state); // full redux state
   const { list: rawProducts } = useSelector((state) => state.products);
 
-
-//for Track How many active users currntly
-// useEffect(() => {
-
- 
-//  let anonId = localStorage.getItem('anon_id');
-//   if (!anonId) {
-//     anonId = generateUUID();
-//     localStorage.setItem('anon_id', anonId);
-//   }
-
-
-//   const pingServer = () => {
-//     //  const metadata = getTrackingMetadata();
-//     if (navigator.onLine) {
-//       fetch(`${BASE_URL}auth/track-anonymous-user`, {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify( {anonId }),
-//       }).catch((err) => console.error("Ping failed:", err));
-//     } else {
-//       console.log("Skipped ping: Offline");
-//     }
-//   };
-
-//   pingServer(); // initial call
-
-//   // const interval = setInterval(pingServer, 60000); // every 60sAdd commentMore actions
-//   const interval = setInterval(pingServer, 2 * 60 * 1000); //every 2 minutes
-//   // every 60s-  60000
-//   return () => clearInterval(interval); // cleanup
-// }, []);
-  
+//for track Usrs Location + User Final Code 
 useEffect(() => {
   let interval;
 
-  const trackAnonymousUser = async () => {
+  const initTracking = async () => {
     try {
-      const cachedId = sessionStorage.getItem("anon_id");
-      let anonId = cachedId;
-
+      // 1 Get or create anonId
+      let anonId = sessionStorage.getItem("anon_id");
       if (!anonId) {
         const fp = await FingerprintJS.load();
         const result = await fp.get();
@@ -82,27 +49,127 @@ useEffect(() => {
         sessionStorage.setItem("anon_id", anonId);
       }
 
-      const pingServer = () => {
-        fetch(`${BASE_URL}auth/track-anonymous-user`, {
+      // 2 Get location data
+      let locationData = null;
+      try {
+        const locationRes = await fetch('http://ip-api.com/json');
+        const data = await locationRes.json();
+        locationData = {
+          city: data.city,
+          country: data.country,
+          region: data.regionName,
+          lat: data.lat,
+          lon: data.lon,
+          ip: data.query
+        };
+        console.log('Location data:', locationData);
+      } catch (locErr) {
+        console.error('Failed to fetch location:', locErr);
+      }
+
+      // 3 Send first ping (with location if available)
+      const sendPing = (withLocation = false) => {
+        fetch(`${BASE_URL}auth/trackActiveUsersWithLocation`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ anonId }),
-        }).catch((err) => console.error("Ping failed:", err));
+          body: JSON.stringify({
+            anonId,
+            ...(withLocation && locationData ? { location: locationData } : {})
+          })
+        }).catch(err => console.error("Ping failed:", err));
       };
 
-      pingServer();
-      interval = setInterval(pingServer, 2 * 60 * 1000);
-    } catch (error) {
-      console.error("Fingerprint error:", error);
+      sendPing(true);  // First ping with location
+
+      //4 Set interval pings (without location)
+      interval = setInterval(() => sendPing(false), 2 * 60 * 1000);
+
+    } catch (err) {
+      console.error('Tracking error:', err);
     }
   };
 
-  trackAnonymousUser();
+  initTracking();
 
   return () => {
-    clearInterval(interval);
+    if (interval) clearInterval(interval);
   };
+
 }, []);
+
+
+
+
+
+
+
+
+//  useEffect(() => {
+//     const fetchLocation = async () => {
+//       try {
+//         const res = await fetch('http://ip-api.com/json');
+//         const data = await res.json();
+//         console.log('Location data:', data);
+
+//         // Send to your backend
+//         await fetch(`${BASE_URL}auth/track-location`, {
+//           method: 'POST',
+//           headers: { 'Content-Type': 'application/json' },
+//           body: JSON.stringify({
+//             city: data.city,
+//             country: data.country,
+//             region: data.regionName,
+//             lat: data.lat,
+//             lon: data.lon,
+//             ip: data.query
+//           })
+//         });
+//       } catch (err) {
+//         console.error('Error fetching location:', err);
+//       }
+//     };
+
+//     fetchLocation();
+//   }, []);
+
+  
+// //for Track How many active users currntly
+// useEffect(() => {
+//   let interval;
+
+//   const trackAnonymousUser = async () => {
+//     try {
+//       const cachedId = sessionStorage.getItem("anon_id");
+//       let anonId = cachedId;
+
+//       if (!anonId) {
+//         const fp = await FingerprintJS.load();
+//         const result = await fp.get();
+//         anonId = result.visitorId;
+//         sessionStorage.setItem("anon_id", anonId);
+//       }
+
+//       const pingServer = () => {
+//         fetch(`${BASE_URL}auth/track-anonymous-user`, {
+//           method: 'POST',
+//           headers: { 'Content-Type': 'application/json' },
+//           body: JSON.stringify({ anonId }),
+//         }).catch((err) => console.error("Ping failed:", err));
+//       };
+
+//       pingServer();
+//       interval = setInterval(pingServer, 2 * 60 * 1000);
+//     } catch (error) {
+//       console.error("Fingerprint error:", error);
+//     }
+//   };
+
+//   trackAnonymousUser();
+
+//   return () => {
+//     clearInterval(interval);
+//   };
+// }, []);
 
 
 
