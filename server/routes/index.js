@@ -13,6 +13,8 @@ router.use("/auth", authRoutes);
 router.use("/products", productsRoutes);
 router.use("/design", designRoutes);
 router.use("/customer",customerRoutes)
+
+
 // router.use("/imageOperation",imageOperationRoutes)
 
 
