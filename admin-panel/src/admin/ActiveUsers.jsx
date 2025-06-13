@@ -115,7 +115,8 @@ export default function ActiveUsers() {
 
       {users.length > 0 && (
         <Card title="Active Users with Location">
-          <IndexTable
+          <Box maxHeight="400px" overflow="auto">
+           <IndexTable
             resourceName={{ singular: 'user', plural: 'users' }}
             itemCount={users.length}
             selectedItemsCount={allResourcesSelected ? 'All' : selectedResources.length}
@@ -147,6 +148,7 @@ export default function ActiveUsers() {
               </IndexTable.Row>
             ))}
           </IndexTable>
+          </Box>
         </Card>
       )}
     </Page>
