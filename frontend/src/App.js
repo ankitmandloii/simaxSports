@@ -58,8 +58,8 @@ useEffect(() => {
           city: data.city,
           country: data.country,
           region: data.regionName,
-          lat: data.lat,
-          lon: data.lon,
+          lat: data.latitude,
+          lon: data.longitude,
           ip: data.query
         };
         console.log('Location data:', locationData);
