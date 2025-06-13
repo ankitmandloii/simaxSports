@@ -52,8 +52,13 @@ useEffect(() => {
       // 2 Get location data
       let locationData = null;
       try {
-        const locationRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
+        //https://get.geojs.io/v1/ip/geo.json
+        const locationRes = await fetch(`${BASE_URL}auth/getLoc`,{
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }});
+        console.log(locationRes,"locationRes");
         const data = await locationRes.json();
+        console.log(data,"Data");
         locationData = {
           city: data.city,
           country: data.country,

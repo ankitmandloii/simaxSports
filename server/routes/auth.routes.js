@@ -16,6 +16,13 @@ router.post('/admin-change-password',customerValidation.verifyToken, controllers
 router.post('/tActiveUserL', controllers.trackActiveUsersWithLocation)
 router.get('/getActiveUsersWithLocation', controllers.getActiveUsersWithLocation)
 
+
+
+
+router.get('/getLoc', controllers.getLoc)
+
+
+
 // router.post('/track-location', controllers.trackLocation);
 // router.get('/getTrackedLocation', controllers.getTrackedLocation);
 

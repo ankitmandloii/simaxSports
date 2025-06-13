@@ -312,3 +312,36 @@ exports.getTrackedLocation = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
+exports.getLoc = async (req, res) => {
+  try {
+   // Get client IP — handles reverse proxy setups if trusted
+    const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    console.log("Clinet Ip :", clientIp);
+    const ip = clientIp.split(',')[0].trim(); // in case of multiple IPs
+    console.log("ip Ip :", ip);
+
+    // Call IP location API (you can replace with your chosen service)
+    const apiRes = await fetch(`https://ipinfo.io/${ip}/json`);
+    if (!apiRes.ok) throw new Error('Location API failed');
+    
+    const locationData = await apiRes.json();
+ console.log("locationData:", locationData);
+    res.json({
+      ip,
+      location: {
+        city: locationData.city,
+        region: locationData.region,
+        country: locationData.country,
+        // latitude: locationData.latitude,
+        // longitude: locationData.longitude
+      }
+    });
+
+
+  } catch (err) {
+    console.error('Error fetching location:', err);
+    res.status(500).json({ error: 'Failed to fetch location' });
+  }
+};
