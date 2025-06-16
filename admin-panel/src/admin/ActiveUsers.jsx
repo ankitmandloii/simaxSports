@@ -99,7 +99,7 @@ export default function ActiveUsers() {
 
   const uniqueCountries = [...new Set(users.map(u => u.location?.country).filter(Boolean))];
   const progressValue = Math.min((activeUserNumber / 100) * 100, 100); // Example scale
-  
+
   return (
     <Page>
       <Card padding="500" rounded>
@@ -188,11 +188,12 @@ export default function ActiveUsers() {
         </Card>
       ) : (
         <Card padding="300">
+
           <EmptyState
             heading="No active users yet"
             action={{ content: 'Refresh', onAction: getActiveUsersWithLocation, loading }}
-            image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/empty-state.svg"
           >
+
             <p>Click refresh to load the latest active users.</p>
           </EmptyState>
         </Card>
