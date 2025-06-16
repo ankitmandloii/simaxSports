@@ -9,6 +9,9 @@ import {
   InlineStack,
   Button,
   IndexTable,
+  Badge,
+  ProgressBar,
+  EmptyState,
   useIndexResourceState
 } from '@shopify/polaris';
 import { useEffect, useRef, useState } from 'react';
@@ -55,7 +58,7 @@ export default function ActiveUsers() {
   const getActiveUsersWithLocation = async () => {
     try {
       setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 2000)); // simulate delay
+      await new Promise(resolve => setTimeout(resolve, 1000)); // simulate delay
       const BASE_URL = process.env.REACT_APP_BASE_URL;
       const token = localStorage.getItem('admin-token');
       const response = await fetch(`${BASE_URL}auth/getActiveUsersWithLocation`, {
@@ -94,61 +97,104 @@ export default function ActiveUsers() {
 
   const { selectedResources, allResourcesSelected, handleSelectionChange } = useIndexResourceState(users);
 
+  const uniqueCountries = [...new Set(users.map(u => u.location?.country).filter(Boolean))];
+  const progressValue = Math.min((activeUserNumber / 100) * 100, 100); // Example scale
+  
   return (
     <Page>
-      <Card sectioned title="Account Settings" subtitle="Manage your account settings and preferences">
-        <Box style={{ width: '16px', height: '16px' }}>
-          <Icon source={PersonLockFilledIcon} tone="base" />
-        </Box>
-        <BlockStack gap="400">
-          <Text variant="headingLg" as="h2">Active users on our design App</Text>
-          <Text tone="subdued">Number of User Currently Using The App</Text>
-          <Divider />
-          <Text variant="headingLg" as="h2">Active users : {activeUserNumber}</Text>
-          <InlineStack align="end" paddingBlockStart="300">
-            <Button variant="primary" onClick={getActiveUsersWithLocation} loading={loading}>
-              Get Active Count
-            </Button>
+      <Card padding="500" rounded>
+        <InlineStack align="space-between" blockAlign="center">
+          <InlineStack gap="400">
+            <Box style={{ width: '24px', height: '24px' }}>
+              <Icon source={PersonLockFilledIcon} tone="base" />
+            </Box>
+            <Text variant="headingLg">Active Users on Design App</Text>
           </InlineStack>
+          <Button variant="primary" onClick={getActiveUsersWithLocation} loading={loading}>
+            Refresh
+          </Button>
+        </InlineStack>
+
+        <BlockStack gap="500" paddingBlockStart="400">
+          <InlineStack gap="400" wrap={false}>
+            <Card background="bg-surface-secondary" padding="300">
+              <BlockStack gap="100" align="center">
+                <Text tone="subdued">Active Users</Text>
+                <Text variant="heading2xl" tone="success">{activeUserNumber}</Text>
+              </BlockStack>
+            </Card>
+
+            <Card background="bg-surface-secondary" padding="300">
+              <BlockStack gap="100" align="center">
+                <Text tone="subdued">Unique Countries</Text>
+                <Text variant="heading2xl">{uniqueCountries.length}</Text>
+              </BlockStack>
+            </Card>
+          </InlineStack>
+
+          <Box paddingBlock="200">
+            <ProgressBar progress={progressValue} tone="success" />
+          </Box>
         </BlockStack>
       </Card>
 
-      {users.length > 0 && (
-        <Card title="Active Users with Location">
-          <Box maxHeight="400px" overflow="auto">
-           <IndexTable
-            resourceName={{ singular: 'user', plural: 'users' }}
-            itemCount={users.length}
-            selectedItemsCount={allResourcesSelected ? 'All' : selectedResources.length}
-            onSelectionChange={handleSelectionChange}
-            headings={[
-              { title: 'Anon ID' },
-              { title: 'City' },
-              { title: 'Country' },
-              { title: 'Region' },
-              { title: 'IP' },
-              { title: 'Last Active' },
-            ]}
-            selectable={false}
+      <Divider />
 
-          >
-            {users.map((user, index) => (
-              <IndexTable.Row
-                id={user._id}
-                key={user._id}
-                selected={selectedResources.includes(user._id)}
-                position={index}
-              >
-                <IndexTable.Cell>{user.anonId}</IndexTable.Cell>
-                <IndexTable.Cell>{user.location?.city || '-'}</IndexTable.Cell>
-                <IndexTable.Cell>{user.location?.country || '-'}</IndexTable.Cell>
-                <IndexTable.Cell>{user.location?.region || '-'}</IndexTable.Cell>
-                <IndexTable.Cell>{user.location?.ip || '-'}</IndexTable.Cell>
-                <IndexTable.Cell>{new Date(user.lastActive).toLocaleString()}</IndexTable.Cell>
-              </IndexTable.Row>
-            ))}
-          </IndexTable>
+      {users.length > 0 ? (
+        <Card title="Active Users with Location" padding="300">
+          <Box maxHeight="400px" overflow="auto">
+            <IndexTable
+              resourceName={{ singular: 'user', plural: 'users' }}
+              itemCount={users.length}
+              selectedItemsCount={allResourcesSelected ? 'All' : selectedResources.length}
+              onSelectionChange={handleSelectionChange}
+              headings={[
+                { title: 'Anon ID' },
+                { title: 'City' },
+                { title: 'Country' },
+                { title: 'Region' },
+                { title: 'IP' },
+                { title: 'Last Active' },
+              ]}
+              selectable={false}
+            >
+              {users.map((user, index) => (
+                <IndexTable.Row
+                  id={user._id}
+                  key={user._id}
+                  selected={selectedResources.includes(user._id)}
+                  position={index}
+                >
+                  <IndexTable.Cell>
+                    <Text as="span" fontWeight="medium" fontFamily="monospace">
+                      {user.anonId}
+                    </Text>
+                  </IndexTable.Cell>
+                  <IndexTable.Cell>{user.location?.city || '-'}</IndexTable.Cell>
+                  <IndexTable.Cell>
+                    {user.location?.country
+                      ? <Badge tone="success">{user.location.country}</Badge>
+                      : '-'}
+                  </IndexTable.Cell>
+                  <IndexTable.Cell>{user.location?.region || '-'}</IndexTable.Cell>
+                  <IndexTable.Cell>
+                    <Text as="span" fontFamily="monospace">{user.location?.ip || '-'}</Text>
+                  </IndexTable.Cell>
+                  <IndexTable.Cell>{new Date(user.lastActive).toLocaleString()}</IndexTable.Cell>
+                </IndexTable.Row>
+              ))}
+            </IndexTable>
           </Box>
+        </Card>
+      ) : (
+        <Card padding="300">
+          <EmptyState
+            heading="No active users yet"
+            action={{ content: 'Refresh', onAction: getActiveUsersWithLocation, loading }}
+            image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/empty-state.svg"
+          >
+            <p>Click refresh to load the latest active users.</p>
+          </EmptyState>
         </Card>
       )}
     </Page>
