@@ -270,7 +270,7 @@ canvas#mirrorCanvasBack {
   border: 1px solid #d2d5d9;
   background: #fff;
   padding: 8px 20px;
-  border-radius: 10px;
+  border-radius: 100px;
   /* width: 104px; */
   /* margin-left: 20px; */
   cursor: pointer;

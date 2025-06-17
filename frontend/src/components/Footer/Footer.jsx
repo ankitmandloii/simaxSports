@@ -54,7 +54,7 @@ const Footer = () => {
           <button className={footerStyle.footerBtn} onClick={setSavedesignPopupHandler}>
             <FiSave /> SAVE DESIGN
           </button>
-          <button className={footerStyle.footerBtn} onClick={setNavigate}>
+          <button className={footerStyle.saveButton} onClick={setNavigate}>
             NEXT STEP <FaArrowRightLong />
           </button>
         </div>
