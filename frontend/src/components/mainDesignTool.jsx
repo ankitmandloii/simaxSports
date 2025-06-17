@@ -20,7 +20,6 @@ import CurvedText from "./fabric/fabric.TextCurved"; // Adjust path if needed
 fabric.CurvedText = CurvedText;
 const MainDesignTool = ({
   warningColor,
-  key,
   id,
   backgroundImage,
   // mirrorCanvasRef,
@@ -1206,7 +1205,7 @@ const MainDesignTool = ({
       selectable: true,
       fontFamily: fontFamily,
       hasBorders: false,
-      hasControls: false,
+      hasControls: false, 
       evented: true,
       isSync: true,
     });
@@ -1242,9 +1241,10 @@ const MainDesignTool = ({
       // originY: 'center',
       isDesignGroup: true,
       hasBorders: false,
-
+      
     });
-
+    
+    group.setCoords();
     canvas.add(group);
     canvas.requestRenderAll();
     syncMirrorCanvas(activeSide);

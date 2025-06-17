@@ -60,8 +60,7 @@ export default function AddTextSheet({ isOpen, setIsOpen, sheetContaint, snap })
       onClose={() => setIsOpen(false)}
 
       snapPoints={snapPoint}
-      keyboardInset
-      avoidKeyboard
+ 
     >
       <Sheet.Container>
         {/* ✅ Header is draggable */}

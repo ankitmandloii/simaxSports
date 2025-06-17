@@ -2,16 +2,19 @@
   font-family: "Roboto-Regular";
   src: url("../public/Roboto-Regular.ttf") format("opentype");
   font-weight: normal;
+  font-display: swap;
 }
 
 @font-face {
   font-family: "PornStarAcademy";
   src: url("../public/fonts/sportsjersey.ttf") format("opentype");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Interstate";
   src: url("../public/fonts/overpass/overpass-extrabold.otf") format("opentype");
+  font-display: swap;
 }
 
 * {
