@@ -14,7 +14,7 @@ import {
   deleteProduct as deleteProductAction,
   setSelectedProducts as setSelectedProductsAction,
 } from '../../../redux/ProductSlice/SelectedProductSlice';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { removeNameAndNumberProduct, setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 // import ContinueEditPopup from '../../PopupComponent/ContinueEditPopup/ContinueEditPopup';
 // import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesignSlice';
@@ -29,7 +29,7 @@ import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSli
 
 const ProductToolbar = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
   
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
   // const { setActiveProduct } = useOutletContext();

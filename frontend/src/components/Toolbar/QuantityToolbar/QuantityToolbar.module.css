@@ -102,6 +102,17 @@
   letter-spacing: 0%;
 }
 
+@keyframes slideInFromLeftToolbar {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 .toolbarMainContainer {
   overflow: visible;
   width: 100%;
@@ -109,8 +120,10 @@
   min-width: 345px;
   height: 680px;
   border-radius: 0px 20px 20px 0px;
-  /* padding-inline: 30px; */
   padding-top: 26.87px;
+  
+  /* Animation properties */
+  animation: slideInFromLeftToolbar 1s ease-out forwards;
 }
 
 .toolbarBox {
