@@ -30,6 +30,7 @@ import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSli
 const ProductToolbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
   // const { setActiveProduct } = useOutletContext();
 
@@ -89,9 +90,25 @@ const ProductToolbar = () => {
     setAddProduct(false);
   };
 
-  const handleDeleteProduct = (indexToDelete) => {
-    dispatch(deleteProductAction(indexToDelete));
-  };
+const handleDeleteProduct = (indexToDelete) => {
+  // Remove product at index
+  const updated = [...selectedProducts];
+  updated.splice(indexToDelete, 1);
+
+  // Dispatch updated product list
+  dispatch(deleteProductAction(indexToDelete));
+  dispatch(setSelectedProductsAction(updated));
+
+  // Determine and set next active product
+  const newActiveProduct = getNextActiveProduct(updated, indexToDelete);
+
+  if (newActiveProduct) {
+    dispatch(setActiveProduct(newActiveProduct));
+  } else {
+    dispatch(setActiveProduct(null));
+  }
+};
+
 
   const normalizeVariants = (product) => {
     if (product?.allVariants?.length) return product.allVariants;
@@ -126,45 +143,100 @@ const ProductToolbar = () => {
     return allColors.filter((color) => !selectedColorNames.has(color.name));
   };
 
-  const handleDeleteColorThumbnail = (productIndex, colorIndex) => {
-    const product = selectedProducts[productIndex];
-    const productid = product.id;
-    if (productid) {
-      dispatch(removeNameAndNumberProduct(productid));
-    }
-    const totalThumbnails = 1 + (product.addedColors?.length || 0);
-    if (totalThumbnails === 1) {
-      handleDeleteProduct(productIndex);
-      return;
-    }
 
-    if (colorIndex === 0) {
-      const updated = [...selectedProducts];
-      const current = { ...updated[productIndex] };
-      const remainingColors = current.addedColors || [];
+// const getNextActiveProduct = (products, targetIndex) => {
+//   console.log("getNextActiveProduct",products.length)
+//   console.log("getNextActiveProducttargetIndex",targetIndex)
+//   if (products.length === 0) {
+//     return null;
+//   }
 
-      if (remainingColors.length > 0) {
-        const [firstColor, ...rest] = remainingColors;
-        current.selectedColor = safeCloneColor(firstColor, product.imgurl);
-        current.imgurl = firstColor.img;
-        current.addedColors = rest;
-        updated[productIndex] = current;
-        dispatch(setSelectedProductsAction(updated));
-      } else {
-        handleDeleteProduct(productIndex);
-      }
+//   // Try to use the product at targetIndex, fallback to last product
+//   const current = products[targetIndex] || products[products.length - 1];
+//   const addedColors = current.addedColors || [];
 
-      setActiveThumbnail({ productIndex: null, colorIndex: null });
-      return;
-    }
+//   let nextColor = null;
 
-    const updated = [...selectedProducts];
-    const currentProduct = { ...updated[productIndex] };
-    currentProduct.addedColors = currentProduct.addedColors?.filter((_, i) => i !== colorIndex - 1) || [];
-    updated[productIndex] = currentProduct;
-    dispatch(setSelectedProductsAction(updated));
-    setActiveThumbnail({ productIndex: null, colorIndex: null });
+//   if (addedColors.length > 0) {
+//     nextColor = addedColors[0]; // Pick the first added color
+//   } else {
+//     nextColor = current.selectedColor; // Fallback to main product color
+//   }
+
+//   return {
+//     ...current,
+//     selectedColor: safeCloneColor(nextColor, current.imgurl),
+//     imgurl: nextColor?.img || current.imgurl,
+//   };
+// };
+
+
+const getNextActiveProduct = (products, targetIndex) => {
+  if (products.length === 0) return null;
+
+  const safeIndex = Math.min(targetIndex, products.length - 1);
+  const current = products[safeIndex];
+
+  const addedColors = current.addedColors || [];
+  const nextColor = addedColors.length > 0
+    ? addedColors[0]
+    : current.selectedColor;
+
+  return {
+    ...current,
+    selectedColor: safeCloneColor(nextColor, current.imgurl),
+    imgurl: nextColor?.img || current.imgurl,
   };
+};
+
+
+const handleDeleteColorThumbnail = (productIndex, colorIndex) => {
+  const updated = [...selectedProducts];
+  const originalProduct = selectedProducts[productIndex];
+  const product = {
+    ...originalProduct,
+    addedColors: [...(originalProduct.addedColors || [])],
+    selectedColor: { ...originalProduct.selectedColor },
+  };
+
+  // Remove the color from addedColors
+  if (colorIndex === 0) {
+    // Deleting main color
+    if (product.addedColors.length > 0) {
+      const [firstColor, ...rest] = product.addedColors;
+      product.selectedColor = safeCloneColor(firstColor, product.imgurl);
+      product.imgurl = firstColor.img;
+      product.addedColors = rest;
+    } else {
+      // No added colors left — remove the product
+      updated.splice(productIndex, 1);
+    }
+  } else {
+    // Remove added color
+    product.addedColors.splice(colorIndex - 1, 1);
+    updated[productIndex] = product;
+  }
+
+  // Update the product list in Redux
+  dispatch(setSelectedProductsAction(updated));
+
+  // Determine new active product
+
+
+
+  const newActiveProduct = getNextActiveProduct(updated, productIndex);
+
+  // Set the new active product
+  if (newActiveProduct) {
+    dispatch(setActiveProduct(newActiveProduct));
+  } else {
+    // If no products left
+    dispatch(setActiveProduct(null));
+  }
+
+  setActiveThumbnail({ productIndex: null, colorIndex: null });
+};
+
 
   const { list: rawProducts, loading, error } = useSelector(
     (state) => state.products
@@ -208,7 +280,7 @@ const ProductToolbar = () => {
   return (
     <div className="toolbar-main-container">
       <div className={style.productToolbar}>
-        
+
         <div className="toolbar-main-heading">
           <h5 className="Toolbar-badge">Product</h5>
           <h2>Manage Your Products</h2>
@@ -221,9 +293,19 @@ const ProductToolbar = () => {
               <div className={style.toolbarHead}>
                 <div className={style.toolbarProductTitleHead}>
                   <h4>{product?.name || product?.title}</h4>
-                  <span className={style.crossProdICon} onClick={() => handleDeleteProduct(index)} style={{ cursor: 'pointer' }}>
-                    <CrossIcon />
-                  </span>
+                  {(
+                    selectedProducts.length > 1
+                  ) && (
+
+                      <span
+                        className={style.crossProdICon}
+                        onClick={() => handleDeleteProduct(index)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <CrossIcon />
+                      </span>
+                    )}
+
                 </div>
 
                 <div className={style.productToolbarImageWithBtn}>
@@ -258,17 +340,22 @@ const ProductToolbar = () => {
                         }}
                       >
                         {activeThumbnail.productIndex === index && activeThumbnail.colorIndex === i && (
-                          <div className="thumbnail-actions">
-                            <span
-                              className={style.crossProdIConofSingleProduct}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteColorThumbnail(index, i);
-                              }}
-                            >
-                              <CrossIcon />
-                            </span>
+                          <div className="style.thumbnail-actions">
 
+
+                            {!(
+                              selectedProducts.length === 1 &&
+                              (1 + (selectedProducts[index]?.addedColors?.length || 0)) === 1
+                            ) && (<span
+                                  className={style.crossProdIConofSingleProduct}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteColorThumbnail(index, i);
+                                  }}
+                                >
+                                  <CrossIcon />
+                                </span>
+                              )}
                             <button
                               className={style.toolbarSpan}
                               style={{ '--indicator-color': getHexFromName(color?.name) }}
