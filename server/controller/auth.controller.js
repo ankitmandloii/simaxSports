@@ -8,7 +8,36 @@ const { statusCode } = require("../constant/statusCodes.js");
 const User = require("../model/userSchema.js");
 const ActiveUser = require('../model/activeUserSchema.js');
 const { dbConnection } = require("../config/db.js");
+const Location = require('../model/locationSchema.js')
 // const client = require('../utils/redisClient.js');
+
+// function verifyShopifyWebhook(req, res, buf) {
+//   const hmac = req.get('X-Shopify-Hmac-Sha256');
+//   const generatedHmac = crypto
+//     .createHmac('sha256', SHOPIFY_SECRET)
+//     .update(buf, 'utf8')
+//     .digest('base64');
+
+//   if (generatedHmac !== hmac) {
+//     throw new Error('Webhook verification failed');
+//   }
+// }
+
+
+exports.orderCreationWEbHooks = async (req, res) => {
+  try {
+    verifyShopifyWebhook(req, res, req.body);
+    const orderData = JSON.parse(req.body);
+    console.log('Order webhook data:', orderData);
+
+    // TODO: Process orderData (save to DB, update status, etc.)
+
+    res.status(200).send('OK');
+  } catch (err) {
+    console.error('Webhook error:', err.message);
+    res.status(401).send('Unauthorized');
+  }
+};
 
 exports.signUp = async (req, res) => {
   try {
@@ -162,38 +191,125 @@ exports.adminChangePassword = async (req, res) => {
 
 
 
-exports.trackAnonymousUser = async (req, res) => {
-  console.log("trackAnonymousUser CALLED2");
+// exports.trackAnonymousUser = async (req, res) => {
+//   console.log("trackAnonymousUser CALLED2");
+//   try {
+//     await dbConnection();
+//     const { anonId } = req.body;
+//     if (!anonId) return res.status(400).json({ message: 'anonId required' });
+
+//     console.log(`Tracking ping from anonId: ${anonId} at ${new Date().toISOString()}`);
+
+//     await ActiveUser.findOneAndUpdate(
+//       { anonId },
+//       { lastActive: new Date() },
+//       { upsert: true }
+//     );
+
+//     res.status(200).json({ message: 'Activity tracked' });
+//   } catch (err) {
+//     console.error('Activity Error:', err);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
+
+exports.trackActiveUsersWithLocation = async (req, res) => {
   try {
     await dbConnection();
-    const { anonId } = req.body;
-    if (!anonId) return res.status(400).json({ message: 'anonId required' });
-    
-    console.log(`Tracking ping from anonId: ${anonId} at ${new Date().toISOString()}`);
+    const { anonId, location } = req.body;
+
+    if (!anonId) {
+      return res.status(400).json({ message: 'anonId required' });
+    }
+
+    const update = { lastActive: new Date() };
+
+    if (location) {
+      update.location = {
+        city: location.city,
+        country: location.country,
+        region: location.region,
+        lat: location.lat,
+        lon: location.lon,
+        ip: location.ip,
+        timestamp: new Date()
+      };
+    }
 
     await ActiveUser.findOneAndUpdate(
       { anonId },
-      { lastActive: new Date() },
-      { upsert: true }
+      update,
+      { upsert: true, new: true }
     );
 
-    res.status(200).json({ message: 'Activity tracked' });
+    res.status(200).json({ message: 'successfully' });
   } catch (err) {
-    console.error('Activity Error:', err);
+    console.error('UserT error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
 
 
-exports.getActiveUserCount = async (req, res) => {
-  console.log("getActiveUserCount called2");
+
+// exports.getActiveUserCount = async (req, res) => {
+//   console.log("getActiveUserCount called2");
+//   try {
+//     const cutoff = new Date(Date.now() - 5 * 60 * 1000); // last 5 min
+//     const activeUsersData = await ActiveUser.countDocuments({ lastActive: { $gte: cutoff } });
+//     res.status(200).json({ activeUserCount: activeUsersData });
+//   } catch (err) {
+//     console.error('Count Error:', err);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
+
+exports.getActiveUsersWithLocation = async (req, res) => {
   try {
-    const cutoff = new Date(Date.now() - 5 * 60 * 1000); // last 5 min
-    const activeUsersData = await ActiveUser.countDocuments({ lastActive: { $gte: cutoff } });
-    res.status(200).json({ activeUserCount: activeUsersData });
+    const cutoff = new Date(Date.now() - 5 * 60 * 1000); // 5 min active window
+    const users = await ActiveUser.find({ lastActive: { $gte: cutoff } })
+      .sort({ lastActive: -1 })
+      .lean();  // lean for plain JS objects
+
+    res.status(200).json({
+      activeUserCount: users.length,
+      users
+    });
+
   } catch (err) {
-    console.error('Count Error:', err);
+    console.error('getActiveUsersWithL error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
+
+//track Location API 
+
+// exports.trackLocation = async (req, res) => {
+//   console.log("trackLocation CALLED function");
+//   try {
+//     const { city, country, region, lat, lon, ip } = req.body;
+//     await Location.create({ city, country, region, lat, lon, ip });
+//     res.status(200).json({ message: 'Location saved' });
+//   } catch (err) {
+//     console.error('trackLocation Error:', err);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
+
+
+exports.getTrackedLocation = async (req, res) => {
+  console.log("getTrackedLocation CALLED function");
+  try {
+    const locations = await Location.find().sort({ timestamp: -1 });
+    res.status(200).json(locations);
+  } catch (err) {
+    console.error('tragetTrackedLocation Error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+

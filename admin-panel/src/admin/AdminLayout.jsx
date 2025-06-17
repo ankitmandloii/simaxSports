@@ -110,7 +110,7 @@ export default function AdminLayout({ children }) {
             onClick: () => navigate('/admin/orders'),
           },
           {
-            label: 'Active Users On App',
+            label: 'App Activity',
             icon: PersonAddIcon,
             selected: location.pathname.startsWith('/admin/activeUsers'),
             onClick: () => navigate('/admin/activeUsers'),

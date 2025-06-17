@@ -29,7 +29,8 @@ import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSli
 
 const ProductToolbar = () => {
   const dispatch = useDispatch();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
   // const { setActiveProduct } = useOutletContext();
 
@@ -88,11 +89,27 @@ const ProductToolbar = () => {
     setIsAddingProduct(false);
     setAddProduct(false);
   };
-  // Handle deleting a product
+
   const handleDeleteProduct = (indexToDelete) => {
+    // Remove product at index
+    const updated = [...selectedProducts];
+    updated.splice(indexToDelete, 1);
+
+    // Dispatch updated product list
     dispatch(deleteProductAction(indexToDelete));
+    dispatch(setSelectedProductsAction(updated));
+
+    // Determine and set next active product
+    const newActiveProduct = getNextActiveProduct(updated, indexToDelete);
+
+    if (newActiveProduct) {
+      dispatch(setActiveProduct(newActiveProduct));
+    } else {
+      dispatch(setActiveProduct(null));
+    }
   };
-  // Normalize variants from raw product data (e.g., Shopify)
+
+
   const normalizeVariants = (product) => {
     if (product?.allVariants?.length) return product.allVariants;
     if (product?.variants?.edges?.length) return product.variants.edges.map(edge => edge.node);
@@ -125,51 +142,105 @@ const ProductToolbar = () => {
 
     return allColors.filter((color) => !selectedColorNames.has(color.name));
   };
-  // Delete specific color thumbnail or whole product if it's the last one
+
+
+  // const getNextActiveProduct = (products, targetIndex) => {
+  //   console.log("getNextActiveProduct",products.length)
+  //   console.log("getNextActiveProducttargetIndex",targetIndex)
+  //   if (products.length === 0) {
+  //     return null;
+  //   }
+
+  //   // Try to use the product at targetIndex, fallback to last product
+  //   const current = products[targetIndex] || products[products.length - 1];
+  //   const addedColors = current.addedColors || [];
+
+  //   let nextColor = null;
+
+  //   if (addedColors.length > 0) {
+  //     nextColor = addedColors[0]; // Pick the first added color
+  //   } else {
+  //     nextColor = current.selectedColor; // Fallback to main product color
+  //   }
+
+  //   return {
+  //     ...current,
+  //     selectedColor: safeCloneColor(nextColor, current.imgurl),
+  //     imgurl: nextColor?.img || current.imgurl,
+  //   };
+  // };
+
+
+  const getNextActiveProduct = (products, targetIndex) => {
+    if (products.length === 0) return null;
+
+    const safeIndex = Math.min(targetIndex, products.length - 1);
+    const current = products[safeIndex];
+
+    const addedColors = current.addedColors || [];
+    const nextColor = addedColors.length > 0
+      ? addedColors[0]
+      : current.selectedColor;
+
+    return {
+      ...current,
+      selectedColor: safeCloneColor(nextColor, current.imgurl),
+      imgurl: nextColor?.img || current.imgurl,
+    };
+  };
+
+
   const handleDeleteColorThumbnail = (productIndex, colorIndex) => {
-    const product = selectedProducts[productIndex];
-    const productid = product.id;
-    if (productid) {
-      dispatch(removeNameAndNumberProduct(productid));
-    }
-    const totalThumbnails = 1 + (product.addedColors?.length || 0);
-    if (totalThumbnails === 1) {
-      handleDeleteProduct(productIndex);
-      return;
-    }
-    // If first (selected) color is removed, replace it with the next one
-    if (colorIndex === 0) {
-      const updated = [...selectedProducts];
-      const current = { ...updated[productIndex] };
-      const remainingColors = current.addedColors || [];
-
-      if (remainingColors.length > 0) {
-        const [firstColor, ...rest] = remainingColors;
-        current.selectedColor = safeCloneColor(firstColor, product.imgurl);
-        current.imgurl = firstColor.img;
-        current.addedColors = rest;
-        updated[productIndex] = current;
-        dispatch(setSelectedProductsAction(updated));
-      } else {
-        handleDeleteProduct(productIndex);
-      }
-
-      setActiveThumbnail({ productIndex: null, colorIndex: null });
-      return;
-    }
-    // Remove added color
-
     const updated = [...selectedProducts];
-    const currentProduct = { ...updated[productIndex] };
-    currentProduct.addedColors = currentProduct.addedColors?.filter((_, i) => i !== colorIndex - 1) || [];
-    updated[productIndex] = currentProduct;
+    const originalProduct = selectedProducts[productIndex];
+    const product = {
+      ...originalProduct,
+      addedColors: [...(originalProduct.addedColors || [])],
+      selectedColor: { ...originalProduct.selectedColor },
+    };
+
+    // Remove the color from addedColors
+    if (colorIndex === 0) {
+      // Deleting main color
+      if (product.addedColors.length > 0) {
+        const [firstColor, ...rest] = product.addedColors;
+        product.selectedColor = safeCloneColor(firstColor, product.imgurl);
+        product.imgurl = firstColor.img;
+        product.addedColors = rest;
+      } else {
+        // No added colors left — remove the product
+        updated.splice(productIndex, 1);
+      }
+    } else {
+      // Remove added color
+      product.addedColors.splice(colorIndex - 1, 1);
+      updated[productIndex] = product;
+    }
+
+    // Update the product list in Redux
     dispatch(setSelectedProductsAction(updated));
+
+    // Determine new active product
+
+
+
+    const newActiveProduct = getNextActiveProduct(updated, productIndex);
+
+    // Set the new active product
+    if (newActiveProduct) {
+      dispatch(setActiveProduct(newActiveProduct));
+    } else {
+      // If no products left
+      dispatch(setActiveProduct(null));
+    }
+
     setActiveThumbnail({ productIndex: null, colorIndex: null });
   };
-  // Access raw product list from store
-  // const { list: rawProducts, loading, error } = useSelector(
-  //   (state) => state.products
-  // );
+
+
+  const { list: rawProducts, loading, error } = useSelector(
+    (state) => state.products
+  );
 
   // const [searchParams] = useSearchParams();
   // Fetch all products once on mount (Commented )
@@ -223,9 +294,19 @@ const ProductToolbar = () => {
               <div className={style.toolbarHead}>
                 <div className={style.toolbarProductTitleHead}>
                   <h4>{product?.name || product?.title}</h4>
-                  <span className={style.crossProdICon} onClick={() => handleDeleteProduct(index)} style={{ cursor: 'pointer' }}>
-                    <CrossIcon />
-                  </span>
+                  {(
+                    selectedProducts.length > 1
+                  ) && (
+
+                      <span
+                        className={style.crossProdICon}
+                        onClick={() => handleDeleteProduct(index)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <CrossIcon />
+                      </span>
+                    )}
+
                 </div>
 
                 <div className={style.productToolbarImageWithBtn}>
@@ -260,8 +341,13 @@ const ProductToolbar = () => {
                         }}
                       >
                         {activeThumbnail.productIndex === index && activeThumbnail.colorIndex === i && (
-                          <div className="thumbnail-actions">
-                            <span
+                          <div className="style.thumbnail-actions">
+
+
+                            {!(
+                              selectedProducts.length === 1 &&
+                              (1 + (selectedProducts[index]?.addedColors?.length || 0)) === 1
+                            ) && (<span
                               className={style.crossProdIConofSingleProduct}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -270,7 +356,7 @@ const ProductToolbar = () => {
                             >
                               <CrossIcon />
                             </span>
-
+                              )}
                             <button
                               className={style.toolbarSpan}
                               style={{ '--indicator-color': getHexFromName(color?.name) }}
