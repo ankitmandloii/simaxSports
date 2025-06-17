@@ -8,8 +8,8 @@ import { BsZoomIn } from "react-icons/bs";
 import { setExportedImages } from '../redux/CanvasExportDesign/canvasExportSlice';
 import SleeveDesignPopup from './PopupComponent/addSleeveDesign/addSleeveDesingPopup';
 import { getHexFromName } from './utils/colorUtils';
-// import { fetchProducts } from '../redux/ProductSlice/ProductSlice';
-import { setSelectedProducts } from '../redux/ProductSlice/SelectedProductSlice';
+import { fetchProducts } from '../redux/ProductSlice/ProductSlice';
+import { setActiveProduct, setSelectedProducts } from '../redux/ProductSlice/SelectedProductSlice';
 import { useSearchParams } from 'react-router-dom';
 import style from './ProductContainer.module.css'
 import RedoundoComponent from './RedoundoComponent/redoundo';
@@ -143,6 +143,7 @@ function ProductContainer() {
     const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/${productId}`);
     // console.log("initiale Product", initialProduct);
     dispatch(setSelectedProducts(initialProduct));
+    dispatch(setActiveProduct(initialProduct[0]));
     // dispatch(setCurrentProductId(initialProduct[0]?.id));
     // dispatch(addProductDesignState({ productId: initialProduct[0]?.id }))
     if (initialProduct.length > 0) {

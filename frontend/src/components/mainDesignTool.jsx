@@ -111,7 +111,7 @@ const MainDesignTool = ({
 
     if (!boundaryBox || !warningText) return;
 
-    const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text" || obj.isDesignGroup || obj.type === 'group');
+    const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text" );
 
     textObjects.forEach((obj) => obj.setCoords());
 
@@ -633,7 +633,7 @@ const MainDesignTool = ({
     canvas.add(warningText);
 
     function updateBoundaryVisibility() {
-      const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text" || obj.type === "group");
+      const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text" );
       textObjects.forEach((obj) => obj.setCoords());
 
       const allInside = textObjects.every((obj) => {
@@ -1204,6 +1204,7 @@ const MainDesignTool = ({
       originY: 'center',
       alignText: 'center',
       selectable: true,
+      fontFamily: fontFamily,
       hasBorders: false,
       hasControls: false,
       evented: true,
@@ -1236,6 +1237,7 @@ const MainDesignTool = ({
       width: fontSize === "small" ? 60 : 190,
       left: position?.x || canvas.getWidth() / 2,
       top: position?.y || canvas.getHeight() / 2,
+      fontFamily: fontFamily,
       // originX: 'center',
       // originY: 'center',
       isDesignGroup: true,

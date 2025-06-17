@@ -121,26 +121,27 @@ const AddTextToolbar = () => {
   //  [dispatch,selectedTextId, selectedBackTextId ])
 
 
-  const handleRangeInputSizeChange = (e) => {
-    const rawValue = e.target.value;
+const handleRangeInputSizeChange = (e) => {
+  const rawValue = e.target.value;
+  setRangeValuesSize(rawValue);
 
-    // Update the UI state immediately (even for partially typed values)
-    setRangeValuesSize(rawValue);
+  const parsed = parseFloat(rawValue);
+  if (isNaN(parsed) || parsed < 0.2 || parsed > 10) return;
 
-    const parsed = parseFloat(rawValue);
+  const scaleX = textContaintObject.scaleX;
+  const scaleY = textContaintObject.scaleY;
 
-    if (isNaN(parsed) || parsed < 0.2 || parsed > 10) return;
+  // Use average of current X and Y scale as "prev size"
+  const currentAvg = (scaleX + scaleY) / 2; 
 
-    const scaleRatio = parsed / prevSize;
-    const scaleX = textContaintObject.scaleX;
-    const scaleY = textContaintObject.scaleY;
+  const scaleRatio = parsed / currentAvg;
 
-    globalDispatch("scaleX", scaleX * scaleRatio);
-    globalDispatch("scaleY", scaleY * scaleRatio);
-    globalDispatch("scaledValue", parsed);
+  globalDispatch("scaleX", scaleX * scaleRatio);
+  globalDispatch("scaleY", scaleY * scaleRatio);
+  globalDispatch("scaledValue", parsed);
 
-    setPrevSize(parsed);
-  };
+  setPrevSize(parsed); // if shared across
+};
 
 
   const handleBlur = () => {

@@ -1,47 +1,52 @@
-import React from 'react'
-import style from './ContinueEditPopup.module.css'
-import { CrossIcon } from '../../iconsSvg/CustomIcon'
-// import { restoreDesignFromSavedState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice'
-import { useDispatch } from 'react-redux'
-// import { restoreDesignSelectedProductSlice } from '../../../redux/ProductSlice/SelectedProductSlice'
-import { restoreAllSlicesFromLocalStorage } from '../../utils/RestoreSliceStates'
+import React from 'react';
+import style from './ContinueEditPopup.module.css';
+import { CrossIcon } from '../../iconsSvg/CustomIcon';
+import { useDispatch } from 'react-redux';
+import { restoreAllSlicesFromLocalStorage } from '../../utils/RestoreSliceStates';
+
 const ContinueEditPopup = ({ handleContinuePopup }) => {
   const dispatch = useDispatch();
 
-  const continueEditHandler = async () => {
-    //  alert("continueEditHandler")    
+  const continueEditHandler = () => {
     dispatch(restoreAllSlicesFromLocalStorage());
     handleContinuePopup();
-  }
-  const StartFromScratchHandler = () => {
-    handleContinuePopup();
-  }
+  };
+
   return (
-    <div className={style.continueOverlay}>
+    <div className={style.overlay}>
+      <div className={style.modal}>
+        <button className={style.closeButton} onClick={handleContinuePopup}>
+          <CrossIcon />
+        </button>
+        <div className={style.content}>
+          <h2 className={style.title}>Continue Your Design</h2>
+          <p className={style.subtitle}>
+            We've saved your progress. Would you like to pick up where you left off or start a fresh design?
+          </p>
 
-      <div className={style.continueEditPopupMainDiv}>
+          <div className={style.previewRow}>
+            {Array(4).fill().map((_, i) => (
+              <img
+                key={i}
+                src="https://cdn.shopify.com/s/files/1/0724/8517/5535/files/unisex-premium-sweatshirt-team-red-front-6765fb41737e1.png?v=1734736719"
+                alt="Design preview"
+                className={style.previewImage}
+              />
+            ))}
+          </div>
 
-
-        <div className={style.continueEditHeader}>
-          <h4>Start Where You Left Off</h4>
-          <span className={style.crossIconContinueBox} onClick={handleContinuePopup}>
-            <CrossIcon />
-          </span>
-        </div>
-        <div className="middle-img-continue-container">
-          <div className={style.imgSmall}>
-            <img src='https://cdn.shopify.com/s/files/1/0724/8517/5535/files/unisex-premium-sweatshirt-team-red-front-6765fb41737e1.png?v=1734736719' alt="product_image" />
-            <img src='https://cdn.shopify.com/s/files/1/0724/8517/5535/files/unisex-premium-sweatshirt-team-red-front-6765fb41737e1.png?v=1734736719' alt="product_image" />
-            <img src='https://cdn.shopify.com/s/files/1/0724/8517/5535/files/unisex-premium-sweatshirt-team-red-front-6765fb41737e1.png?v=1734736719' alt="product_image" />
-            <img src='https://cdn.shopify.com/s/files/1/0724/8517/5535/files/unisex-premium-sweatshirt-team-red-front-6765fb41737e1.png?v=1734736719' alt="product_image" />
-
+          <div className={style.buttonGroup}>
+            <button className={style.primaryBtn} onClick={continueEditHandler}>
+              Continue Editing
+            </button>
+            <button className={style.secondaryBtn} onClick={handleContinuePopup}>
+              Start From Scratch
+            </button>
           </div>
         </div>
-        <button className={style.continueEditingBtn} onClick={continueEditHandler}>Continue Editing</button>
-        <p className={style.startFromScratchPara}>or <span onClick={StartFromScratchHandler}> Start From Scratch</span></p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ContinueEditPopup
+export default ContinueEditPopup;
