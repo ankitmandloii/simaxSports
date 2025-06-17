@@ -262,6 +262,36 @@ canvas#mirrorCanvasBack {
   margin-right: 20px;
 }
 
+.sleeveDesignButn {
+  text-align: center;
+   display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #d2d5d9;
+  background: #fff;
+  padding: 8px 20px;
+  border-radius: 10px;
+  /* width: 104px; */
+  /* margin-left: 20px; */
+  cursor: pointer;
+  transition: all 0.4s ease -in -out;
+}
+
+
+.sleeveDesignButn:hover {
+  box-shadow: 0 0 0 2px #005bff;
+}
+
+.sleeveDesignButn svg {
+  min-width: 18px;
+  min-height: 18px;
+}
+.sleeveDesignButn p{
+  font-weight: 600;
+  font-size: 14px;
+}
+
 .zoomContainer {
   display: flex;
   justify-content: center;
@@ -277,6 +307,10 @@ canvas#mirrorCanvasBack {
   transition: all 0.4s ease -in -out;
 }
 
+.zoomContainer p{
+  font-weight: 600;
+  font-size: 14px;
+}
 .zoomContainer:hover {
   box-shadow: 0 0 0 2px #005bff;
 }

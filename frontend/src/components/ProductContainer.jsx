@@ -350,8 +350,8 @@ function ProductContainer() {
           </div>
 
           {!addSleeves &&
-            <div className={style.zoomContainer} onClick={onClose}>
-              <p>SLEEVES & MORE</p>
+            <div className={style.sleeveDesignButn} onClick={onClose}>
+              <p>Sleeve design</p>
             </div>
           }
 
