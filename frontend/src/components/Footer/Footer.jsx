@@ -24,7 +24,7 @@ const Footer = () => {
   }, []);
 
   const setNavigate = () => {
-    navigate('/quantity?productId=8847707537647&title=Dusty%20Rose%20/%20S');
+    navigate('/quantity');
   };
 
   const setSavedesignPopupHandler = () => {
