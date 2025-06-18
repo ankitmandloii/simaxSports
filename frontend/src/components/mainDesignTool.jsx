@@ -245,7 +245,7 @@ const MainDesignTool = ({
       canvas.remove(transform.target);
       canvas.requestRenderAll();
       // setSelectedHeight("");
-      navigate("/product?productId=8847707537647&title=Dusty%20Rose%20/%20S");
+      navigate("/design/product");
     }
   };
 
@@ -919,7 +919,7 @@ const MainDesignTool = ({
 
           curved.on("mousedown", () => {
             dispatch(setSelectedTextState(textInput.id));
-            navigate("/addText?productId=8847707537647&title=Dusty%20Rose%20/%20S", { state: textInput });
+            navigate("/design/addText", { state: textInput });
           });
 
           curved.on("modified", (e) => {
@@ -1225,7 +1225,7 @@ const MainDesignTool = ({
 
     })
     group.on("mousedown", () => {
-      navigate("/addNames?productId=8847707537647&title=Dusty%20Rose%20/%20S");
+      navigate("/design/addNames");
     })
 
     // console.log("group ", group, group.type);

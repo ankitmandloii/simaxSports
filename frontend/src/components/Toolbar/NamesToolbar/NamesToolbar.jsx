@@ -32,7 +32,7 @@ const NamesToolbar = () => {
   const showAddnamesPopupHAndler = () => {
     if (!selectedProducts || selectedProducts.length === 0) {
       toast.info("Please Add Product First");      // Orange
-      navigate("/product?productId=8847707537647&title=Dusty%20Rose%20/%20S");
+      navigate("/design/product");
       return;
     }
     setshowAddnamesPopup(!showAddnamesPopup)

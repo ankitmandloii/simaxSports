@@ -30,7 +30,7 @@
   align-items: center;
   flex-direction: column;
   background: transparent;
-  border-radius: 20px;
+  /* border-radius: 20px; */
   padding: 2.5rem;
   box-shadow: var(--shadow);
   position: relative;
