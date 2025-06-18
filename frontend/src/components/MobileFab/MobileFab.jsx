@@ -11,7 +11,7 @@ const MobileFAB = ({ onShare, onSave, onPrice }) => {
   const fabRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const steps = ['/design/product', '/design/quantity', '/review'];
+  const steps = ['/design/product', '/quantity', '/review'];
   const currentIndex = steps.indexOf(location.pathname);
   // Close FAB when clicking outside
   useEffect(() => {
