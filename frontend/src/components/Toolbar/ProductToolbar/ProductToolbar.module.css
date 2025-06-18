@@ -355,6 +355,26 @@ Border
   padding-top: 26.87px;
 }
 
+.miniProdImgContainer {
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  /* stack items */
+  justify-content: flex-start;
+  align-items: center;
+  width: 88px;
+  height: 100px;
+  min-height: 90px;
+  /* allow extra height for button */
+  border-radius: 8px;
+  position: relative;
+  padding-top: 4px;
+  cursor: pointer;
+}
+
+.miniProdImgContainer:hover {
+  border: 2px solid #005bff;
+}
 
 /* tablet */
 @media (max-width: 1200px) {
@@ -365,4 +385,10 @@ Border
   .toolbarMainContainer {
     max-height: initial;
   }
+}
+
+.activeThumbnail {
+  border: 2px solid #0b70ec;
+  border-radius: 8px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }

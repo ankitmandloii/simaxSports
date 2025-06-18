@@ -18,10 +18,7 @@ import ContinueEditPopup from "./components/PopupComponent/ContinueEditPopup/Con
 import { ToastContainer } from "react-toastify";
 import { fetchProducts } from "./redux/ProductSlice/ProductSlice";
 import BottomBar from "./components/bottomBar/BottomBar";
-// import { generateUUID } from './components/utils/generateUUID';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
-
-
 
 function App() {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -32,12 +29,11 @@ function App() {
   const [continueEditPopup, setContinueEditPopup] = useState(false);
   const [willRenderContinue, setWillRenderContinue] = useState(false);
 
-  const isQuantityPage = location.pathname === "/quantity";
-  const reduxState = useSelector((state) => state); // full redux state
+  const isQuantityPage = location.pathname === "/design/quantity";
+  const reduxState = useSelector((state) => state);
   const { list: rawProducts } = useSelector((state) => state.products);
 
-  //for track Usrs Location + User Final Code 
-
+  // Track Anonymous Users
   useEffect(() => {
     let interval = null;
     let isUnmounted = false;
@@ -251,7 +247,6 @@ function App() {
       }
     };
 
-    // iOS-compatible events
     window.addEventListener("pagehide", handleSaveState);
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden") {
@@ -270,7 +265,7 @@ function App() {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  // Check localStorage and show continue popup if needed
+  // Check if saved state should trigger continue edit popup
   useEffect(() => {
     if (!willRenderContinue && rawProducts.length > 0) {
       let savedState = null;
@@ -285,7 +280,7 @@ function App() {
 
       const { addName, addNumber, present, activeSide } =
         savedState.TextFrontendDesignSlice;
-      const textObjects = present?.[activeSide]?.texts || []; // also check for image objects
+      const textObjects = present?.[activeSide]?.texts || [];
 
       if ((textObjects.length > 0) || addName || addNumber) {
         setWillRenderContinue(true);
@@ -294,10 +289,17 @@ function App() {
     }
   }, [rawProducts, willRenderContinue]);
 
-  // Close the continue popup
   const handleContinuePopup = () => {
     setContinueEditPopup(false);
   };
+  // set initial
+  useEffect(() => {
+    if (location.pathname === "/") {
+      navigate("design/product", { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
+
   return (
     <>
       <div className="app-main-container">
@@ -309,29 +311,23 @@ function App() {
               }`}
           >
             {rawProducts.length === 0 ? (
-              <>
-                <div
-                  className="fullscreen-loader"
-                  style={{ flexDirection: "column" }}
+              <div className="fullscreen-loader" style={{ flexDirection: "column" }}>
+                <p
+                  style={{
+                    marginBottom: 20,
+                    fontSize: 15,
+                    color: "#555",
+                    fontWeight: "700",
+                  }}
                 >
-                  <p
-                    style={{
-                      marginBottom: 20,
-                      fontSize: 15,
-                      color: "#555",
-                      fontWeight: "700",
-                    }}
-                  >
-                    Let's create something great today
-                  </p>
-                  <div className="loader-spinner"></div>
-                </div>
-              </>
-            ) : (
-              <></>
-            )}
+                  Let's create something great today
+                </p>
+                <div className="loader-spinner"></div>
+              </div>
+            ) : null}
+
             <Routes>
-              <Route path="/" element={<Layout />}>
+              <Route path="/design" element={<Layout />}>
                 <Route index element={<ProductToolbar />} />
                 <Route path="product" element={<ProductToolbar />} />
                 <Route path="addText" element={<AddTextToolbar />} />
@@ -342,8 +338,9 @@ function App() {
                 <Route path="addNames" element={<NamesToolbar />} />
                 <Route path="quantity" element={<QuantityToolbar />} />
               </Route>
-              <Route path="review" element={<Review />} />
+              <Route path="/review" element={<Review />} />
             </Routes>
+
             <Footer />
           </div>
         </div>
@@ -363,7 +360,8 @@ function App() {
         {continueEditPopup && (
           <ContinueEditPopup handleContinuePopup={handleContinuePopup} />
         )}
-        <BottomBar></BottomBar>
+
+        <BottomBar />
       </div>
     </>
   );

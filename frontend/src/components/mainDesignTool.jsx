@@ -582,7 +582,7 @@ const MainDesignTool = ({
   useEffect(() => {
     const canvas = new fabric.Canvas(canvasRef.current, {
       width: 550,
-      height: 450,
+      height: 650,
       // backgroundColor: "gray"
     });
 

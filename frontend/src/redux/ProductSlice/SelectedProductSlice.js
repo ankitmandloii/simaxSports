@@ -25,11 +25,18 @@ const selectedProductSlice = createSlice({
     setActiveProduct(state, action) {
       state.activeProduct = action.payload;
     },
-      restoreDesignSelectedProductSlice(state, action) {
+    // setActiveProduct(state, action) {
+    //   const { product, productIndex, colorIndex } = action.payload;
+    //   state.activeProduct = product;
+    //   state.activeProductIndex = productIndex;
+    //   state.activeColorIndex = colorIndex;
+    // },
+
+    restoreDesignSelectedProductSlice(state, action) {
       return { ...state, ...action.payload };
-    },  
+    },
   },
 });
 
-export const {restoreDesignSelectedProductSlice, setSelectedProducts, addProduct, updateProduct, deleteProduct , setActiveProduct} = selectedProductSlice.actions;
+export const { restoreDesignSelectedProductSlice, setSelectedProducts, addProduct, updateProduct, deleteProduct, setActiveProduct } = selectedProductSlice.actions;
 export default selectedProductSlice.reducer;

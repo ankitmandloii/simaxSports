@@ -4,6 +4,7 @@ import logo from '../images/SimaxApparel_Logo.png'
 import { CartIcon, UserIcon } from '../iconsSvg/CustomIcon';
 import style from './Header.module.css'
 import { useMediaQuery } from 'react-responsive'
+import { BsXLg } from 'react-icons/bs';
 
 const Header = () => {
   const location = useLocation();
@@ -11,7 +12,7 @@ const Header = () => {
   // Extract current path without query params
   const currentPath = location.pathname;
   // Group of routes that map to "DESIGN"
-  const designRoutes = ['/product', '/addArt', '/uploadArt', '/addNames', '/addText'];
+  const designRoutes = ['/design/product', '/design/addArt', '/design/uploadArt', '/design/addNames', '/design/addText'];
   const isDesktopOrLaptop = useMediaQuery({ query: '(max-width: 750px)' })
 
   return (
@@ -21,15 +22,15 @@ const Header = () => {
 
         <nav className={style.navSteps}>
           <Link
-            to="/product"
+            to="/design/product"
             className={`${style.step} ${designRoutes.includes(location.pathname) ? style.stepActive : ''}`}
           >
             <span className={style.navSpanNumber}>1</span> DESIGN
           </Link>
 
           <Link
-            to="/quantity"
-            className={`${style.step} ${location.pathname === '/quantity' ? style.stepActive : ''}`}
+            to="/design/quantity"
+            className={`${style.step} ${location.pathname === '/design/quantity' ? style.stepActive : ''}`}
           >
             <span className={style.navSpanNumber}>2</span> QUANTITY & SIZES
           </Link>
@@ -55,20 +56,19 @@ const Header = () => {
         {
           isDesktopOrLaptop && (
             <div>
-              {
-                currentPath == "/product" &&
+              {designRoutes.includes(currentPath) && (
                 <Link
-                  to={`/product`}
-                  className={`${style.step} ${designRoutes.includes(currentPath) ? style.stepActive : ''}`}
+                  to="/design/product"
+                  className={`${style.step} ${style.stepActive}`}
                 >
                   <span className={style.navSpanNumber}>1</span>
                   <span className={style.navSpanHeading}>DESIGN</span>
                 </Link>
-              }
+              )}
 
-              {currentPath == "/quantity" && <Link
-                to={`/quantity`}
-                className={`${style.step} ${currentPath === '/quantity' ? style.stepActive : ''}`}
+              {currentPath == "/design/quantity" && <Link
+                to={`/design/quantity`}
+                className={`${style.step} ${currentPath === '/design/quantity' ? style.stepActive : ''}`}
               >
                 <span className={style.navSpanNumber}>2</span>
                 <span className={style.navSpanHeading}>QUANTITY & SIZES</span>
@@ -87,7 +87,7 @@ const Header = () => {
           )
         }
       </div>
-    </header>
+    </header >
   );
 };
 

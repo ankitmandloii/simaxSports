@@ -124,7 +124,7 @@ h4 {
   max-width: 695px;
   width: 100%;
   padding: 0 10px;
-  max-height: 680px;  
+  max-height: 680px;
   max-width: 600px;
   height: 680px;
   margin-left: 21px;
@@ -197,6 +197,7 @@ h4 {
 .cursor {
   cursor: pointer;
 }
+
 input[type="range"] {
   -webkit-appearance: none;
   width: 100%;
@@ -548,6 +549,17 @@ hr {
 
 
 
+.canvas-container {
+  height: 100vh !important;
+  /* background-color: #000 !important; */
+  /* Height is based on viewport height */
+  width: calc(70vh * (3 / 3)) !important;
+  /* Width is calculated from height */
+  max-width: 900px !important;
+  object-fit: cover !important;
+  /* Limit max width */
+  margin: 0 auto;
+}
 
 /* ≤ 1200px: Adjust layout and scale canvas */
 @media (max-width: 1200px) {
@@ -564,6 +576,7 @@ hr {
     overflow: hidden;
   }
 }
+
 
 /* Tablet: up to 1024px */
 @media (max-width: 1200px) {
@@ -588,7 +601,7 @@ hr {
 @media only screen and (max-width: 1200px) {
   .toolbar-main-container {
     /* min-width: 750px !important; */
-    max-width: 100%; 
+    max-width: 100%;
     padding: 20px;
     width: 100%;
     margin: 0 auto;
@@ -596,4 +609,3 @@ hr {
     /* overflow: hidden; */
   }
 }
-

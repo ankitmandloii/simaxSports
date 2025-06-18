@@ -22,11 +22,11 @@ import AddTextToolbar from '../Toolbar/AddTextToolbar/AddTextToolbar';
 import UploadArtToolbar from '../Toolbar/UploadArtToolbar/UploadArtToolbar';
 
 const menuItems = [
-  { path: "/product", icon: <RiTShirt2Line />, label: "Products", data: <ProductToolbar />, snap: 1200 },
-  { path: "/addText", icon: <AddProductIcon />, label: "Text", data: <AddTextToolbar />, snap: 600 },
-  { path: "/uploadArt", icon: <LuHardDriveUpload />, label: "Upload", data: <UploadArtToolbar />, snap: 1200 },
-  { path: "/addArt", icon: <PiCameraPlusFill />, label: "Add Art", data: <AddArtToolbar />, snap: 1200 },
-  { path: "/addNames", icon: <PiListNumbersBold />, label: "Names & Numbers", data: <NamesToolbar />, snap: 1200 },
+  { path: "/design/product", icon: <RiTShirt2Line />, label: "Products", data: <ProductToolbar />, snap: 1200 },
+  { path: "/design/addText", icon: <AddProductIcon />, label: "Text", data: <AddTextToolbar />, snap: 600 },
+  { path: "/design/uploadArt", icon: <LuHardDriveUpload />, label: "Upload", data: <UploadArtToolbar />, snap: 1200 },
+  { path: "/design/addArt", icon: <PiCameraPlusFill />, label: "Add Art", data: <AddArtToolbar />, snap: 1200 },
+  { path: "/design/addNames", icon: <PiListNumbersBold />, label: "Names & Numbers", data: <NamesToolbar />, snap: 1200 },
   // { path: "/addImage", icon: <PiListNumbersBold />, label: "Add Image", data: <AddImageToolbar />, snap: 1200 },
 
 ];
@@ -56,7 +56,7 @@ const BottomBar = () => {
     // Adjust the breakpoint as needed (e.g., 1024 for tablets or 768 for mobile only)
     const isMobileOrTablet = width <= 1024;
 
-    if (isMobileOrTablet && location.pathname === "/addImage") {
+    if (isMobileOrTablet && location.pathname === "/design/addImage") {
       setSheetContaint(<AddImageToolbar />);
       setSheetSnapPoint(1200); // or your desired snap height
       setIsOpen(true);

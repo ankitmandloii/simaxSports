@@ -36,27 +36,27 @@ const AdminSidebar = () => {
 
   const menuItems = [
     {
-      path: "/product?productId=8847707537647&title=Dusty%20Rose%20/%20S",
+      path: "/design/product",
       icon: <RiTShirt2Line />,
       label: "Products",
     },
     {
-      path: "/addText?productId=8847707537647&title=Dusty%20Rose%20/%20S",
+      path: "/design/addText",
       icon: <AddProductIcon />,
       label: "Text",
     },
     {
-      path: "/uploadArt?productId=8847707537647&title=Dusty%20Rose%20/%20S",
+      path: "/design/uploadArt",
       icon: <AddArtIcon />,
       label: "Upload",
     },
     {
-      path: "/addArt?productId=8847707537647&title=Dusty%20Rose%20/%20S",
+      path: "/design/addArt",
       icon: <SelectArtIcon />,
       label: "Add Art",
     },
     {
-      path: "/addNames?productId=8847707537647&title=Dusty%20Rose%20/%20S",
+      path: "/design/addNames",
       icon: <NumberArtIcon />,
       label: "Names & Numbers",
     },

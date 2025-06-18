@@ -4,11 +4,16 @@ import { getHexFromName } from '../../utils/colorUtils';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
 import { toast } from 'react-toastify';
 import style from './CollectionProductPopup.module.css';
+import { useSelector } from 'react-redux';
 
-const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
+const CollectionProductPopup = ({
+  collectionId,
+  onProductSelect,
+  onClose,
+}) => {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const popupRef = useRef(null);
-
+  const selectedProducts = useSelector((state) => state?.selectedProducts?.selectedProducts)
   const [products, setProducts] = useState([]);
   const [selectedVariantImage, setSelectedVariantImage] = useState({});
   const [selectedColorByProduct, setSelectedColorByProduct] = useState({});
@@ -49,30 +54,33 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
     setImageLoaded({});
   };
 
-  const fetchProducts = useCallback(async (isLoadMore = false) => {
-    if (!effectiveCollectionId) return;
-    setLoading(true);
-    try {
-      const res = await fetch(`${BASE_URL}products/collection/${numericId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ limit: 50, cursor: isLoadMore ? cursor : '' }),
-      });
+  const fetchProducts = useCallback(
+    async (isLoadMore = false) => {
+      if (!effectiveCollectionId) return;
+      setLoading(true);
+      try {
+        const res = await fetch(`${BASE_URL}products/collection/${numericId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ limit: 50, cursor: isLoadMore ? cursor : '' }),
+        });
 
-      const data = await res.json();
-      const edges = data?.result?.node?.products?.edges || [];
-      const pageInfo = data?.result?.node?.products?.pageInfo;
+        const data = await res.json();
+        const edges = data?.result?.node?.products?.edges || [];
+        const pageInfo = data?.result?.node?.products?.pageInfo;
 
-      const newProducts = edges.map(edge => edge.node);
-      setProducts(prev => isLoadMore ? [...prev, ...newProducts] : newProducts);
-      setCursor(pageInfo?.endCursor || '');
-      setHasNextPage(pageInfo?.hasNextPage || false);
-    } catch (err) {
-      console.error('Error fetching products:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [BASE_URL, cursor, effectiveCollectionId, numericId]);
+        const newProducts = edges.map((edge) => edge.node);
+        setProducts((prev) => (isLoadMore ? [...prev, ...newProducts] : newProducts));
+        setCursor(pageInfo?.endCursor || '');
+        setHasNextPage(pageInfo?.hasNextPage || false);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [BASE_URL, cursor, effectiveCollectionId, numericId]
+  );
 
   const getFirstVariantImage = (product) =>
     product?.variants?.edges?.[0]?.node?.image?.originalSrc || '';
@@ -80,7 +88,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   const getUniqueColors = (product) => {
     const colorSet = new Set();
     product?.variants?.edges?.forEach(({ node }) => {
-      const color = node.selectedOptions.find(opt => opt.name === 'Color')?.value;
+      const color = node.selectedOptions.find((opt) => opt.name === 'Color')?.value;
       if (color) colorSet.add(color);
     });
     return [...colorSet];
@@ -88,7 +96,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
 
   const getVariantImageByColor = (product, color) => {
     const variant = product.variants.edges.find(({ node }) =>
-      node.selectedOptions.some(opt => opt.name === 'Color' && opt.value === color)
+      node.selectedOptions.some((opt) => opt.name === 'Color' && opt.value === color)
     );
     return variant?.node?.image?.originalSrc || '';
   };
@@ -96,12 +104,12 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   const handleColorClick = (e, product, color) => {
     e.stopPropagation();
     const image = getVariantImageByColor(product, color);
-    setSelectedColorByProduct(prev => ({ ...prev, [product.id]: color }));
-    setSelectedVariantImage(prev => ({ ...prev, [product.id]: image }));
+    setSelectedColorByProduct((prev) => ({ ...prev, [product.id]: color }));
+    setSelectedVariantImage((prev) => ({ ...prev, [product.id]: image }));
   };
 
   const handleImageLoad = (productId) => {
-    setImageLoaded(prev => ({ ...prev, [productId]: true }));
+    setImageLoaded((prev) => ({ ...prev, [productId]: true }));
   };
 
   const renderColorSwatches = (product) =>
@@ -115,8 +123,8 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
           className={`color-swatch ${isSelected ? 'selected' : ''}`}
           style={{ backgroundColor: getHexFromName(color) }}
           title={color}
-          onMouseEnter={() => setHoverImage(prev => ({ ...prev, [product.id]: image }))}
-          onMouseLeave={() => setHoverImage(prev => ({ ...prev, [product.id]: '' }))}
+          onMouseEnter={() => setHoverImage((prev) => ({ ...prev, [product.id]: image }))}
+          onMouseLeave={() => setHoverImage((prev) => ({ ...prev, [product.id]: '' }))}
           onClick={(e) => handleColorClick(e, product, color)}
         />
       );
@@ -128,7 +136,13 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
     const selectedImage = selectedVariantImage[product.id];
 
     if (!selectedColor) {
-      toast.error("Please select a color before adding the product.");
+      toast.error('Please select a color before adding the product.');
+      return;
+    }
+
+    const isAlreadySelected = selectedProducts.some((p) => p.id === product.id);
+    if (isAlreadySelected) {
+      toast.error('Product already selected.');
       return;
     }
 
@@ -147,68 +161,76 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
       ) : (
         <>
           <div className={style.productListCollection}>
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className={style.modalProduct}
-                onClick={() =>
-                  setSelectedProductColors(
-                    selectedProductColors === product.id ? null : product.id
-                  )
-                }
-              >
-                <div className={style.imgProContainer}>
-                  <div className={style.imageWrapper}>
-                    {!imageLoaded[product.id] && (
-                      <div className={style.imagePlaceholder}>Loading...</div>
-                    )}
+            {products.map((product) => {
+              const isAlreadySelected = selectedProducts.some((p) => p.id === product.id);
+
+              return (
+                <div
+                  key={product.id}
+                  className={style.modalProduct}
+                  onClick={() => {
+                    if (isAlreadySelected) {
+                      toast.error('Product already selected.');
+                      return;
+                    }
+                    setSelectedProductColors(
+                      selectedProductColors === product.id ? null : product.id
+                    );
+                  }}
+                >
+                  <div className={style.imgProContainer}>
+                    <div className={style.imageWrapper}>
+                      {!imageLoaded[product.id] && (
+                        <div className={style.imagePlaceholder}>Loading...</div>
+                      )}
+                      <img
+                        src={hoverImage[product.id] || getFirstVariantImage(product)}
+                        alt={product.title}
+                        className={`${style.modalProductcolorImg} ${imageLoaded[product.id] ? style.visible : style.hidden
+                          }`}
+                        onLoad={() => handleImageLoad(product.id)}
+                      />
+                    </div>
+                  </div>
+                  <p>{product.title}</p>
+                  <div className={style.modalProductcolorContainer}>
                     <img
-                      src={hoverImage[product.id] || getFirstVariantImage(product)}
-                      alt={product.title}
-                      className={`${style.modalProductcolorImg} ${imageLoaded[product.id] ? style.visible : style.hidden
-                        }`}
-                      onLoad={() => handleImageLoad(product.id)}
+                      src={ColorWheel}
+                      alt="colors"
+                      className={style.modalProductcolorImg}
+                      style={{ cursor: 'pointer' }}
                     />
+                    <p>{getUniqueColors(product).length} Colors</p>
+
+                    {selectedProductColors === product.id && (
+                      <div className={style.colorPopup} ref={popupRef}>
+                        <div className={style.colorPopupHeader}>
+                          <button
+                            className="close-popup-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedProductColors(null);
+                            }}
+                          >
+                            <CrossIcon />
+                          </button>
+                        </div>
+                        <div className="color-swatch-list">{renderColorSwatches(product)}</div>
+                        <div className={style.popupActions}>
+                          <button
+                            className={style.addProductBtnPopup}
+                            onClick={(e) => handleAddProduct(e, product)}
+                            disabled={!selectedColorByProduct[product.id] || isAlreadySelected}
+                          >
+                            {isAlreadySelected ? 'Product Already Added' : 'Add Product'}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <p>{product.title}</p>
-                <div className={style.modalProductcolorContainer}>
-                  <img
-                    src={ColorWheel}
-                    alt="colors"
-                    className={style.modalProductcolorImg}
-                    style={{ cursor: 'pointer' }}
-                  />
-                  <p>{getUniqueColors(product).length} Colors</p>
-
-                  {selectedProductColors === product.id && (
-                    <div className={style.colorPopup} ref={popupRef}>
-                      <div className={style.colorPopupHeader}>
-                        <button
-                          className="close-popup-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedProductColors(null);
-                          }}
-                        >
-                          <CrossIcon />
-                        </button>
-                      </div>
-                      <div className="color-swatch-list">{renderColorSwatches(product)}</div>
-                      <div className={style.popupActions}>
-                        <button
-                          className={style.addProductBtnPopup}
-                          onClick={(e) => handleAddProduct(e, product)}
-                          disabled={!selectedColorByProduct[product.id]}
-                        >
-                          Add Product
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {hasNextPage && (
