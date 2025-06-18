@@ -321,7 +321,7 @@ function App() {
                   className="fullscreen-loader"
                   style={{ flexDirection: "column" }}
                 >
-                 <LoadingScreen/>
+                  <LoadingScreen/>
                 </div>
               </>
             ) : (
