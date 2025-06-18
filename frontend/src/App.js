@@ -19,6 +19,9 @@ import { ToastContainer } from "react-toastify";
 import { fetchProducts } from "./redux/ProductSlice/ProductSlice";
 import BottomBar from "./components/bottomBar/BottomBar";
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import LoadingScreen from "./components/loadingComponent/LoadingScreen";
+
+
 
 function App() {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -262,7 +265,9 @@ function App() {
 
   // Fetch product list on mount
   useEffect(() => {
-    dispatch(fetchProducts());
+     setTimeout(() => {
+       dispatch (fetchProducts());
+     }, 5000);
   }, [dispatch]);
 
   // Check if saved state should trigger continue edit popup
@@ -311,21 +316,17 @@ function App() {
               }`}
           >
             {rawProducts.length === 0 ? (
-              <div className="fullscreen-loader" style={{ flexDirection: "column" }}>
-                <p
-                  style={{
-                    marginBottom: 20,
-                    fontSize: 15,
-                    color: "#555",
-                    fontWeight: "700",
-                  }}
+              <>
+                <div
+                  className="fullscreen-loader"
+                  style={{ flexDirection: "column" }}
                 >
-                  Let's create something great today
-                </p>
-                <div className="loader-spinner"></div>
-              </div>
-            ) : null}
-
+                 <LoadingScreen/>
+                </div>
+              </>
+            ) : (
+              <></>
+            )}
             <Routes>
               <Route path="/design" element={<Layout />}>
                 <Route index element={<ProductToolbar />} />
