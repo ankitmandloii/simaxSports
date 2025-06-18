@@ -29,12 +29,15 @@
 
 .addTextFirstToolbarBoxContainer {
   display: flex;
-  justify-content: space-around; /* use flex-start to allow natural overflow */
+  justify-content: space-around;
+  /* use flex-start to allow natural overflow */
   gap: 10px;
 
-  white-space: nowrap; /* prevent child items from wrapping */
+  white-space: nowrap;
+  /* prevent child items from wrapping */
 
-  padding: 10px; /* optional: spacing inside the container */
+  padding: 10px;
+  /* optional: spacing inside the container */
 }
 
 .toolbarBoxIconsAndHeadingForTogether {
@@ -297,7 +300,7 @@
 .toolbarIcon {
   background-color: transparent;
   color: black;
-  padding: 4px 4px;
+  padding: 3px 8px;
   border-radius: 4px;
   border: 1px solid #d2d5d9;
   cursor: pointer;
@@ -328,12 +331,15 @@
   background-color: #a9a6a6;
   color: #fff;
 }
+
 @media screen and (max-width: 1200px) {
   .addTextFirstToolbarBoxContainer {
-    overflow-x: auto !important; /* 'auto' avoids unnecessary scrollbars */
+    overflow-x: auto !important;
+    /* 'auto' avoids unnecessary scrollbars */
     white-space: nowrap;
     scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch; /* for iOS smooth scrolling */
+    -webkit-overflow-scrolling: touch;
+    /* for iOS smooth scrolling */
   }
 
   /* .toolbarBox {

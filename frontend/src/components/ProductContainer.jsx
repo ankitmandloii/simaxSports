@@ -140,7 +140,7 @@ function ProductContainer() {
     const productId = "8847707537647"; // "8847707537647"
     // console.log("productId", productId);
     // console.log(rawProducts, "productId")
-    const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/${productId}`);
+    const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/8847707537647`);
     // console.log("initiale Product", initialProduct);
     dispatch(setSelectedProducts(initialProduct));
     dispatch(setActiveProduct(initialProduct[0]));

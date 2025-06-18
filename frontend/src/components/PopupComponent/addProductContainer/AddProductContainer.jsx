@@ -5,9 +5,13 @@ import styles from './AddProductContainer.module.css';
 import { getHexFromName } from "../../utils/colorUtils";
 import colorwheel1 from "../../images/color-wheel1.png";
 import { CrossIcon } from "../../iconsSvg/CustomIcon";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProductPopup }) => {
   const { list: rawProducts, loading, error } = useSelector((state) => state.products);
+  const selectedProduct = useSelector((state) => state.selectedProducts.selectedProducts);
+
   const [products, setProducts] = useState([]);
   const [productStates, setProductStates] = useState({});
   const [imageLoadStates, setImageLoadStates] = useState({});
@@ -59,8 +63,15 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
     }));
   };
 
-  const toggleColorPopup = (e, productKey) => {
+  const toggleColorPopup = (e, productKey, product) => {
     e.stopPropagation();
+    const isAlreadySelected = selectedProduct.some(p => p.id === product.id);
+    if (isAlreadySelected) {
+      // alert("Product already selected");
+      toast.error("Product already selected");
+      return;
+    }
+
     setProductStates((prev) =>
       Object.fromEntries(
         Object.entries(prev).map(([key, state]) => [
@@ -117,10 +128,11 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
             const state = productStates[productKey] || {};
             const displayImage = state.hoverImage || imgurl;
             const imageLoaded = imageLoadStates[productKey];
+            const isAlreadySelected = selectedProduct.some((p) => p.id === product.id);
 
             return (
               <li key={productKey} className={styles.modalProduct}>
-                <div className={styles.productMain} onClick={(e) => toggleColorPopup(e, productKey)}>
+                <div className={styles.productMain} onClick={(e) => toggleColorPopup(e, productKey, product)}>
                   <div className={styles.imageWrapper}>
                     {!imageLoaded && <div className={styles.imagePlaceholder}></div>}
                     <img
@@ -137,7 +149,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                 {colors.length > 0 && (
                   <div
                     className={styles.modalProductColorContainer}
-                    onClick={(e) => toggleColorPopup(e, productKey)}
+                    onClick={(e) => toggleColorPopup(e, productKey, product)}
                   >
                     <img src={colorwheel1} alt="colors" className={styles.modalProductColorImg} />
                     <p>{colors.length} Colors</p>
@@ -185,9 +197,9 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                           <button
                             className={styles.addProductBtnPopup}
                             onClick={(e) => handleAddProduct(e, product, productKey)}
-                            disabled={!state.selectedColor}
+                            disabled={!state.selectedColor || isAlreadySelected}
                           >
-                            Add Product
+                            {isAlreadySelected ? "Product Already Selected" : "Add Product"}
                           </button>
                         </div>
                       </div>

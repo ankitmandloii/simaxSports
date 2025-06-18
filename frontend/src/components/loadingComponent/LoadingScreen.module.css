@@ -1,0 +1,232 @@
+:root {
+  --primary-color: #005bff;
+  --secondary-color: #0039a3;
+  --accent-color: #ff2d75;
+  --bg-color: #f8f9fa;
+  --text-color: #2b2d42;
+  --light-color: black;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.loaderContainer {
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  font-family: "Poppins", sans-serif;
+  color: var(--text-color);
+  overflow: hidden;
+}
+
+.loaderCard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: transparent;
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: var(--shadow);
+  position: relative;
+  /* max-width: 500px;   */
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  overflow: hidden;
+}
+
+.loaderCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  animation: progress 6s ease-in-out infinite;
+}
+
+.textAnimationContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 150px;
+  margin-bottom: 1.5rem;
+}
+
+.simaxText {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.simaxText::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: underline 1.5s ease-in-out 1.5s forwards;
+}
+
+.simaxText span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: letterDrop 0.4s ease forwards;
+}
+
+.simaxText span:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.simaxText span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.simaxText span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.simaxText span:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.simaxText span:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.sportsText {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  color: var(--accent-color);
+  opacity: 0;
+  animation: fadeIn 1s ease-in-out 1.5s forwards;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.loaderText {
+  color: black;
+  margin-top: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  position: relative;
+      
+  font-family: "Lucida Handwriting", "cursive";
+}
+
+.progressText {
+    
+  font-family: "Lucida Handwriting", "cursive";
+  color: black;
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.dots::after {
+  content: "";
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+/* Animations */
+@keyframes underline {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dots {
+  0% {
+    content: "";
+  }
+  25% {
+    content: ".";
+  }
+  50% {
+    content: "..";
+  }
+  75% {
+    content: "...";
+  }
+  100% {
+    content: "";
+  }
+}
+
+@keyframes progress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes letterDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .loaderCard {
+    padding: 1.5rem;
+  }
+  .simaxText {
+    font-size: 2.5rem;
+  }
+  .sportsText {
+    font-size: 1.2rem;
+  }
+  .loaderText {
+    font-size: 1.2rem;
+  }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #121212;
+    --text-color: #f8f9fa;
+    --light-color: #1e1e1e;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+  .simaxText {
+    color: #005bff;
+  }
+}

@@ -29,7 +29,7 @@ const UploadArtToolbar = () => {
 
       setIsLoading(true);
       setTimeout(() => {
-        navigate("/addImage");
+        navigate("/design/addImage");
       }, 4000);
     }
   };
@@ -72,7 +72,7 @@ const UploadArtToolbar = () => {
 
           setIsLoading(true);
           setTimeout(() => {
-            navigate("/addImage");
+            navigate("/design/addImage");
           }, 4000);
 
           setDriveFiles(data.docs);
@@ -196,7 +196,7 @@ const UploadArtToolbar = () => {
 
                 setIsLoading(true);
                 setTimeout(() => {
-                  navigate("/addImage");
+                  navigate("/design/addImage");
                 }, 4000);
 
                 setDropboxFiles(files);

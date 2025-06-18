@@ -30,7 +30,7 @@ import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSli
 const ProductToolbar = () => {
   const dispatch = useDispatch();
 
-  
+
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
   // const { setActiveProduct } = useOutletContext();
 
