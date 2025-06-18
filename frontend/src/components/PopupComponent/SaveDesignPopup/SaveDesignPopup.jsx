@@ -159,7 +159,7 @@ const SaveDesignPopup = ({ setSavedesignPopupHandler }) => {
 
             <button className={`${style.popupButton} ${style.emailButton}`}
               onClick={handleSaveDesign}>
-              SAVE DESIGN
+              Save Design
             </button>
 
             <button className={`${style.popupButton} ${style.backButton}`} onClick={handleBack}>

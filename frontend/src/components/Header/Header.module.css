@@ -15,6 +15,7 @@
 }
 
 .navSpanNumber {
+  font-size: 16px;
   background-color: #888;
   border-radius: 100%;
   display: inline-flex;
@@ -62,7 +63,7 @@ a.step:first-child:after {
   display: flex;
   gap: 78px;
   font-weight: 600;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   font-size: 14px;
   color: #888;
 }
@@ -116,6 +117,10 @@ a.step:first-child:after {
   display: flex;
   gap: 5px;
   align-items: center;
+}
+
+.headerBtn p {
+  font-size: 16px;
 }
 
 .headerBtn svg {

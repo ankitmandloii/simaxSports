@@ -46,16 +46,16 @@ const Footer = () => {
       {!isMobile && !sleevedesignn && (
         <div className={footerStyle.footerContainer}>
           <button className={footerStyle.footerBtn} onClick={setSavedesignPopupHandler}>
-            <IoShareSocialOutline /> SHARE
+            <IoShareSocialOutline /> Share
           </button>
           <button className={footerStyle.footerBtn} onClick={setNavigate}>
-            <IoPricetagOutline /> GET PRICE
+            <IoPricetagOutline /> Get Price
           </button>
           <button className={footerStyle.footerBtn} onClick={setSavedesignPopupHandler}>
-            <FiSave /> SAVE DESIGN
+            <FiSave /> Save Design
           </button>
           <button className={footerStyle.saveButton} onClick={setNavigate}>
-            NEXT STEP <FaArrowRightLong />
+            Next Step<FaArrowRightLong />
           </button>
         </div>
       )}

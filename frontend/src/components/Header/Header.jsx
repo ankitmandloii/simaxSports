@@ -25,21 +25,21 @@ const Header = () => {
             to="/design/product"
             className={`${style.step} ${designRoutes.includes(location.pathname) ? style.stepActive : ''}`}
           >
-            <span className={style.navSpanNumber}>1</span> DESIGN
+            <span className={style.navSpanNumber}>1</span> Design
           </Link>
 
           <Link
             to="/design/quantity"
             className={`${style.step} ${location.pathname === '/design/quantity' ? style.stepActive : ''}`}
           >
-            <span className={style.navSpanNumber}>2</span> QUANTITY & SIZES
+            <span className={style.navSpanNumber}>2</span> Quantity & Sizes
           </Link>
 
           <Link
             to="/review"
             className={`${style.step} ${location.pathname === '/review' ? style.stepActive : ''}`}
           >
-            <span className={style.navSpanNumber}>3</span> REVIEW
+            <span className={style.navSpanNumber}>3</span> Review
           </Link>
         </nav>
       </div>
@@ -80,7 +80,7 @@ const Header = () => {
                   className={`${style.step} ${currentPath === '/review' ? style.stepActive : ''}`}
                 >
                   <span className={style.navSpanNumber}>3</span>
-                  <span className={style.navSpanHeading}>REVIEW</span>
+                  <span className={style.navSpanHeading}>Review</span>
                 </Link>
               }
             </div>
