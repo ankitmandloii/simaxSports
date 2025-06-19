@@ -110,7 +110,7 @@ const MainDesignTool = ({
 
     if (!boundaryBox || !warningText) return;
 
-    const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text" );
+    const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text");
 
     textObjects.forEach((obj) => obj.setCoords());
 
@@ -207,14 +207,16 @@ const MainDesignTool = ({
     }),
     bringToFrontControl: new fabric.Control({
       x: -0.5,
-      y: 0.6,
-      offsetX: -16,
-      offsetY: 10,
+      y: 0.5,
+      offsetX: -16,  // move a little left
+      offsetY: 16,   // move a little down
+      actionName: "layer",
       cursorStyle: "pointer",
       mouseUpHandler: bringPopup,
-      render: renderIcon("layer"), // use appropriate icon
+      render: renderIcon("layer"),
       cornerSize: 20,
     }),
+
     increaseHeight: new fabric.Control({
       x: 0,
       y: -0.5,
@@ -632,7 +634,7 @@ const MainDesignTool = ({
     canvas.add(warningText);
 
     function updateBoundaryVisibility() {
-      const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text" );
+      const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text");
       textObjects.forEach((obj) => obj.setCoords());
 
       const allInside = textObjects.every((obj) => {
@@ -880,6 +882,7 @@ const MainDesignTool = ({
           canvas.renderAll();
         } else if (!existingObj) {
           const curved = new fabric.CurvedText(textInput.content, {
+            lockScalingFlip: true,
             id: textInput.id,
             fontWeight: textInput.fontWeight || "normal",
             fontStyle: textInput.fontStyle || "normal",
@@ -1205,7 +1208,7 @@ const MainDesignTool = ({
       selectable: true,
       fontFamily: fontFamily,
       hasBorders: false,
-      hasControls: false, 
+      hasControls: false,
       evented: true,
       isSync: true,
     });
@@ -1241,9 +1244,9 @@ const MainDesignTool = ({
       // originY: 'center',
       isDesignGroup: true,
       hasBorders: false,
-      
+
     });
-    
+
     group.setCoords();
     canvas.add(group);
     canvas.requestRenderAll();

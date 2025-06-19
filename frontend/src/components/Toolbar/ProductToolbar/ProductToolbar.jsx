@@ -300,240 +300,240 @@ const ProductToolbar = () => {
         </div>
 
         <div className={style.toolbarBox}>
-          {selectedProducts.map((product, index) => (
-            <div className={style.toolbarProductHead} key={index}>
-              <div className={style.toolbarHead}>
-                <div className={style.toolbarProductTitleHead}>
-                  <h4>{product?.name || product?.title}</h4>
-                  {(
-                    selectedProducts.length > 1
-                  ) && (
 
-                      <span
-                        className={style.crossProdICon}
-                        onClick={() => handleDeleteProduct(index)}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <CrossIcon />
-                      </span>
-                    )}
+        {selectedProducts.map((product, index) => (
+          <div className={style.toolbarProductHead} key={index}>
+            <div className={style.toolbarHead}>
+              <div className={style.toolbarProductTitleHead}>
+                <h4>{product?.name || product?.title}</h4>
+                {(
+                  selectedProducts.length > 1
+                ) && (
 
-                </div>
-
-                <div className={style.productToolbarImageWithBtn}>
-                  {[
-                    {
-                      img: product?.imgurl || product?.selectedImage,
-                      name: product?.selectedColor?.name || product?.name,
-                    },
-                    ...(product?.addedColors || []),
-                  ].map((color, i) => {
-                    const isHovered = hoveredThumbnail.productIndex === index && hoveredThumbnail.colorIndex === i;
-                    const imgSrc = isHovered ? hoveredThumbnail.color.img : color.img;
-
-                    return (
-                      <div
-                        key={i}
-                        className="mini-prod-img-container"
-                        onClick={() => {
-                          const clickedColor = i === 0 ? product.selectedColor : product.addedColors?.[i - 1];
-                          const updatedActiveProduct = {
-                            ...product,
-                            selectedColor: safeCloneColor(clickedColor, product.imgurl),
-                            imgurl: clickedColor?.img || product.imgurl,
-                          };
-                          dispatch(setActiveProduct(updatedActiveProduct));
-                          setTimeout(() => dispatch(setRendering()), 10);
-                          setActiveThumbnail((prev) =>
-                            prev.productIndex === index && prev.colorIndex === i
-                              ? { productIndex: null, colorIndex: null }
-                              : { productIndex: index, colorIndex: i }
-                          );
-                        }}
-                      >
-                        {activeThumbnail.productIndex === index && activeThumbnail.colorIndex === i && (
-                          <div className="style.thumbnail-actions">
-
-
-                            {!(
-                              selectedProducts.length === 1 &&
-                              (1 + (selectedProducts[index]?.addedColors?.length || 0)) === 1
-                            ) && (<span
-                              className={style.crossProdIConofSingleProduct}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteColorThumbnail(index, i);
-                              }}
-                            >
-                              <CrossIcon />
-                            </span>
-                              )}
-                            <button
-                              className={style.toolbarSpan}
-                              style={{ '--indicator-color': getHexFromName(color?.name) }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setColorChangeTarget({ productIndex: index, colorIndex: i, actionType: 'change' });
-                              }}
-                            >
-                              Change
-                            </button>
-
-                          </div>
-
-                        )}
-                        {
-                          colorChangeTarget.productIndex === index && colorChangeTarget.actionType === 'change' && colorChangeTarget.colorIndex === i && (
-                            <ProductAvailableColor
-                              actionType={colorChangeTarget.actionType}
-                              product={product}
-                              availableColors={getAvailableColorsForProduct(product)}
-                              onClose={() => setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null })}
-                              onAddColor={(productData, color) => {
-                                const updated = [...selectedProducts];
-                                const current = { ...updated[index] };
-                                const newColor = safeCloneColor(color);
-
-                                const allVariants = normalizeVariants(productData);
-                                const colorName = color.name.toLowerCase().trim();
-                                const sizeVariantPairs = allVariants
-                                  .filter(variant => {
-                                    const colorOpt = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'color');
-                                    return colorOpt?.value.toLowerCase().trim() === colorName;
-                                  })
-                                  .map(variant => {
-                                    const sizeOpt = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'size');
-                                    return sizeOpt?.value ? { size: sizeOpt.value, variantId: variant.id } : null;
-                                  })
-                                  .filter(Boolean);
-
-                                newColor.sizes = sizeVariantPairs;
-
-                                if (colorChangeTarget.colorIndex === 0) {
-                                  current.selectedColor = newColor;
-                                  current.imgurl = newColor.img;
-                                } else if (colorChangeTarget.colorIndex > 0) {
-                                  const newAddedColors = [...(current.addedColors || [])];
-                                  current.addedColors = [
-                                    ...newAddedColors.slice(0, colorChangeTarget.colorIndex - 1),
-                                    newColor,
-                                    ...newAddedColors.slice(colorChangeTarget.colorIndex),
-                                  ];
-                                } else {
-                                  const alreadyExists = current.addedColors?.some((c) => c.name === newColor.name);
-                                  if (!alreadyExists) {
-                                    current.addedColors = [...(current.addedColors || []), newColor];
-                                  }
-                                }
-
-                                updated[index] = current;
-                                dispatch(setSelectedProductsAction(updated));
-                                setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null });
-                              }}
-                              onHoverColor={(color) =>
-                                setHoveredThumbnail({ productIndex: index, colorIndex: colorChangeTarget.colorIndex, color })
-                              }
-                              onLeaveColor={() =>
-                                setHoveredThumbnail({ productIndex: null, colorIndex: null, color: null })
-                              }
-                            />
-                          )
-                        }
-                        <div className={style.imgThumbnaillContainer}>
-                          <img src={imgSrc} className="product-mini-img" alt={color.name} title={color.name} />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className={style.toolbarMiddleButton}>
-                  <button className="black-button" onClick={() => openChangeProductPopup(false, index)}>
-                    Change Product
-                  </button>
-
-                  <div className={style.addColorBtnMainContainer}>
-                    <div
-                      className={style.addCartButton}
-                      onClick={() => setColorChangeTarget({ productIndex: index, colorIndex: -1, actionType: 'addColor' })}
+                    <span
+                      className={style.crossProdICon}
+                      onClick={() => handleDeleteProduct(index)}
+                      style={{ cursor: 'pointer' }}
                     >
-                      <img src={colorwheel} alt="color wheel" className={style.colorImg} />
-                      <p>Add Color</p>
-                    </div>
+                      <CrossIcon />
+                    </span>
+                  )}
+
+              </div>
+
+              <div className={style.productToolbarImageWithBtn}>
+                {[
+                  {
+                    img: product?.imgurl || product?.selectedImage,
+                    name: product?.selectedColor?.name || product?.name,
+                  },
+                  ...(product?.addedColors || []),
+                ].map((color, i) => {
+                  const isHovered = hoveredThumbnail.productIndex === index && hoveredThumbnail.colorIndex === i;
+                  const imgSrc = isHovered ? hoveredThumbnail.color.img : color.img;
+
+                  return (
+                    <div
+                      key={i}
+                      className="mini-prod-img-container"
+                      onClick={() => {
+                        const clickedColor = i === 0 ? product.selectedColor : product.addedColors?.[i - 1];
+                        const updatedActiveProduct = {
+                          ...product,
+                          selectedColor: safeCloneColor(clickedColor, product.imgurl),
+                          imgurl: clickedColor?.img || product.imgurl,
+                        };
+                        dispatch(setActiveProduct(updatedActiveProduct));
+                        setTimeout(() => dispatch(setRendering()), 10);
+                        setActiveThumbnail((prev) =>
+                          prev.productIndex === index && prev.colorIndex === i
+                            ? { productIndex: null, colorIndex: null }
+                            : { productIndex: index, colorIndex: i }
+                        );
+                      }}
+                    >
+                      {activeThumbnail.productIndex === index && activeThumbnail.colorIndex === i && (
+                        <div className="style.thumbnail-actions">
 
 
-                    {
-                      colorChangeTarget.productIndex === index && colorChangeTarget.actionType === 'addColor' && (
-                        <ProductAvailableColor
-                          actionType={colorChangeTarget.actionType}
-                          product={product}
-                          availableColors={getAvailableColorsForProduct(product)}
-                          onClose={() => setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null })}
-                          onAddColor={(productData, color) => {
-                            const updated = [...selectedProducts];
-                            const current = { ...updated[index] };
-                            const newColor = safeCloneColor(color);
+                          {!(
+                            selectedProducts.length === 1 &&
+                            (1 + (selectedProducts[index]?.addedColors?.length || 0)) === 1
+                          ) && (<span
+                            className={style.crossProdIConofSingleProduct}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteColorThumbnail(index, i);
+                            }}
+                          >
+                            <CrossIcon />
+                          </span>
+                            )}
+                          <button
+                            className={style.toolbarSpan}
+                            style={{ '--indicator-color': getHexFromName(color?.name) }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setColorChangeTarget({ productIndex: index, colorIndex: i, actionType: 'change' });
+                            }}
+                          >
+                            Change
+                          </button>
 
-                            const allVariants = normalizeVariants(productData);
-                            const colorName = color.name.toLowerCase().trim();
-                            const sizeVariantPairs = allVariants
-                              .filter(variant => {
-                                const colorOpt = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'color');
-                                return colorOpt?.value.toLowerCase().trim() === colorName;
-                              })
-                              .map(variant => {
-                                const sizeOpt = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'size');
-                                return sizeOpt?.value ? { size: sizeOpt.value, variantId: variant.id } : null;
-                              })
-                              .filter(Boolean);
+                        </div>
 
-                            newColor.sizes = sizeVariantPairs;
+                      )}
+                      {
+                        colorChangeTarget.productIndex === index && colorChangeTarget.actionType === 'change' && colorChangeTarget.colorIndex === i && (
+                          <ProductAvailableColor
+                            actionType={colorChangeTarget.actionType}
+                            product={product}
+                            availableColors={getAvailableColorsForProduct(product)}
+                            onClose={() => setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null })}
+                            onAddColor={(productData, color) => {
+                              const updated = [...selectedProducts];
+                              const current = { ...updated[index] };
+                              const newColor = safeCloneColor(color);
 
-                            if (colorChangeTarget.colorIndex === 0) {
-                              current.selectedColor = newColor;
-                              current.imgurl = newColor.img;
-                            } else if (colorChangeTarget.colorIndex > 0) {
-                              const newAddedColors = [...(current.addedColors || [])];
-                              current.addedColors = [
-                                ...newAddedColors.slice(0, colorChangeTarget.colorIndex - 1),
-                                newColor,
-                                ...newAddedColors.slice(colorChangeTarget.colorIndex),
-                              ];
-                            } else {
-                              const alreadyExists = current.addedColors?.some((c) => c.name === newColor.name);
-                              if (!alreadyExists) {
-                                current.addedColors = [...(current.addedColors || []), newColor];
+                              const allVariants = normalizeVariants(productData);
+                              const colorName = color.name.toLowerCase().trim();
+                              const sizeVariantPairs = allVariants
+                                .filter(variant => {
+                                  const colorOpt = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'color');
+                                  return colorOpt?.value.toLowerCase().trim() === colorName;
+                                })
+                                .map(variant => {
+                                  const sizeOpt = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'size');
+                                  return sizeOpt?.value ? { size: sizeOpt.value, variantId: variant.id } : null;
+                                })
+                                .filter(Boolean);
+
+                              newColor.sizes = sizeVariantPairs;
+
+                              if (colorChangeTarget.colorIndex === 0) {
+                                current.selectedColor = newColor;
+                                current.imgurl = newColor.img;
+                              } else if (colorChangeTarget.colorIndex > 0) {
+                                const newAddedColors = [...(current.addedColors || [])];
+                                current.addedColors = [
+                                  ...newAddedColors.slice(0, colorChangeTarget.colorIndex - 1),
+                                  newColor,
+                                  ...newAddedColors.slice(colorChangeTarget.colorIndex),
+                                ];
+                              } else {
+                                const alreadyExists = current.addedColors?.some((c) => c.name === newColor.name);
+                                if (!alreadyExists) {
+                                  current.addedColors = [...(current.addedColors || []), newColor];
+                                }
                               }
+
+                              updated[index] = current;
+                              dispatch(setSelectedProductsAction(updated));
+                              setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null });
+                            }}
+                            onHoverColor={(color) =>
+                              setHoveredThumbnail({ productIndex: index, colorIndex: colorChangeTarget.colorIndex, color })
                             }
+                            onLeaveColor={() =>
+                              setHoveredThumbnail({ productIndex: null, colorIndex: null, color: null })
+                            }
+                          />
+                        )
+                      }
+                      <div className={style.imgThumbnaillContainer}>
+                        <img src={imgSrc} className="product-mini-img" alt={color.name} title={color.name} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
 
-                            updated[index] = current;
-                            dispatch(setSelectedProductsAction(updated));
-                            setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null });
-                          }}
-                          onHoverColor={(color) =>
-                            setHoveredThumbnail({ productIndex: index, colorIndex: colorChangeTarget.colorIndex, color })
-                          }
-                          onLeaveColor={() =>
-                            setHoveredThumbnail({ productIndex: null, colorIndex: null, color: null })
-                          }
-                        />
-                      )
-                    }
+              <div className={style.toolbarMiddleButton}>
+                <button className="black-button" onClick={() => openChangeProductPopup(false, index)}>
+                  Change Product
+                </button>
 
-
+                <div className={style.addColorBtnMainContainer}>
+                  <div
+                    className={style.addCartButton}
+                    onClick={() => setColorChangeTarget({ productIndex: index, colorIndex: -1, actionType: 'addColor' })}
+                  >
+                    <img src={colorwheel} alt="color wheel" className={style.colorImg} />
+                    <p>Add Color</p>
                   </div>
+
+
+                  {
+                    colorChangeTarget.productIndex === index && colorChangeTarget.actionType === 'addColor' && (
+                      <ProductAvailableColor
+                        actionType={colorChangeTarget.actionType}
+                        product={product}
+                        availableColors={getAvailableColorsForProduct(product)}
+                        onClose={() => setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null })}
+                        onAddColor={(productData, color) => {
+                          const updated = [...selectedProducts];
+                          const current = { ...updated[index] };
+                          const newColor = safeCloneColor(color);
+
+                          const allVariants = normalizeVariants(productData);
+                          const colorName = color.name.toLowerCase().trim();
+                          const sizeVariantPairs = allVariants
+                            .filter(variant => {
+                              const colorOpt = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'color');
+                              return colorOpt?.value.toLowerCase().trim() === colorName;
+                            })
+                            .map(variant => {
+                              const sizeOpt = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'size');
+                              return sizeOpt?.value ? { size: sizeOpt.value, variantId: variant.id } : null;
+                            })
+                            .filter(Boolean);
+
+                          newColor.sizes = sizeVariantPairs;
+
+                          if (colorChangeTarget.colorIndex === 0) {
+                            current.selectedColor = newColor;
+                            current.imgurl = newColor.img;
+                          } else if (colorChangeTarget.colorIndex > 0) {
+                            const newAddedColors = [...(current.addedColors || [])];
+                            current.addedColors = [
+                              ...newAddedColors.slice(0, colorChangeTarget.colorIndex - 1),
+                              newColor,
+                              ...newAddedColors.slice(colorChangeTarget.colorIndex),
+                            ];
+                          } else {
+                            const alreadyExists = current.addedColors?.some((c) => c.name === newColor.name);
+                            if (!alreadyExists) {
+                              current.addedColors = [...(current.addedColors || []), newColor];
+                            }
+                          }
+
+                          updated[index] = current;
+                          dispatch(setSelectedProductsAction(updated));
+                          setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null });
+                        }}
+                        onHoverColor={(color) =>
+                          setHoveredThumbnail({ productIndex: index, colorIndex: colorChangeTarget.colorIndex, color })
+                        }
+                        onLeaveColor={() =>
+                          setHoveredThumbnail({ productIndex: null, colorIndex: null, color: null })
+                        }
+                      />
+                    )
+                  }
+
+
                 </div>
               </div>
             </div>
+          </div>
 
-          ))}
-
-          <button className={style.addProductBtn} onClick={addProductPopup}>
-            <IoAdd /> Add Products
-          </button>
-
-          <p className="center">Customize Method Example</p>
+        ))}
+        <button className={style.addProductBtn} onClick={addProductPopup}>
+          <IoAdd /> Add Products
+        </button>
         </div>
+
+          {/* <p className="center">Customize Method Example</p> */}
 
         {changeProductPopup && (
           <ChangePopup

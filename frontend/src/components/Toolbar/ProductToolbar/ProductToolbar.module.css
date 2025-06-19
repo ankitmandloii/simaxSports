@@ -1,12 +1,7 @@
-/* .toolbar-main-heading h3 {
-  font-size: 1rem;
-  font-weight: 700;
 
-} */
 .productToolbar {
   position: relative;
   overflow-y: auto;
-  /* overflow-x: visible !important; */
 }
 
 .product-mini-img {
@@ -33,13 +28,7 @@
   gap: 12px
 }
 
-/* .toolbar-main-heading .Toolbar-badge {
-  background-color: red;
-  color: white;
-  width: fit-content;
- 
 
-} */
 .addCartButton {
   cursor: pointer;
 }
@@ -54,44 +43,12 @@
   flex-wrap: wrap;
 }
 
-/* .small-color-span{
-  display: inline-block;
-  height: 20px;
-  width: 20px;
-  background-color: red;
-} */
-.toolbarBox {
-  background-color: #ffffff;
-  padding: 5px 5px;
-  margin-top: 15px;
-  border-radius: 10px;
-
-  /* height: 28.56rem; */
-  /* width: 24.69rem; */
-  /* height: 25rem;
-    width: 20.69rem; */
-
-}
 
 .addColorBtnMainContainer {
   position: relative;
 }
 
-/*  */
 
-/* .toolbar-head h3 {
-  font-size: 12.5px;
-  font-weight: 500;
-} */
-
-/* .toolbar-main-heading p {
-  font-size: small;
-} */
-
-/* .product-mini-img {
-  height: 2.4rem;
-
-} */
 .imgThumbnaillContainer {
   height: 4rem;
 }
@@ -100,10 +57,6 @@
   height: auto;
   width: 100%;
 }
-
-/* .mini-prod-img-container img {
-  height: 3rem;
-} */
 
 
 
@@ -156,14 +109,6 @@
   cursor: pointer;
 }
 
-/* Width
-355px
-Height
-59.98px
-Radius
-8px
-Border
-2px */
 .center {
   text-align: center;
 }
@@ -314,44 +259,22 @@ Border
   border: 1px solid #ccc;
 }
 
-/* 
-.thumbnail-actions {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  right: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-end;
-  z-index: 2;
-} */
+
 .relative {
   position: relative;
 }
 
-.toolbarBox {
-  /* width: 22rem; */
-  /* height: 22rem; */
-  height: 500px;
-  padding: 10px 15px;
-  /* overflow-y: auto; */
 
-  /* margin-top: 15px; */
-  border-radius: 10px;
-
-
-}
 
 .toolbarMainContainer {
-  overflow: visible;
+  overflow-y: auto;
   width: 100%;
   background: #fff;
-  max-height: 680px;
+  /* max-height: 680px; */
   min-width: 400px;
   /* height: 100%  ; */
   border-radius: 0px 20px 20px 0px;
-  padding-inline: 30px;
+  padding-inline: 15px;
   padding-top: 26.87px;
 }
 

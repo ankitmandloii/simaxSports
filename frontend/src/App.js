@@ -311,7 +311,7 @@ function App() {
             className={`main-layout-container ${isQuantityPage ? "quantity-page" : ""
               }`}
           >
-            {rawProducts.length === 0 ? (
+            {/* {rawProducts.length === 0 ? (
               <>
                 <div
                   className="fullscreen-loader"
@@ -322,7 +322,7 @@ function App() {
               </>
             ) : (
               <></>
-            )}
+            )} */}
             {/* <Routes>
               <Route path="/design" element={<Layout />}>
                 <Route index element={<ProductToolbar />} />

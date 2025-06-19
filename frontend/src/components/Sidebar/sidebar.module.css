@@ -1,8 +1,8 @@
 .sidebarWrapper {
   display: flex;
   position: relative;
-  max-height: 680px;
-  height: 680px;
+  /* max-height: 680px; */
+  height: 90vh;
 }
 
 .sidebarToggleBtn {
