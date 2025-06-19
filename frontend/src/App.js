@@ -4,9 +4,7 @@ import Review from "./pages/Review/Review";
 import ProductToolbar from "./components/Toolbar/ProductToolbar/ProductToolbar";
 import ProductContainer from "./components/ProductContainer";
 import AddTextToolbar from "./components/Toolbar/AddTextToolbar/AddTextToolbar";
-import Header from "./components/Header/Header";
 import "./App.css";
-import Footer from "./components/Footer/Footer";
 import UploadArtToolbar from "./components/Toolbar/UploadArtToolbar/UploadArtToolbar";
 import AddArtToolbar from "./components/Toolbar/AddArtToolbar/AddArtToolbar";
 import NamesToolbar from "./components/Toolbar/NamesToolbar/NamesToolbar";
@@ -20,7 +18,7 @@ import { fetchProducts } from "./redux/ProductSlice/ProductSlice";
 import BottomBar from "./components/bottomBar/BottomBar";
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import LoadingScreen from "./components/loadingComponent/LoadingScreen";
-
+import NotFound from "./pages/NotFound/NotFound";
 
 
 function App() {
@@ -32,7 +30,7 @@ function App() {
   const [continueEditPopup, setContinueEditPopup] = useState(false);
   const [willRenderContinue, setWillRenderContinue] = useState(false);
 
-  const isQuantityPage = location.pathname === "/design/quantity";
+  const isQuantityPage = location.pathname === "/quantity";
   const reduxState = useSelector((state) => state);
   const { list: rawProducts } = useSelector((state) => state.products);
 
@@ -265,9 +263,9 @@ function App() {
 
   // Fetch product list on mount
   useEffect(() => {
-     setTimeout(() => {
-       dispatch (fetchProducts());
-     }, 5000);
+    setTimeout(() => {
+      dispatch(fetchProducts());
+    }, 5000);
   }, [dispatch]);
 
   // Check if saved state should trigger continue edit popup
@@ -304,12 +302,10 @@ function App() {
     }
   }, [location.pathname, navigate]);
 
-
   return (
     <>
       <div className="app-main-container">
         <div className="main-inner-container">
-          <Header />
 
           <div
             className={`main-layout-container ${isQuantityPage ? "quantity-page" : ""
@@ -321,13 +317,13 @@ function App() {
                   className="fullscreen-loader"
                   style={{ flexDirection: "column" }}
                 >
-                  <LoadingScreen/>
+                  <LoadingScreen />
                 </div>
               </>
             ) : (
               <></>
             )}
-            <Routes>
+            {/* <Routes>
               <Route path="/design" element={<Layout />}>
                 <Route index element={<ProductToolbar />} />
                 <Route path="product" element={<ProductToolbar />} />
@@ -338,11 +334,41 @@ function App() {
                 <Route path="addArt" element={<AddArtToolbar />} />
                 <Route path="addNames" element={<NamesToolbar />} />
                 <Route path="quantity" element={<QuantityToolbar />} />
+                <Route path="/review" element={<Review />} />
+
               </Route>
-              <Route path="/review" element={<Review />} />
+              <Route path="*" element={<NotFound />} />
+
+            </Routes> */}
+            <Routes>
+              {/* Layout wraps all valid pages including /design and /review */}
+              <Route path="/" element={<Layout />}>
+                {/* /design pages */}
+                <Route path="design">
+                  <Route index element={<ProductToolbar />} />
+                  <Route path="product" element={<ProductToolbar />} />
+                  <Route path="addText" element={<AddTextToolbar />} />
+                  <Route path="addImage" element={<AddImageToolbar />} />
+                  <Route path="products" element={<ProductContainer />} />
+                  <Route path="uploadArt" element={<UploadArtToolbar />} />
+                  <Route path="addArt" element={<AddArtToolbar />} />
+                  <Route path="addNames" element={<NamesToolbar />} />
+
+                  {/* Catch invalid nested routes in /design */}
+                  {/* <Route path="*" element={<NotFound />} /> */}
+                </Route>
+                <Route path="quantity" element={<QuantityToolbar />} />
+
+                {/* /review page with Layout (not nested under /design) */}
+                <Route path="review" element={<Review />} />
+
+                {/* Catch any other invalid top-level routes */}
+
+              </Route>
+              <Route path="*" element={<NotFound />} />
             </Routes>
 
-            <Footer />
+
           </div>
         </div>
 

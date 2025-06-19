@@ -2,35 +2,41 @@ import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import AdminSidebar from './Sidebar/sidebar';
 import ProductContainer from './ProductContainer';
-
+import Header from '../components/Header/Header.jsx'
+import Footer from '../components/Footer/Footer.jsx'
 import { useMediaQuery } from 'react-responsive'
 
 const Layout = () => {
   // const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1023px)' })
   const isDesktopOrLaptop = useMediaQuery({ query: '(min-width: 1200px)' })
   const location = useLocation();
-  const isQuantityPage = location.pathname === "/design/quantity";
+  const isQuantityPage = location.pathname === "/quantity";
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1199px)' });
   // const isProductPage = location.pathname === "/product";
 
 
 
   return (
+    <>
+      <Header />
 
-    <div className="layout-main-container">
+      <div className="layout-main-container">
 
-      <div className="layout-container">
+        <div className="layout-container">
 
-        <div className="page-content">
-          {isDesktopOrLaptop && <div className="layout-toolbar">
-            {!isQuantityPage && <AdminSidebar />}
-            <Outlet />
-          </div>}
-          {(isTabletOrMobile && isQuantityPage) && <Outlet />}
-          {!(isTabletOrMobile && isQuantityPage) && <ProductContainer />}
+          <div className="page-content">
+            {isDesktopOrLaptop && <div className="layout-toolbar">
+              {!isQuantityPage && <AdminSidebar />}
+              <Outlet />
+            </div>}
+            {(isTabletOrMobile && isQuantityPage) && <Outlet />}
+            {!(isTabletOrMobile && isQuantityPage) && <ProductContainer />}
+          </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
+
   );
 };
 

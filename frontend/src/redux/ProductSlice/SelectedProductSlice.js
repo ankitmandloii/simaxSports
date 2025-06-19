@@ -25,6 +25,8 @@ const selectedProductSlice = createSlice({
     setActiveProduct(state, action) {
       state.activeProduct = action.payload;
     },
+    // In your reducer (SelectedProductSlice)
+
     // setActiveProduct(state, action) {
     //   const { product, productIndex, colorIndex } = action.payload;
     //   state.activeProduct = product;

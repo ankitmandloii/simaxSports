@@ -29,8 +29,8 @@ const Header = () => {
           </Link>
 
           <Link
-            to="/design/quantity"
-            className={`${style.step} ${location.pathname === '/design/quantity' ? style.stepActive : ''}`}
+            to="/quantity"
+            className={`${style.step} ${location.pathname === '/quantity' ? style.stepActive : ''}`}
           >
             <span className={style.navSpanNumber}>2</span> Quantity & Sizes
           </Link>
@@ -66,9 +66,9 @@ const Header = () => {
                 </Link>
               )}
 
-              {currentPath == "/design/quantity" && <Link
-                to={`/design/quantity`}
-                className={`${style.step} ${currentPath === '/design/quantity' ? style.stepActive : ''}`}
+              {currentPath == "/quantity" && <Link
+                to={`/quantity`}
+                className={`${style.step} ${currentPath === '/quantity' ? style.stepActive : ''}`}
               >
                 <span className={style.navSpanNumber}>2</span>
                 <span className={style.navSpanHeading}>QUANTITY & SIZES</span>
