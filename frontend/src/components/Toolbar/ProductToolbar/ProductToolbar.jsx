@@ -171,9 +171,9 @@ const ProductToolbar = () => {
   // };
 
 
-  const getNextActiveProduct = (products, targetIndex) => {
+  const getNextActiveProduct = (products, targetIndex, colorIndex) => {
     if (products.length === 0) return null;
-
+    console.log("data.............", products, targetIndex, colorIndex);
     const safeIndex = Math.min(targetIndex, products.length - 1);
     const current = products[safeIndex];
 
@@ -182,10 +182,21 @@ const ProductToolbar = () => {
       ? addedColors[0]
       : current.selectedColor;
 
+    const isMainColor = colorIndex === 0;
+    console.log("color index", colorIndex);
+    const clickedColor = isMainColor
+      ? addedColors[0]
+      : addedColors[colorIndex - 2] || addedColors[colorIndex] || null;
+
+    // const updatedActiveProduct = {
+    //   ...product,
+    //   selectedColor: safeCloneColor(clickedColor, product.imgurl),
+    //   imgurl: clickedColor?.img || product.imgurl,
+    // };
     return {
       ...current,
-      selectedColor: safeCloneColor(nextColor, current.imgurl),
-      imgurl: nextColor?.img || current.imgurl,
+      selectedColor: safeCloneColor(clickedColor, current.imgurl),
+      imgurl: clickedColor?.img || current.imgurl,
     };
   };
 
@@ -224,7 +235,7 @@ const ProductToolbar = () => {
 
 
 
-    const newActiveProduct = getNextActiveProduct(updated, productIndex);
+    const newActiveProduct = getNextActiveProduct(updated, productIndex, colorIndex);
 
     // Set the new active product
     if (newActiveProduct) {
