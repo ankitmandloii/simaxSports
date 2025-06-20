@@ -5,6 +5,7 @@ import icons from "../data/icons";
 // import { TbArrowBack } from "react-icons/tb";
 // import { VscZoomIn } from "react-icons/vsc";
 import style from "./MainDesignTool.module.css";
+import FontFaceObserver from 'fontfaceobserver';
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteTextState,
@@ -1120,6 +1121,14 @@ const MainDesignTool = ({
   //   canvas.renderAll();
   // }, [isRender,addName, addNumber, nameAndNumberDesignState,  ]);
 
+
+  const loadFont = (fontName) => {
+  return new Promise((resolve) => {
+    const font = new FontFaceObserver(fontName);
+    font.load().then(resolve).catch(resolve); // ignore error to avoid blocking
+  });
+};
+
   const renderNameAndNumber = () => {
     const canvas = fabricCanvasRef.current;
     if (!canvas || !nameAndNumberDesignState) {
@@ -1236,7 +1245,7 @@ const MainDesignTool = ({
       width: fontSize === "small" ? 60 : 190,
       left: position?.x || canvas.getWidth() / 2,
       top: position?.y || canvas.getHeight() / 2,
-      fontFamily: fontFamily || "Chakra Petch",
+     
       // originX: 'center',
       // originY: 'center',
       isDesignGroup: true,
@@ -1251,10 +1260,16 @@ const MainDesignTool = ({
   }
 
 
-  useEffect(() => {
+useEffect(() => {
+  const loadAndRender = async () => {
+    if (nameAndNumberDesignState?.fontFamily) {
+      await loadFont(nameAndNumberDesignState.fontFamily);
+    }
     renderNameAndNumber();
-  }, [isRender, addName, addNumber, nameAndNumberDesignState, activeSide]);
+  };
 
+ loadAndRender();
+}, [isRender, addName, addNumber, nameAndNumberDesignState, activeSide]);
   // useEffect(() => {
 
   // const getImageFromCanvas = (fabricCanvas) => {
