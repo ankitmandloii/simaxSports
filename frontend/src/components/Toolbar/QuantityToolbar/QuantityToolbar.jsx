@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import miniProd from '../../images/mini-prod.png';
 import style from './QuantityToolbar.module.css';
 import { FaChevronDown, FaChevronRight } from "react-icons/fa";
+import { useSelector } from 'react-redux';
 
 const adultSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"];
 const womenSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
 
 const QuantityToolbar = () => {
+  const frontImage = useSelector(state => state?.selectedProducts?.activeProduct?.imgurl);
   const [quantities, setQuantities] = useState({});
   const [licenses, setLicenses] = useState({
     collegiate: false,
@@ -44,7 +46,7 @@ const QuantityToolbar = () => {
                 {isExpanded ? <FaChevronDown /> : <FaChevronRight />}
               </div>
               <div className={style.miniProdImgContainer}>
-                <img src={miniProd} className={style.productMiniImg} alt='product' />
+                {frontImage ? <img src={frontImage} className={style.productMiniImg} alt='product' /> : <img src={miniProd} className={style.productMiniImg} alt='product' />}
               </div>
               <div>
                 <h4>Essential Red T-Shirt for Men & Women</h4>

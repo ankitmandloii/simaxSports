@@ -10,7 +10,7 @@ import SleeveDesignPopup from './PopupComponent/addSleeveDesign/addSleeveDesingP
 import { getHexFromName } from './utils/colorUtils';
 import { fetchProducts } from '../redux/ProductSlice/ProductSlice';
 import { setActiveProduct, setSelectedProducts } from '../redux/ProductSlice/SelectedProductSlice';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import style from './ProductContainer.module.css'
 import RedoundoComponent from './RedoundoComponent/redoundo';
 import ViewControlButtons from './controls/ViewControlButtons';
@@ -20,7 +20,7 @@ function ProductContainer() {
   const BackImgRef = useRef(null);
   const LeftImgRef = useRef(null);
   const RightImgRef = useRef(null);
-
+  const location = useLocation();
   const dispatch = useDispatch();
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
@@ -73,6 +73,7 @@ function ProductContainer() {
 
   const [OpenSleeveDesignUPopup, setOpenSleeveDesignUPopup] = useState(false);
   const [addSleeves, setAddSleeves] = useState(false);
+  const isDesignProduct = location.pathname === '/design/product';
 
   const toggleZoom = () => {
     if (isZoomedIn) {
@@ -229,7 +230,7 @@ function ProductContainer() {
     <div className={style.ProductContainerMainDiv}>
       <div className={style.flex}>
         <div className={style.controllContainer}>
-          <RedoundoComponent />
+          {!isDesignProduct && <RedoundoComponent />}
           <ViewControlButtons
             ShowBack={ShowBack}
             ShowFront={ShowFront}

@@ -1,7 +1,6 @@
-.colorPopupContainerSpanBox {
+/* .colorPopupContainerSpanBox {
   position: absolute;
   top: 50%;
-  /* right: 2%; */
   background: #fff;
   padding: 20px;
   border-radius: 10px;
@@ -10,7 +9,21 @@
   width: 16rem;
   margin: auto;
   z-index: 200;
+} */
+.colorPopupContainerSpanBox {
+  position: absolute;
+  top: 50%;
+  /* right: 2%; */
+  background: #fff;
+  padding: 5px;
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 10rem;
+  margin: auto;
+  z-index: 200;
 }
+
 
 .colorOptionsGrid {
   display: flex;

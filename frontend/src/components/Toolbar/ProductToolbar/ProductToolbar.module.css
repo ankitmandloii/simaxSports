@@ -1,7 +1,6 @@
-
 .productToolbar {
   position: relative;
-  overflow-y: auto;
+  /* overflow-y: auto; */
 }
 
 .product-mini-img {

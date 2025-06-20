@@ -33,12 +33,13 @@ const ProductAvailableColor = ({
   return (
     <div className="color-popup-overlay"> {/* Add a dimmed background if needed */}
       <div className={style.colorPopupContainerSpanBox} ref={popupRef} style={{
-        ...(actionType === 'change' ? { left: '0' } : { right: '0' })
+        ...(actionType === 'change' ? { left: '-30%' } : { right: '0' })
       }}>
         <span onClick={onClose} className={style.crossProdIConn}>
           <CrossIcon />
         </span>
-        <p>Select a Color for {product.name || product.title}</p>
+        {/* <p>Select a Color for {product.name || product.title}</p> */}
+        <p>Select a Color</p>
         {colorsToShow.length > 0 ? (
           <div className={style.colorOptionsGrid}>
             {colorsToShow.map((color, idx) => (
