@@ -24,7 +24,8 @@ const UploadArtToolbar = () => {
   const handleFiles = (files) => {
     if (files.length > 0) {
       const file = files[0];
-      const src = URL.createObjectURL(file);
+      // const src = URL.createObjectURL(file);
+      const src = "https://simaxdesigns.imgix.net/uploads/1750424103581_test1Image.jpg";
       dispatch(addImageState({ src }));
 
       setIsLoading(true);

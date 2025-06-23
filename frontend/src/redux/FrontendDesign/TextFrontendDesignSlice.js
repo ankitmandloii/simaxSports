@@ -268,25 +268,34 @@ const createNewText = ({ value, id }, length) => ({
   layerIndex: length,
 });
 
-
-const createNewImage = ({ id, src }, length) => ({
-  id: id,
-  src,
+const createNewImage = (
+  { src},
+  length
+) => ({
+  id: nanoid(),
+   src:src,
   scaleX: 1,
   scaleY: 1,
-  originalScaleX: 1,
-  originalScaleY: 1,
   rotate: 0,
   flipX: false,
   flipY: false,
   width: 150,
   height: 150,
   position: { x: 280, y: 200 },
+  scaledValue: 1,
+  rotate: 0,
   locked: false,
   layerIndex: length,
+  // Ai Operation
+  remomveBg: false,
+  cropAndTrim: false,
+  superResolution: false,
+  cropAndTrimParamValue:
+    "fit=crop&crop=entropy&trim=color&w=400&h=400&dpr=2&quality=100&format=webp",
+  superResolutionParamValue:
+    "?auto=enhance&dpr=2&quality=100&format=webp&upscale=true",
+  removeBgParamValue: "?remove-bg=true&dpr=2&quality=100&format=webp",
 });
-
-
 
 const initialState = {
   activeSide: "front",
@@ -299,6 +308,7 @@ const initialState = {
   present: {
     front: {
       selectedTextId: null,
+      selectedImageId: null,
       texts: [],
       images: [],
       setRendering: false,
@@ -321,6 +331,7 @@ const initialState = {
     },
     back: {
       selectedTextId: null,
+      selectedImageId: null,
       texts: [],
       images: [],
       setRendering: false,
@@ -335,7 +346,6 @@ const initialState = {
         fontSize: "small",
         position: { x: 280, y: 200 },
       },
-
       // 🆕 Product list for Name & Number (back)
       nameAndNumberProductList: [
         // productId: [{ colorVariant, size, name, number }]
@@ -343,11 +353,13 @@ const initialState = {
     },
     leftSleeve: {
       selectedTextId: null,
+      selectedImageId: null,
       texts: [],
       setRendering: false,
     },
     rightSleeve: {
       selectedTextId: null,
+      selectedImageId: null,
       texts: [],
       setRendering: false,
     },
@@ -516,7 +528,6 @@ const TextFrontendDesignSlice = createSlice({
     },
     toggleSleeveDesign: (state) => {
       state.sleeveDesign = !state.sleeveDesign;
-
     },
 
     // Reset canvas state for all sides
@@ -525,7 +536,9 @@ const TextFrontendDesignSlice = createSlice({
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       state.present = {
         front: {
-          selectedTextId: null, texts: [], nameAndNumberDesignState: {
+          selectedTextId: null,
+          texts: [],
+          nameAndNumberDesignState: {
             id: "front",
             name: "NAME",
             number: "00",
@@ -533,10 +546,13 @@ const TextFrontendDesignSlice = createSlice({
             fontFamily: "Oswald",
             fontSize: "small",
             position: { x: 325, y: 300 },
-          }, setRendering: false
+          },
+          setRendering: false,
         },
         back: {
-          selectedTextId: null, texts: [], nameAndNumberDesignState: {
+          selectedTextId: null,
+          texts: [],
+          nameAndNumberDesignState: {
             id: "front",
             name: "NAME",
             number: "00",
@@ -544,11 +560,11 @@ const TextFrontendDesignSlice = createSlice({
             fontFamily: "Oswald",
             fontSize: "small",
             position: { x: 325, y: 300 },
-          }, setRendering: false
+          },
+          setRendering: false,
         },
         leftSleeve: { selectedTextId: null, texts: [], setRendering: false },
         rightSleeve: { selectedTextId: null, texts: [], setRendering: false },
-
       };
       state.future = {
         front: [],
@@ -671,19 +687,26 @@ const TextFrontendDesignSlice = createSlice({
       ].nameAndNumberProductList.filter((product) => product.id !== id);
     },
 
-
-
     addImageState: (state, action) => {
-      const { src, id, side = state.activeSide } = action.payload;
+      const { src, id = nanoid(), side = state.activeSide } = action.payload;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      const newImage = createNewImage({ src, id }, state.present[side].images.length);
+      const newImage = createNewImage(
+        { src },
+        state.present[side].images.length
+      );
+      state.present[side].selectedImageId = newImage.id;
       state.present[side].images.push(newImage);
       state.future[side] = [];
       state.present[side].setRendering = !state.present[side].setRendering;
     },
 
     updateImageState: (state, action) => {
-      const { id, changes, side = state.activeSide, isRenderOrNot } = action.payload;
+      const {
+        id,
+        changes,
+        side = state.activeSide,
+        isRenderOrNot,
+      } = action.payload;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       const image = state.present[side].images.find((img) => img.id === id);
       if (image && !image.locked) Object.assign(image, changes);
@@ -705,13 +728,23 @@ const TextFrontendDesignSlice = createSlice({
     restoreDesignFromSavedState(state, action) {
       return { ...state, ...action.payload };
     },
+    selectedImageIdState: (state, action) => {
+      const { side = state.activeSide, id } = action.payload;
+      state.present[side].selectedImageId = id;
+      state.present[side].setRendering = !state.present[side].setRendering;
+    },
+
     copyTextToSide: (state, action) => {
       const { fromSide, toSide, textId } = action.payload;
-      const textToCopy = state.present[fromSide].texts.find(t => t.id === textId);
+      const textToCopy = state.present[fromSide].texts.find(
+        (t) => t.id === textId
+      );
 
       if (!textToCopy) return;
 
-      state.past[toSide].push(JSON.parse(JSON.stringify(state.present[toSide])));
+      state.past[toSide].push(
+        JSON.parse(JSON.stringify(state.present[toSide]))
+      );
 
       const newText = {
         ...JSON.parse(JSON.stringify(textToCopy)),
@@ -728,8 +761,6 @@ const TextFrontendDesignSlice = createSlice({
       state.present[toSide].setRendering = !state.present[toSide].setRendering;
       state.future[toSide] = [];
     },
-
-
   },
 });
 
@@ -759,7 +790,8 @@ export const {
   deleteImageState,
   restoreDesignFromSavedState,
   toggleSleeveDesign,
-  copyTextToSide
+  copyTextToSide,
+  selectedImageIdState
 } = TextFrontendDesignSlice.actions;
 
 // ✅ Export Selectors

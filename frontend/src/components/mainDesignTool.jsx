@@ -11,6 +11,7 @@ import {
   deleteTextState,
   moveTextBackwardState,
   moveTextForwardState,
+  selectedImageIdState,
   setSelectedTextState,
   updateNameAndNumberDesignState,
   updateTextState,
@@ -41,13 +42,14 @@ const MainDesignTool = ({
   const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
 
 
-  // const image = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images[0]);
-  // const imgRef = useRef(null);
+  const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
 
-  // const [previewUrl, setPreviewUrl] = useState(null);
-  // console.log("image", image);
-  // console.log("imgRef", imgRef);
-  // console.log("previewUrl", previewUrl);
+  const imgRef = useRef(null);
+
+  const [previewUrl, setPreviewUrl] = useState(null);
+  console.log("imageContaintObject", imageContaintObject);
+  console.log("imgRef", imgRef);
+  console.log("previewUrl", previewUrl);
 
   // useEffect(() => {
   //   if (image?.src) {
@@ -55,7 +57,7 @@ const MainDesignTool = ({
   //   }
   // }, [image?.src]);
 
-  // const [lastTranform, setLastTranform] = useState(null);
+  const [lastTranform, setLastTranform] = useState(null);
   const textContaintObject = useSelector(
     (state) => state.TextFrontendDesignSlice.present[activeSide].texts
   );
@@ -360,7 +362,7 @@ const MainDesignTool = ({
 
 
   const syncMirrorCanvas = async (activeSide) => {
-
+    return;
 
     const getImageFromCanvas = async (fabricCanvas) => {
       if (!fabricCanvas) return null;
@@ -553,6 +555,7 @@ const MainDesignTool = ({
   //     }
 
   const checkBoundary = (e) => {
+    return;
     const obj = e.target;
     const canvas = fabricCanvasRef.current;
     const canvasWidth = canvas.getWidth();
@@ -798,6 +801,7 @@ const MainDesignTool = ({
     }
     renderCurveTextObjects();
     renderNameAndNumber(); //note : we have to call it for render object after canvas initialize
+    renderAllImageObjects();
     //want to do same for image 
 
     return () => {
@@ -987,46 +991,114 @@ const MainDesignTool = ({
 
   }, [activeSide, isRender, dispatch, id, textContaintObject]);
 
+const renderAllImageObjects = () => {
+  const canvas = fabricCanvasRef.current;
+  if (!canvas) return;
 
-  // useEffect(() => {
-  //   if (!previewUrl) return;
+  if (!imageContaintObject || imageContaintObject.length === 0) {
+    const existingImages = canvas.getObjects().filter((obj) => obj.type === "image");
+    existingImages.forEach((obj) => canvas.remove(obj));
+    return;
+  }
 
-  //   const canvas = fabricCanvasRef.current;
-  //   if (!canvas) return;
+  imageContaintObject.forEach((imageData) => {
+    const {
+      id,
+      src,
+      left = 300,
+      top = 300,
+      scaleX = 1,
+      scaleY = 1,
+      angle = 0,
+      flipX = false,
+      flipY = false,
+      locked = false,
+      layerIndex = 0,
+      customType = "main-image"
+    } = imageData;
 
-  //   // Remove old image (if needed)
-  //   const existingImg = canvas.getObjects().find(obj => obj.type === 'image');
-  //   if (existingImg) {
-  //     canvas.remove(existingImg);
-  //   }
+    const url = src;
+    const existingObj = canvas.getObjects().find((obj) => obj.id === id);
 
-  //   // Add new image
-  //   fabric.Image.fromURL(previewUrl, (img) => {
-  //     img.set({
-  //       left: 400,
-  //       top: 300,
-  //       scaleX: 0.5,
-  //       scaleY: 0.5,
-  //       objectCaching: false,
-  //       borderColor: "skyblue",
-  //       borderDashArray: [4, 4],
-  //       hasBorders: true,
-  //       isSync:true,
-  //       customType: "main-image", // use this to identify the image later
-  //     });
+    fabric.Image.fromURL(url, (img) => {
+      const maxWidth = 10;
+      const maxHeight = 10;
+          const scaleX = 300 / img.width;
+          const scaleY = 300 / img.height;
 
-  //     img.setControlsVisibility({
-  //       mt: false, mb: false, ml: false, mr: false,
-  //       tl: false, tr: false, bl: false, br: false, mtr: false,
-  //     });
 
-  //     img.controls = createControls(); // custom controls
-  //     canvas.add(img);
-  //     canvas.renderAll();
 
-  //     syncMirrorCanvas?.(); // if you have a sync function
-  //   });
-  // }, [previewUrl]); // 👈 Reacts to previewUrl change
+      img.set({
+        id,
+        left,
+        top,
+        angle,
+        scaleX: scaleX ,  
+        scaleY: scaleY ,
+        flipX,
+        flipY,
+        // width:100,
+        // height: 100,
+        lockMovementX: locked,
+        lockMovementY: locked,
+        originX: "center",
+        originY: "center",
+        objectCaching: false,
+        borderColor: "skyblue",
+        borderDashArray: [4, 4],
+        hasBorders: true,
+        hasControls: true,
+        selectable: true,
+        evented: true,
+        customType,
+        isSync: true,
+        layerIndex
+      });
+
+      img.setControlsVisibility({
+        mt: false, mb: false, ml: false, mr: false,
+        tl: false, tr: false, bl: false, br: false, mtr: false,
+      });
+
+      img.controls = createControls();
+
+      if (existingObj) {
+        canvas.remove(existingObj);
+      }
+
+      canvas.add(img);
+
+      img.on("mousedown", () => {
+        dispatch(selectedImageIdState(id));
+        navigate("/design/addImage", { state: imageData });
+      });
+
+      img.on("modified", (e) => {
+        const obj = e.target;
+        if (!obj) return;
+
+        const center = obj.getCenterPoint();
+        obj.setPositionByOrigin(center, 'center', 'center');
+        obj.setCoords();
+
+        globalDispatch("position", { x: obj.left, y: obj.top }, id);
+        globalDispatch("rotate", obj.angle, id);
+
+        canvas.renderAll();
+        syncMirrorCanvas(activeSide);
+      });
+
+      canvas.renderAll();
+    });
+  });
+
+  updateBoundaryVisibility?.();
+};
+
+
+  useEffect(() => {
+    renderAllImageObjects();
+  }, [imageContaintObject]); // 👈 Reacts to previewUrl change 
 
 
   //  *************************************************************  for rendering the name and number**********************************************************
@@ -1126,11 +1198,11 @@ const MainDesignTool = ({
 
 
   const loadFont = (fontName) => {
-  return new Promise((resolve) => {
-    const font = new FontFaceObserver(fontName);
-    font.load().then(resolve).catch(resolve); // ignore error to avoid blocking
-  });
-};
+    return new Promise((resolve) => {
+      const font = new FontFaceObserver(fontName);
+      font.load().then(resolve).catch(resolve); // ignore error to avoid blocking
+    });
+  };
 
   const renderNameAndNumber = () => {
     const canvas = fabricCanvasRef.current;
@@ -1248,7 +1320,7 @@ const MainDesignTool = ({
       width: fontSize === "small" ? 60 : 190,
       left: position?.x || canvas.getWidth() / 2,
       top: position?.y || canvas.getHeight() / 2,
-     
+
       // originX: 'center',
       // originY: 'center',
       isDesignGroup: true,
@@ -1263,16 +1335,16 @@ const MainDesignTool = ({
   }
 
 
-useEffect(() => {
-  const loadAndRender = async () => {
-    if (nameAndNumberDesignState?.fontFamily) {
-      await loadFont(nameAndNumberDesignState.fontFamily);
-    }
-    renderNameAndNumber();
-  };
+  useEffect(() => {
+    const loadAndRender = async () => {
+      if (nameAndNumberDesignState?.fontFamily) {
+        await loadFont(nameAndNumberDesignState.fontFamily);
+      }
+      renderNameAndNumber();
+    };
 
- loadAndRender();
-}, [isRender, addName, addNumber, nameAndNumberDesignState, activeSide]);
+    loadAndRender();
+  }, [isRender, addName, addNumber, nameAndNumberDesignState, activeSide]);
   // useEffect(() => {
 
   // const getImageFromCanvas = (fabricCanvas) => {
