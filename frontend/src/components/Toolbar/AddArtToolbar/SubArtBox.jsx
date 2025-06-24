@@ -11,7 +11,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
   const [unsplashImages, setUnsplashImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isUploadingTobackend, setIsUploadingTobackend] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
 
   const fetchUnsplashImages = async (query, pageNumber = 1) => {
     if (!query) return;
-    isLoading(true);
+    setLoading(true);
     try {
       const response = await axios.get(
         `https://api.unsplash.com/search/photos`,
@@ -43,7 +43,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
     } catch (err) {
       console.error("Unsplash API error:", err);
     } finally {
-      isLoading(false);
+      setLoading(false);
     }
   };
 
@@ -75,7 +75,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
 
 
   const handleFiles = async (img) => {
-    setIsLoading(true);
+    setIsUploadingTobackend(true);
     const BASE_URL = process.env.REACT_APP_BASE_URL;
     if (!img?.urls?.full) return;
 
@@ -109,12 +109,12 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
         dispatch(addImageState({ src: fileObj.url }));
       });
 
-       navigate("/design/addImage");
+      navigate("/design/addImage");
     } catch (err) {
       toast.error("Error uploading image");
       console.error("Upload error:", err.response?.data || err.message);
     } finally {
-      setIsLoading(false);
+      setIsUploadingTobackend(false);
     }
   };
 
@@ -130,80 +130,84 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
 
   return (
     <div className={style.toolbarMainContainerClipArt}>
-      <div className="toolbar-box">
-        <Link to="/design/uploadArt">
-          <button className={style.uploadButton}>Upload Your Own Image</button>
-        </Link>
+      {isUploadingTobackend ? (
+        <div className={style.loaderWrapper}>
+          <div className={style.loader}></div>
+          <p>Uploading your image...</p>
+        </div>)
 
-        <div className={style.searchContainer}>
-          <div className={style.searchWrapper}>
-            <input
-              type="text"
-              value={searchTerm}
-              className={style.searchInputSubart}
-              placeholder="Search for Clipart and AI Generated Art"
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <span className={style.searchIcon}>
-              <RxCross1 className={style.crossIcon} onClick={handleClear} />
-              <SearchIcon />
-            </span>
-          </div>
-        </div>
+        : (
 
-        {queries.length > 0 && !searchTerm && (
-          <>
-            <h2>{category}</h2>
-            <div className={style.textButtonGroup}>
-              {queries.map((query) => (
-                <button
-                  key={query}
-                  className={style.textButton}
-                  onClick={() => setSearchTerm(query)}
-                >
-                  {query}
-                </button>
-              ))}
+          <div className="toolbar-box">
+            <Link to="/design/uploadArt">
+              <button className={style.uploadButton}>Upload Your Own Image</button>
+            </Link>
+
+            <div className={style.searchContainer}>
+              <div className={style.searchWrapper}>
+                <input
+                  type="text"
+                  value={searchTerm}
+                  className={style.searchInputSubart}
+                  placeholder="Search for Clipart and AI Generated Art"
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <span className={style.searchIcon}>
+                  <RxCross1 className={style.crossIcon} onClick={handleClear} />
+                  <SearchIcon />
+                </span>
+              </div>
             </div>
-          </>
 
-        )}
+            {queries.length > 0 && !searchTerm && (
+              <>
+                <h2>{category}</h2>
+                <div className={style.textButtonGroup}>
+                  {queries.map((query) => (
+                    <button
+                      key={query}
+                      className={style.textButton}
+                      onClick={() => setSearchTerm(query)}
+                    >
+                      {query}
+                    </button>
+                  ))}
+                </div>
+              </>
 
-        <h4 className="margin-bottom">Generated Results</h4>
-        {loading && (
-          <div className={style.loaderWrapper}>
-            <div className={style.loader}></div>
-            <p>Loading amazing art...</p>
-          </div>
-        )}
-        {isLoading && (
-          <div className={style.loaderWrapper}>
-            <div className={style.loader}></div>
-            <p>Uploading your image...</p>
+            )}
+
+            <h4 className="margin-bottom">Generated Results</h4>
+            {loading && (
+              <div className={style.loaderWrapper}>
+                <div className={style.loader}></div>
+                <p>Loading amazing art...</p>
+              </div>
+            )}
+
+
+            <div className={style.clipartGrid}>
+              {unsplashImages.length > 0 ? (
+                unsplashImages.map((img) => (
+                  <img
+                    key={img.id}
+                    src={img.urls.small}
+                    alt={img.alt_description}
+                    className={style.clipartImage}
+                    onClick={() => handleFiles(img)}
+                  />
+                ))
+              ) : (
+                searchTerm && !loading && <p>No results found for "{searchTerm}"</p>
+              )}
+            </div>
+
+            {!loading && hasMore && unsplashImages.length > 0 && (
+              <button onClick={handleLoadMore} className={style.loadMoreButton}>
+                Load More
+              </button>
+            )}
           </div>)}
-
-        <div className={style.clipartGrid}>
-          {unsplashImages.length > 0 ? (
-            unsplashImages.map((img) => (
-              <img
-                key={img.id}
-                src={img.urls.small}
-                alt={img.alt_description}
-                className={style.clipartImage}
-                onClick={() => handleFiles(img)}
-              />
-            ))
-          ) : (
-            searchTerm && !loading && <p>No results found for "{searchTerm}"</p>
-          )}
-        </div>
-
-        {!loading && hasMore && unsplashImages.length > 0 && (
-          <button onClick={handleLoadMore} className={style.loadMoreButton}>
-            Load More
-          </button>
-        )}
-      </div>
     </div>
 
   );
