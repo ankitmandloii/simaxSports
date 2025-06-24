@@ -77,13 +77,13 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
   const handleFiles = async (img) => {
     setIsUploadingTobackend(true);
     const BASE_URL = process.env.REACT_APP_BASE_URL;
-    if (!img?.urls?.full) return;
+    if (!img?.urls?.small) return;
 
     try {
 
 
       // Step 1: Fetch image from Unsplash URL as Blob
-      const response = await fetch(img.urls.full);
+      const response = await fetch(img.urls.small);
       const blob = await response.blob();
       const file = new File([blob], `${img.id}.jpg`, { type: blob.type });
 
