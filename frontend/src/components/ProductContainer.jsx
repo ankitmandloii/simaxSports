@@ -22,13 +22,14 @@ function ProductContainer() {
   const RightImgRef = useRef(null);
   const location = useLocation();
   const dispatch = useDispatch();
+
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   const exportRequested = useSelector((state) => state.canvasExport.exportRequested);
   const selectedProducts = useSelector(state => state.selectedProducts.selectedProducts);
   const frontImage = useSelector(state => state?.selectedProducts?.activeProduct?.imgurl);
   const backImage = useSelector(state => state?.selectedProducts?.activeProduct?.colors?.[1]?.img);
-
+  const isQuantityPage = location.pathname === "/quantity" || location.pathname === '/review';
 
   function invertHexColor(hex) {
     try {
@@ -73,7 +74,7 @@ function ProductContainer() {
 
   const [OpenSleeveDesignUPopup, setOpenSleeveDesignUPopup] = useState(false);
   const [addSleeves, setAddSleeves] = useState(false);
-  const isDesignProduct = location.pathname === '/design/product';
+  const isDesignProduct = location.pathname === '/design/product' || location.pathname === '/quantity' || location.pathname === '/review';
 
   const toggleZoom = () => {
     if (isZoomedIn) {
@@ -298,7 +299,7 @@ function ProductContainer() {
         </div>
 
         {/* Side Preview Thumbnails */}
-        <div className={style.ProuductMirrorContainer} >
+        {!isQuantityPage && <div className={style.ProuductMirrorContainer} >
           <div className={style.ProuductMirrorLeftContainer}>
 
             <div className={style.cornerImgCanvaContainer} onClick={ShowFront}>
@@ -360,7 +361,7 @@ function ProductContainer() {
             {logo}
             <p>Zoom</p>
           </div>
-        </div>
+        </div>}
       </div>
       {/* <button onClick={handleDownload}>Click</button> */}
     </div>

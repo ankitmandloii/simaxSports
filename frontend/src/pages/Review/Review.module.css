@@ -1,0 +1,262 @@
+/* .size-section {
+  margin-top: 20px;
+} */
+
+.sizeGroup h5 {
+  margin-bottom: 8px;
+}
+
+.sizeGroup {
+  margin-top: 5px;
+}
+
+.sizeInputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.sizeBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 25px;
+}
+
+.sizeBox input {
+  width: 30px;
+  /* padding: 5px; */
+  text-align: center;
+  height: 20px;
+  outline: none;
+  border: 1px solid #D2D5D9;
+  border-radius: 4px;
+}
+
+.licenseOptions {
+  /* margin-top: 20px; */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calculateBtn {
+  width: 100%;
+  padding: 12px;
+  background: black;
+  margin-top: 10px;
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 100px;
+}
+
+.sizeBox label {
+  font-size: 8px;
+}
+
+.licenseOptions label {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 26px;
+  letter-spacing: 0%;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.licenseOptions label input {
+  width: 16px;
+  height: 16px;
+}
+
+.quantityToolbarHead {
+  display: flex;
+  gap: 10px;
+  position: relative;
+}
+
+
+
+.quantity-toolbar .toolbar-box-top-content {
+  background-color: #F6F6F6;
+  padding: 0;
+  width: 100%;
+  border-radius: 5px;
+}
+
+.sizeSection {
+  display: flex;
+  flex-direction: column;
+  padding: 0 10px;
+  gap: 20px;
+}
+
+.size-box label {
+  font-size: 8px;
+  font-weight: 500;
+  margin-bottom: 5px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0%;
+}
+
+@keyframes slideInFromLeftToolbar {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toolbarMainContainer {
+  overflow: visible;
+  width: 100%;
+  max-height: 680px;
+  min-width: 345px;
+  height: 680px;
+  border-radius: 0px 20px 20px 0px;
+  padding-top: 15px;
+
+  /* Animation properties */
+  animation: slideInFromLeftToolbar 1s ease-out forwards;
+}
+
+.toolbarBox {
+  /* width: 22rem; */
+  /* height: 22rem; */
+  height: 500px;
+  background-color: #fff;
+  padding: 10px 15px;
+  overflow-y: auto;
+
+  /* margin-top: 15px; */
+  border-radius: 10px;
+}
+
+.toolbarSpan {
+  height: 25px;
+  width: 7rem;
+  background-color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border-radius: 100px;
+  border: 1px solid #d2d5d9;
+  padding-left: 14px;
+  margin-top: 10px;
+  /* position: absolute;
+  bottom: 0;
+  left: 0; */
+}
+
+.toolbarSpan::after {
+  content: "";
+  position: absolute;
+  background-color: var(--indicator-color, "red");
+  height: 10px;
+  width: 10px;
+  bottom: 8px;
+  border-radius: 100%;
+  left: 11px;
+  right: 0;
+  transform: translateY(-50%);
+  border: 1px solid #888;
+  top: 50%;
+}
+
+.licenseOptions label {
+  display: block;
+
+}
+
+.licenseOptions {
+  margin-top: 10px;
+}
+
+
+.mainTopContainer {
+  background-color: #f6f6f6;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.productMiniImg {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  height: 4rem;
+  /* Ensures image keeps aspect ratio */
+}
+
+.downArrow {
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+}
+
+.miniProdImgContainer {
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 88px;
+  height: 42px;
+  min-height: 72px;
+  border-radius: 8px;
+  position: relative;
+  padding-top: 4px;
+  cursor: pointer;
+}
+
+.reviewPriceheading {
+  font-weight: 600;
+}
+
+.reviewPriceheadingSpan {
+  color: var(--red);
+}
+
+.sizeBoxFlex {
+  display: flex;
+  gap: 20px;
+
+
+}
+
+.sizeTagSmallbox {
+  width: 2.5rem;
+  height: 1.5rem;
+  background-color: var(--grey-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+}
+
+.reviewBox {
+  display: flex;
+}
+
+@media (max-width:1200px) {
+  .toolbarMargin {
+    margin-top: 5.5rem;
+  }
+
+  .toolbarMainContainer {
+    padding: 10px;
+  }
+}

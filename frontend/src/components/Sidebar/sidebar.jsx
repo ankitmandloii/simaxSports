@@ -75,9 +75,9 @@ const AdminSidebar = () => {
         <nav className={styles.sidebarMenu}>
           {menuItems.map((item) => {
             const isActive =
-              (item.path.startsWith("/product") &&
+              (item.path.startsWith("/design/product") &&
                 (location.pathname === "/" ||
-                  location.pathname === "/product")) ||
+                  location.pathname === "/design/product")) ||
               location.pathname + location.search === item.path;
 
             return (
@@ -89,12 +89,12 @@ const AdminSidebar = () => {
                 onClick={() => setMobileOpen(false)}
               >
                 <span
-                  className={`${styles.sidebarIcon} ${item.path === "/addArt" ? styles.sidebariconAddArt : ""
+                  className={`${styles.sidebarIcon} ${item.path === "/design/addArt" ? styles.sidebariconAddArt : ""
                     }`}
                 >
                   {item.icon}
                 </span>
-                {item.path === "/addArt" && (
+                {item.path === "/design/addArt" && (
                   <span className={styles.spannAi}>AI</span>
                 )}
                 {!collapsed && (

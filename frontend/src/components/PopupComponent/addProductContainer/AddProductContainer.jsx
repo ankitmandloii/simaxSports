@@ -181,7 +181,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                                   cursor: "pointer",
                                   padding: 10,
                                   margin: 5,
-                                  borderRadius: "50%",
+                                  borderRadius: "20%",
                                   display: "inline-block",
                                   border: isSelected ? "2px solid black" : "1px solid gray",
                                 }}

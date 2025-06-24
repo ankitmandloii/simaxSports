@@ -16,7 +16,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const clid = '058b6f5e36ed6b7502e24b8f83f8badaf529e88609981f3315d5c751e8d623a7';
+  const clid = process.env.REACT_APP_UNSPLASH_CID;
 
   const fetchUnsplashImages = async (query, pageNumber = 1) => {
     if (!query) return;
@@ -177,7 +177,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
 
             )}
 
-            <h4 className="margin-bottom">Generated Results</h4>
+            {unsplashImages.length > 0 && <h4 className="margin-bottom">Generated Results</h4>}
             {loading && (
               <div className={style.loaderWrapper}>
                 <div className={style.loader}></div>

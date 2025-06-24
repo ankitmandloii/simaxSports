@@ -10,8 +10,9 @@ const Layout = () => {
   // const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1023px)' })
   const isDesktopOrLaptop = useMediaQuery({ query: '(min-width: 1200px)' })
   const location = useLocation();
-  const isQuantityPage = location.pathname === "/quantity";
+  const isQuantityPage = location.pathname === "/quantity" || location.pathname === '/review';
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1199px)' });
+
   // const isProductPage = location.pathname === "/product";
 
 
@@ -34,7 +35,8 @@ const Layout = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      {!isQuantityPage && <Footer />}
+
     </>
 
   );

@@ -89,6 +89,7 @@
 .sizeSection {
   display: flex;
   flex-direction: column;
+  padding: 0 10px;
   gap: 20px;
 }
 
@@ -107,6 +108,7 @@
     transform: translateX(-100%);
     opacity: 0;
   }
+
   100% {
     transform: translateX(0);
     opacity: 1;
@@ -120,8 +122,8 @@
   min-width: 345px;
   height: 680px;
   border-radius: 0px 20px 20px 0px;
-  padding-top: 26.87px;
-  
+  padding-top: 15px;
+
   /* Animation properties */
   animation: slideInFromLeftToolbar 1s ease-out forwards;
 }
@@ -129,10 +131,10 @@
 .toolbarBox {
   /* width: 22rem; */
   /* height: 22rem; */
-  /* height: 500px; */
+  height: 500px;
   background-color: #fff;
   padding: 10px 15px;
-  /* overflow-y: auto; */
+  overflow-y: auto;
 
   /* margin-top: 15px; */
   border-radius: 10px;
@@ -140,7 +142,7 @@
 
 .toolbarSpan {
   height: 25px;
-  width: 81.29px;
+  width: 7rem;
   background-color: #ffffff;
   font-size: 12px;
   font-weight: 700;

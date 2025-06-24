@@ -56,7 +56,7 @@ const ProductAvailableColor = ({
                     backgroundColor: getHexFromName(color.name),
                     width: '20px',
                     height: '20px',
-                    borderRadius: '50%',
+                    borderRadius: '20%',
                     display: 'inline-block',
                     border: '1px solid #888',
                     marginBottom: '8px',

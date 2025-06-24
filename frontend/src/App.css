@@ -125,7 +125,7 @@ h4 {
   width: 100%;
   padding: 0 10px;
   /* max-height: 680px; */
-  max-width:530px;
+  max-width: 530px;
   height: 90vh;
   margin-left: 21px;
 }
@@ -367,7 +367,7 @@ hr {
 .color-swatch {
   width: 20px;
   height: 20px;
-  border-radius: 50%;
+  border-radius: 20%;
   display: inline-block;
   border: 1px solid #ccc;
   cursor: pointer;
@@ -424,7 +424,7 @@ hr {
 .color-swatch-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 3px;
 }
 
 .main-top-container {
