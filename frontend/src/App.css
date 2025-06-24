@@ -266,7 +266,7 @@ input[type="range"]::-moz-range-track {
 .toolbar-box {
   /* width: 22rem; */
   /* height: 22rem; */
-  height: 465px;
+  /* height: 465px; */
   background-color: #f6f6f6;
   padding: 10px 15px;
   /* overflow-y: auto; */
@@ -280,7 +280,7 @@ input[type="range"]::-moz-range-track {
 }
 
 .toolbar-main-container {
-  overflow: visible;
+  overflow: auto;
   width: 100%;
   background: #fff;
   max-height: 680px;

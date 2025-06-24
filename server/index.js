@@ -9,6 +9,7 @@ const routes = require("./routes/index.js");
 const { dbConnection } = require('./config/db');
 // const { initSocket } = require('./socket'); // adjust path
 const helmet = require('helmet');
+const multer = require('multer');
 // Setup middlewares
 app.use(helmet());
 app.use(express.json());
@@ -28,6 +29,19 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Routes
 app.use("/api", routes);
+
+app.use((err, req, res, next) => {
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({ message: "File size is too large (max 10MB)" });
+  }
+
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ message: err.message });
+  }
+
+  return res.status(500).json({ message: err.message || "Internal Server Error" });
+});
+
 
 // Test route
 app.use("/", (req, res) => res.send("Yes, Now you can hit APIs"));

@@ -97,7 +97,7 @@
   top: 50%;
   transform: translateY(-50%);
   color: #888;
-  cursor: pointer;
+  /* cursor: pointer; */
   font-size: 20px;
   /* If you're using an SVG or an icon font, adjust accordingly */
   /* For a simple magnifying glass, you could use an SVG or a unicode character if not using an icon library */
@@ -111,4 +111,93 @@
   border-radius: 100px;
   font-weight: bold;
   font-size: .7rem;
+}
+
+
+.textButtonGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 1rem 0;
+}
+
+.textButton {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  text-decoration: underline;
+}
+
+.textButton:hover {
+  color: #0056b3;
+}
+
+.loadMoreButton {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.loadMoreButton:hover {
+  background: #005bb5;
+}
+
+
+.loaderWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border-left-color: #000000; /* Indigo or your primary color */
+  animation: spin 1s ease infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.crossIcon {
+  cursor: pointer;
+  font-size: 20px; /* adjust as needed */
+  color: #888;
+  transition: color 0.2s ease, transform 0.2s ease;
+  margin-right: 8px;
+}
+
+.crossIcon:hover {
+  color: #ff4d4f; /* or any hover color */
+  transform: scale(1.1);
+}
+
+.clipartImage {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.clipartImage:hover {
+  transform: scale(1.3);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
 }
