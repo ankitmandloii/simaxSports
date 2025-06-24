@@ -3,13 +3,8 @@ const { sendResponse } = require("../utils/sendResponse.js");
 const { SuccessMessage, ErrorMessage } = require("../constant/messages.js");
 const { statusCode } = require("../constant/statusCodes.js");
 const ImageGallery = require("../model/imageGallery.model.js");
-// const fs = require('fs');
-// // const sharp = require('sharp');
+const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
-
-const aws = require("aws-sdk");
-const {v4: uuidv4} = require("uuid");
-const path = require("path");
 
 
 
@@ -36,109 +31,114 @@ const path = require("path");
 //         console.error(error);
 //         res.status(500).json({ error: 'Image conversion failed' });
 //     }
-
-
 // };
 
 
 
 
+/*app.get("/imgix-url", (req, res) => {
+  const { key, bgRemove, resize, sharp } = req.query;
 
-const spacesEndpoint = new aws.Endpoint(process.env.S3_ENDPOINT);
-const s3 = new aws.S3({
-    endpoint: spacesEndpoint,
+  let url = `https://your.imgix.net/${key}`;
+
+  const params = [];
+  if (bgRemove === "true") params.push("bg-remove=true");
+  if (resize) params.push(`w=${resize}`);
+  if (sharp) params.push(`sharp=${sharp}`);
+
+  if (params.length) url += "?" + params.join("&");
+
+  res.json({ imgixUrl: url });
+});
+*/
+//APi for get Full url with operation 
+
+
+
+
+
+const s3Client = new S3Client({
+    region: process.env.AWS_REGION,
     credentials: {
         accessKeyId: process.env.S3_ACCESS_KEY,
         secretAccessKey: process.env.S3_ACCESS_SECRET_KEY
     }
 });
 
-exports.fileUpload = async (request, response) => {
+
+exports.fileUpload = async (req, res) => {
     try {
-        const session = response.locals.shopify.session || response.locals.shopify
-        const shop = session.shop.split(".")[0];
-        let uploadPromises = [];
-        if (request.files?.length) {
+        const files = req.files?.length ? req.files : req.file ? [req.file] : [];
 
-            request.files.forEach(file => {
-                const storageUuid = uuidv4();
-                const fileContent = file.buffer;
-                const originalname = file.originalname;
-                const extension = path.extname(originalname);
-                const type = file.mimetype;
-                const key = `${storageUuid}${extension}`;
-                const params = {
-                    Bucket: `${process.env.S3_BUCKET}/${shop}`,
-                    Key: key,
-                    Body: fileContent,
-                    ACL: "public-read",
-                    ContentType: type
-                };
+        if (files.length === 0) {
+            return res.status(400).json({ message: "No file(s) uploaded" });
+        }
 
-                // Create a promise for each file upload
-                const uploadPromise = new Promise((resolve, reject) => {
-                    s3.putObject(params, (err, data) => {
-                        if (err) {
-                            console.error("Error uploading image:", err);
-                            reject(err);
-                        } else {
-                            const fileUrl = `${process.env.S3_BASEURL}/${shop}/${key}`;
-                            resolve({id: storageUuid, url: fileUrl});
-                        }
-                    });
-                });
-                uploadPromises.push(uploadPromise);
+        console.log("server tak  aggya");
+
+        const uploadedUrls = [];
+
+        for (const file of files) {
+            const fileKey = `uploads/${Date.now()}_${file.originalname}`;
+            const uploadParams = {
+                Bucket: process.env.S3_BUCKET,
+                Key: fileKey,
+                Body: file.buffer,
+                ContentType: file.mimetype,
+            };
+
+            const uploadCommand = new PutObjectCommand(uploadParams);
+            await s3Client.send(uploadCommand);
+            // const fileUrlFromS3Direct = https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key};
+            const fileUrlFromImgixDirect = `https://${process.env.IMGIX_DOMAIN}/${fileKey}`;
+            uploadedUrls.push({
+                name: file.originalname,
+                url: fileUrlFromImgixDirect
             });
         }
-        console.log(request.body.partnerId);
 
-
-        if (uploadPromises.length > 0) {
-
-            // Wait for all uploads to complete
-            const uploadedFiles = await Promise.all(uploadPromises);
-            const fileType = uploadedFiles[0].url.split('.').pop()
-            console.log(fileType, "fileType")
-            if (fileType === 'jpeg' || fileType === 'png' || fileType === "jpg") {
-                console.log("condition hit")
-                await ImageGallery.create({
-                    partnerId: request.body.partnerId,
-                    imgScr: uploadedFiles[0].url
-                })
-            }
-
-            return sendResponse(response, statusCode.OK, true, SuccessMessage.UPLOAD_FILE_SUCCESS, uploadedFiles);
-
-        } else {
-            return sendResponse(response, statusCode.BAD_REQUEST, false, ErrorMessage.UPLOAD_FILE_FAILURE);
-        }
-    } catch (error) {
-        console.log(error);
-        return sendResponse(response, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+        res.status(200).json({
+            success: true,
+            uploaded: uploadedUrls.length,
+            files: uploadedUrls
+        });
+    } catch (err) {
+        console.error("Upload error:", err);
+        res.status(500).json({ message: "File upload failed", error: err.message });
     }
 };
 
 
-// delete file by key
-exports.fileDelete = async (request, response) => {
-    try {
-        const session = response.locals.shopify.session || response.locals.shopify
-        const shop = session.shop.split(".")[0];
-        const imageKey = request.query.imageKey; 
-        s3.deleteObject({
-            Bucket: `${process.env.S3_BUCKET}/${shop}`, //'your-bucket-name',
-            Key: imageKey   //(path) of the file to delete
-        }, function (err, data) {
-            if (err) {
-                console.log("Error in Image Delete ", err);
-            }
-        })
-        return sendResponse(response, statusCode.OK, true, SuccessMessage.DATA_DELETED);
-    } catch (error) {
-        console.log(error);
-        return sendResponse(response, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+
+
+//delete File From AWS -S3 bucket API
+exports.fileDelete = async (req, res) => {
+    const { key } = req.body;
+
+
+    if (!key) {
+        return res.status(400).json({ message: "Missing file key in request body" });
     }
-}
+
+    const deleteParams = {
+        Bucket: process.env.S3_BUCKET,
+        Key: key, // Example: "uploads/162123_file.jpg"
+    };
+
+    try {
+        const command = new DeleteObjectCommand(deleteParams);
+        await s3Client.send(command);
+
+        return res.status(200).json({
+            success: true,
+            message: "File deleted successfully",
+            deletedKey: key
+        });
+    } catch (err) {
+        console.error("Delete error:", err);
+        return res.status(500).json({ message: "Failed to delete file", error: err.message });
+    }
+};
 
 // delete folder 
 exports.deleteFolder = async (domain) => {
@@ -157,10 +157,10 @@ exports.deleteFolder = async (domain) => {
         // Create a list of objects to delete
         const deleteParams = {
             Bucket: process.env.S3_BUCKET,
-            Delete: {Objects: []}
+            Delete: { Objects: [] }
         };
-        listedObjects.Contents.forEach(({Key}) => {
-            deleteParams.Delete.Objects.push({Key});
+        listedObjects.Contents.forEach(({ Key }) => {
+            deleteParams.Delete.Objects.push({ Key });
         });
         // Delete the listed objects
         await s3.deleteObjects(deleteParams).promise();
@@ -179,7 +179,7 @@ exports.deleteFolder = async (domain) => {
 exports.getImageGalleryList = async (request, response) => {
     try {
         const partnerId = request.body.partnerId
-        const result = await ImageGallery.find({partnerId}).limit(request.body.limit).skip(request.body.offset)
+        const result = await ImageGallery.find({ partnerId }).limit(request.body.limit).skip(request.body.offset)
         return sendResponse(response, statusCode.OK, true, SuccessMessage.DATA_FETCHED, result);
     } catch (error) {
         return sendResponse(response, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);

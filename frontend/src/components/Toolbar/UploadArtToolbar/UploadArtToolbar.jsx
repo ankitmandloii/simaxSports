@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addImageState } from "../../../redux/FrontendDesign/TextFrontendDesignSlice";
 import style from './UploadArtToolbar.module.css';
+import axios from "axios";
+import { toast } from "react-toastify";
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
 const DEVELOPER_KEY = process.env.REACT_APP_DEVELOPER_KEY;
 
@@ -21,25 +23,63 @@ const UploadArtToolbar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
-  const handleFiles = (files) => {
-    if (files.length > 0) {
-      const file = files[0];
-      // const src = URL.createObjectURL(file);
-      const src = "https://simaxdesigns.imgix.net/uploads/1750424103581_test1Image.jpg";
-      dispatch(addImageState({ src }));
+  // const handleFiles = (files) => {
+  //   console.log("file length", files.length)
+  //   if (files.length > 0) {
+  //     const file = files[0];
+  //     const src = URL.createObjectURL(file);
+  //     dispatch(addImageState({ src }));
 
+  //     setIsLoading(true);
+  //     setTimeout(() => {
+  //       navigate("/design/addImage");
+  //     }, 4000);
+  //   }
+  // };
+
+
+  const handleFiles = async (files) => {
+    const BASE_URL = process.env.REACT_APP_BASE_URL;
+    if (files.length === 0) return;
+
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append("images", files[i]);
+    }
+
+
+    try {
       setIsLoading(true);
-      setTimeout(() => {
-        navigate("/design/addImage");
-      }, 4000);
+
+      const response = await axios.post(
+        `${BASE_URL}imageOperation/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
+      // console.log("Uploaded successfully", response.data.files);
+      response.data.files.forEach((fileObj) => {
+        // console.log("URL form imgix API",fileObj.url);
+        dispatch(addImageState({ src: fileObj.url }));
+      });
+      navigate("/design/addImage");
+    } catch (err) {
+      toast.error(" Error uploading files");
+      console.error("Upload error:", err.response?.data || err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleDrop = (e) => {
+
+  const handleDrop = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFiles(e.dataTransfer.files);
+      await handleFiles(e.dataTransfer.files);
       e.dataTransfer.clearData();
     }
   };
@@ -67,14 +107,15 @@ const UploadArtToolbar = () => {
 
         if (data.docs && data.docs.length > 0) {
           const file = data.docs[0];
-          const src = getDriveImageUrl(file);
-          console.log("Selected file URL:", src);
-          dispatch(addImageState({ src }));
+          handleFiles(file);
+          // const src = getDriveImageUrl(file);
+          // console.log("Selected file URL:", src);
+          // dispatch(addImageState({ src }));
 
-          setIsLoading(true);
-          setTimeout(() => {
-            navigate("/design/addImage");
-          }, 4000);
+          // setIsLoading(true);
+          // setTimeout(() => {
+          //   navigate("/design/addImage");
+          // }, 4000);
 
           setDriveFiles(data.docs);
         }
@@ -191,14 +232,15 @@ const UploadArtToolbar = () => {
 
             <DropboxPicker onFilesSelected={(files) => {
               if (files && files.length > 0) {
-                const file = files[0];
-                const src = file.link || file.preview;
-                dispatch(addImageState({ src }));
+                handleFiles(files);
+                // const file = files[0];
+                // const src = file.link || file.preview;
+                // dispatch(addImageState({ src }));
 
-                setIsLoading(true);
-                setTimeout(() => {
-                  navigate("/design/addImage");
-                }, 4000);
+                // setIsLoading(true);
+                // setTimeout(() => {
+                //   navigate("/design/addImage");
+                // }, 4000);
 
                 setDropboxFiles(files);
               }

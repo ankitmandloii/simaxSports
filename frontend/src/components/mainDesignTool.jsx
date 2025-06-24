@@ -13,12 +13,14 @@ import {
   moveTextForwardState,
   selectedImageIdState,
   setSelectedTextState,
+  updateImageState,
   updateNameAndNumberDesignState,
   updateTextState,
 } from "../redux/FrontendDesign/TextFrontendDesignSlice";
 import { useNavigate } from "react-router-dom";
 import LayerModal from "./CommonComponent/layerComponent/layerComponent";
 import CurvedText from "./fabric/fabric.TextCurved"; // Adjust path if needed
+import { set } from "y";
 fabric.CurvedText = CurvedText;
 const MainDesignTool = ({
   warningColor,
@@ -38,6 +40,7 @@ const MainDesignTool = ({
   const activeSide = useSelector(
     (state) => state.TextFrontendDesignSlice.activeSide
   );
+  const [activeObjectType, setActiveObjectType] = useState("image");
   const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
   const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
 
@@ -47,9 +50,9 @@ const MainDesignTool = ({
   const imgRef = useRef(null);
 
   const [previewUrl, setPreviewUrl] = useState(null);
-  console.log("imageContaintObject", imageContaintObject);
-  console.log("imgRef", imgRef);
-  console.log("previewUrl", previewUrl);
+  // console.log("imageContaintObject", imageContaintObject);
+  // console.log("imgRef", imgRef);
+  // console.log("previewUrl", previewUrl);
 
   // useEffect(() => {
   //   if (image?.src) {
@@ -96,12 +99,22 @@ const MainDesignTool = ({
   }, [zoomLevel]);
 
   const globalDispatch = (lable, value, id) => {
-    dispatch(
-      updateTextState({
-        ["id"]: id,
-        changes: { [lable]: value },
-      })
-    );
+    if (activeObjectType == "image") {
+      dispatch(
+        updateImageState({
+          "id": id,
+          changes: { [lable]: value },
+        })
+      );
+    }
+    else {
+      dispatch(
+        updateTextState({
+          "id": id,
+          changes: { [lable]: value },
+        })
+      );
+    }
   };
 
   const updateBoundaryVisibility = useCallback(() => {
@@ -665,6 +678,7 @@ const MainDesignTool = ({
 
 
 
+
     const handleSelection = (e) => {
       if (e.selected.length > 1) {
         canvas.discardActiveObject();
@@ -680,55 +694,6 @@ const MainDesignTool = ({
       dispatch(setSelectedTextState(null));
     };
 
-    const handleScale = (e) => {
-      const clampScale = (value, min = 0.2, max = 10) => Math.max(min, Math.min(value, max));
-      const obj = e.target;
-      // console.log(e, "event details");
-      if (!obj || !e.transform || !['scale', 'scaleX', 'scaleY'].includes(e.transform.action)) return;
-
-
-      // 👇 DO NOT force object to scale from center manually
-      // const center = obj.getCenterPoint(); ❌ Remove this
-
-      const center = obj.getCenterPoint();
-
-
-      // const baseScaleX = Number(obj.scaleX) || 1;
-      // const baseScaleY = Number(obj.scaleY) || 1;
-
-      let deltaScaleX = obj.scaleX;
-      let deltaScaleY = obj.scaleY;
-
-      const isUniform = Math.abs(deltaScaleX - deltaScaleY) < 0.001;
-
-      let finalScaleX, finalScaleY;
-
-      if (isUniform) {
-        // Uniform scaling adds to both axes
-        const additiveScale = deltaScaleX;
-        finalScaleX = clampScale((additiveScale));
-        finalScaleY = clampScale((additiveScale));
-      } else {
-
-        finalScaleX = clampScale(deltaScaleX);
-
-        finalScaleY = clampScale(deltaScaleY);
-
-      }
-      obj.scaleX = finalScaleX;
-      obj.scaleY = finalScaleY;
-
-      obj.setPositionByOrigin(center, 'center', 'center');
-      obj.setCoords();
-
-      // Dispatch based on whether it was uniform or not
-
-      globalDispatch("scaleX", parseFloat(finalScaleX.toFixed(1)), obj.id);
-      globalDispatch("scaleY", parseFloat(finalScaleY.toFixed(1)), obj.id);
-
-      globalDispatch("scaledValue", parseFloat(finalScaleX.toFixed(1)), obj.id);
-      canvas.renderAll();
-    };
 
 
 
@@ -741,7 +706,7 @@ const MainDesignTool = ({
     const handleObjectModified = (e) => {
       updateBoundaryVisibility(e);
       syncMirrorCanvas(activeSide);
-      handleScale(e);
+      // handleScale(e);
     };
 
     const handleMoving = (e) => {
@@ -815,7 +780,62 @@ const MainDesignTool = ({
       // mirrorCanvasRef.current = null;
     };
   }, [iconImages, id, backgroundImage, activeSide]);
+  const handleScale = (e) => {
+    const clamp = (value, min = 0.2, max = 20) => Math.max(min, Math.min(value, max));
+    const obj = e.target;
+    const canvas = fabricCanvasRef.current;
 
+    if (!obj || !obj.id || !e.transform || !['scale', 'scaleX', 'scaleY'].includes(e.transform.action)) return;
+
+    // Get the original dimensions from the image data
+    const imageData = imageContaintObject?.find(img => img.id === obj.id);
+    if (!imageData) return;
+
+    const center = obj.getCenterPoint();
+    const baseWidth = 150; // Matching your renderAllImageObjects standard width
+    const originalWidth = obj.width; // Original image width
+    const baseScale = baseWidth / originalWidth; // Base scale factor
+
+    let newScaleX = obj.scaleX;
+    let newScaleY = obj.scaleY;
+
+    // Calculate the actual scale relative to original image (removing base scaling)
+    const actualScaleX = newScaleX / baseScale;
+    const actualScaleY = newScaleY / baseScale;
+
+    // Handle scaling based on transform action
+    if (e.transform.action === 'scale') {
+      // Uniform scaling (shift key held)
+      const uniformScale = clamp(Math.sqrt(actualScaleX * actualScaleY));
+      newScaleX = baseScale * uniformScale;
+      newScaleY = baseScale * uniformScale;
+    } else {
+      // Non-uniform scaling
+      newScaleX = baseScale * clamp(actualScaleX);
+      newScaleY = baseScale * clamp(actualScaleY);
+    }
+
+    // Apply the new scales
+    obj.scaleX = newScaleX;
+    obj.scaleY = newScaleY;
+
+    // Maintain object position
+    obj.setPositionByOrigin(center, 'center', 'center');
+    obj.setCoords();
+
+    // Calculate the scale values to store (relative to base scale)
+    const storedScaleX = newScaleX / baseScale;
+    const storedScaleY = newScaleY / baseScale;
+
+    // Dispatch updates - matching your renderAllImageObjects pattern
+    globalDispatch("scaleX", parseFloat(storedScaleX.toFixed(1)), obj.id);
+    globalDispatch("scaleY", parseFloat(storedScaleY.toFixed(1)), obj.id);
+    globalDispatch("scaledValue", parseFloat(storedScaleX.toFixed(1)), obj.id); // assuming uniform
+
+    // Sync with canvas and mirror if needed
+    canvas?.renderAll();
+    syncMirrorCanvas(activeSide);
+  };
 
   const renderCurveTextObjects = () => {
     const canvas = fabricCanvasRef.current;
@@ -883,7 +903,6 @@ const MainDesignTool = ({
           existingObj.setCoords();
           canvas.requestRenderAll();
           existingObj.controls = createControls()
-
           canvas.renderAll();
         } else if (!existingObj) {
           const curved = new fabric.CurvedText(textInput.content, {
@@ -927,11 +946,65 @@ const MainDesignTool = ({
 
           curved.on("mousedown", () => {
             dispatch(setSelectedTextState(textInput.id));
+            setActiveObjectType("curved-text");
             navigate("/design/addText", { state: textInput });
           });
+          const handleScale = (e) => {
+            const clampScale = (value, min = 0.2, max = 10) => Math.max(min, Math.min(value, max));
+            const obj = e.target;
+            // console.log(e, "event details");
+            if (!obj || !e.transform || !['scale', 'scaleX', 'scaleY'].includes(e.transform.action)) return;
 
+
+            // 👇 DO NOT force object to scale from center manually
+            // const center = obj.getCenterPoint(); ❌ Remove this
+
+            const center = obj.getCenterPoint();
+
+
+            // const baseScaleX = Number(obj.scaleX) || 1;
+            // const baseScaleY = Number(obj.scaleY) || 1;
+
+            let deltaScaleX = obj.scaleX;
+            let deltaScaleY = obj.scaleY;
+
+            const isUniform = Math.abs(deltaScaleX - deltaScaleY) < 0.001;
+
+            let finalScaleX, finalScaleY;
+
+            if (isUniform) {
+              // Uniform scaling adds to both axes
+              const additiveScale = deltaScaleX;
+              finalScaleX = clampScale((additiveScale));
+              finalScaleY = clampScale((additiveScale));
+              // finalScaleX = additiveScale;
+              // finalScaleY = additiveScale;
+            } else {
+
+              finalScaleX = clampScale(deltaScaleX);
+
+              finalScaleY = clampScale(deltaScaleY);
+              // finalScaleX = deltaScaleX;
+
+              // finalScaleY = deltaScaleY;
+
+            }
+            obj.scaleX = finalScaleX;
+            obj.scaleY = finalScaleY;
+
+            obj.setPositionByOrigin(center, 'center', 'center');
+            obj.setCoords();
+
+            // Dispatch based on whether it was uniform or not
+
+            globalDispatch("scaleX", parseFloat(finalScaleX.toFixed(1)), obj.id);
+            globalDispatch("scaleY", parseFloat(finalScaleY.toFixed(1)), obj.id);
+
+            globalDispatch("scaledValue", parseFloat(finalScaleX.toFixed(1)), obj.id);
+            canvas.renderAll();
+          }
           curved.on("modified", (e) => {
-
+           setActiveObjectType("curved-text")
             const obj = e.target;
             if (!obj) return;
 
@@ -942,14 +1015,12 @@ const MainDesignTool = ({
             globalDispatch("position", { x: obj.left, y: obj.top }, textInput.id);
             globalDispatch("rotate", obj.angle, textInput.id);
             canvas.renderAll();
-
+            handleScale(e);
             syncMirrorCanvas(activeSide);
 
           });
 
-          curved.on("update", () => {
-            alert("ok");
-          })
+
           //                     });
 
           curved.setControlsVisibility({
@@ -991,109 +1062,253 @@ const MainDesignTool = ({
 
   }, [activeSide, isRender, dispatch, id, textContaintObject]);
 
-const renderAllImageObjects = () => {
-  const canvas = fabricCanvasRef.current;
-  if (!canvas) return;
 
-  if (!imageContaintObject || imageContaintObject.length === 0) {
-    const existingImages = canvas.getObjects().filter((obj) => obj.type === "image");
-    existingImages.forEach((obj) => canvas.remove(obj));
-    return;
-  }
+  const renderAllImageObjects = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
 
-  imageContaintObject.forEach((imageData) => {
-    const {
-      id,
-      src,
-      left = 300,
-      top = 300,
-      scaleX = 1,
-      scaleY = 1,
-      angle = 0,
-      flipX = false,
-      flipY = false,
-      locked = false,
-      layerIndex = 0,
-      customType = "main-image"
-    } = imageData;
+    // Step 1: Clean duplicates (same ID multiple times on canvas)
+    const seenIds = new Set();
+    let duplicateRemoved = false;
 
-    const url = src;
-    const existingObj = canvas.getObjects().find((obj) => obj.id === id);
-
-    fabric.Image.fromURL(url, (img) => {
-      const maxWidth = 10;
-      const maxHeight = 10;
-          const scaleX = 300 / img.width;
-          const scaleY = 300 / img.height;
-
-
-
-      img.set({
-        id,
-        left,
-        top,
-        angle,
-        scaleX: scaleX ,  
-        scaleY: scaleY ,
-        flipX,
-        flipY,
-        // width:100,
-        // height: 100,
-        lockMovementX: locked,
-        lockMovementY: locked,
-        originX: "center",
-        originY: "center",
-        objectCaching: false,
-        borderColor: "skyblue",
-        borderDashArray: [4, 4],
-        hasBorders: true,
-        hasControls: true,
-        selectable: true,
-        evented: true,
-        customType,
-        isSync: true,
-        layerIndex
-      });
-
-      img.setControlsVisibility({
-        mt: false, mb: false, ml: false, mr: false,
-        tl: false, tr: false, bl: false, br: false, mtr: false,
-      });
-
-      img.controls = createControls();
-
-      if (existingObj) {
-        canvas.remove(existingObj);
+    canvas.getObjects('image').forEach(obj => {
+      if (!obj.id) return;
+      if (seenIds.has(obj.id)) {
+        console.warn("→ Removed duplicate image with id:", obj.id);
+        canvas.remove(obj);
+        duplicateRemoved = true;
+      } else {
+        seenIds.add(obj.id);
       }
+    });
 
-      canvas.add(img);
+    // Step 2: Remove images not in imageContaintObject
+    const validIds = imageContaintObject?.map(img => img.id) || [];
+    let staleRemoved = false;
 
-      img.on("mousedown", () => {
-        dispatch(selectedImageIdState(id));
-        navigate("/design/addImage", { state: imageData });
-      });
+    canvas.getObjects('image').forEach(obj => {
+      if (obj.id && !validIds.includes(obj.id)) {
+        console.warn("→ Removed stale image not in imageContaintObject:", obj.id);
+        canvas.remove(obj);
+        staleRemoved = true;
+      }
+    });
 
-      img.on("modified", (e) => {
-        const obj = e.target;
-        if (!obj) return;
+    if (duplicateRemoved || staleRemoved) {
+      canvas.renderAll();
+    }
 
-        const center = obj.getCenterPoint();
-        obj.setPositionByOrigin(center, 'center', 'center');
-        obj.setCoords();
+    // Step 3: If no images to render, stop
+    if (!imageContaintObject || imageContaintObject.length === 0) {
+      return;
+    }
 
-        globalDispatch("position", { x: obj.left, y: obj.top }, id);
-        globalDispatch("rotate", obj.angle, id);
+    // Step 4: Render/update image objects
+    imageContaintObject.forEach((imageData) => {
+      const {
+        id,
+        src,
+        position,
+        angle = 0,
+        flipX = false,
+        flipY = false,
+        locked = false,
+        scaleX,
+        scaleY,
+        layerIndex = 0,
+        customType = "main-image",
+      } = imageData;
+
+      const existingObj = canvas.getObjects('image').find(obj => obj.id === id);
+
+      if (existingObj && existingObj.getSrc() !== src) {
+        // CASE 1: Replace if src changed
+        console.log("→ Replacing image (src changed):", id);
+        canvas.remove(existingObj);
+
+        fabric.Image.fromURL(src, (newImg) => {
+          const computedScaleX = 150 / newImg.width;
+          const computedScaleY = 150 / newImg.height;
+
+          newImg.set({
+            id,
+            left: position.x,
+            top: position.y,
+            angle,
+            scaleX: computedScaleX * scaleX,
+            scaleY: computedScaleY * scaleY,
+            flipX,
+            flipY,
+            lockMovementX: locked,
+            lockMovementY: locked,
+            originX: "center",
+            originY: "center",
+            objectCaching: false,
+            borderColor: "skyblue",
+            borderDashArray: [4, 4],
+            hasBorders: true,
+            hasControls: true,
+            selectable: true,
+            evented: true,
+            customType,
+            isSync: true,
+            layerIndex
+          });
+
+          newImg.setControlsVisibility({
+            mt: false, mb: false, ml: false, mr: false,
+            tl: false, tr: false, bl: false, br: false, mtr: false,
+          });
+
+          newImg.controls = createControls();
+          canvas.add(newImg);
+
+          newImg.on("mousedown", (e) => {
+            const obj = e.target;
+            if (obj && obj.id) {
+              dispatch(selectedImageIdState(obj.id));
+              setActiveObjectType("Image");
+              navigate("/design/addImage", { state: imageData });
+            }
+          });
+
+
+          newImg.on("modified", (e) => {
+            setActiveObjectType("image");
+            const obj = e.target;
+            if (!obj) return;
+            const center = obj.getCenterPoint();
+            obj.setPositionByOrigin(center, 'center', 'center');
+            obj.setCoords();
+
+            globalDispatch("position", { x: obj.left, y: obj.top }, id);
+            globalDispatch("rotate", obj.angle, id);
+            handleScale(e);
+            canvas.renderAll();
+            syncMirrorCanvas(activeSide);
+          });
+
+
+          canvas.renderAll();
+        });
+
+      } else if (existingObj) {
+        // CASE 2: Update properties
+        console.log("→ Updating existing image:", id);
+        const computedScaleX = 150 / existingObj.width;
+        const computedScaleY = 150 / existingObj.height;
+
+        existingObj.set({
+          left: position.x,
+          top: position.y,
+          angle,
+          flipX,
+          flipY,
+          scaleX: computedScaleX * scaleX,
+          scaleY: computedScaleY * scaleY,
+          lockMovementX: locked,
+          lockMovementY: locked,
+          layerIndex,
+          customType,
+          isSync: true
+        });
+        existingObj.setControlsVisibility({
+          mt: false, mb: false, ml: false, mr: false,
+          tl: false, tr: false, bl: false, br: false, mtr: false,
+        });
+
+        existingObj.controls = createControls();
+        // canvas.add(newImg);
+        const center = existingObj.getCenterPoint();
+        existingObj.setPositionByOrigin(center, "center", "center");
+        existingObj.setCoords();
 
         canvas.renderAll();
-        syncMirrorCanvas(activeSide);
-      });
 
-      canvas.renderAll();
+      } else {
+        // CASE 3: Create new image
+        console.log("→ Creating new image:", id);
+
+        fabric.Image.fromURL(src, (img) => {
+          const computedScaleX = 150 / img.width;
+          const computedScaleY = 150 / img.height;
+
+          img.set({
+            id,
+            left: position.x,
+            top: position.y,
+            angle,
+            scaleX: computedScaleX * scaleX,
+            scaleY: computedScaleY * scaleY,
+            flipX,
+            flipY,
+            lockMovementX: locked,
+            lockMovementY: locked,
+            originX: "center",
+            originY: "center",
+            objectCaching: false,
+            borderColor: "skyblue",
+            borderDashArray: [4, 4],
+            hasBorders: true,
+            hasControls: true,
+            selectable: true,
+            evented: true,
+            customType,
+            isSync: true,
+            layerIndex
+          });
+
+          img.setControlsVisibility({
+            mt: false, mb: false, ml: false, mr: false,
+            tl: false, tr: false, bl: false, br: false, mtr: false,
+          });
+
+          img.controls = createControls();
+          canvas.add(img);
+
+          img.on("mousedown", (e) => {
+            const obj = e.target;
+            if (obj && obj.id) {
+              dispatch(selectedImageIdState(obj.id));
+              setActiveObjectType("image");
+              navigate("/design/addImage", { state: imageData });
+            }
+          });
+
+          img.on("modified", (e) => {
+            const obj = e.target;
+            if (!obj) return;
+            const center = obj.getCenterPoint();
+            obj.setPositionByOrigin(center, 'center', 'center');
+            obj.setCoords();
+
+            globalDispatch("position", { x: obj.left, y: obj.top }, id);
+            globalDispatch("rotate", obj.angle, id);
+            handleScale(e);
+            canvas.renderAll();
+            syncMirrorCanvas(activeSide);
+          });
+
+
+
+          canvas.renderAll();
+        });
+      }
     });
-  });
 
-  updateBoundaryVisibility?.();
-};
+    updateBoundaryVisibility?.();
+  };
+
+
+
+
+
+
+  useEffect(() => {
+    renderAllImageObjects();
+  }, [imageContaintObject, activeSide, isRender]); // 👈 Reacts to previewUrl change
+
+
 
 
   useEffect(() => {

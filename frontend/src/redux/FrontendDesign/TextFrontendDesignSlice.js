@@ -281,9 +281,11 @@ const createNewImage = (
   flipY: false,
   width: 150,
   height: 150,
-  position: { x: 280, y: 200 },
+  left:280,
+  top:200,
+  position: { x: 280, y: 150 },
   scaledValue: 1,
-  rotate: 0,
+  angle: 0,
   locked: false,
   layerIndex: length,
   // Ai Operation
@@ -707,6 +709,7 @@ const TextFrontendDesignSlice = createSlice({
         side = state.activeSide,
         isRenderOrNot,
       } = action.payload;
+      console.log("id",id,"changes........................",changes);
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       const image = state.present[side].images.find((img) => img.id === id);
       if (image && !image.locked) Object.assign(image, changes);
@@ -729,7 +732,8 @@ const TextFrontendDesignSlice = createSlice({
       return { ...state, ...action.payload };
     },
     selectedImageIdState: (state, action) => {
-      const { side = state.activeSide, id } = action.payload;
+      const side = state.activeSide;
+      const id = action.payload;
       state.present[side].selectedImageId = id;
       state.present[side].setRendering = !state.present[side].setRendering;
     },

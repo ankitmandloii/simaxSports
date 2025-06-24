@@ -133,7 +133,7 @@
   top: 50%;
   transform: translateY(-50%);
   color: #888;
-  cursor: pointer;
+  /* cursor: pointer; */
   font-size: 20px;
   /* If you're using an SVG or an icon font, adjust accordingly */
   /* For a simple magnifying glass, you could use an SVG or a unicode character if not using an icon library */
