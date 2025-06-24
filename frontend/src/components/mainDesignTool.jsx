@@ -20,7 +20,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import LayerModal from "./CommonComponent/layerComponent/layerComponent";
 import CurvedText from "./fabric/fabric.TextCurved"; // Adjust path if needed
-import { set } from "y";
+
 fabric.CurvedText = CurvedText;
 const MainDesignTool = ({
   warningColor,

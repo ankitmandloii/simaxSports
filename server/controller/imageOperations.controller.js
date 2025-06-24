@@ -74,7 +74,7 @@ exports.fileUpload = async (req, res) => {
             return res.status(400).json({ message: "No file(s) uploaded" });
         }
 
-        console.log("server tak  aggya");
+        
 
         const uploadedUrls = [];
 

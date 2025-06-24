@@ -6,19 +6,21 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import style from './SubArt.module.css';
 import { useDispatch } from 'react-redux';
 import { addImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
+import { toast } from 'react-toastify';
 const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }) => {
   const [unsplashImages, setUnsplashImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const dispatch = useDispatch();
-  const navigate= useNavigate();
+  const navigate = useNavigate();
 
   const clid = '058b6f5e36ed6b7502e24b8f83f8badaf529e88609981f3315d5c751e8d623a7';
 
   const fetchUnsplashImages = async (query, pageNumber = 1) => {
     if (!query) return;
-    setLoading(true);
+    isLoading(true);
     try {
       const response = await axios.get(
         `https://api.unsplash.com/search/photos`,
@@ -41,7 +43,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
     } catch (err) {
       console.error("Unsplash API error:", err);
     } finally {
-      setLoading(false);
+      isLoading(false);
     }
   };
 
@@ -69,11 +71,63 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
     fetchUnsplashImages(searchTerm, nextPage);
   };
 
-  const clickForDispatch =(files) => {
-    // console.log("Files",files.full);
-    dispatch(addImageState({ "src": files.full }));
-    navigate("/design/addImage");
-  }
+
+
+
+  const handleFiles = async (img) => {
+    setIsLoading(true);
+    const BASE_URL = process.env.REACT_APP_BASE_URL;
+    if (!img?.urls?.full) return;
+
+    try {
+
+
+      // Step 1: Fetch image from Unsplash URL as Blob
+      const response = await fetch(img.urls.full);
+      const blob = await response.blob();
+      const file = new File([blob], `${img.id}.jpg`, { type: blob.type });
+
+      // Step 2: Create FormData and append File
+      const formData = new FormData();
+      formData.append("images", file);
+
+      // Step 3: Upload to server
+      const uploadResponse = await axios.post(
+        `${BASE_URL}imageOperation/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
+
+      console.log("Uploaded successfully:", uploadResponse.data.files);
+
+      uploadResponse.data.files.forEach((fileObj) => {
+        console.log("URL from Imgix API:", fileObj.url);
+        dispatch(addImageState({ src: fileObj.url }));
+      });
+
+       navigate("/design/addImage");
+    } catch (err) {
+      toast.error("Error uploading image");
+      console.error("Upload error:", err.response?.data || err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
   return (
     <div className={style.toolbarMainContainerClipArt}>
       <div className="toolbar-box">
@@ -122,7 +176,11 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
             <p>Loading amazing art...</p>
           </div>
         )}
-
+        {isLoading && (
+          <div className={style.loaderWrapper}>
+            <div className={style.loader}></div>
+            <p>Uploading your image...</p>
+          </div>)}
 
         <div className={style.clipartGrid}>
           {unsplashImages.length > 0 ? (
@@ -132,7 +190,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
                 src={img.urls.small}
                 alt={img.alt_description}
                 className={style.clipartImage}
-                onClick={()=>clickForDispatch(img.urls)}
+                onClick={() => handleFiles(img)}
               />
             ))
           ) : (
@@ -147,6 +205,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
         )}
       </div>
     </div>
+
   );
 };
 
