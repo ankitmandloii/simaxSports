@@ -189,20 +189,33 @@ const handleRangeInputSizeChange = (e) => {
       return `${base}${transform}`;
     }, [img]);
 
-  const applyTransform = useCallback(async (transform) => {
-    if (!img?.src) return;
-    setLoading(true);
-    const newUrl = buildUrl(transform);
-    setActiveTransform(transform);
-    // setSelectedFilter(filters.find(f => f.transform === transform)?.name || 'Normal');
-    setPreviewUrl(newUrl);
-    globalDispatch('src', newUrl);
-    globalDispatch('removeBg', transform.includes('bg-remove=true'));
-    globalDispatch('removeBgParamValue', transform.includes('bg-remove=true') ? 'bg-remove=true' : '');
-    setTimeout(() => {
-      setLoading(false);
-    }, 100);
-  }, [img, buildUrl, globalDispatch, filters]);
+ const applyTransform = useCallback(
+    async (transform) => {
+      if (!img?.src) return;
+ 
+      setLoading(true); // Start loading
+      const newUrl = buildUrl(transform);
+ 
+      // Create a new Image object to truly track loading
+      const tempImage = new Image();
+      tempImage.onload = () => {
+        setPreviewUrl(newUrl); // Update previewUrl only when loaded
+        setActiveTransform(transform);
+        globalDispatch('src', newUrl); // Dispatch to Redux only when loaded
+        globalDispatch('removeBg', transform.includes('bg-remove=true'));
+        globalDispatch('removeBgParamValue', transform.includes('bg-remove=true') ? 'bg-remove=true' : '');
+        setLoading(false); // End loading
+      };
+      tempImage.onerror = () => {
+        console.error('Failed to load image:', newUrl);
+        setPreviewUrl('/placeholder.png'); // Fallback on error
+        setLoading(false); // End loading even on error
+      };
+      tempImage.src = newUrl; // Start loading the image
+    },
+    [img, buildUrl, globalDispatch]
+  ); //
+ 
 
   const toggleEffect = (effect) => {
     setActiveEffects(prev => {
@@ -299,8 +312,8 @@ const handleRangeInputSizeChange = (e) => {
  
 function removeBackgroundHandler(e) {
   // update local state
-  const value = isActive('bg-remove=truefm=png');
-  toggle('bg-remove=true&fm=png',value )
+  const value = isActive('bg-remove=true');
+  toggle('bg-remove=true',value )
   setRemoveBackground(!removeBackground);
   // update redux store
   globalDispatch("removeBg",!removeBackground);
@@ -309,8 +322,8 @@ function removeBackgroundHandler(e) {
 function cropAndTrimdHandler(e) {
   // update local state
                    
-  const value = isActive('fit=crop&crop=faces&w=400&h=400fm=png');
-  toggle('fit=crop&crop=faces&w=400&h=400fm=png',value )
+  const value = isActive('fit=crop&crop=faces&w=400&h=400');
+  toggle('fit=crop&crop=faces&w=400&h=400',value )
   setCropAndTrim(value);
   // update redux store
   globalDispatch("cropAndTrim",value);
@@ -324,9 +337,12 @@ function superResolutiondHandler(e) {
   // update redux store
   globalDispatch("superResolution",value);
 }
+useEffect(() =>{
+  applyTransform();
+},[])
 
   // console.log("previewUrl", previewUrl, "image src", img?.src);
-   if(loading) return <div className={styles.loadingOverlay}><div className={styles.loadingSpinner} /><p>Applying changes...</p></div>;
+  //  if(loading) return <div className={styles.loadingOverlay}><div className={styles.loadingSpinner} /><p>Applying changes...</p></div>;
   return (
     
     <div className="toolbar-main-container ">
@@ -354,7 +370,11 @@ function superResolutiondHandler(e) {
                                 setSelectedFilter(f.name);
                               }}
                             >
-                              {previewUrl && <img src={buildUrl(f.transform)} alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} />}
+                              {
+                                loading ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} /></>:<> {previewUrl && <img src={buildUrl(f.transform)} alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} />}</>
+                              }
+                             
+
                               <span>{f.name}</span>
                             </div>
                           ))}
