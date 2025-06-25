@@ -31,5 +31,6 @@ const upload = multer({
 router.post("/upload", upload.array('images', 5), controllers.fileUpload); // Accept both single and multiple files
 router.delete("/delete", controllers.fileDelete);
 // router.post("/image/list",controllers.getImageGalleryList)
+// router.post("/generateImage",controllers.generateImage)
 
 module.exports = router;

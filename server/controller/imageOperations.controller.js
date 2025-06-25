@@ -4,7 +4,7 @@ const { SuccessMessage, ErrorMessage } = require("../constant/messages.js");
 const { statusCode } = require("../constant/statusCodes.js");
 const ImageGallery = require("../model/imageGallery.model.js");
 const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
-
+// const axios = require('axios');
 
 
 
@@ -65,6 +65,15 @@ const s3Client = new S3Client({
     }
 });
 
+const sanitizeFilenameFunction = (name) => {
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, '_')            // Replace spaces with underscores
+    .replace(/[^\w\-\.]+/g, '')      // Remove non-alphanumeric except dot, dash, underscore
+    .replace(/_+/g, '_')             // Replace multiple underscores with single
+    .trim();
+};
+
 
 exports.fileUpload = async (req, res) => {
     try {
@@ -79,7 +88,8 @@ exports.fileUpload = async (req, res) => {
         const uploadedUrls = [];
 
         for (const file of files) {
-            const fileKey = `uploads/${Date.now()}_${file.originalname}`;
+            const sanitizedName = sanitizeFilenameFunction(file.originalname);
+            const fileKey = `uploads/${Date.now()}_${sanitizedName}`;
             const uploadParams = {
                 Bucket: process.env.S3_BUCKET,
                 Key: fileKey,
@@ -203,3 +213,49 @@ exports.readFile = async (request, response, path) => {
     console.log('JSON data from S3:', jsonData);
     return jsonData;
 }
+
+
+// exports.generateImage = async (req, res) => {
+//     const { prompt } = req.body;
+
+//   try {
+
+    
+//     // Step 1: Create prediction
+//     const startResponse = await axios.post(
+//       'https://api.replicate.com/v1/predictions',
+//       {
+//         version: '8b10794665aed907bb98a1asTesta5324cd1d3a8bea0e9b31e65210967fb9c9e2e08ed',
+//         input: { prompt }
+//       },
+//       {
+//         headers: {
+//           Authorization: `kdsfjksajdfkjjdstest`,
+//           'Content-Type': 'application/json',
+//         },
+//       }
+//     );
+
+//     const prediction = startResponse.data;
+
+//     // Step 2: Poll until completed
+//     let result = prediction;
+//     while (result.status !== 'succeeded' && result.status !== 'failed') {
+//       await new Promise(r => setTimeout(r, 2000));
+//       const poll = await axios.get(`https://api.replicate.com/v1/predictions/${result.id}`, {
+//         headers: { Authorization: `Token ${REPLICATE_API_TOKEN}` },
+//       });
+//       result = poll.data;
+//     }
+
+//     if (result.status === 'succeeded') {
+//       const imageUrl = result.output[0];
+//       res.json({ success: true, imageUrl });
+//     } else {
+//       res.status(500).json({ success: false, error: 'Image generation failed' });
+//     }
+//   } catch (error) {
+//     console.error(error.response?.data || error.message);
+//     res.status(500).json({ success: false, error: 'Something went wrong' });
+//   }
+// };
