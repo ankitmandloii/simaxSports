@@ -134,8 +134,8 @@ const AddImageToolbar = () => {
     const parsed = parseFloat(rawValue);
     if (isNaN(parsed) || parsed < 0.2 || parsed > 10) return;
 
-    const scaleX = img.scaleX;
-    const scaleY = img.scaleY;
+    const scaleX = img?.scaleX;
+    const scaleY = img?.scaleY;
 
     // Use average of current X and Y scale as "prev size"
     const currentAvg = (scaleX + scaleY) / 2;
