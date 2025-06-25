@@ -190,6 +190,7 @@ h4 {
   font-size: small;
 } */
 .toolbar-main-heading {
+  position: relative;
   line-height: 31px;
   margin-bottom: 1rem;
 }

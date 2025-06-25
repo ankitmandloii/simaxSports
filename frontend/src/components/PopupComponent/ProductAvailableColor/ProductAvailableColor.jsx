@@ -54,15 +54,16 @@ const ProductAvailableColor = ({
                   className="color-swatch"
                   style={{
                     backgroundColor: getHexFromName(color.name),
-                    width: '20px',
-                    height: '20px',
+                    width: '26px',
+                    height: '26px',
                     borderRadius: '20%',
                     display: 'inline-block',
                     border: '1px solid #888',
                     marginBottom: '8px',
                   }}
                 />
-                <p style={{ textAlign: 'center', fontSize: '10px' }}>{color.name}</p>
+                {/* color title */}
+                {/* <p style={{ textAlign: 'center', fontSize: '10px' }}>{color.name}</p> */}
               </div>
             ))}
           </div>
