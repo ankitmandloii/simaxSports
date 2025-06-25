@@ -28,7 +28,7 @@ import { useNavigate } from 'react-router-dom';
 
 const BASE_FILTERS = [
   { name: 'Normal', transform: '' },
-  { name: 'Single Color', transform: '?monochrome=fff000' },
+  { name: 'Single Color', transform: '?monochrome=fff000&invert=false' },
   { name: 'Black/White', transform: '?sat=-100' },
 ];
 
@@ -358,8 +358,8 @@ const AddImageToolbar = () => {
   function cropAndTrimdHandler(e) {
     // update local state
 
-    const value = isActive('fit=crop&crop=color&w=400&h=400');
-    toggle('fit=crop&crop=color&w=400&h=400', value)
+    const value = isActive('trim=color');
+    toggle('trim=color', value)
     setCropAndTrim(!cropAndTrim);
     // update redux store
     globalDispatch("cropAndTrim", !cropAndTrim);
@@ -663,7 +663,7 @@ const AddImageToolbar = () => {
                 <div
                   className={`${styles.toolbarBoxIconsContainer} ${centerActive ? styles.toolbarBoxIconsContainerActive : ''}`}
                   onClick={() => {
-                    globalDispatch("position", { x: 325, y: img.position.y });
+                    globalDispatch("position", { x: 290, y: img.position.y });
                     setCenterActive(!centerActive);
                   }}
                 >

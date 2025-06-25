@@ -783,62 +783,63 @@ const MainDesignTool = ({
       // mirrorCanvasRef.current = null;
     };
   }, [iconImages, id, backgroundImage, activeSide]);
-  const handleScale = (e) => {
-    const clamp = (value, min = 0.2, max = 20) => Math.max(min, Math.min(value, max));
-    const obj = e.target;
-    const canvas = fabricCanvasRef.current;
+ const handleScale = (e) => {
+  const clamp = (value, min = 0.2, max = 20) => Math.max(min, Math.min(value, max));
+  const obj = e.target;
+  const canvas = fabricCanvasRef.current;
 
-    if (!obj || !obj.id || !e.transform || !['scale', 'scaleX', 'scaleY'].includes(e.transform.action)) return;
+  if (!obj || !obj.id || !e.transform || !['scale', 'scaleX', 'scaleY'].includes(e.transform.action)) return;
 
-    // Get the original dimensions from the image data
-    const imageData = imageContaintObject?.find(img => img.id === obj.id);
-    if (!imageData) return;
+  // Get original image data
+  const imageData = imageContaintObject?.find(img => img.id === obj.id);
+  if (!imageData) return;
 
-    const center = obj.getCenterPoint();
-    const baseWidth = 150; // Matching your renderAllImageObjects standard width
-    const originalWidth = obj.width; // Original image width
-    const baseScale = baseWidth / originalWidth; // Base scale factor
+  const center = obj.getCenterPoint();
+  const baseWidth = 150;
+  const originalWidth = obj.width;
+  const originalHeight = obj.height;
+  const baseScaleX = baseWidth / originalWidth;
+  const baseScaleY = baseWidth / originalHeight;
 
-    let newScaleX = obj.scaleX;
-    let newScaleY = obj.scaleY;
+  // Get current user scale relative to base
+  const actualScaleX = obj.scaleX / baseScaleX;
+  const actualScaleY = obj.scaleY / baseScaleY;
 
-    // Calculate the actual scale relative to original image (removing base scaling)
-    const actualScaleX = newScaleX / baseScale;
-    const actualScaleY = newScaleY / baseScale;
+  let newScaleX, newScaleY;
 
-    // Handle scaling based on transform action
-    if (e.transform.action === 'scale') {
-      // Uniform scaling (shift key held)
-      const uniformScale = clamp(Math.sqrt(actualScaleX * actualScaleY));
-      newScaleX = baseScale * uniformScale;
-      newScaleY = baseScale * uniformScale;
-    } else {
-      // Non-uniform scaling
-      newScaleX = baseScale * clamp(actualScaleX);
-      newScaleY = baseScale * clamp(actualScaleY);
-    }
+  // if (e.transform.action === 'scale') {
+  //   // Uniform scale
+  //   const uniformScale = clamp(Math.sqrt(actualScaleX * actualScaleY));
+  //   newScaleX = baseScaleX * uniformScale;
+  //   newScaleY = baseScaleY * uniformScale;
+  // } else {
+  //   // Non-uniform scale
+   
+  // }
+ newScaleX = baseScaleX * clamp(actualScaleX);
+    newScaleY = baseScaleY * clamp(actualScaleY);
+  // Apply scaled values
+  obj.scaleX = newScaleX;
+  obj.scaleY = newScaleY;
 
-    // Apply the new scales
-    obj.scaleX = newScaleX;
-    obj.scaleY = newScaleY;
+  // Maintain center
+  obj.setPositionByOrigin(center, 'center', 'center');
+  obj.setCoords();
 
-    // Maintain object position
-    obj.setPositionByOrigin(center, 'center', 'center');
-    obj.setCoords();
+  // Calculate stored scale values (relative to base)
+  const storedScaleX = newScaleX / baseScaleX;
+  const storedScaleY = newScaleY / baseScaleY;
 
-    // Calculate the scale values to store (relative to base scale)
-    const storedScaleX = newScaleX / baseScale;
-    const storedScaleY = newScaleY / baseScale;
+  // Dispatch changes
+  globalDispatch("scaleX", parseFloat(storedScaleX.toFixed(1)), obj.id);
+  globalDispatch("scaleY", parseFloat(storedScaleY.toFixed(1)), obj.id); 
+  globalDispatch("scaledValue", parseFloat((storedScaleX+storedScaleY/2).toFixed(1)), obj.id); // Assuming uniform
 
-    // Dispatch updates - matching your renderAllImageObjects pattern
-    globalDispatch("scaleX", parseFloat(storedScaleX.toFixed(1)), obj.id);
-    globalDispatch("scaleY", parseFloat(storedScaleY.toFixed(1)), obj.id);
-    globalDispatch("scaledValue", parseFloat(storedScaleX.toFixed(1)), obj.id); // assuming uniform
+  // Render & sync
+  canvas?.renderAll();
+  syncMirrorCanvas(activeSide);
+};
 
-    // Sync with canvas and mirror if needed
-    canvas?.renderAll();
-    syncMirrorCanvas(activeSide);
-  };
 
   const renderCurveTextObjects = () => {
     const canvas = fabricCanvasRef.current;
@@ -1003,7 +1004,7 @@ const MainDesignTool = ({
             globalDispatch("scaleX", parseFloat(finalScaleX.toFixed(1)), obj.id);
             globalDispatch("scaleY", parseFloat(finalScaleY.toFixed(1)), obj.id);
 
-            globalDispatch("scaledValue", parseFloat(finalScaleX.toFixed(1)), obj.id);
+            globalDispatch("scaledValue", parseFloat((finalScaleY+finalScaleY/2).toFixed(1)), obj.id);
             canvas.renderAll();
           }
           curved.on("modified", (e) => {
