@@ -43,7 +43,7 @@ const MainDesignTool = ({
   const [activeObjectType, setActiveObjectType] = useState("image");
   const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
   const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
-
+  const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
 
   const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
 
@@ -1004,7 +1004,7 @@ const MainDesignTool = ({
             canvas.renderAll();
           }
           curved.on("modified", (e) => {
-           setActiveObjectType("curved-text")
+            setActiveObjectType("curved-text")
             const obj = e.target;
             if (!obj) return;
 
@@ -1117,12 +1117,150 @@ const MainDesignTool = ({
         scaleY,
         layerIndex = 0,
         customType = "main-image",
+        loading,
+        loadingSrc,
       } = imageData;
-
+      const spinnerId = `spinner-${id}`;
       const existingObj = canvas.getObjects('image').find(obj => obj.id === id);
+      console.log("loading state", loading, loadingSrc);
+      //  Step 1: If loading, show animated arc spinner
+      if (loading) {
+        // Remove existing image with same ID (e.g., if reloading)
+        canvas.getObjects().forEach(obj => {
+          if (obj.id === selectedImageId) {
+            canvas.remove(obj);
+          }
+        });
 
+        const spinnerId = `spinner-${id}`;
+        const existingSpinner = canvas.getObjects().find(o => o.id === spinnerId);
+        if (existingSpinner) return;
+
+        const dotCount = 5;
+        const dotRadius = 6;
+        const dotSpacing = 15;
+        const colors = ['#000000', '#000000', '#000000', '#000000', '#000000']; // black
+
+        const dots = [];
+
+        for (let i = 0; i < dotCount; i++) {
+          dots.push(new fabric.Circle({
+            radius: dotRadius,
+            fill: colors[i],
+            left: position.x + (i * dotSpacing) - ((dotCount * dotSpacing) / 2) + (dotSpacing / 2),
+            top: position.y,
+            originX: 'center',
+            originY: 'center',
+            opacity: 0.3,
+            selectable: false,
+            evented: false
+          }));
+        }
+
+        const loader = new fabric.Group(dots, {
+          id: spinnerId,
+          scaleX,
+          scaleY,
+          height: 150,
+          width: 150,
+          originX: 'center',
+          originY: 'center',
+          left: position.x,
+          top: position.y,
+          selectable: true, // enable interaction
+          evented: true,
+          lockMovementX:true,
+          lockMovementY:true,
+          objectCaching: false,
+          borderColor: "skyblue",
+          borderDashArray: [4, 4],
+        });
+
+        // Enable all control points
+        loader.setControlsVisibility({
+          mt: true, mb: true, ml: true, mr: true,
+          tl: true, tr: true, bl: true, br: true, mtr: true
+        });
+
+        // Optional: if using custom controls
+        if (typeof createControls === 'function') {
+          loader.controls = createControls();
+        }
+
+        // Event listeners for interaction
+        loader.on("mousedown", (e) => {
+          setActiveObjectType("image");
+          console.log("Loader clicked:", loader.id);
+          dispatch?.(selectedImageIdState(id)); // Optional Redux dispatch
+        });
+
+        loader.on("modified", (e) => {
+          const obj = e.target;
+          if (!obj) return;
+          const center = obj.getCenterPoint();
+          obj.setPositionByOrigin(center, 'center', 'center');
+          obj.setCoords();
+
+          globalDispatch("position", { x: obj.left, y: obj.top }, id);
+          globalDispatch("rotate", obj.angle, id);
+          handleScale(e);
+          // canvas.renderAll();
+        });
+
+        canvas.add(loader);
+        canvas.bringToFront(loader);
+
+        // Animate wave effect
+        let animationStep = 0;
+        const animationSpeed = 0.15;
+        let animationFrameId = null;
+
+        const animateDots = () => {
+          if (!canvas.getObjects().includes(loader)) return;
+
+          animationStep += animationSpeed;
+
+          loader.getObjects().forEach((dot, i) => {
+            const waveOffset = i * 0.8;
+            const scale = 0.6 + Math.sin(animationStep + waveOffset) * 0.4;
+            const opacity = 0.4 + scale * 0.6;
+
+            dot.set({
+              scaleX: scale,
+              scaleY: scale,
+              opacity: opacity
+            });
+          });
+
+          canvas.requestRenderAll();
+          animationFrameId = requestAnimationFrame(animateDots);
+        };
+
+        animateDots();
+
+        // Attach cleanup method to remove loader and stop animation
+        loader.cleanup = () => {
+          if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+          }
+          canvas.remove(loader);
+        };
+
+        return loader;
+      }
+
+
+      // Step 2: Remove spinner when loading is false
+      const oldSpinner = canvas.getObjects().find(o => o.id === spinnerId);
+      if (oldSpinner) {
+        clearTimeout(oldSpinner.__spinnerTimer);
+        canvas.remove(oldSpinner);
+      }
+        
       if (existingObj && existingObj.getSrc() !== src) {
         // CASE 1: Replace if src changed
+
+        console.log("src....00",src,"prev src",existingObj.getSrc());
         console.log("→ Replacing image (src changed):", id);
         canvas.remove(existingObj);
 
@@ -1228,6 +1366,7 @@ const MainDesignTool = ({
       } else {
         // CASE 3: Create new image
         console.log("→ Creating new image:", id);
+         console.log("src....01",src);
 
         fabric.Image.fromURL(src, (img) => {
           const computedScaleX = 150 / img.width;

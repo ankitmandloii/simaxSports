@@ -90,17 +90,21 @@ const AddImageToolbar = () => {
 
       const currentEffects = params
         ? params.split('&').filter(param =>
-          !BASE_FILTERS.some(f => f.transform.includes(param))
-        )
-        : [];
-      setActiveEffects(currentEffects);
+            !BASE_FILTERS.some(f => f.transform.includes(param))
+          )
+      : [];
+    setActiveEffects(currentEffects);
+    
+    setRemoveBackground(img.removeBg);
+    setSuperResolution(img.superResolution);
+    setCropAndTrim(img.cropAndTrim);
 
-      // const baseFilter = BASE_FILTERS.find(f =>
-      //   currentTransform.includes(f.transform.replace('?', ''))
-      // ) || BASE_FILTERS[0];
-      // setSelectedFilter(baseFilter.name);
-    } catch { }
-  }, [img]);
+    // const baseFilter = BASE_FILTERS.find(f =>
+    //   currentTransform.includes(f.transform.replace('?', ''))
+    // ) || BASE_FILTERS[0];
+    // setSelectedFilter(baseFilter.name);
+      } catch { }
+    }, [img,selectedImageId]);
 
 
   useEffect(() => {
@@ -197,33 +201,55 @@ const AddImageToolbar = () => {
     return `${base}${transform}`;
   }, [img]);
 
-  const applyTransform = useCallback(
-    async (transform) => {
-      if (!img?.src) return;
+const applyTransform = useCallback(
+  async (transform) => {
+    if (!img?.src) return;
 
-      setLoading(true); // Start loading
-      const newUrl = buildUrl(transform);
+    const newUrl = buildUrl(transform); 
+    const loadingPlaceholder = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s'; // or any placeholder image
 
-      // Create a new Image object to truly track loading
-      const tempImage = new Image();
-      tempImage.onload = () => {
-        setPreviewUrl(newUrl); // Update previewUrl only when loaded
-        setActiveTransform(transform);
-        globalDispatch('src', newUrl); // Dispatch to Redux only when loaded
-        globalDispatch('removeBg', transform.includes('bg-remove=true'));
-        globalDispatch('removeBgParamValue', transform.includes('bg-remove=true') ? 'bg-remove=true' : '');
-        setLoading(false); // End loading
-      };
-      tempImage.onerror = () => {
-        console.error('Failed to load image:', newUrl);
-        setPreviewUrl('/placeholder.png'); // Fallback on error
-        setLoading(false); // End loading even on error
-      };
-      tempImage.src = newUrl; // Start loading the image
-    },
-    [img, buildUrl, globalDispatch]
-  ); //
+    // Set loading: true in local + global state
+    setLoading(true);
+    setPreviewUrl(loadingPlaceholder);
 
+    globalDispatch("loading", true);
+    globalDispatch("loadingSrc", loadingPlaceholder);
+    globalDispatch("src", img.src); // keep old src while loading
+    globalDispatch("transform", transform);
+
+    // Load transformed image
+    const tempImage = new Image();
+    tempImage.onload = () => {
+      // Only update everything when loaded successfully
+      setPreviewUrl(newUrl);
+      setActiveTransform(transform);
+
+      globalDispatch("src", newUrl);
+      globalDispatch("loading", false);
+      globalDispatch("loadingSrc", null);
+      globalDispatch("removeBg", transform.includes("bg-remove=true"));
+      globalDispatch(
+        "removeBgParamValue",
+        transform.includes("bg-remove=true") ? "bg-remove=true" : ""
+      );
+
+      setLoading(false);
+    };
+
+    tempImage.onerror = () => {
+      console.error("Failed to load image:", newUrl);
+      setPreviewUrl("/placeholder.png");
+      setLoading(false);
+      globalDispatch("loading", false);
+      globalDispatch("loadingSrc", null);
+    };
+
+    tempImage.src = newUrl; // Begin load
+  },
+  [img, buildUrl, globalDispatch]
+);
+
+ 
 
   const toggleEffect = (effect) => {
     setActiveEffects(prev => {
@@ -320,34 +346,34 @@ const AddImageToolbar = () => {
 
   function removeBackgroundHandler(e) {
     // update local state
-    const value = isActive('bg-remove=true');
-    toggle('bg-remove=true', value)
-    setRemoveBackground(!removeBackground);
+    const value = isActive('bg-remove=true&fit=crop&crop=edges');
+    toggle('bg-remove=true&fit=crop&crop=edges', value)
+    setRemoveBackground(!removeBackground); 
     // update redux store
     globalDispatch("removeBg", !removeBackground);
   }
 
-  function cropAndTrimdHandler(e) {
-    // update local state
+function cropAndTrimdHandler(e) {
+  // update local state
+                   
+  const value = isActive('fit=crop&crop=color&w=400&h=400');
+  toggle('fit=crop&crop=color&w=400&h=400',value )
+  setCropAndTrim(!cropAndTrim);
+  // update redux store
+  globalDispatch("cropAndTrim",!cropAndTrim);
+}
 
-    const value = isActive('fit=crop&crop=faces&w=400&h=400');
-    toggle('fit=crop&crop=faces&w=400&h=400', value)
-    setCropAndTrim(value);
-    // update redux store
-    globalDispatch("cropAndTrim", value);
-  }
-
-  function superResolutiondHandler(e) {
-    // update local state
-    const value = isActive('auto=enhance&sharp=80&upscale=true');
-    toggle('auto=enhance&sharp=80&upscale=true', value)
-    setSuperResolution(value);
-    // update redux store
-    globalDispatch("superResolution", value);
-  }
-  useEffect(() => {
-    applyTransform();
-  }, [])
+function superResolutiondHandler(e) {
+  // update local state
+  const value = isActive('auto=enhance&sharp=80&upscale=true');
+  toggle('auto=enhance&sharp=80&upscale=true',value )
+  setSuperResolution(!superResolution);
+  // update redux store
+  globalDispatch("superResolution",!superResolution);
+}
+useEffect(() =>{
+  applyTransform();
+},[])
 
   // console.log("previewUrl", previewUrl, "image src", img?.src);
   //  if(loading) return <div className={styles.loadingOverlay}><div className={styles.loadingSpinner} /><p>Applying changes...</p></div>;

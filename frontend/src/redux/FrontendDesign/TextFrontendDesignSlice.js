@@ -297,6 +297,8 @@ const createNewImage = (
   superResolutionParamValue:
     "?auto=enhance&dpr=2&quality=100&format=webp&upscale=true",
   removeBgParamValue: "?remove-bg=true&dpr=2&quality=100&format=webp",
+  loading:false,
+  loadingSrc:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s"
 });
 
 const initialState = {
