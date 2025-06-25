@@ -8,6 +8,7 @@ import style from "./MainDesignTool.module.css";
 import FontFaceObserver from 'fontfaceobserver';
 import { useDispatch, useSelector } from "react-redux";
 import {
+  deleteImageState,
   deleteTextState,
   moveTextBackwardState,
   moveTextForwardState,
@@ -260,6 +261,8 @@ const MainDesignTool = ({
     if (!isLocked(_eventData, transform)) {
       const canvas = transform.target.canvas;
       dispatch(deleteTextState(transform.target.id));
+      dispatch(deleteImageState(transform.target.id));
+
       canvas.remove(transform.target);
       canvas.requestRenderAll();
       // setSelectedHeight("");
@@ -1169,8 +1172,8 @@ const MainDesignTool = ({
           top: position.y,
           selectable: true, // enable interaction
           evented: true,
-          lockMovementX:true,
-          lockMovementY:true,
+          lockMovementX: true,
+          lockMovementY: true,
           objectCaching: false,
           borderColor: "skyblue",
           borderDashArray: [4, 4],
@@ -1256,11 +1259,11 @@ const MainDesignTool = ({
         clearTimeout(oldSpinner.__spinnerTimer);
         canvas.remove(oldSpinner);
       }
-        
+
       if (existingObj && existingObj.getSrc() !== src) {
         // CASE 1: Replace if src changed
 
-        console.log("src....00",src,"prev src",existingObj.getSrc());
+        console.log("src....00", src, "prev src", existingObj.getSrc());
         console.log("→ Replacing image (src changed):", id);
         canvas.remove(existingObj);
 
@@ -1366,7 +1369,7 @@ const MainDesignTool = ({
       } else {
         // CASE 3: Create new image
         console.log("→ Creating new image:", id);
-         console.log("src....01",src);
+        console.log("src....01", src);
 
         fabric.Image.fromURL(src, (img) => {
           const computedScaleX = 150 / img.width;

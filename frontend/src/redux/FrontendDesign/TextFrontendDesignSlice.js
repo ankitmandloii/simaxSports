@@ -297,8 +297,8 @@ const createNewImage = (
   superResolutionParamValue:
     "?auto=enhance&dpr=2&quality=100&format=webp&upscale=true",
   removeBgParamValue: "?remove-bg=true&dpr=2&quality=100&format=webp",
-  loading:false,
-  loadingSrc:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s"
+  loading: false,
+  loadingSrc: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s",
 });
 
 const initialState = {
@@ -498,6 +498,25 @@ const TextFrontendDesignSlice = createSlice({
       state.present[side].setRendering = !state.present[side].setRendering;
       state.future[side] = [];
     },
+    toggleImageLockState: (state, action) => {
+      const side = state.activeSide;
+
+      // Save current state for undo
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+      // Find and toggle lock state for the image
+      const image = state.present[side].images.find(
+        (img) => img.id === action.payload
+      );
+      if (image) image.locked = !image.locked;
+
+      // Trigger rerender
+      state.present[side].setRendering = !state.present[side].setRendering;
+
+      // Clear future for redo
+      state.future[side] = [];
+    }
+    ,
 
     // Set which text is currently selected
     setSelectedTextState: (state, action) => {
@@ -814,6 +833,7 @@ const TextFrontendDesignSlice = createSlice({
       state.future[toSide] = [];
     },
 
+
   },
 });
 
@@ -825,6 +845,7 @@ export const {
   moveTextForwardState,
   moveTextBackwardState,
   toggleLockState,
+  toggleImageLockState,
   deleteTextState,
   undo,
   redo,

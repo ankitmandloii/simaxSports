@@ -19,7 +19,7 @@ import {
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox.jsx';
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox.jsx';
 import { useDispatch, useSelector } from 'react-redux';
-import { duplicateImageState, updateImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
+import { duplicateImageState, toggleImageLockState, toggleLockState, updateImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 import { useNavigate } from 'react-router-dom';
 // import { setCenterState, setFlipXState, setFlipYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState, setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
 // import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
@@ -42,7 +42,7 @@ const AddImageToolbar = () => {
   const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const allImageData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   const img = allImageData.find((img) => img.id == selectedImageId);
-
+  console.log("--img", img)
   const [rangeValuesSize, setRangeValuesSize] = useState(0);
   const [rangeValuesRotate, setRangeValuesRotate] = useState(0);
   const [flipXValue, setflipXValue] = useState(false);
@@ -50,7 +50,9 @@ const AddImageToolbar = () => {
   const [duplicateActive, setDuplicateActive] = useState(false);
   const [centerActive, setCenterActive] = useState(false);
   const [removeBackground, setRemoveBackground] = useState(false);
-  const [isLocked, setIsLocked] = useState(false);
+  // const [isLocked, setIsLocked] = useState(false);
+  const isLocked = img?.locked;
+  console.log("isLocked", isLocked);
   const [selectedFilter, setSelectedFilter] = useState('Normal');
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -72,9 +74,9 @@ const AddImageToolbar = () => {
   const colorClassNameForY = flipYValue !== true ? styles.toolbarBoxIconsContainerFlip2 : styles.toolbarBoxIconsContainerClickStyleFlip2;
   const iconY = flipYValue !== true ? <FlipSecondIcon /> : <FlipSecondWhiteColorIcon />;
 
-
+  // const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   // const [textColorPopup, setTextColorPopup] = useState(false);
-
+  // console.log("-----------imggg", imageContaintObject);
   // Init from store
   useEffect(() => {
     if (!img) return;
@@ -90,21 +92,21 @@ const AddImageToolbar = () => {
 
       const currentEffects = params
         ? params.split('&').filter(param =>
-            !BASE_FILTERS.some(f => f.transform.includes(param))
-          )
-      : [];
-    setActiveEffects(currentEffects);
-    
-    setRemoveBackground(img.removeBg);
-    setSuperResolution(img.superResolution);
-    setCropAndTrim(img.cropAndTrim);
+          !BASE_FILTERS.some(f => f.transform.includes(param))
+        )
+        : [];
+      setActiveEffects(currentEffects);
 
-    // const baseFilter = BASE_FILTERS.find(f =>
-    //   currentTransform.includes(f.transform.replace('?', ''))
-    // ) || BASE_FILTERS[0];
-    // setSelectedFilter(baseFilter.name);
-      } catch { }
-    }, [img,selectedImageId]);
+      setRemoveBackground(img.removeBg);
+      setSuperResolution(img.superResolution);
+      setCropAndTrim(img.cropAndTrim);
+
+      // const baseFilter = BASE_FILTERS.find(f =>
+      //   currentTransform.includes(f.transform.replace('?', ''))
+      // ) || BASE_FILTERS[0];
+      // setSelectedFilter(baseFilter.name);
+    } catch { }
+  }, [img, selectedImageId]);
 
 
   useEffect(() => {
@@ -201,55 +203,55 @@ const AddImageToolbar = () => {
     return `${base}${transform}`;
   }, [img]);
 
-const applyTransform = useCallback(
-  async (transform) => {
-    if (!img?.src) return;
+  const applyTransform = useCallback(
+    async (transform) => {
+      if (!img?.src) return;
 
-    const newUrl = buildUrl(transform); 
-    const loadingPlaceholder = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s'; // or any placeholder image
+      const newUrl = buildUrl(transform);
+      const loadingPlaceholder = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s'; // or any placeholder image
 
-    // Set loading: true in local + global state
-    setLoading(true);
-    setPreviewUrl(loadingPlaceholder);
+      // Set loading: true in local + global state
+      setLoading(true);
+      setPreviewUrl(loadingPlaceholder);
 
-    globalDispatch("loading", true);
-    globalDispatch("loadingSrc", loadingPlaceholder);
-    globalDispatch("src", img.src); // keep old src while loading
-    globalDispatch("transform", transform);
+      globalDispatch("loading", true);
+      globalDispatch("loadingSrc", loadingPlaceholder);
+      globalDispatch("src", img.src); // keep old src while loading
+      globalDispatch("transform", transform);
 
-    // Load transformed image
-    const tempImage = new Image();
-    tempImage.onload = () => {
-      // Only update everything when loaded successfully
-      setPreviewUrl(newUrl);
-      setActiveTransform(transform);
+      // Load transformed image
+      const tempImage = new Image();
+      tempImage.onload = () => {
+        // Only update everything when loaded successfully
+        setPreviewUrl(newUrl);
+        setActiveTransform(transform);
 
-      globalDispatch("src", newUrl);
-      globalDispatch("loading", false);
-      globalDispatch("loadingSrc", null);
-      globalDispatch("removeBg", transform.includes("bg-remove=true"));
-      globalDispatch(
-        "removeBgParamValue",
-        transform.includes("bg-remove=true") ? "bg-remove=true" : ""
-      );
+        globalDispatch("src", newUrl);
+        globalDispatch("loading", false);
+        globalDispatch("loadingSrc", null);
+        globalDispatch("removeBg", transform.includes("bg-remove=true"));
+        globalDispatch(
+          "removeBgParamValue",
+          transform.includes("bg-remove=true") ? "bg-remove=true" : ""
+        );
 
-      setLoading(false);
-    };
+        setLoading(false);
+      };
 
-    tempImage.onerror = () => {
-      console.error("Failed to load image:", newUrl);
-      setPreviewUrl("/placeholder.png");
-      setLoading(false);
-      globalDispatch("loading", false);
-      globalDispatch("loadingSrc", null);
-    };
+      tempImage.onerror = () => {
+        console.error("Failed to load image:", newUrl);
+        setPreviewUrl("/placeholder.png");
+        setLoading(false);
+        globalDispatch("loading", false);
+        globalDispatch("loadingSrc", null);
+      };
 
-    tempImage.src = newUrl; // Begin load
-  },
-  [img, buildUrl, globalDispatch]
-);
+      tempImage.src = newUrl; // Begin load
+    },
+    [img, buildUrl, globalDispatch]
+  );
 
- 
+
 
   const toggleEffect = (effect) => {
     setActiveEffects(prev => {
@@ -276,10 +278,10 @@ const applyTransform = useCallback(
 
 
   const callForXFlip = () => {
-    // const value = !(imageContaintObject.flipX);
-    // setflipXValue(value);
-    // globalDispatch("flipX", value);
-    //console.log("clicked", value);
+    const value = !(img.flipX);
+    setflipXValue(value);
+    globalDispatch("flipX", value);
+    console.log("clicked", value);
   }
 
 
@@ -289,10 +291,10 @@ const applyTransform = useCallback(
 
 
   const callForYFlip = () => {
-    // const value = !(imageContaintObject.flipY);
-    // setflipYValue(value);
-    // //console.log("y value ", value);
-    // globalDispatch("flipY", value);
+    const value = !(img.flipY);
+    setflipYValue(value);
+    //console.log("y value ", value);
+    globalDispatch("flipY", value);
   }
 
   // useEffect(() => {
@@ -348,32 +350,32 @@ const applyTransform = useCallback(
     // update local state
     const value = isActive('bg-remove=true&fit=crop&crop=edges');
     toggle('bg-remove=true&fit=crop&crop=edges', value)
-    setRemoveBackground(!removeBackground); 
+    setRemoveBackground(!removeBackground);
     // update redux store
     globalDispatch("removeBg", !removeBackground);
   }
 
-function cropAndTrimdHandler(e) {
-  // update local state
-                   
-  const value = isActive('fit=crop&crop=color&w=400&h=400');
-  toggle('fit=crop&crop=color&w=400&h=400',value )
-  setCropAndTrim(!cropAndTrim);
-  // update redux store
-  globalDispatch("cropAndTrim",!cropAndTrim);
-}
+  function cropAndTrimdHandler(e) {
+    // update local state
 
-function superResolutiondHandler(e) {
-  // update local state
-  const value = isActive('auto=enhance&sharp=80&upscale=true');
-  toggle('auto=enhance&sharp=80&upscale=true',value )
-  setSuperResolution(!superResolution);
-  // update redux store
-  globalDispatch("superResolution",!superResolution);
-}
-useEffect(() =>{
-  applyTransform();
-},[])
+    const value = isActive('fit=crop&crop=color&w=400&h=400');
+    toggle('fit=crop&crop=color&w=400&h=400', value)
+    setCropAndTrim(!cropAndTrim);
+    // update redux store
+    globalDispatch("cropAndTrim", !cropAndTrim);
+  }
+
+  function superResolutiondHandler(e) {
+    // update local state
+    const value = isActive('auto=enhance&sharp=80&upscale=true');
+    toggle('auto=enhance&sharp=80&upscale=true', value)
+    setSuperResolution(!superResolution);
+    // update redux store
+    globalDispatch("superResolution", !superResolution);
+  }
+  useEffect(() => {
+    applyTransform();
+  }, [])
 
   // console.log("previewUrl", previewUrl, "image src", img?.src);
   //  if(loading) return <div className={styles.loadingOverlay}><div className={styles.loadingSpinner} /><p>Applying changes...</p></div>;
@@ -661,8 +663,8 @@ useEffect(() =>{
                 <div
                   className={`${styles.toolbarBoxIconsContainer} ${centerActive ? styles.toolbarBoxIconsContainerActive : ''}`}
                   onClick={() => {
-                    // globalDispatch("position", { x: 325, y: imageContaintObject.position.y });
-                    // setCenterActive(!centerActive);
+                    globalDispatch("position", { x: 325, y: img.position.y });
+                    setCenterActive(!centerActive);
                   }}
                 >
                   <span><AlignCenterIcon /></span>
@@ -692,10 +694,10 @@ useEffect(() =>{
               <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`}>
                 <div className={styles.toolbarBoxIconsContainerForTogether}>
                   <div className={colorClassName}
-                  // onClick={() => callForXFlip()}
+                    onClick={() => callForXFlip()}
                   ><span>{icon}</span></div>
                   <div className={colorClassNameForY}
-                  //  onClick={() => callForYFlip()}
+                    onClick={() => callForYFlip()}
                   ><span>{iconY}</span></div>
                 </div>
                 Flip
@@ -703,7 +705,7 @@ useEffect(() =>{
 
               <div
                 className={styles.toolbarBoxIconsAndHeadingContainer}
-              // onClick={() => dispatch(toggleLockState(currentTextToolbarId))}
+                onClick={() => dispatch(toggleImageLockState(selectedImageId))}
               >
                 <div className={`${styles.toolbarBoxIconsContainer} ${isLocked ? styles.toolbarBoxIconsContainerActive : ''}`}>
                   <span><LockIcon /></span>
