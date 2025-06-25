@@ -269,11 +269,11 @@ const createNewText = ({ value, id }, length) => ({
 });
 
 const createNewImage = (
-  { src},
+  { src },
   length
 ) => ({
   id: nanoid(),
-   src:src,
+  src: src,
   scaleX: 1,
   scaleY: 1,
   rotate: 0,
@@ -281,8 +281,8 @@ const createNewImage = (
   flipY: false,
   width: 150,
   height: 150,
-  left:280,
-  top:200,
+  left: 280,
+  top: 200,
   position: { x: 280, y: 150 },
   scaledValue: 1,
   angle: 0,
@@ -297,6 +297,8 @@ const createNewImage = (
   superResolutionParamValue:
     "?auto=enhance&dpr=2&quality=100&format=webp&upscale=true",
   removeBgParamValue: "?remove-bg=true&dpr=2&quality=100&format=webp",
+  loading:false,
+  loadingSrc:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s"
 });
 
 const initialState = {
@@ -709,7 +711,7 @@ const TextFrontendDesignSlice = createSlice({
         side = state.activeSide,
         isRenderOrNot,
       } = action.payload;
-      console.log("id",id,"changes........................",changes);
+      console.log("id", id, "changes........................", changes);
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       const image = state.present[side].images.find((img) => img.id === id);
       if (image && !image.locked) Object.assign(image, changes);
@@ -718,6 +720,52 @@ const TextFrontendDesignSlice = createSlice({
       }
       state.future[side] = [];
     },
+    duplicateImageState: (state, action) => {
+      const side = state.activeSide;
+      const idToDuplicate = action.payload;
+
+      if (!state.present[side]?.images) {
+        return;
+      }
+
+      const imageToDuplicate = state.present[side].images.find(
+        (img) => img.id === idToDuplicate
+      );
+
+      if (!imageToDuplicate) {
+        return;
+      }
+
+      if (imageToDuplicate.locked) {
+        return;
+      }
+
+
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+      const newPosition = {
+        x: imageToDuplicate.position.x + 20,
+        y: imageToDuplicate.position.y + 20,
+      };
+
+      const newImage = {
+        ...JSON.parse(JSON.stringify(imageToDuplicate)),
+        id: nanoid(),
+        position: newPosition,
+        left: newPosition.x,
+        top: newPosition.y,
+        layerIndex: state.present[side].images.length,
+      };
+
+      console.log("New duplicated image:", newImage);
+
+      state.present[side].images.push(newImage);
+      state.present[side].selectedImageId = newImage.id;
+      state.future[side] = [];
+      state.present[side].setRendering = !state.present[side].setRendering;
+    },
+
+
 
     deleteImageState: (state, action) => {
       const side = state.activeSide;
@@ -765,6 +813,7 @@ const TextFrontendDesignSlice = createSlice({
       state.present[toSide].setRendering = !state.present[toSide].setRendering;
       state.future[toSide] = [];
     },
+
   },
 });
 
@@ -781,6 +830,7 @@ export const {
   redo,
   resetCanvasState,
   duplicateTextState,
+  duplicateImageState,
   setActiveSide,
   setRendering,
   setAddNumber,

@@ -14,7 +14,7 @@ const Footer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
-  const exportedImages = useSelector((state) => state.canvasExport.exportedImages);
+  // const exportedImages = useSelector((state) => state.canvasExport.exportedImages);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 1200);
@@ -30,13 +30,13 @@ const Footer = () => {
   const setSavedesignPopupHandler = () => {
     setSavedesignPopup(!savedesignpopup);
     dispatch(requestExport());
-    console.log("------expottt", exportedImages)
+    // console.log("------expottt", exportedImages)
   };
-  useEffect(() => {
-    if (exportedImages) {
-      console.log("Images are exported:", exportedImages);
-    }
-  }, [exportedImages]);
+  // useEffect(() => {
+  //   if (exportedImages) {
+  //     console.log("Images are exported:", exportedImages);
+  //   }
+  // }, [exportedImages]);
 
 
 
