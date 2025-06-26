@@ -27,10 +27,7 @@ const MainDesignTool = ({
   warningColor,
   id,
   backgroundImage,
-  // mirrorCanvasRef,
-  // initialDesign,
   zoomLevel,
-  // canvasReff,
   setFrontPreviewImage,
   setBackPreviewImage,
   setLeftSleevePreviewImage,
@@ -38,85 +35,44 @@ const MainDesignTool = ({
   setPreviewForCurrentSide
 }) => {
 
-  const activeSide = useSelector(
-    (state) => state.TextFrontendDesignSlice.activeSide
-  );
-  const [activeObjectType, setActiveObjectType] = useState("image");
+  // **********************************************************************************************************************************************************
+  //                                                                                    USE SELECTORS AREA
+  // **********************************************************************************************************************************************************
+  const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
   const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
   const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
-
   const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
-
-  const imgRef = useRef(null);
-
-  const [previewUrl, setPreviewUrl] = useState(null);
-  // console.log("imageContaintObject", imageContaintObject);
-  // console.log("imgRef", imgRef);
-  // console.log("previewUrl", previewUrl);
-
-  // useEffect(() => {
-  //   if (image?.src) {
-  //     setPreviewUrl(image.src);
-  //   }
-  // }, [image?.src]);
-
-  const [lastTranform, setLastTranform] = useState(null);
-  const textContaintObject = useSelector(
-    (state) => state.TextFrontendDesignSlice.present[activeSide].texts
-  );
-  const isRender = useSelector(
-    (state) => state.TextFrontendDesignSlice.present[activeSide].setRendering
-  );
-  // console.log("nameAndNumberDesignState", nameAndNumberDesignState);
-
+  const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
+  const isRender = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].setRendering);
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId)
-  // const isLocked = selectedTextId && textContaintObject.find((obj) => obj.id === selectedTextId).locked;
-  // console.log("locked value", isLocked);
+
+  // **********************************************************************************************************************************************************
+  //                                                                                    USE REFS AREA
+  // **********************************************************************************************************************************************************
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null);
+
+  // **********************************************************************************************************************************************************
+  //                                                                                    USE STATS AREA
+  // **********************************************************************************************************************************************************
+  const [selectedpopup, setSelectedpopup] = useState(false);
+  const [activeObjectType, setActiveObjectType] = useState("image");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedObject, setSelectedObject] = useState(null);
+
+  // **********************************************************************************************************************************************************
+  //                                                                                    USE DISPTACHS AREA
+  // **********************************************************************************************************************************************************
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [selectedpopup, setSelectedpopup] = useState(false);
-
-  // const [selectedHeight, setSelectedHeight] = useState("");
-  // const mirrorFabricRef = useRef(null);
 
 
 
-
-  useEffect(() => {
-    const canvas = fabricCanvasRef.current;
-    if (canvas && canvas.setZoom) {
-      const zoom = zoomLevel;
-
-      // Get canvas center point (in pixels)
-      const center = new fabric.Point(canvas.width / 2, canvas.height / 2);
-
-      // Zoom relative to center point
-      canvas.zoomToPoint(center, zoom);
-    }
-  }, [zoomLevel]);
-
-  const globalDispatch = (lable, value, id) => {
-    if (activeObjectType == "image") {
-      dispatch(
-        updateImageState({
-          "id": id,
-          changes: { [lable]: value },
-        })
-      );
-    }
-    else {
-      dispatch(
-        updateTextState({
-          "id": id,
-          changes: { [lable]: value },
-        })
-      );
-    }
-  };
+// **********************************************************************************************************************************************************
+  //                                                                                    USE CALLBACKS AREA
+  // **********************************************************************************************************************************************************
 
   const updateBoundaryVisibility = useCallback(() => {
     const canvas = fabricCanvasRef.current;
@@ -151,15 +107,9 @@ const MainDesignTool = ({
     canvas.bringToFront(warningText);
     canvas.requestRenderAll();
   }, []);
-
-
-  useEffect(() => {
-    updateBoundaryVisibility();
-  }, [addName, addNumber, nameAndNumberDesignState, textContaintObject, updateBoundaryVisibility]);
-
-
-
-
+  // **********************************************************************************************************************************************************
+  //                                                                                    USE MEMO AREA
+  // **********************************************************************************************************************************************************
   const iconImages = useMemo(() => {
     const imgs = {};
     for (const key in icons) {
@@ -170,6 +120,153 @@ const MainDesignTool = ({
     return imgs;
   }, []);
 
+  // **********************************************************************************************************************************************************
+  //                                                                                    HELPER FUNCTIONS AREA
+  // **********************************************************************************************************************************************************
+  const globalDispatch = (lable, value, id) => {
+    dispatch(
+      updateImageState({
+        "id": id,
+        changes: { [lable]: value },
+      })
+    );
+    dispatch(
+      updateTextState({
+        "id": id,
+        changes: { [lable]: value },
+      })
+    );
+  };
+  const checkBoundary = (e) => {
+    return;
+    const obj = e.target;
+    const canvas = fabricCanvasRef.current;
+    const canvasWidth = canvas.getWidth();
+    const canvasHeight = canvas.getHeight();
+
+    obj.setCoords(); // Make sure aCoords is updated
+    const bounds = obj.aCoords;
+
+    // Left boundary
+    if (bounds.tl.x < 0) {
+      obj.left -= bounds.tl.x;
+    }
+
+    // Top boundary
+    if (bounds.tl.y < 0) {
+      obj.top -= bounds.tl.y;
+    }
+
+    // Right boundary
+    if (bounds.tr.x > canvasWidth) {
+      obj.left -= bounds.tr.x - canvasWidth;
+    }
+
+    // Bottom boundary
+    if (bounds.bl.y > canvasHeight) {
+      obj.top -= bounds.bl.y - canvasHeight;
+    }
+  };
+  const loadFont = (fontName) => {
+    return new Promise((resolve) => {
+      const font = new FontFaceObserver(fontName);
+      font.load().then(resolve).catch(resolve); // ignore error to avoid blocking
+    });
+  };
+  const handleLayerAction = (action) => {
+    if (selectedObject) {
+      const objectId = selectedObject.id;
+      switch (action) {
+        case "bringForward":
+          selectedObject.bringForward();
+          dispatch(moveTextForwardState(objectId));
+          selectedObject.canvas.requestRenderAll(); // Add this line
+          setSelectedpopup(!selectedpopup);
+          break;
+        case "sendBackward":
+          selectedObject.sendBackwards();
+          dispatch(moveTextBackwardState(objectId));
+          selectedObject.canvas.requestRenderAll(); // Add this line
+          break;
+        case "bringToFront":
+          selectedObject.bringToFront();
+          dispatch(moveTextForwardState(objectId));
+          selectedObject.canvas.requestRenderAll(); // Add this line
+          break;
+        case "sendToBack":
+          selectedObject.sendToBack();
+          dispatch(moveTextBackwardState(objectId));
+
+          selectedObject.canvas.requestRenderAll(); // Add this line
+          break;
+        default:
+          break;
+      }
+    }
+  };
+  const bringPopup = () => {
+    setIsModalOpen(true);
+  };
+  const handleScale = (e) => {
+    const clamp = (value, min = 0.2, max = 20) => Math.max(min, Math.min(value, max));
+    const obj = e.target;
+    const canvas = fabricCanvasRef.current;
+
+    if (!obj || !obj.id || !e.transform || !['scale', 'scaleX', 'scaleY'].includes(e.transform.action)) return;
+
+    // Get original image data
+    const imageData = imageContaintObject?.find(img => img.id === obj.id);
+    if (!imageData) return;
+
+    const center = obj.getCenterPoint();
+    const baseWidth = 150;
+    const originalWidth = obj.width;
+    const originalHeight = obj.height;
+    const baseScaleX = baseWidth / originalWidth;
+    const baseScaleY = baseWidth / originalHeight;
+
+    // Get current user scale relative to base
+    const actualScaleX = obj.scaleX / baseScaleX;
+    const actualScaleY = obj.scaleY / baseScaleY;
+
+    let newScaleX, newScaleY;
+
+    // if (e.transform.action === 'scale') {
+    //   // Uniform scale
+    //   const uniformScale = clamp(Math.sqrt(actualScaleX * actualScaleY));
+    //   newScaleX = baseScaleX * uniformScale;
+    //   newScaleY = baseScaleY * uniformScale;
+    // } else {
+    //   // Non-uniform scale
+
+    // }
+    newScaleX = baseScaleX * clamp(actualScaleX);
+    newScaleY = baseScaleY * clamp(actualScaleY);
+    // Apply scaled values
+    obj.scaleX = newScaleX;
+    obj.scaleY = newScaleY;
+
+    // Maintain center
+    obj.setPositionByOrigin(center, 'center', 'center');
+    obj.setCoords();
+
+    // Calculate stored scale values (relative to base)
+    const storedScaleX = newScaleX / baseScaleX;
+    const storedScaleY = newScaleY / baseScaleY;
+
+    // Dispatch changes
+    globalDispatch("scaleX", parseFloat(storedScaleX.toFixed(1)), obj.id);
+    globalDispatch("scaleY", parseFloat(storedScaleY.toFixed(1)), obj.id);
+    globalDispatch("scaledValue", parseFloat((storedScaleX + storedScaleY / 2).toFixed(1)), obj.id); // Assuming uniform
+
+    // Render & sync
+    canvas?.renderAll();
+    syncMirrorCanvas(activeSide);
+  };
+
+  // **********************************************************************************************************************************************************
+  //                                                                                    CONTROL BUTTONS AREA
+  // **********************************************************************************************************************************************************
 
   const renderIcon = (key) => {
     return function (ctx, left, top, _styleOverride, fabricObject) {
@@ -270,59 +367,7 @@ const MainDesignTool = ({
     }
   };
 
-  // const bringForward = (eventData, transform) => {
-  //   alert("bring to Farward");
-  //   if (!isLocked(eventData, transform)) {
-  //     setSelectedpopup(!selectedpopup);
-  //     const target = transform.target;
-  //     target.canvas.bringForward(target);
-  //     target.canvas.requestRenderAll();
-  //   }
-  // };
-
-  // const sendBackward = (eventData, transform) => {
-  //   alert("send to back");
-  //   if (!isLocked(eventData, transform)) {
-  //     const target = transform.target;
-  //     target.canvas.sendBackwards(target);
-  //     target.canvas.requestRenderAll();
-  //   }
-  // };
-
-  // const bringToFront = (eventData, transform) => {
-  //   alert("bring to front");
-  //   if (!isLocked(eventData, transform)) {
-  //     const target = transform.target;
-  //     target.canvas.bringToFront(target);
-  //     target.canvas.requestRenderAll();
-  //   }
-  // };
-  const bringPopup = () => {
-    //  setSelectedpopup(!selectedpopup)
-    setIsModalOpen(true);
-  };
-  // const bringToFrontt = (object) => {
-
-  //   object.canvas.bringToFront(object);
-  //   object.canvas.requestRenderAll();
-  // };
-
-  // const sendToBack = (eventData, transform) => {
-  //   const target = transform.target;
-  //   const canvas = target.canvas;
-
-  //   const beforeIndex = canvas.getObjects().indexOf(target);
-  //   //console.log("Before index:", beforeIndex);
-
-  //   canvas.sendToBack(target);
-  //   canvas.requestRenderAll();
-
-  //   // const afterIndex = canvas.getObjects().indexOf(target);
-  //   //console.log("After index:", afterIndex);
-  // };
-
   const scaleFromCenter = (eventData, transform, x, y) => {
-
     if (!isLocked(eventData, transform)) {
       transform.target.set({ centeredScaling: true });
       return fabric.controlsUtils.scalingEqually(eventData, transform, x, y);
@@ -357,26 +402,9 @@ const MainDesignTool = ({
     }
   };
 
-  // const handleHeightChange = (e) => {
-  //   const value = parseFloat(e.target.value);
-  //   setSelectedHeight(e.target.value);
-  //   const canvas = fabricCanvasRef.current;
-  //   const activeObject = canvas.getActiveObject();
-  //   if (activeObject && !isNaN(value)) {
-  //     activeObject.set("scaleY", value / activeObject.height);
-  //     canvas.requestRenderAll();
-  //   }
-  // };
-
-  const handleObjectSelection = (e) => {
-    const obj = e.selected?.[0];
-    if (obj && obj.height) {
-      // const actualHeight = obj.height * obj.scaleY;
-      // setSelectedHeight(actualHeight.toFixed(0));
-    }
-  };
-
-
+  // **********************************************************************************************************************************************************
+  //                                                                                    MIRROR OBJECTS
+  // **********************************************************************************************************************************************************
   const syncMirrorCanvas = async (activeSide) => {
     return;
 
@@ -440,166 +468,29 @@ const MainDesignTool = ({
       setRightSleevePreviewImage(await getImageFromCanvas(fabricCanvasRef.current))
     }
 
-    // return;
-
-    // const parent = document.querySelector(".corner-img-canva-container");
-
-    // const w = parent.clientWidth;
-    // const h = parent.clientHeight - 30;
-    // //console.log(mirrorCanvasRef.current, "dafh")
-    // const mirrorCanvas = mirrorCanvasRef.current;
-    // const mainCanvas = fabricCanvasRef.current;
-
-    // if (!mirrorCanvas || !mainCanvas) return;
-
-    // const json = mainCanvas.toJSON();
-
-    // // console.log(json, "json data");
-
-    // // return;
-
-    // mirrorCanvas.loadFromJSON(json, () => {
-    //   const originalWidth = mainCanvas.getWidth();
-    //   const originalHeight = mainCanvas.getHeight();
-
-    //   // Target mirror canvas size
-    //   const mirrorWidth = w;
-    //   const mirrorHeight = h;
-
-    //   // Scale ratio (fit while maintaining aspect ratio)
-    //   const scale = Math.min(
-    //     mirrorWidth / originalWidth,
-    //     mirrorHeight / originalHeight
-    //   );
-
-    //   // Calculate offset to center content
-    //   const offsetX = (mirrorWidth - originalWidth * scale) / 2;
-    //   const offsetY = (mirrorHeight - originalHeight * scale) / 2;
-
-    //   // Set mirror canvas size
-    //   mirrorCanvas.setWidth(mirrorWidth);
-    //   mirrorCanvas.setHeight(mirrorHeight);
-
-    //   // Scale and reposition each object
-    //   mirrorCanvas.getObjects().forEach((obj) => {
-    //     // obj.scaleX *= scale;
-    //     // obj.scaleY *= scale;
-    //     // obj.left = obj.left * scale + offsetX;
-    //     // obj.top = obj.top * scale + offsetY;
-    //     // obj.setCoords();
-    //     console.log(obj);
-    //   });
-
-    //   mirrorCanvas.getObjects().filter((obj) => obj.type == "curved-text" || obj.type  == "group" || obj.type == "image").forEach((obj) => {
-    //     obj.scaleX *= scale;
-    //     obj.scaleY *= scale;
-    //     obj.left = obj.left * scale + offsetX;
-    //     obj.top = obj.top * scale + offsetY;
-    //     obj.setCoords();
-    //   });
-
-    //   // Set background color
-    //   mirrorCanvas.setBackgroundColor(
-    //     "white",
-    //     mirrorCanvas.renderAll.bind(mirrorCanvas)
-    //   );
-
-    //   // Scale and center background image
-    //   const extraScale = 1.1; // slightly enlarge
-
-    //   const bgImage = mainCanvas.backgroundImage;
-    //   if (bgImage) {
-    //     bgImage.clone((clonedBg) => {
-    //       // Get mirror canvas size
-    //       const canvasW = mirrorCanvas.getWidth();
-    //       const canvasH = mirrorCanvas.getHeight();
-
-    //       // Original image size
-    //       const imgW = bgImage.width || bgImage._element?.naturalWidth;
-    //       const imgH = bgImage.height || bgImage._element?.naturalHeight;
-
-    //       // Scale to fit while maintaining aspect ratio
-    //       const bgScale = Math.min(canvasW / imgW, canvasH / imgH) * extraScale;
-
-    //       clonedBg.set({
-    //         originX: "center",
-    //         originY: "center",
-    //         scaleX: bgScale,
-    //         scaleY: bgScale,
-    //         left: canvasW / 2,
-    //         top: canvasH / 2,
-    //       });
-
-    //       mirrorCanvas.setBackgroundImage(
-    //         clonedBg,
-    //         mirrorCanvas.renderAll.bind(mirrorCanvas)
-    //       );
-    //     });
-    //   } else {
-    //     mirrorCanvas.renderAll();
-    //   }
-    // });
   };
 
+  // **********************************************************************************************************************************************************
+  //                                                                                    USE EFFECTS 
+  // **********************************************************************************************************************************************************
 
-
-  //  const moveHandler = (e) => {
-  //    console.log(e,"moved eve")
-  //       const obj = e.transform.target;
-  //     const foundObject =textContaintObject && textContaintObject?.find((obj) => obj.id == selectedTextId);
-  //     const isLocked = foundObject?.locked ?? false;
-
-  //      console.log(foundObject,"foundObject");  
-
-  //       // You can check a custom flag (e.g., obj.locked)
-  //       if (!isLocked) {
-  //         console.log("can move object")
-  //           globalDispatch("position", { x: obj.left, y: obj.top }, selectedTextId);
-
-  //         obj.left =  obj.left;  
-  //         obj.top =  obj.top;
-  //         // return;
-  //       }
-  //       else{
-  //         obj.left =foundObject.position.x;
-  //         obj.top =foundObject.position.y;
-  //         globalDispatch("position",{x:foundObject.position.x,y:foundObject.position.y});
-  //         console.log("can not move object");
-  //         return; 
-  //       }
-
-  //     }
-
-  const checkBoundary = (e) => {
-    return;
-    const obj = e.target;
+  useEffect(() => {
     const canvas = fabricCanvasRef.current;
-    const canvasWidth = canvas.getWidth();
-    const canvasHeight = canvas.getHeight();
+    if (canvas && canvas.setZoom) {
+      const zoom = zoomLevel;
 
-    obj.setCoords(); // Make sure aCoords is updated
-    const bounds = obj.aCoords;
+      // Get canvas center point (in pixels)
+      const center = new fabric.Point(canvas.width / 2, canvas.height / 2);
 
-    // Left boundary
-    if (bounds.tl.x < 0) {
-      obj.left -= bounds.tl.x;
+      // Zoom relative to center point
+      canvas.zoomToPoint(center, zoom);
     }
+  }, [zoomLevel]);
 
-    // Top boundary
-    if (bounds.tl.y < 0) {
-      obj.top -= bounds.tl.y;
-    }
 
-    // Right boundary
-    if (bounds.tr.x > canvasWidth) {
-      obj.left -= bounds.tr.x - canvasWidth;
-    }
-
-    // Bottom boundary
-    if (bounds.bl.y > canvasHeight) {
-      obj.top -= bounds.bl.y - canvasHeight;
-    }
-  };
+  useEffect(() => {
+    updateBoundaryVisibility();
+  }, [addName, addNumber, nameAndNumberDesignState, textContaintObject, updateBoundaryVisibility]);
 
   useEffect(() => {
     const canvas = new fabric.Canvas(canvasRef.current, {
@@ -610,7 +501,6 @@ const MainDesignTool = ({
 
     canvas.preserveObjectStacking = true;
     fabricCanvasRef.current = canvas;
-    // mirrorCanvasRef.current = new fabric.StaticCanvas(id);
 
     const boxWidth = 270;
     const boxHeight = 355;
@@ -687,7 +577,7 @@ const MainDesignTool = ({
         canvas.discardActiveObject();
         canvas.requestRenderAll();
       } else {
-        handleObjectSelection(e);
+
         setSelectedObject(e.selected[0]);
       }
     };
@@ -783,64 +673,12 @@ const MainDesignTool = ({
       // mirrorCanvasRef.current = null;
     };
   }, [iconImages, id, backgroundImage, activeSide]);
- const handleScale = (e) => {
-  const clamp = (value, min = 0.2, max = 20) => Math.max(min, Math.min(value, max));
-  const obj = e.target;
-  const canvas = fabricCanvasRef.current;
-
-  if (!obj || !obj.id || !e.transform || !['scale', 'scaleX', 'scaleY'].includes(e.transform.action)) return;
-
-  // Get original image data
-  const imageData = imageContaintObject?.find(img => img.id === obj.id);
-  if (!imageData) return;
-
-  const center = obj.getCenterPoint();
-  const baseWidth = 150;
-  const originalWidth = obj.width;
-  const originalHeight = obj.height;
-  const baseScaleX = baseWidth / originalWidth;
-  const baseScaleY = baseWidth / originalHeight;
-
-  // Get current user scale relative to base
-  const actualScaleX = obj.scaleX / baseScaleX;
-  const actualScaleY = obj.scaleY / baseScaleY;
-
-  let newScaleX, newScaleY;
-
-  // if (e.transform.action === 'scale') {
-  //   // Uniform scale
-  //   const uniformScale = clamp(Math.sqrt(actualScaleX * actualScaleY));
-  //   newScaleX = baseScaleX * uniformScale;
-  //   newScaleY = baseScaleY * uniformScale;
-  // } else {
-  //   // Non-uniform scale
-   
-  // }
- newScaleX = baseScaleX * clamp(actualScaleX);
-    newScaleY = baseScaleY * clamp(actualScaleY);
-  // Apply scaled values
-  obj.scaleX = newScaleX;
-  obj.scaleY = newScaleY;
-
-  // Maintain center
-  obj.setPositionByOrigin(center, 'center', 'center');
-  obj.setCoords();
-
-  // Calculate stored scale values (relative to base)
-  const storedScaleX = newScaleX / baseScaleX;
-  const storedScaleY = newScaleY / baseScaleY;
-
-  // Dispatch changes
-  globalDispatch("scaleX", parseFloat(storedScaleX.toFixed(1)), obj.id);
-  globalDispatch("scaleY", parseFloat(storedScaleY.toFixed(1)), obj.id); 
-  globalDispatch("scaledValue", parseFloat((storedScaleX+storedScaleY/2).toFixed(1)), obj.id); // Assuming uniform
-
-  // Render & sync
-  canvas?.renderAll();
-  syncMirrorCanvas(activeSide);
-};
 
 
+
+  // **********************************************************************************************************************************************************
+  //                                                                                    TEXT OBJECTS AREA
+  // **********************************************************************************************************************************************************
   const renderCurveTextObjects = () => {
     const canvas = fabricCanvasRef.current;
     if (textContaintObject && textContaintObject.length === 0) {
@@ -1004,7 +842,7 @@ const MainDesignTool = ({
             globalDispatch("scaleX", parseFloat(finalScaleX.toFixed(1)), obj.id);
             globalDispatch("scaleY", parseFloat(finalScaleY.toFixed(1)), obj.id);
 
-            globalDispatch("scaledValue", parseFloat((finalScaleY+finalScaleY/2).toFixed(1)), obj.id);
+            globalDispatch("scaledValue", parseFloat((finalScaleY + finalScaleY / 2).toFixed(1)), obj.id);
             canvas.renderAll();
           }
           curved.on("modified", (e) => {
@@ -1059,13 +897,15 @@ const MainDesignTool = ({
       updateBoundaryVisibility();
     }
   }
-
   useEffect(() => {
     // console.log("renderiing on layer index changed");
     renderCurveTextObjects();
 
   }, [activeSide, isRender, dispatch, id, textContaintObject]);
 
+  // **********************************************************************************************************************************************************
+  //                                                                                    IMAGE OBJECTS AREA
+  // **********************************************************************************************************************************************************
 
   const renderAllImageObjects = () => {
     const canvas = fabricCanvasRef.current;
@@ -1442,133 +1282,21 @@ const MainDesignTool = ({
     updateBoundaryVisibility?.();
   };
 
-
-
-
-
-
   useEffect(() => {
     renderAllImageObjects();
   }, [imageContaintObject, activeSide, isRender]); // 👈 Reacts to previewUrl change
 
 
-
-
-  useEffect(() => {
-    renderAllImageObjects();
-  }, [imageContaintObject]); // 👈 Reacts to previewUrl change 
-
-
-  //  *************************************************************  for rendering the name and number**********************************************************
-
-  // useEffect(() => {
-  //   const canvas = fabricCanvasRef.current;
-  //   if (!canvas || !nameAndNumberDesignState) {
-  //     console.warn("Canvas or nameAndNumberDesignState is missing.");
-  //     return;
-  //   }
-
-  //   const {
-  //     name,
-  //     number,
-  //     position,
-  //     fontFamily,
-  //     fontColor,
-  //     fontSize,
-  //     id,
-  //   } = nameAndNumberDesignState;
-
-  //   const objectId = id;
-
-  //   // Remove existing object if neither name nor number is being added
-  //   if (!addName && !addNumber) {
-  //     const existingTextObject = canvas.getObjects().find(obj => obj.id === objectId);
-  //     if (existingTextObject) {
-  //       canvas.remove(existingTextObject);
-  //       canvas.requestRenderAll();
-  //       canvas.renderAll();
-  //     }
-  //     return;
-  //   }
-
-  //   // Build the stacked text
-  //   let stackedText = '';
-  //   if (addName && name) stackedText += name;
-  //   if (addName && addNumber && number) stackedText += '\n';
-  //   if (addNumber && number) stackedText += number;
-
-  //   if (!stackedText) {
-  //     const existingTextObject = canvas.getObjects().find(obj => obj.id === objectId);
-  //     if (existingTextObject) {
-  //       canvas.remove(existingTextObject);
-  //       canvas.requestRenderAll();
-  //     }
-  //     return;
-  //   }
-
-  //   // Font size mapping
-  //   const fontSizeMap = {
-  //     small: 40,
-  //     medium: 60,
-  //     large: 80,
-  //   };
-  //   const resolvedFontSize = fontSizeMap[fontSize] || 60;
-  //   const boxWidth = 300;
-
-  //   let existingTextObject = canvas.getObjects().find(obj => obj.id === objectId);
-
-  //   if (!existingTextObject) {
-  //     existingTextObject = new fabric.CurvedText(stackedText,
-  //       {
-  //         id: objectId,
-  //         originX: "center",
-  //         originY: "center",
-  //         textAlign: "center",
-  //         selectable: true,
-  //         hasBorders: true,
-  //         hasControls: false,
-  //         evented: true,
-  //         width: boxWidth,
-  //         fontWeight:  '700', 
-  //         fontFamily: fontFamily ,
-  //       });
-  //     canvas.add(existingTextObject);
-  //     canvas.renderAll();
-  //   }
-  //   //  existingTextObject = canvas.getObjects().find(obj => obj.id === objectId);
-  //   existingTextObject.set({
-  //     text: stackedText,
-  //     fill: fontColor,
-  //     fontFamily: fontFamily ,
-  //     fontSize: resolvedFontSize,
-  //     left: position?.x || 300,
-  //     top: position?.y || 300,
-  //     evented: true,
-  //   });
-
-  //   existingTextObject.dirty = true;
-  //   existingTextObject.setCoords();
-  //   canvas.requestRenderAll();
-
-  //   console.log(existingTextObject,"existingTextObject")
-  //   canvas.renderAll();
-  // }, [isRender,addName, addNumber, nameAndNumberDesignState,  ]);
-
-
-  const loadFont = (fontName) => {
-    return new Promise((resolve) => {
-      const font = new FontFaceObserver(fontName);
-      font.load().then(resolve).catch(resolve); // ignore error to avoid blocking
-    });
-  };
-
+  // **********************************************************************************************************************************************************
+  //                                                                                    NAME AND NUMBER OBJECTS AREA
+  // **********************************************************************************************************************************************************
   const renderNameAndNumber = () => {
     const canvas = fabricCanvasRef.current;
     if (!canvas || !nameAndNumberDesignState) {
       // console.warn("Canvas or nameAndNumberDesignState is missing.");
       return;
     }
-
+    
     const {
       name,
       number,
@@ -1578,9 +1306,9 @@ const MainDesignTool = ({
       fontSize,
       id,
     } = nameAndNumberDesignState;
-
+    
     const objectId = id;
-
+    
     if (!addName && !addNumber) {
       const existingGroup = canvas.getObjects().find(obj => obj.id === objectId);
       if (existingGroup) {
@@ -1589,20 +1317,20 @@ const MainDesignTool = ({
       }
       return;
     }
-
+    
     const fontSizeMap = {
       small: 60,
       medium: 100,
       large: 150,
     };
     const baseFontSize = fontSizeMap[fontSize] || 80;
-
+    
     // Remove old group if it exists
     const oldGroup = canvas.getObjects().filter(obj => obj.isDesignGroup === true);
     oldGroup.forEach((oldGroup) => canvas.remove(oldGroup));
-
+    
     const textObjects = [];
-
+    
     if (addName && name) {
       const nameText = new fabric.Text(name, {
         fontSize: baseFontSize * 0.3,
@@ -1615,7 +1343,7 @@ const MainDesignTool = ({
       nameText.left = -nameText.width / 2;
       textObjects.push(nameText);
     }
-
+    
     if (addNumber && number) {
       const numberText = new fabric.Text(number, {
         fontSize: baseFontSize,
@@ -1625,7 +1353,7 @@ const MainDesignTool = ({
         originY: 'top',
       });
       numberText.left = (-numberText.width) / 2;
-
+      
       // Stack below name if present
       if (textObjects.length > 0) {
         const previous = textObjects[textObjects.length - 1];
@@ -1634,9 +1362,9 @@ const MainDesignTool = ({
       }
       textObjects.push(numberText);
     }
-
+    
     if (textObjects.length === 0) return;
-
+    
     const group = new fabric.Group(textObjects, {
       id: objectId,
       left: position?.x || canvas.getWidth() / 2,
@@ -1651,12 +1379,12 @@ const MainDesignTool = ({
       evented: true,
       isSync: true,
     });
-
+    
     group.on(("modified"), (e) => {
       const obj = e.target;
       if (!obj) return;
       const center = obj.getCenterPoint();
-
+      
       obj.setPositionByOrigin(center, 'center', 'center');
       obj.setCoords();
       dispatch(updateNameAndNumberDesignState({
@@ -1664,12 +1392,12 @@ const MainDesignTool = ({
           "position": { x: obj.left, y: obj.top },
         }
       }));
-
+      
     })
     group.on("mousedown", () => {
       navigate("/design/addNames");
     })
-
+    
     // console.log("group ", group, group.type);
     // Force recalculation of bounds
     group._calcBounds();
@@ -1678,21 +1406,19 @@ const MainDesignTool = ({
       width: fontSize === "small" ? 60 : 190,
       left: position?.x || canvas.getWidth() / 2,
       top: position?.y || canvas.getHeight() / 2,
-
+      
       // originX: 'center',
       // originY: 'center',
       isDesignGroup: true,
       hasBorders: false,
-
+      
     });
-
+    
     group.setCoords();
     canvas.add(group);
     canvas.requestRenderAll();
     syncMirrorCanvas(activeSide);
   }
-
-
   useEffect(() => {
     const loadAndRender = async () => {
       if (nameAndNumberDesignState?.fontFamily) {
@@ -1700,33 +1426,16 @@ const MainDesignTool = ({
       }
       renderNameAndNumber();
     };
-
+    
     loadAndRender();
   }, [isRender, addName, addNumber, nameAndNumberDesignState, activeSide]);
-  // useEffect(() => {
-
-  // const getImageFromCanvas = (fabricCanvas) => {
-  //   if (!fabricCanvas) return null;
-  //   // const canvas = fabricCanvas.lowerCanvasEl;
-  //   return fabricCanvas .toDataURL("image/png");
-  // };
-
-  // console.log("key",activeSide  );
-  // if(activeSide == "front"){
-  //   console.log("active side",activeSide,"changing front")
-  //   if(fabricCanvasRef.current){
-  //     setFrontPreviewImage(getImageFromCanvas(fabricCanvasRef.current));
-  //   }
-  // }
-  // else{
-  //     console.log("active side",activeSide,"changing back")
-  //     if(fabricCanvasRef.current){
-  //       setBackPreviewImage(getImageFromCanvas(fabricCanvasRef.current));
-  //     }
-  // }
-  // // syncMirrorCanvas();
-  // },[fabricCanvasRef.current,activeSide])
-
+  
+  
+  
+    // **********************************************************************************************************************************************************
+    //                                                                                    OTHER USE EFFECTS
+    // **********************************************************************************************************************************************************
+  
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
     const existingObjects = canvas.getObjects();
@@ -1739,7 +1448,7 @@ const MainDesignTool = ({
         canvas.remove(obj);
       }
     });
-
+    
     const object = canvas.getObjects().find((obj) => obj.id === selectedTextId);
     // console.log("selectedTextId", selectedTextId, object)
     if (object) {
@@ -1748,48 +1457,11 @@ const MainDesignTool = ({
     }
     canvas.renderAll();
   }, [selectedTextId, isRender])
-
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedObject, setSelectedObject] = useState(null);
-  const handleLayerAction = (action) => {
-    if (selectedObject) {
-      const objectId = selectedObject.id;
-      switch (action) {
-        case "bringForward":
-          selectedObject.bringForward();
-          dispatch(moveTextForwardState(objectId));
-          selectedObject.canvas.requestRenderAll(); // Add this line
-          setSelectedpopup(!selectedpopup);
-          break;
-        case "sendBackward":
-          selectedObject.sendBackwards();
-          dispatch(moveTextBackwardState(objectId));
-          selectedObject.canvas.requestRenderAll(); // Add this line
-          break;
-        case "bringToFront":
-          selectedObject.bringToFront();
-          dispatch(moveTextForwardState(objectId));
-          selectedObject.canvas.requestRenderAll(); // Add this line
-          break;
-        case "sendToBack":
-          selectedObject.sendToBack();
-          dispatch(moveTextBackwardState(objectId));
-
-          selectedObject.canvas.requestRenderAll(); // Add this line
-          break;
-        default:
-          break;
-      }
-    }
-  };
-
-
-  // useEffect(() =>{
-  //   const st = setTimeout(() =>{
-  //    syncMirrorCanvas(activeSide);
-  //   },3000);
-  // },[textContaintObject,activeSide])
+  
+  
+  
+  
+  
 
   return (
     <div id={style.canvas} style={{ position: "relative", top: 5 }} >
@@ -1798,7 +1470,7 @@ const MainDesignTool = ({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onLayerAction={handleLayerAction}
-      />
+        />
 
     </div>
   );
