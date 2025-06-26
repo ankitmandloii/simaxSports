@@ -29,7 +29,7 @@ const DropboxPicker = ({ onFilesSelected, children }) => {
     if (!window.Dropbox) return;
 
     window.Dropbox.choose({
-      linkType: "preview",
+      linkType: "direct",
       multiselect: true,
       extensions: [".pdf", ".png", ".jpg", ".jpeg", ".psd", ".ai", ".tiff"],
       success: (files) => {
