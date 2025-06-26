@@ -289,7 +289,8 @@ const createNewImage = (
   locked: false,
   layerIndex: totalElements,
   // Ai Operation
-  remomveBg: false,
+  replaceBackgroundColor: "#000000", // stored with hash
+  replaceBgParamValue: "bg-remove=true&bg=AABB22",
   cropAndTrim: false,
   superResolution: false,
   cropAndTrimParamValue:

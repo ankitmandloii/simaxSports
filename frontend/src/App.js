@@ -297,10 +297,10 @@ function App() {
   };
   // set initial
   useEffect(() => {
-    if (location.pathname === "/") {
-      navigate("design/product", { replace: true });
-    }
-  }, [location.pathname, navigate]);
+    // if (location.pathname === "/") {
+    // }
+    navigate("design/product", { replace: true });
+  }, []);
 
   return (
     <>

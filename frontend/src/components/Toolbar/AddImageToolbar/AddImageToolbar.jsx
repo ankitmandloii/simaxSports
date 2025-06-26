@@ -21,6 +21,8 @@ import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { duplicateImageState, moveElementBackwardState, moveElementForwardState, toggleImageLockState, toggleLockState, updateImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 import { useNavigate } from 'react-router-dom';
+import ReplaceBackgroundColorPicker from '../../CommonComponent/ChooseColorBox/ReplaceBackgroundColorPicker.jsx';
+
 // import { setCenterState, setFlipXState, setFlipYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState, setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
 // import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
 // import { duplicateTextState, addTextState, updateTextState, toggleLockState, moveTextForwardState, moveTextBackwardState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
@@ -61,6 +63,8 @@ const AddImageToolbar = () => {
   const [activeTransform, setActiveTransform] = useState('');
   const [cropAndTrim, setCropAndTrim] = useState(false);
   const [superResolution, setSuperResolution] = useState(false);
+  const [bgColor, setBgColor] = useState("#000000");
+
   const [resetDefault, setResetDefault] = useState(false);
   const imgRef = useRef(null);
 
@@ -78,7 +82,7 @@ const AddImageToolbar = () => {
   const iconY = flipYValue !== true ? <FlipSecondIcon /> : <FlipSecondWhiteColorIcon />;
 
   // const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
-  // const [textColorPopup, setTextColorPopup] = useState(false);
+  const [bgColorPopup, setBGColorPopup] = useState(false);
   // console.log("-----------imggg", imageContaintObject);
   // Init from store
   useEffect(() => {
@@ -148,7 +152,7 @@ const AddImageToolbar = () => {
     globalDispatch("scaleX", scaleX * scaleRatio);
     globalDispatch("scaleY", scaleY * scaleRatio);
     globalDispatch("scaledValue", parsed);
-     setResetDefault(false);
+    setResetDefault(false);
   };
 
   const handleBlur = () => {
@@ -159,7 +163,7 @@ const AddImageToolbar = () => {
       globalDispatch("scaleY", 1);
       globalDispatch("scaledValue", 1);
     }
-     setResetDefault(false);
+    setResetDefault(false);
   };
 
 
@@ -172,7 +176,7 @@ const AddImageToolbar = () => {
     if (isNaN(parsed) || parsed < 0 || parsed > 360) return;
 
     globalDispatch("angle", parsed);
-     setResetDefault(false);
+    setResetDefault(false);
   };
 
 
@@ -182,7 +186,7 @@ const AddImageToolbar = () => {
       setRangeValuesRotate("0");
       globalDispatch("angle", 0);
     }
-     setResetDefault(false);
+    setResetDefault(false);
   };
   const handleDuplicateImage = () => {
     if (!selectedImageId) return;
@@ -205,19 +209,19 @@ const AddImageToolbar = () => {
   //   { name: 'Single Color', transform: '?monochrome=ff0000' },
   //   { name: 'Black/White', transform: '?sat=-100' }
   // ]);
-  const buildUrl = useCallback((transform,resetAll) => {
+  const buildUrl = useCallback((transform, resetAll) => {
     const base = img?.src?.split('?')[0] || '';
-    if(resetAll){
+    if (resetAll) {
       return base;
     }
     return `${base}${transform}`;
   }, [img]);
 
   const applyTransform = useCallback(
-    async (transform,resetAll) => {
+    async (transform, resetAll) => {
       if (!img?.src) return;
-       
-      const newUrl = buildUrl(transform,resetAll);
+
+      const newUrl = buildUrl(transform, resetAll);
       const loadingPlaceholder = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s'; // or any placeholder image
 
       // Set loading: true in local + global state
@@ -245,7 +249,7 @@ const AddImageToolbar = () => {
           transform.includes("bg-remove=true") ? "bg-remove=true" : ""
         );
 
-        console.log("URL..............",newUrl)
+        console.log("URL..............", newUrl)
 
         setLoading(false);
       };
@@ -294,7 +298,7 @@ const AddImageToolbar = () => {
     setflipXValue(value);
     globalDispatch("flipX", value);
     console.log("clicked", value);
-     setResetDefault(false);
+    setResetDefault(false);
   }
 
 
@@ -308,7 +312,7 @@ const AddImageToolbar = () => {
     setflipYValue(value);
     //console.log("y value ", value);
     globalDispatch("flipY", value);
-     setResetDefault(false);
+    setResetDefault(false);
   }
 
   // useEffect(() => {
@@ -403,8 +407,50 @@ const AddImageToolbar = () => {
     setRemoveBackground(!removeBackground);
     // update redux store
     globalDispatch("removeBg", !removeBackground);
-     setResetDefault(false);
+    setResetDefault(false);
   }
+
+
+
+const bGReplaceColorChangedFunctionCalled = (color) => {
+  const hex = color.replace('#', '');
+  const value = isActive(`bg-remove=true&bg=${hex}`);
+  toggle(`bg-remove=true&bg=${hex}`, value);
+
+  setBgColor(color);
+  setResetDefault(false);
+
+  const imgixParam = `bg-remove=true&bg=${hex}`;
+  globalDispatch("replaceBackgroundColor", color);
+  globalDispatch("replaceBgParamValue", imgixParam);
+};
+
+  // const bGReplaceColorChangedFunctionCalled = (color) => {
+  //   // Get current toggle state (true/false)
+  //    const hex = color.replace('#', '');
+  //   const value = isActive(`bg-remove=true&bg=${hex}`);
+
+  //   // Toggle the param (enables/disables it)
+  //   toggle(`bg-remove=true&bg=${hex}`, value);
+
+  //   // Set local state
+  //   setBgColor(color);
+  //   setResetDefault(false);
+
+  //   // Remove '#' and build Imgix param
+
+  //   const imgixParam = `bg-remove=true&bg=${hex}`;
+
+  //   // Update Redux store
+  //   globalDispatch("replaceBackgroundColor", color);              // e.g. "#AABB22"
+  //   globalDispatch("replaceBgParamValue", imgixParam);            // e.g. "bg-remove=true&bg=AABB22"
+  // };
+
+
+
+  const toggleBGReplaceColorPopup = () => {
+    setBGColorPopup(!bgColorPopup);
+  };
 
   function cropAndTrimdHandler(e) {
     // update local state
@@ -414,7 +460,7 @@ const AddImageToolbar = () => {
     setCropAndTrim(!cropAndTrim);
     // update redux store
     globalDispatch("cropAndTrim", !cropAndTrim);
-     setResetDefault(false);
+    setResetDefault(false);
   }
 
   function superResolutiondHandler(e) {
@@ -424,12 +470,12 @@ const AddImageToolbar = () => {
     setSuperResolution(!superResolution);
     // update redux store
     globalDispatch("superResolution", !superResolution);
-     setResetDefault(false);
-  } 
+    setResetDefault(false);
+  }
 
 
   const handleReset = () => {
-    if(resetDefault) return;
+    if (resetDefault) return;
     // 1. Dispatch global image state reset
     const changes = {
       scaleX: 1,
@@ -445,6 +491,7 @@ const AddImageToolbar = () => {
       removeBg: false,
       cropAndTrim: false,
       superResolution: false,
+      replaceBackgroundColor: "#000000"
     };
 
     dispatch(updateImageState({ id: selectedImageId, changes }));
@@ -454,12 +501,14 @@ const AddImageToolbar = () => {
     setCropAndTrim(false);
     setSuperResolution(false);
     setActiveTransform('');
+    setBGColorPopup(false);
+    setBgColor("#000000");
     // 3. Remove active transformations via `toggle`
     // const removeBgKey = 'bg-remove=true';
     // const cropKey = 'trim=color';
     // const enhanceKey = 'auto=enhance&sharp=80&upscale=true';
-    if(previewUrl?.split("?")?.length > 1){
-      applyTransform('',true);
+    if (previewUrl?.split("?")?.length > 1) {
+      applyTransform('', true);
     }
     setResetDefault(true);
     setSelectedFilter("Normal")
@@ -509,7 +558,7 @@ const AddImageToolbar = () => {
                       onClick={() => {
                         applyTransform(f.transform);
                         setSelectedFilter(f.name);
-                        if(f.name != "Normal") setResetDefault(false);
+                        if (f.name != "Normal") setResetDefault(false);
                       }}
                     >
                       {
@@ -668,20 +717,29 @@ const AddImageToolbar = () => {
               <hr />
 
 
-              {/* <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+              <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Replace Background With AI<span className={styles.aiBadge}>AI</span></div>
 
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={() => { }}>
+               
+                  <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleBGReplaceColorPopup}>
+                    <SpanColorBox color={bgColor} />
+                    {bgColorPopup && (
+                      <ReplaceBackgroundColorPicker
+                        closePopupHandler={toggleBGReplaceColorPopup}
+                        defaultColor={bgColor}
+                        onApply={bGReplaceColorChangedFunctionCalled}
+                      />
+                    )}
+                 
 
-
-                  <span><AngleActionIcon /></span>
+                  {/* <span><AngleActionIcon /></span> */}
 
 
 
                 </div>
-              </div> */}
+              </div>
 
-              {/* <hr /> */}
+              <hr />
 
               <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
@@ -768,7 +826,7 @@ const AddImageToolbar = () => {
                   onClick={() => {
                     globalDispatch("position", { x: 290, y: img.position.y });
                     setCenterActive(!centerActive);
-                     setResetDefault(false);
+                    setResetDefault(false);
                   }}
                 >
                   <span><AlignCenterIcon /></span>

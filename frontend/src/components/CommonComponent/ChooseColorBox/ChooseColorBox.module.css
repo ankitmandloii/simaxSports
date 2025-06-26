@@ -81,6 +81,37 @@
   text-align: center;
 }
 
+.applyButtonWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.applyButton {
+  background: #000000;
+  color: #fff;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.applyButton:hover {
+  background: #005bff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+.applyButton:active {
+  transform: scale(0.98);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+
 @media screen and (max-width: 500px) {
   .chooseColorBox {
     right: 0;
