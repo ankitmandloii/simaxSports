@@ -13,7 +13,6 @@ import { toast } from "react-toastify";
 
 const UploadArtToolbar = () => {
   const [files, setFiles] = useState([]);
-  const [dropboxFiles, setDropboxFiles] = useState([]);
   const inputRef = useRef();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -138,24 +137,6 @@ const UploadArtToolbar = () => {
             </div>
           )}
 
-          {dropboxFiles.length > 0 && (
-            <div className={style.fileList}>
-              <h4>Dropbox files:</h4>
-              <ul>
-                {dropboxFiles.map((file, idx) => (
-                  <li key={idx} className={style.fileItem}>
-                    <a href={file.link} target="_blank" rel="noopener noreferrer">{file.name}</a>
-                    <span className={style.removeIcon} onClick={() => {
-                      const updated = [...dropboxFiles];
-                      updated.splice(idx, 1);
-                      setDropboxFiles(updated);
-                    }}>✖</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
           <div className={style.uploadBtnFlexContainer}>
             <div className={style.uploadOptionBtn} onClick={() => googleDriveLogin()}>
               <img src={googleDrive} alt="Google Drive" />
@@ -165,7 +146,6 @@ const UploadArtToolbar = () => {
             <DropboxPicker
               onFilesSelected={async (files) => {
                 if (files && files.length > 0) {
-                  setDropboxFiles(files);
                   const fetchedFiles = await Promise.all(
                     files.map(async (fileMeta) => {
                       const response = await fetch(fileMeta.link);
@@ -173,7 +153,7 @@ const UploadArtToolbar = () => {
                       return new File([blob], fileMeta.name, { type: blob.type });
                     })
                   );
-                  await handleFiles(fetchedFiles);
+                  await handleFiles(fetchedFiles); // Upload immediately without showing name
                 }
               }}
             >
