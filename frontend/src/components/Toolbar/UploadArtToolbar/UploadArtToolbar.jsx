@@ -1,8 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { ChooseFileIcon } from "../../iconsSvg/CustomIcon";
 import dropBox from '../../images/dropBox.png';
 import googleDrive from "../../images/googleDrive.png";
-import { useGoogleLogin } from '@react-oauth/google';
+import useDrivePicker from "react-google-drive-picker";
 import DropboxPicker from "../../CommonComponent/DropboxPicker";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -10,13 +10,24 @@ import { addImageState } from "../../../redux/FrontendDesign/TextFrontendDesignS
 import style from './UploadArtToolbar.module.css';
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useGoogleLogin } from "@react-oauth/google";
+
+const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
+const DEVELOPER_KEY = process.env.REACT_APP_DEVELOPER_KEY;
 
 const UploadArtToolbar = () => {
   const [files, setFiles] = useState([]);
+  const [driveFiles, setDriveFiles] = useState([]);
+  const [dropboxFiles, setDropboxFiles] = useState([]);
   const inputRef = useRef();
+  const [openPicker] = useDrivePicker();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+  const [googleAccessToken, setGoogleAccessToken] = useState(null);
+
+
+
 
   const handleFiles = async (files) => {
     const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -29,11 +40,17 @@ const UploadArtToolbar = () => {
 
     try {
       setIsLoading(true);
+
       const response = await axios.post(
         `${BASE_URL}imageOperation/upload`,
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        }
       );
+
       response.data.files.forEach((fileObj) => {
         dispatch(addImageState({ src: fileObj.url }));
       });
@@ -57,47 +74,57 @@ const UploadArtToolbar = () => {
 
   const handleClick = () => inputRef.current.click();
 
-  const googleDriveLogin = useGoogleLogin({
-    scope: 'https://www.googleapis.com/auth/drive.readonly',
-    onSuccess: async (tokenResponse) => {
-      try {
-        const res = await axios.get(
-          'https://www.googleapis.com/drive/v3/files',
-          {
-            headers: {
-              Authorization: `Bearer ${tokenResponse.access_token}`,
-            },
-            params: {
-              pageSize: 20,
-              fields: 'files(id, name, mimeType)',
-              q: "mimeType contains 'image/'"
-            },
-          }
-        );
+  const handleOpenGoogleDrivePicker = () => {
+    openPicker({
+      clientId: CLIENT_ID,
+      developerKey: DEVELOPER_KEY,
+      viewId: "DOCS",
+      showUploadView: true,
+      showUploadFolders: true,
+      supportDrives: true,
+      multiselect: true,
+      callbackFunction: async (data) => {
+        if (data.action === "cancel") return;
 
-        const files = res.data.files;
-        window._googleAccessToken = tokenResponse.access_token;
+        if (data.docs && data.docs.length > 0) {
+          const driveFilesMeta = data.docs;
 
-        for (const file of files) {
-          const blobRes = await fetch(
-            `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`,
-            {
-              headers: {
-                Authorization: `Bearer ${tokenResponse.access_token}`,
-              },
-            }
+          // Now fetch the file contents using file.url
+          const filesToUpload = await Promise.all(
+            driveFilesMeta.map(async (doc) => {
+              try {
+                const response = await fetch(doc.url); // this works if file is public or user is authed
+                const blob = await response.blob();
+                return new File([blob], doc.name, { type: doc.mimeType });
+              } catch (err) {
+                toast.error(`Error fetching ${doc.name}`);
+                return null;
+              }
+            })
           );
-          const blob = await blobRes.blob();
-          const fetchedFile = new File([blob], file.name, { type: blob.type });
-          await handleFiles([fetchedFile]);
-        }
 
-      } catch (err) {
-        console.error("Google Drive API error:", err);
-        toast.error("Failed to upload Google Drive files");
-      }
+          const filteredFiles = filesToUpload.filter(f => f !== null);
+          if (filteredFiles.length > 0) {
+            await handleFiles(filteredFiles);
+            setDriveFiles(driveFilesMeta);
+          }
+        }
+      },
+    });
+  };
+
+
+  useEffect(() => {
+    if (googleAccessToken) {
+      handleOpenGoogleDrivePicker();
+    }
+  }, [googleAccessToken]);
+
+  const loginToGoogle = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      setGoogleAccessToken(tokenResponse.access_token); // just set it
     },
-    onError: () => toast.error("Google login failed"),
+    scope: "https://www.googleapis.com/auth/drive.readonly",
   });
 
   return (
@@ -110,7 +137,11 @@ const UploadArtToolbar = () => {
 
       {!isLoading ? (
         <div className={style.toolbarBox}>
-          <div className={style.dropZone} onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
+          <div
+            className={style.dropZone}
+            onDrop={handleDrop}
+            onDragOver={(e) => e.preventDefault()}
+          >
             <p>Drag & drop files here</p>
             <p className={style.marginTop}>or</p>
             <button className={style.uploadFileBtn} onClick={handleClick}>
@@ -126,11 +157,66 @@ const UploadArtToolbar = () => {
                 {files.map((file, idx) => (
                   <li key={idx} className={style.fileItem}>
                     {file.name}
-                    <span className={style.removeIcon} onClick={() => {
-                      const updated = [...files];
-                      updated.splice(idx, 1);
-                      setFiles(updated);
-                    }}>✖</span>
+                    <span
+                      className={style.removeIcon}
+                      onClick={() => {
+                        const updated = [...files];
+                        updated.splice(idx, 1);
+                        setFiles(updated);
+                      }}
+                    >
+                      ✖
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {driveFiles.length > 0 && (
+            <div className={style.fileList}>
+              <h4>Google Drive files:</h4>
+              <ul>
+                {driveFiles.map((file, idx) => (
+                  <li key={idx} className={style.fileItem}>
+                    <a href={file.url} target="_blank" rel="noopener noreferrer">
+                      {file.name}
+                    </a>
+                    <span
+                      className={style.removeIcon}
+                      onClick={() => {
+                        const updated = [...driveFiles];
+                        updated.splice(idx, 1);
+                        setDriveFiles(updated);
+                      }}
+                    >
+                      ✖
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {dropboxFiles.length > 0 && (
+            <div className={style.fileList}>
+              <h4>Dropbox files:</h4>
+              <ul>
+                {dropboxFiles.map((file, idx) => (
+                  <li key={idx} className={style.fileItem}>
+                    <a href={file.link} target="_blank" rel="noopener noreferrer">
+                      {file.name}
+                    </a>
+                    <span
+                      className={style.removeIcon}
+                      onClick={() => {
+                        const updated = [...dropboxFiles];
+                        updated.splice(idx, 1);
+                        setDropboxFiles(updated);
+                      }}
+                    >
+                      ✖
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -138,7 +224,7 @@ const UploadArtToolbar = () => {
           )}
 
           <div className={style.uploadBtnFlexContainer}>
-            <div className={style.uploadOptionBtn} onClick={() => googleDriveLogin()}>
+            <div className={style.uploadOptionBtn} onClick={handleOpenGoogleDrivePicker}>
               <img src={googleDrive} alt="Google Drive" />
               <p>Use Google Drive</p>
             </div>
@@ -165,10 +251,17 @@ const UploadArtToolbar = () => {
           </div>
 
           <p className={style.uploadPara}>
-            Upload ANY file type, but we prefer vector, high-res, or large files such as: .AI, .EPS, .PDF, .TIFF, .PSD, .JPG, .PNG
+            Upload ANY file type, but we prefer vector, high-res, or large files such as:
+            .AI, .EPS, .PDF, .TIFF, .PSD, .JPG, .PNG
           </p>
 
-          <input type="file" multiple ref={inputRef} style={{ display: "none" }} onChange={(e) => handleFiles(e.target.files)} />
+          <input
+            type="file"
+            multiple
+            ref={inputRef}
+            style={{ display: "none" }}
+            onChange={(e) => handleFiles(e.target.files)}
+          />
         </div>
       ) : (
         <div>
