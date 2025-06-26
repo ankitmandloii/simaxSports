@@ -252,7 +252,7 @@ const createNewText = ({ value, id }, totalElements) => ({
   originalScaleX: 1,
   originalScaleY: 1,
   scaledValue: 1,
-  rotate: 0,
+  angle: 0,
   spacing: 1,
   arc: 0,
   outLineColor: "",
@@ -453,7 +453,7 @@ const TextFrontendDesignSlice = createSlice({
         isRenderOrNot,
       } = action.payload;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      const text = state.present[side].texts.find((t) => t.id === id);
+      const text = state.present[side]?.texts?.find((t) => t.id === id);
       if (text && !text.locked) Object.assign(text, changes);
       if (isRenderOrNot) {
         state.present[side].setRendering = !state.present[side].setRendering;
@@ -634,7 +634,7 @@ const TextFrontendDesignSlice = createSlice({
       const { side = state.activeSide, changes } = action.payload;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       if (state.present[side]?.nameAndNumberDesignState) {
-        Object.assign(state.present[side].nameAndNumberDesignState, changes);
+        Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
       }
       state.present[side].setRendering = nanoid();
       state.future[side] = [];
@@ -749,7 +749,7 @@ const TextFrontendDesignSlice = createSlice({
       } = action.payload;
       console.log("id", id, "changes........................", changes);
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      const image = state.present[side].images.find((img) => img.id === id);
+      const image = state.present[side]?.images?.find((img) => img.id === id);
       if (image && !image.locked) Object.assign(image, changes);
       if (isRenderOrNot) {
         state.present[side].setRendering = !state.present[side].setRendering;

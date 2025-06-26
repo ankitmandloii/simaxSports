@@ -61,6 +61,7 @@ const AddImageToolbar = () => {
   const [activeTransform, setActiveTransform] = useState('');
   const [cropAndTrim, setCropAndTrim] = useState(false);
   const [superResolution, setSuperResolution] = useState(false);
+  const [resetDefault, setResetDefault] = useState(false);
   const imgRef = useRef(null);
 
   const [filters, setFilters] = useState(BASE_FILTERS);
@@ -108,7 +109,7 @@ const AddImageToolbar = () => {
       // ) || BASE_FILTERS[0];
       // setSelectedFilter(baseFilter.name);
     } catch { }
-  }, [img, selectedImageId]);
+  }, [img, selectedImageId, resetDefault]);
 
 
   useEffect(() => {
@@ -147,17 +148,18 @@ const AddImageToolbar = () => {
     globalDispatch("scaleX", scaleX * scaleRatio);
     globalDispatch("scaleY", scaleY * scaleRatio);
     globalDispatch("scaledValue", parsed);
+     setResetDefault(false);
   };
 
   const handleBlur = () => {
-    // const parsed = parseFloat(rangeValuesSize);
-    // if (isNaN(parsed) || parsed < 0.2 || parsed > 10) {
-    //   setRangeValuesSize("5");
-    //   setPrevSize(5);
-    //   globalDispatch("scaleX", 5);
-    //   globalDispatch("scaleY", 5);
-    //   globalDispatch("scaledValue", 5);
-    // }
+    const parsed = parseFloat(rangeValuesSize);
+    if (isNaN(parsed) || parsed < 0.2 || parsed > 10) {
+      setRangeValuesSize("1");
+      globalDispatch("scaleX", 1);
+      globalDispatch("scaleY", 1);
+      globalDispatch("scaledValue", 1);
+    }
+     setResetDefault(false);
   };
 
 
@@ -170,15 +172,17 @@ const AddImageToolbar = () => {
     if (isNaN(parsed) || parsed < 0 || parsed > 360) return;
 
     globalDispatch("angle", parsed);
+     setResetDefault(false);
   };
 
 
   const handleRotateBlur = () => {
-    // const parsed = parseFloat(rangeValuesRotate);
-    // if (isNaN(parsed) || parsed < 0 || parsed > 360) {
-    //   setRangeValuesRotate("0");
-    //   globalDispatch("rotate", 0);
-    // }
+    const parsed = parseFloat(rangeValuesRotate);
+    if (isNaN(parsed) || parsed < 0 || parsed > 360) {
+      setRangeValuesRotate("0");
+      globalDispatch("angle", 0);
+    }
+     setResetDefault(false);
   };
   const handleDuplicateImage = () => {
     if (!selectedImageId) return;
@@ -191,6 +195,7 @@ const AddImageToolbar = () => {
   }
 
   const globalDispatch = useCallback((label, value) => {
+
     dispatch(updateImageState({ id: selectedImageId, changes: { [label]: value }, isRenderOrNot: true }));
   }, [dispatch, selectedImageId]);
 
@@ -200,16 +205,19 @@ const AddImageToolbar = () => {
   //   { name: 'Single Color', transform: '?monochrome=ff0000' },
   //   { name: 'Black/White', transform: '?sat=-100' }
   // ]);
-  const buildUrl = useCallback((transform) => {
+  const buildUrl = useCallback((transform,resetAll) => {
     const base = img?.src?.split('?')[0] || '';
+    if(resetAll){
+      return base;
+    }
     return `${base}${transform}`;
   }, [img]);
 
   const applyTransform = useCallback(
-    async (transform) => {
+    async (transform,resetAll) => {
       if (!img?.src) return;
-
-      const newUrl = buildUrl(transform);
+       
+      const newUrl = buildUrl(transform,resetAll);
       const loadingPlaceholder = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s'; // or any placeholder image
 
       // Set loading: true in local + global state
@@ -236,6 +244,8 @@ const AddImageToolbar = () => {
           "removeBgParamValue",
           transform.includes("bg-remove=true") ? "bg-remove=true" : ""
         );
+
+        console.log("URL..............",newUrl)
 
         setLoading(false);
       };
@@ -274,7 +284,7 @@ const AddImageToolbar = () => {
     });
   };
 
-  const toggle = (param, condition) => applyTransform(condition ? activeTransform.replace(new RegExp(`${param}(&|$)`), '') : `${activeTransform}${activeTransform ? '&' : '?'}${param}`);
+  const toggle = (param, condition) => applyTransform(condition ? activeTransform.replace(new RegExp(`${param}(&|$)`), '',) : `${activeTransform}${activeTransform ? '&' : '?'}${param}`);
 
   const isActive = useCallback((param) => activeTransform.includes(param), [activeTransform]);
 
@@ -284,6 +294,7 @@ const AddImageToolbar = () => {
     setflipXValue(value);
     globalDispatch("flipX", value);
     console.log("clicked", value);
+     setResetDefault(false);
   }
 
 
@@ -297,6 +308,7 @@ const AddImageToolbar = () => {
     setflipYValue(value);
     //console.log("y value ", value);
     globalDispatch("flipY", value);
+     setResetDefault(false);
   }
 
   // useEffect(() => {
@@ -386,11 +398,12 @@ const AddImageToolbar = () => {
 
   function removeBackgroundHandler(e) {
     // update local state
-    const value = isActive('bg-remove=true&fit=crop&crop=edges');
-    toggle('bg-remove=true&fit=crop&crop=edges', value)
+    const value = isActive('bg-remove=true');
+    toggle('bg-remove=true', value)
     setRemoveBackground(!removeBackground);
     // update redux store
     globalDispatch("removeBg", !removeBackground);
+     setResetDefault(false);
   }
 
   function cropAndTrimdHandler(e) {
@@ -401,6 +414,7 @@ const AddImageToolbar = () => {
     setCropAndTrim(!cropAndTrim);
     // update redux store
     globalDispatch("cropAndTrim", !cropAndTrim);
+     setResetDefault(false);
   }
 
   function superResolutiondHandler(e) {
@@ -410,11 +424,61 @@ const AddImageToolbar = () => {
     setSuperResolution(!superResolution);
     // update redux store
     globalDispatch("superResolution", !superResolution);
-  }
-  useEffect(() => {
-    applyTransform();
-  }, [])
+     setResetDefault(false);
+  } 
 
+
+  const handleReset = () => {
+    if(resetDefault) return;
+    // 1. Dispatch global image state reset
+    const changes = {
+      scaleX: 1,
+      scaleY: 1,
+      rotate: 0,
+      flipX: false,
+      flipY: false,
+      position: { x: 280, y: 200 },
+      scaledValue: 1,
+      angle: 0,
+      locked: false,
+      // AI operation states (optional to store)
+      removeBg: false,
+      cropAndTrim: false,
+      superResolution: false,
+    };
+
+    dispatch(updateImageState({ id: selectedImageId, changes }));
+
+    // 2. Reset local component states
+    setRemoveBackground(false);
+    setCropAndTrim(false);
+    setSuperResolution(false);
+    setActiveTransform('');
+    // 3. Remove active transformations via `toggle`
+    // const removeBgKey = 'bg-remove=true';
+    // const cropKey = 'trim=color';
+    // const enhanceKey = 'auto=enhance&sharp=80&upscale=true';
+    if(previewUrl?.split("?")?.length > 1){
+      applyTransform('',true);
+    }
+    setResetDefault(true);
+    setSelectedFilter("Normal")
+    // if (isActive(removeBgKey)) toggle(removeBgKey, true);      // turns OFF
+    // if (isActive(cropKey)) toggle(cropKey, true);              // turns OFF
+    // if (isActive(enhanceKey)) toggle(enhanceKey, true);        // turns OFF
+
+    // 4. Dispatch Redux AI states explicitly if needed
+    // globalDispatch("removeBg", false);
+    // globalDispatch("cropAndTrim", false);
+    // globalDispatch("superResolution", false);
+
+  };
+
+  useEffect(() => {
+    if (img?.src?.split("?").length <= 1) {
+      applyTransform("?auto=enhance");
+    }
+  }, [])
   // console.log("previewUrl", previewUrl, "image src", img?.src);
   //  if(loading) return <div className={styles.loadingOverlay}><div className={styles.loadingSpinner} /><p>Applying changes...</p></div>;
   return (
@@ -425,7 +489,7 @@ const AddImageToolbar = () => {
         <h5 className='Toolbar-badge'>Upload Art</h5>
         <span className={styles.crossIcon} onClick={handleBack}><CrossIcon /></span>
         <h3>Edit Your Artwork</h3>
-        <p>Our design professionals will select ink colors <br></br> for you or tellus your preferred colors at checkout.</p>
+        <p>Our design professionals will select ink colors for you or tellus your preferred colors at checkout.</p>
       </div>
 
       <div className={styles.toolbarBox}>
@@ -445,6 +509,7 @@ const AddImageToolbar = () => {
                       onClick={() => {
                         applyTransform(f.transform);
                         setSelectedFilter(f.name);
+                        if(f.name != "Normal") setResetDefault(false);
                       }}
                     >
                       {
@@ -463,9 +528,9 @@ const AddImageToolbar = () => {
 
               {selectedFilter === "Normal" || selectedFilter === "Single Color" && (<hr />)}
 
-              {selectedFilter === "Normal" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
+              {/* {selectedFilter === "Normal" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Edit Colors</div>
-                {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleTextColorPopup}>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleTextColorPopup}>
                   <SpanColorBox color={textColor} />
                   <SpanColorBox color={textColor} />
                   <SpanColorBox color={textColor} />
@@ -480,8 +545,8 @@ const AddImageToolbar = () => {
                     />
 
                   )}
-                </div> */}
-              </div>)}
+                </div>
+              </div>)} */}
 
 
 
@@ -603,7 +668,7 @@ const AddImageToolbar = () => {
               <hr />
 
 
-              <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+              {/* <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Replace Background With AI<span className={styles.aiBadge}>AI</span></div>
 
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={() => { }}>
@@ -614,9 +679,9 @@ const AddImageToolbar = () => {
 
 
                 </div>
-              </div>
+              </div> */}
 
-              <hr />
+              {/* <hr /> */}
 
               <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
@@ -639,8 +704,8 @@ const AddImageToolbar = () => {
                     max="10"
                     step="0.1"
                     value={rangeValuesSize}
-                    // onChange={handleRangeInputSizeChange}
-                    // onBlur={handleBlur}
+                    onChange={handleRangeInputSizeChange}
+                    onBlur={handleBlur}
                     className={styles.spanValueBoxInput}
                   />
                   {/* Size end here */}
@@ -679,9 +744,9 @@ const AddImageToolbar = () => {
                     min="0"
                     max="360"
                     step="0.1"
-                    // value={rangeValuesRotate}
-                    // onChange={handleRangeInputRotateChange}
-                    // onBlur={handleRotateBlur}
+                    value={rangeValuesRotate}
+                    onChange={handleRangeInputRotateChange}
+                    onBlur={handleRotateBlur}
                     className={styles.spanValueBoxInput}
                   />
 
@@ -690,7 +755,7 @@ const AddImageToolbar = () => {
               </div>
 
               <hr></hr>
-              <p className='add-image-reset-text'>Reset To Default</p>
+              <p className={styles.resetButton} onClick={handleReset}>Reset To Defaults</p>
 
             </div>
 
@@ -703,6 +768,7 @@ const AddImageToolbar = () => {
                   onClick={() => {
                     globalDispatch("position", { x: 290, y: img.position.y });
                     setCenterActive(!centerActive);
+                     setResetDefault(false);
                   }}
                 >
                   <span><AlignCenterIcon /></span>

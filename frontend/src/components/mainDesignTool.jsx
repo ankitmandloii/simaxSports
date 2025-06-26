@@ -131,7 +131,7 @@ const MainDesignTool = ({
     dispatch(
       updateImageState({
         "id": id,
-        changes: { [lable]: value },
+        changes: { [lable]: (lable=="angle"?Number(value).toFixed(1):value) },
       })
     );
     dispatch(
@@ -211,62 +211,51 @@ const MainDesignTool = ({
   const bringPopup = () => {
     setIsModalOpen(true);
   };
-  const handleScale = (e) => {
-    const clamp = (value, min = 0.2, max = 20) => Math.max(min, Math.min(value, max));
-    const obj = e.target;
-    const canvas = fabricCanvasRef.current;
+ const handleScale = (e) => {
+  const clamp = (value, min = 0.2, max = 20) => Math.max(min, Math.min(value, max));
+  const obj = e.target;
+  const canvas = fabricCanvasRef.current;
 
-    if (!obj || !obj.id || !e.transform || !['scale', 'scaleX', 'scaleY'].includes(e.transform.action)) return;
+  if (!obj || !obj.id || !e.transform || !['scale', 'scaleX', 'scaleY'].includes(e.transform.action)) return;
 
-    // Get original image data
-    const imageData = imageContaintObject?.find(img => img.id === obj.id);
-    if (!imageData) return;
+  const imageData = imageContaintObject?.find(img => img.id === obj.id);
+  if (!imageData) return;
 
-    const center = obj.getCenterPoint();
-    const baseWidth = 150;
-    const originalWidth = obj.width;
-    const originalHeight = obj.height;
-    const baseScaleX = baseWidth / originalWidth;
-    const baseScaleY = baseWidth / originalHeight;
+  const center = obj.getCenterPoint();
+  const originalWidth = obj.width;
+  const originalHeight = obj.height;
 
-    // Get current user scale relative to base
-    const actualScaleX = obj.scaleX / baseScaleX;
-    const actualScaleY = obj.scaleY / baseScaleY;
+  const MAX_WIDTH = 300;
+  const MAX_HEIGHT = 300;
 
-    let newScaleX, newScaleY;
+  // Calculate base (initial bounding box) scale
+  const boundingScale = Math.min(MAX_WIDTH / originalWidth, MAX_HEIGHT / originalHeight);
 
-    // if (e.transform.action === 'scale') {
-    //   // Uniform scale
-    //   const uniformScale = clamp(Math.sqrt(actualScaleX * actualScaleY));
-    //   newScaleX = baseScaleX * uniformScale;
-    //   newScaleY = baseScaleY * uniformScale;
-    // } else {
-    //   // Non-uniform scale
+  // Actual current scale relative to that base
+  const relativeScaleX = obj.scaleX / boundingScale;
+  const relativeScaleY = obj.scaleY / boundingScale;
 
-    // }
-    newScaleX = baseScaleX * clamp(actualScaleX);
-    newScaleY = baseScaleY * clamp(actualScaleY);
-    // Apply scaled values
-    obj.scaleX = newScaleX;
-    obj.scaleY = newScaleY;
+  // Clamp to avoid extreme zoom in/out
+  const clampedScaleX = clamp(relativeScaleX);
+  const clampedScaleY = clamp(relativeScaleY);
 
-    // Maintain center
-    obj.setPositionByOrigin(center, 'center', 'center');
-    obj.setCoords();
+  // Apply scaled values
+  obj.scaleX = boundingScale * clampedScaleX;
+  obj.scaleY = boundingScale * clampedScaleY;
 
-    // Calculate stored scale values (relative to base)
-    const storedScaleX = newScaleX / baseScaleX;
-    const storedScaleY = newScaleY / baseScaleY;
+  // Maintain center position
+  obj.setPositionByOrigin(center, 'center', 'center');
+  obj.setCoords();
 
-    // Dispatch changes
-    globalDispatch("scaleX", parseFloat(storedScaleX.toFixed(1)), obj.id);
-    globalDispatch("scaleY", parseFloat(storedScaleY.toFixed(1)), obj.id);
-    globalDispatch("scaledValue", parseFloat((storedScaleX + storedScaleY / 2).toFixed(1)), obj.id); // Assuming uniform
+  // Dispatch relative scale values (user control)
+  globalDispatch("scaleX", parseFloat(clampedScaleX.toFixed(1)), obj.id);
+  globalDispatch("scaleY", parseFloat(clampedScaleY.toFixed(1)), obj.id);
+  globalDispatch("scaledValue", parseFloat(((clampedScaleX + clampedScaleY) / 2).toFixed(1)), obj.id);
 
-    // Render & sync
-    canvas?.renderAll();
-    syncMirrorCanvas(activeSide);
-  };
+  canvas?.renderAll();
+  syncMirrorCanvas(activeSide);
+};
+
 
   // **********************************************************************************************************************************************************
   //                                                                                    CONTROL BUTTONS AREA
@@ -730,7 +719,7 @@ const MainDesignTool = ({
             stroke: textInput.outLineColor || "",
             strokeWidth: textInput.outLineSize || 0,
             fill: textInput.textColor || "white",
-            angle: textInput.rotate || 0,
+            angle: textInput.angle || 0,
             left: textInput.position.x || 300,
             top: textInput.position.y || 300,
             fontFamily: textInput.fontFamily || "Impact",
@@ -770,7 +759,7 @@ const MainDesignTool = ({
             hasControls: true,
             flipX: textInput.flipX,
             flipY: textInput.flipY,
-            angle: textInput.rotate || 0,
+            angle: textInput.angle || 0,
             scaleX: textInput.scaleX,
             scaleY: textInput.scaleY,
             layerIndex: textInput.layerIndex,
@@ -859,7 +848,7 @@ const MainDesignTool = ({
             obj.setPositionByOrigin(center, 'center', 'center');
             obj.setCoords();
             globalDispatch("position", { x: obj.left, y: obj.top }, textInput.id);
-            globalDispatch("rotate", obj.angle, textInput.id);
+            globalDispatch("angle", obj.angle, textInput.id);
             canvas.renderAll();
             handleScale(e);
             syncMirrorCanvas(activeSide);
@@ -911,380 +900,685 @@ const MainDesignTool = ({
   //                                                                                    IMAGE OBJECTS AREA
   // **********************************************************************************************************************************************************
 
+  // const renderAllImageObjects = () => {
+  //   const canvas = fabricCanvasRef.current;
+  //   if (!canvas) return;
+
+  //   // Step 1: Clean duplicates (same ID multiple times on canvas)
+  //   const seenIds = new Set();
+  //   let duplicateRemoved = false;
+
+  //   canvas.getObjects('image').forEach(obj => {
+  //     if (!obj.id) return;
+  //     if (seenIds.has(obj.id)) {
+  //       console.warn("→ Removed duplicate image with id:", obj.id);
+  //       canvas.remove(obj);
+  //       duplicateRemoved = true;
+  //     } else {
+  //       seenIds.add(obj.id);
+  //     }
+  //   });
+
+  //   // Step 2: Remove images not in imageContaintObject
+  //   const validIds = imageContaintObject?.map(img => img.id) || [];
+  //   let staleRemoved = false;
+
+  //   canvas.getObjects('image').forEach(obj => {
+  //     if (obj.id && !validIds.includes(obj.id)) {
+  //       console.warn("→ Removed stale image not in imageContaintObject:", obj.id);
+  //       canvas.remove(obj);
+  //       staleRemoved = true;
+  //     }
+  //   });
+
+  //   if (duplicateRemoved || staleRemoved) {
+  //     canvas.renderAll();
+  //   }
+
+  //   // Step 3: If no images to render, stop
+  //   if (!imageContaintObject || imageContaintObject.length === 0) {
+  //     return;
+  //   }
+
+  //   // Step 4: Render/update image objects
+  //   imageContaintObject.forEach((imageData) => {
+  //     const {
+  //       id,
+  //       src,
+  //       position,
+  //       angle = 0,
+  //       flipX = false,
+  //       flipY = false,
+  //       locked = false,
+  //       scaleX,
+  //       scaleY,
+  //       layerIndex = 0,
+  //       customType = "main-image",
+  //       loading,
+  //       loadingSrc,
+  //     } = imageData;
+  //     const spinnerId = `spinner-${id}`;
+  //     const existingObj = canvas.getObjects('image').find(obj => obj.id === id);
+  //     console.log("loading state", loading, loadingSrc);
+  //     //  Step 1: If loading, show animated arc spinner
+  //     if (loading) {
+  //       // Remove existing image with same ID (e.g., if reloading)
+  //       canvas.getObjects().forEach(obj => {
+  //         if (obj.id === selectedImageId) {
+  //           canvas.remove(obj);
+  //         }
+  //       });
+
+  //       const spinnerId = `spinner-${id}`;
+  //       const existingSpinner = canvas.getObjects().find(o => o.id === spinnerId);
+  //       if (existingSpinner) return;
+
+  //       const dotCount = 5;
+  //       const dotRadius = 6;
+  //       const dotSpacing = 15;
+  //       const colors = ['#000000', '#000000', '#000000', '#000000', '#000000']; // black
+
+  //       const dots = [];
+
+  //       for (let i = 0; i < dotCount; i++) {
+  //         dots.push(new fabric.Circle({
+  //           radius: dotRadius,
+  //           fill: colors[i],
+  //           left: position.x + (i * dotSpacing) - ((dotCount * dotSpacing) / 2) + (dotSpacing / 2),
+  //           top: position.y,
+  //           originX: 'center',
+  //           originY: 'center',
+  //           opacity: 0.3,
+  //           selectable: false,
+  //           evented: false
+  //         }));
+  //       }
+
+  //       const loader = new fabric.Group(dots, {
+  //         id: spinnerId,
+  //         scaleX,
+  //         scaleY,
+  //         height: 150,
+  //         width: 150,
+  //         originX: 'center',
+  //         originY: 'center',
+  //         left: position.x,
+  //         top: position.y,
+  //         selectable: true, // enable interaction
+  //         evented: false,
+  //         lockMovementX: true,  
+  //         lockMovementY: true,
+  //         objectCaching: false,
+  //         borderColor: "skyblue",
+  //         borderDashArray: [4, 4],
+  //       });
+
+  //       // Enable all control points
+  //       loader.setControlsVisibility({
+  //         mt: true, mb: true, ml: true, mr: true,
+  //         tl: true, tr: true, bl: true, br: true, mtr: true
+  //       });
+
+  //       // Optional: if using custom controls
+  //       if (typeof createControls === 'function') {
+  //         loader.controls = createControls();
+  //       }
+
+  //       // Event listeners for interaction
+  //       loader.on("mousedown", (e) => {
+  //         setActiveObjectType("image");
+  //         console.log("Loader clicked:", loader.id);
+  //         dispatch?.(selectedImageIdState(id)); // Optional Redux dispatch
+  //       });
+
+  //       loader.on("modified", (e) => {
+  //         const obj = e.target;
+  //         if (!obj) return;
+  //         const center = obj.getCenterPoint();
+  //         obj.setPositionByOrigin(center, 'center', 'center');
+  //         obj.setCoords();
+
+  //         globalDispatch("position", { x: obj.left, y: obj.top }, id);
+  //         globalDispatch("angle", obj.angle, id);
+  //         handleScale(e);
+  //         // canvas.renderAll();
+  //       });
+
+  //       canvas.add(loader);
+  //       canvas.bringToFront(loader);
+
+  //       // Animate wave effect
+  //       let animationStep = 0;
+  //       const animationSpeed = 0.15;
+  //       let animationFrameId = null;
+
+  //       const animateDots = () => {
+  //         if (!canvas.getObjects().includes(loader)) return;
+
+  //         animationStep += animationSpeed;
+
+  //         loader.getObjects().forEach((dot, i) => {
+  //           const waveOffset = i * 0.8;
+  //           const scale = 0.6 + Math.sin(animationStep + waveOffset) * 0.4;
+  //           const opacity = 0.4 + scale * 0.6;
+
+  //           dot.set({
+  //             scaleX: scale,
+  //             scaleY: scale,
+  //             opacity: opacity
+  //           });
+  //         });
+
+  //         canvas.requestRenderAll();
+  //         animationFrameId = requestAnimationFrame(animateDots);
+  //       };
+
+  //       animateDots();
+
+  //       // Attach cleanup method to remove loader and stop animation
+  //       loader.cleanup = () => {
+  //         if (animationFrameId) {
+  //           cancelAnimationFrame(animationFrameId);
+  //         }
+  //         canvas.remove(loader);
+  //       };
+
+  //       return loader;
+  //     }
+
+
+  //     // Step 2: Remove spinner when loading is false
+  //     const oldSpinner = canvas.getObjects().find(o => o.id === spinnerId);
+  //     if (oldSpinner) {
+  //       clearTimeout(oldSpinner.__spinnerTimer);
+  //       canvas.remove(oldSpinner);
+  //     }
+
+  //     if (existingObj && existingObj.getSrc() !== src) {
+  //       // CASE 1: Replace if src changed
+
+  //       console.log("src....00", src, "prev src", existingObj.getSrc());
+  //       console.log("→ Replacing image (src changed):", id);
+  //       canvas.remove(existingObj);
+
+  //         fabric.Image.fromURL(src, (newImg) => {
+  //            console.log("img height and width when replace ",newImg.width,newImg.height);
+  //           const computedScaleX = 150 / newImg.width;
+  //           const computedScaleY = 150 / newImg.height;
+
+  //           newImg.set({
+  //             id,
+  //             left: position.x,
+  //             top: position.y,
+  //             angle,
+  //             scaleX: computedScaleX * scaleX,
+  //             scaleY: computedScaleY * scaleY,
+  //             flipX,
+  //             flipY,
+  //             lockMovementX: locked,
+  //             lockMovementY: locked,
+  //             originX: "center",
+  //             originY: "center",
+  //             objectCaching: false,
+  //             borderColor: "skyblue",
+  //             borderDashArray: [4, 4],
+  //             hasBorders: true,
+  //             hasControls: true,
+  //             selectable: true,
+  //             evented: true,
+  //             customType,
+  //             isSync: true,
+  //             layerIndex
+  //           });
+
+  //           newImg.setControlsVisibility({
+  //             mt: false, mb: false, ml: false, mr: false,
+  //             tl: false, tr: false, bl: false, br: false, mtr: false,
+  //           });
+
+  //           newImg.controls = createControls();
+  //           canvas.add(newImg);
+
+  //           newImg.on("mousedown", (e) => {
+  //             const obj = e.target;
+  //             if (obj && obj.id) {
+  //               canvas.setActiveObject(e.target);
+  //               dispatch(selectedImageIdState(obj.id));
+  //               setActiveObjectType("Image");
+  //               navigate("/design/addImage", { state: imageData });
+                
+  //             }
+  //           });
+
+
+  //           newImg.on("modified", (e) => {
+  //             setActiveObjectType("image");
+  //             const obj = e.target;
+  //             if (!obj) return;
+  //             const center = obj.getCenterPoint();
+  //             obj.setPositionByOrigin(center, 'center', 'center');
+  //             obj.setCoords();
+
+  //             globalDispatch("position", { x: obj.left, y: obj.top }, id);
+  //             globalDispatch("angle", obj.angle, id);
+  //             handleScale(e);
+  //             canvas.renderAll();
+  //             syncMirrorCanvas(activeSide);
+  //           });
+
+
+  //           canvas.renderAll();
+  //         });
+
+  //     } else if (existingObj) {
+  //       // CASE 2: Update properties
+  //       console.log("→ Updating existing image:", id);
+  //       const computedScaleX = 150 / existingObj.width;
+  //       const computedScaleY = 150 / existingObj.height;
+
+  //       existingObj.set({
+  //         left: position.x,
+  //         top: position.y,
+  //         angle,
+  //         flipX,
+  //         flipY,
+  //         scaleX: computedScaleX * scaleX,
+  //         scaleY: computedScaleY * scaleY,
+  //         lockMovementX: locked,
+  //         lockMovementY: locked,
+  //         layerIndex,
+  //         customType,
+  //         isSync: true
+  //       });
+  //       existingObj.setControlsVisibility({
+  //         mt: false, mb: false, ml: false, mr: false,
+  //         tl: false, tr: false, bl: false, br: false, mtr: false,
+  //       });
+
+  //       existingObj.controls = createControls();
+  //       // canvas.add(newImg);
+  //       const center = existingObj.getCenterPoint();
+  //       existingObj.setPositionByOrigin(center, "center", "center");
+  //       existingObj.setCoords();
+
+  //       canvas.renderAll();
+
+  //     } else {
+  //       // CASE 3: Create new image
+  //       console.log("→ Creating new image:", id);
+  //       console.log("src....01", src);
+
+  //       fabric.Image.fromURL(src, (img) => {
+  //         console.log("img height and width ",img.width,img.height);
+  //         const computedScaleX = 150 / img.width;
+  //         const computedScaleY = 150 / img.height;
+
+  //         img.set({
+  //           id,
+  //           left: position.x,
+  //           top: position.y,
+  //           angle,
+  //           scaleX: computedScaleX * scaleX,
+  //           scaleY: computedScaleY * scaleY,
+  //           flipX,
+  //           flipY,
+  //           lockMovementX: locked,
+  //           lockMovementY: locked,
+  //           originX: "center",
+  //           originY: "center",
+  //           objectCaching: false,
+  //           borderColor: "skyblue",
+  //           borderDashArray: [4, 4],
+  //           hasBorders: true,
+  //           hasControls: true,
+  //           selectable: true,
+  //           evented: true,
+  //           customType,
+  //           isSync: true,
+  //           layerIndex
+  //         });
+
+  //         img.setControlsVisibility({
+  //           mt: false, mb: false, ml: false, mr: false,
+  //           tl: false, tr: false, bl: false, br: false, mtr: false,
+  //         });
+
+  //         img.controls = createControls();
+  //         canvas.add(img);
+
+  //         img.on("mousedown", (e) => {
+  //           const obj = e.target;
+  //           if (obj && obj.id) {
+  //             canvas.setActiveObject(obj);
+  //             dispatch(selectedImageIdState(obj.id));
+  //             setActiveObjectType("image");
+  //             navigate("/design/addImage", { state: imageData });
+  //              canvas.renderAll();
+  //           }
+  //         });
+
+  //         img.on("modified", (e) => {
+  //           const obj = e.target;
+  //           if (!obj) return;
+  //           const center = obj.getCenterPoint();
+  //           obj.setPositionByOrigin(center, 'center', 'center');
+  //           obj.setCoords();
+
+  //           globalDispatch("position", { x: obj.left, y: obj.top }, id);
+  //           globalDispatch("angle", obj.angle, id);
+  //           handleScale(e);
+  //           canvas.renderAll();
+  //           syncMirrorCanvas(activeSide);
+  //         });
+
+
+
+  //         canvas.renderAll();
+  //       });
+  //     }
+  //   });
+
+  //   updateBoundaryVisibility?.();
+  // };
   const renderAllImageObjects = () => {
-    const canvas = fabricCanvasRef.current;
-    if (!canvas) return;
+  const canvas = fabricCanvasRef.current;
+  if (!canvas) return;
 
-    // Step 1: Clean duplicates (same ID multiple times on canvas)
-    const seenIds = new Set();
-    let duplicateRemoved = false;
+  const MAX_WIDTH = 300;
+  const MAX_HEIGHT = 300;
 
-    canvas.getObjects('image').forEach(obj => {
-      if (!obj.id) return;
-      if (seenIds.has(obj.id)) {
-        console.warn("→ Removed duplicate image with id:", obj.id);
-        canvas.remove(obj);
-        duplicateRemoved = true;
-      } else {
-        seenIds.add(obj.id);
-      }
-    });
+  const getScaled = (img, userScaleX = 1, userScaleY = 1) => {
+    const scale = Math.min(MAX_WIDTH / img.width, MAX_HEIGHT / img.height);
+    return {
+      scaleX: scale * userScaleX,
+      scaleY: scale * userScaleY
+    };
+  };
 
-    // Step 2: Remove images not in imageContaintObject
-    const validIds = imageContaintObject?.map(img => img.id) || [];
-    let staleRemoved = false;
+  const seenIds = new Set();
+  let duplicateRemoved = false;
 
-    canvas.getObjects('image').forEach(obj => {
-      if (obj.id && !validIds.includes(obj.id)) {
-        console.warn("→ Removed stale image not in imageContaintObject:", obj.id);
-        canvas.remove(obj);
-        staleRemoved = true;
-      }
-    });
-
-    if (duplicateRemoved || staleRemoved) {
-      canvas.renderAll();
+  canvas.getObjects('image').forEach(obj => {
+    if (!obj.id) return;
+    if (seenIds.has(obj.id)) {
+      console.warn("→ Removed duplicate image with id:", obj.id);
+      canvas.remove(obj);
+      duplicateRemoved = true;
+    } else {
+      seenIds.add(obj.id);
     }
+  });
 
-    // Step 3: If no images to render, stop
-    if (!imageContaintObject || imageContaintObject.length === 0) {
-      return;
+  const validIds = imageContaintObject?.map(img => img.id) || [];
+  let staleRemoved = false;
+
+  canvas.getObjects('image').forEach(obj => {
+    if (obj.id && !validIds.includes(obj.id)) {
+      console.warn("→ Removed stale image not in imageContaintObject:", obj.id);
+      canvas.remove(obj);
+      staleRemoved = true;
     }
+  });
 
-    // Step 4: Render/update image objects
-    imageContaintObject.forEach((imageData) => {
-      const {
-        id,
-        src,
-        position,
-        angle = 0,
-        flipX = false,
-        flipY = false,
-        locked = false,
+  if (duplicateRemoved || staleRemoved) {
+    canvas.renderAll();
+  }
+
+  if (!imageContaintObject || imageContaintObject.length === 0) return;
+
+  imageContaintObject.forEach((imageData) => {
+    const {
+      id, src, position, angle = 0,
+      flipX = false, flipY = false,
+      locked = false,
+      scaleX = 1, scaleY = 1,
+      layerIndex = 0, customType = "main-image",
+      loading, loadingSrc
+    } = imageData;
+
+    const spinnerId = `spinner-${id}`;
+    const existingObj = canvas.getObjects('image').find(obj => obj.id === id);
+
+    // Loader (Spinner)
+    if (loading) {
+      canvas.getObjects().forEach(obj => {
+        if (obj.id === selectedImageId) canvas.remove(obj);
+      });
+
+      const existingSpinner = canvas.getObjects().find(o => o.id === spinnerId);
+      if (existingSpinner) return;
+
+      const dotCount = 5;
+      const dotRadius = 6;
+      const dotSpacing = 15;
+      const colors = Array(dotCount).fill('#000000');
+      const dots = [];
+
+      for (let i = 0; i < dotCount; i++) {
+        dots.push(new fabric.Circle({
+          radius: dotRadius,
+          fill: colors[i],
+          left: position.x + (i * dotSpacing) - ((dotCount * dotSpacing) / 2) + (dotSpacing / 2),
+          top: position.y,
+          originX: 'center',
+          originY: 'center',
+          opacity: 0.3,
+          selectable: false,
+          evented: false
+        }));
+      }
+
+      const loader = new fabric.Group(dots, {
+        id: spinnerId,
         scaleX,
         scaleY,
-        layerIndex = 0,
-        customType = "main-image",
-        loading,
-        loadingSrc,
-      } = imageData;
-      const spinnerId = `spinner-${id}`;
-      const existingObj = canvas.getObjects('image').find(obj => obj.id === id);
-      console.log("loading state", loading, loadingSrc);
-      //  Step 1: If loading, show animated arc spinner
-      if (loading) {
-        // Remove existing image with same ID (e.g., if reloading)
-        canvas.getObjects().forEach(obj => {
-          if (obj.id === selectedImageId) {
-            canvas.remove(obj);
+        originX: 'center',
+        originY: 'center',
+        left: position.x,
+        top: position.y,
+        selectable: true,
+        evented: false,
+        lockMovementX: true,
+        lockMovementY: true,
+        objectCaching: false,
+        borderColor: "skyblue",
+        borderDashArray: [4, 4],
+      });
+
+      loader.setControlsVisibility({
+        mt: true, mb: true, ml: true, mr: true,
+        tl: true, tr: true, bl: true, br: true, mtr: true
+      });
+
+      if (typeof createControls === 'function') {
+        loader.controls = createControls();
+      }
+
+      loader.on("mousedown", () => {
+        setActiveObjectType("image");
+        dispatch?.(selectedImageIdState(id));
+      });
+
+      loader.on("modified", (e) => {
+        const obj = e.target;
+        if (!obj) return;
+        const center = obj.getCenterPoint();
+        obj.setPositionByOrigin(center, 'center', 'center');
+        obj.setCoords();
+        globalDispatch("position", { x: obj.left, y: obj.top }, id);
+        globalDispatch("angle", obj.angle, id);
+        handleScale(e);
+      });
+
+      canvas.add(loader);
+      canvas.bringToFront(loader);
+
+      let animationStep = 0;
+      const animationSpeed = 0.15;
+      let animationFrameId = null;
+
+      const animateDots = () => {
+        if (!canvas.getObjects().includes(loader)) return;
+
+        animationStep += animationSpeed;
+        loader.getObjects().forEach((dot, i) => {
+          const waveOffset = i * 0.8;
+          const scale = 0.6 + Math.sin(animationStep + waveOffset) * 0.4;
+          const opacity = 0.4 + scale * 0.6;
+          dot.set({ scaleX: scale, scaleY: scale, opacity });
+        });
+
+        canvas.requestRenderAll();
+        animationFrameId = requestAnimationFrame(animateDots);
+      };
+
+      animateDots();
+      loader.cleanup = () => {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        canvas.remove(loader);
+      };
+
+      return loader;
+    }
+
+    const oldSpinner = canvas.getObjects().find(o => o.id === spinnerId);
+    if (oldSpinner) {
+      clearTimeout(oldSpinner.__spinnerTimer);
+      canvas.remove(oldSpinner);
+    }
+
+    // Replace Image
+    if (existingObj && existingObj.getSrc() !== src) {
+      canvas.remove(existingObj);
+      fabric.Image.fromURL(src, (newImg) => {
+        const { scaleX: finalX, scaleY: finalY } = getScaled(newImg, scaleX, scaleY);
+
+        newImg.set({
+          id, left: position.x, top: position.y,
+          angle, scaleX: finalX, scaleY: finalY,
+          flipX, flipY,
+          lockMovementX: locked, lockMovementY: locked,
+          originX: "center", originY: "center",
+          objectCaching: false,
+          borderColor: "skyblue", borderDashArray: [4, 4],
+          hasBorders: true, hasControls: true,
+          selectable: true, evented: true,
+          customType, isSync: true, layerIndex
+        });
+
+        newImg.setControlsVisibility({
+          mt: false, mb: false, ml: false, mr: false,
+          tl: false, tr: false, bl: false, br: false, mtr: false
+        });
+
+        newImg.controls = createControls();
+        canvas.add(newImg);
+
+        newImg.on("mousedown", (e) => {
+          const obj = e.target;
+          if (obj?.id) {
+            canvas.setActiveObject(obj);
+            dispatch(selectedImageIdState(obj.id));
+            setActiveObjectType("Image");
+            navigate("/design/addImage", { state: imageData });
           }
         });
 
-        const spinnerId = `spinner-${id}`;
-        const existingSpinner = canvas.getObjects().find(o => o.id === spinnerId);
-        if (existingSpinner) return;
-
-        const dotCount = 5;
-        const dotRadius = 6;
-        const dotSpacing = 15;
-        const colors = ['#000000', '#000000', '#000000', '#000000', '#000000']; // black
-
-        const dots = [];
-
-        for (let i = 0; i < dotCount; i++) {
-          dots.push(new fabric.Circle({
-            radius: dotRadius,
-            fill: colors[i],
-            left: position.x + (i * dotSpacing) - ((dotCount * dotSpacing) / 2) + (dotSpacing / 2),
-            top: position.y,
-            originX: 'center',
-            originY: 'center',
-            opacity: 0.3,
-            selectable: false,
-            evented: false
-          }));
-        }
-
-        const loader = new fabric.Group(dots, {
-          id: spinnerId,
-          scaleX,
-          scaleY,
-          height: 150,
-          width: 150,
-          originX: 'center',
-          originY: 'center',
-          left: position.x,
-          top: position.y,
-          selectable: true, // enable interaction
-          evented: true,
-          lockMovementX: true,
-          lockMovementY: true,
-          objectCaching: false,
-          borderColor: "skyblue",
-          borderDashArray: [4, 4],
-        });
-
-        // Enable all control points
-        loader.setControlsVisibility({
-          mt: true, mb: true, ml: true, mr: true,
-          tl: true, tr: true, bl: true, br: true, mtr: true
-        });
-
-        // Optional: if using custom controls
-        if (typeof createControls === 'function') {
-          loader.controls = createControls();
-        }
-
-        // Event listeners for interaction
-        loader.on("mousedown", (e) => {
-          setActiveObjectType("image");
-          console.log("Loader clicked:", loader.id);
-          dispatch?.(selectedImageIdState(id)); // Optional Redux dispatch
-        });
-
-        loader.on("modified", (e) => {
+        newImg.on("modified", (e) => {
           const obj = e.target;
           if (!obj) return;
           const center = obj.getCenterPoint();
           obj.setPositionByOrigin(center, 'center', 'center');
           obj.setCoords();
-
           globalDispatch("position", { x: obj.left, y: obj.top }, id);
-          globalDispatch("rotate", obj.angle, id);
+          globalDispatch("angle", obj.angle, id);
           handleScale(e);
-          // canvas.renderAll();
-        });
-
-        canvas.add(loader);
-        canvas.bringToFront(loader);
-
-        // Animate wave effect
-        let animationStep = 0;
-        const animationSpeed = 0.15;
-        let animationFrameId = null;
-
-        const animateDots = () => {
-          if (!canvas.getObjects().includes(loader)) return;
-
-          animationStep += animationSpeed;
-
-          loader.getObjects().forEach((dot, i) => {
-            const waveOffset = i * 0.8;
-            const scale = 0.6 + Math.sin(animationStep + waveOffset) * 0.4;
-            const opacity = 0.4 + scale * 0.6;
-
-            dot.set({
-              scaleX: scale,
-              scaleY: scale,
-              opacity: opacity
-            });
-          });
-
-          canvas.requestRenderAll();
-          animationFrameId = requestAnimationFrame(animateDots);
-        };
-
-        animateDots();
-
-        // Attach cleanup method to remove loader and stop animation
-        loader.cleanup = () => {
-          if (animationFrameId) {
-            cancelAnimationFrame(animationFrameId);
-          }
-          canvas.remove(loader);
-        };
-
-        return loader;
-      }
-
-
-      // Step 2: Remove spinner when loading is false
-      const oldSpinner = canvas.getObjects().find(o => o.id === spinnerId);
-      if (oldSpinner) {
-        clearTimeout(oldSpinner.__spinnerTimer);
-        canvas.remove(oldSpinner);
-      }
-
-      if (existingObj && existingObj.getSrc() !== src) {
-        // CASE 1: Replace if src changed
-
-        console.log("src....00", src, "prev src", existingObj.getSrc());
-        console.log("→ Replacing image (src changed):", id);
-        canvas.remove(existingObj);
-
-        fabric.Image.fromURL(src, (newImg) => {
-          const computedScaleX = 150 / newImg.width;
-          const computedScaleY = 150 / newImg.height;
-
-          newImg.set({
-            id,
-            left: position.x,
-            top: position.y,
-            angle,
-            scaleX: computedScaleX * scaleX,
-            scaleY: computedScaleY * scaleY,
-            flipX,
-            flipY,
-            lockMovementX: locked,
-            lockMovementY: locked,
-            originX: "center",
-            originY: "center",
-            objectCaching: false,
-            borderColor: "skyblue",
-            borderDashArray: [4, 4],
-            hasBorders: true,
-            hasControls: true,
-            selectable: true,
-            evented: true,
-            customType,
-            isSync: true,
-            layerIndex
-          });
-
-          newImg.setControlsVisibility({
-            mt: false, mb: false, ml: false, mr: false,
-            tl: false, tr: false, bl: false, br: false, mtr: false,
-          });
-
-          newImg.controls = createControls();
-          canvas.add(newImg);
-
-          newImg.on("mousedown", (e) => {
-            const obj = e.target;
-            if (obj && obj.id) {
-              dispatch(selectedImageIdState(obj.id));
-              setActiveObjectType("Image");
-              navigate("/design/addImage", { state: imageData });
-            }
-          });
-
-
-          newImg.on("modified", (e) => {
-            setActiveObjectType("image");
-            const obj = e.target;
-            if (!obj) return;
-            const center = obj.getCenterPoint();
-            obj.setPositionByOrigin(center, 'center', 'center');
-            obj.setCoords();
-
-            globalDispatch("position", { x: obj.left, y: obj.top }, id);
-            globalDispatch("rotate", obj.angle, id);
-            handleScale(e);
-            canvas.renderAll();
-            syncMirrorCanvas(activeSide);
-          });
-
-
           canvas.renderAll();
+          syncMirrorCanvas(activeSide);
         });
-
-      } else if (existingObj) {
-        // CASE 2: Update properties
-        console.log("→ Updating existing image:", id);
-        const computedScaleX = 150 / existingObj.width;
-        const computedScaleY = 150 / existingObj.height;
-
-        existingObj.set({
-          left: position.x,
-          top: position.y,
-          angle,
-          flipX,
-          flipY,
-          scaleX: computedScaleX * scaleX,
-          scaleY: computedScaleY * scaleY,
-          lockMovementX: locked,
-          lockMovementY: locked,
-          layerIndex,
-          customType,
-          isSync: true
-        });
-        existingObj.setControlsVisibility({
-          mt: false, mb: false, ml: false, mr: false,
-          tl: false, tr: false, bl: false, br: false, mtr: false,
-        });
-
-        existingObj.controls = createControls();
-        // canvas.add(newImg);
-        const center = existingObj.getCenterPoint();
-        existingObj.setPositionByOrigin(center, "center", "center");
-        existingObj.setCoords();
 
         canvas.renderAll();
+      });
 
-      } else {
-        // CASE 3: Create new image
-        console.log("→ Creating new image:", id);
-        console.log("src....01", src);
+    } else if (existingObj) {
+      const { scaleX: finalX, scaleY: finalY } = getScaled(existingObj, scaleX, scaleY);
 
-        fabric.Image.fromURL(src, (img) => {
-          const computedScaleX = 150 / img.width;
-          const computedScaleY = 150 / img.height;
+      existingObj.set({
+        left: position.x, top: position.y,
+        angle, flipX, flipY,
+        scaleX: finalX, scaleY: finalY,
+        lockMovementX: locked, lockMovementY: locked,
+        layerIndex, customType, isSync: true
+      });
 
-          img.set({
-            id,
-            left: position.x,
-            top: position.y,
-            angle,
-            scaleX: computedScaleX * scaleX,
-            scaleY: computedScaleY * scaleY,
-            flipX,
-            flipY,
-            lockMovementX: locked,
-            lockMovementY: locked,
-            originX: "center",
-            originY: "center",
-            objectCaching: false,
-            borderColor: "skyblue",
-            borderDashArray: [4, 4],
-            hasBorders: true,
-            hasControls: true,
-            selectable: true,
-            evented: true,
-            customType,
-            isSync: true,
-            layerIndex
-          });
+      existingObj.setControlsVisibility({
+        mt: false, mb: false, ml: false, mr: false,
+        tl: false, tr: false, bl: false, br: false, mtr: false
+      });
 
-          img.setControlsVisibility({
-            mt: false, mb: false, ml: false, mr: false,
-            tl: false, tr: false, bl: false, br: false, mtr: false,
-          });
+      existingObj.controls = createControls();
+      const center = existingObj.getCenterPoint();
+      existingObj.setPositionByOrigin(center, "center", "center");
+      existingObj.setCoords();
+      canvas.renderAll();
 
-          img.controls = createControls();
-          canvas.add(img);
+    } else {
+      fabric.Image.fromURL(src, (img) => {
+        const { scaleX: finalX, scaleY: finalY } = getScaled(img, scaleX, scaleY);
 
-          img.on("mousedown", (e) => {
-            const obj = e.target;
-            if (obj && obj.id) {
-              dispatch(selectedImageIdState(obj.id));
-              setActiveObjectType("image");
-              navigate("/design/addImage", { state: imageData });
-            }
-          });
-
-          img.on("modified", (e) => {
-            const obj = e.target;
-            if (!obj) return;
-            const center = obj.getCenterPoint();
-            obj.setPositionByOrigin(center, 'center', 'center');
-            obj.setCoords();
-
-            globalDispatch("position", { x: obj.left, y: obj.top }, id);
-            globalDispatch("rotate", obj.angle, id);
-            handleScale(e);
-            canvas.renderAll();
-            syncMirrorCanvas(activeSide);
-          });
-
-
-
-          canvas.renderAll();
+        img.set({
+          id, left: position.x, top: position.y,
+          angle, scaleX: finalX, scaleY: finalY,
+          flipX, flipY,
+          lockMovementX: locked, lockMovementY: locked,
+          originX: "center", originY: "center",
+          objectCaching: false,
+          borderColor: "skyblue", borderDashArray: [4, 4],
+          hasBorders: true, hasControls: true,
+          selectable: true, evented: true,
+          customType, isSync: true, layerIndex
         });
-      }
-    });
 
-    updateBoundaryVisibility?.();
-  };
+        img.setControlsVisibility({
+          mt: false, mb: false, ml: false, mr: false,
+          tl: false, tr: false, bl: false, br: false, mtr: false
+        });
+
+        img.controls = createControls();
+        canvas.add(img);
+
+        img.on("mousedown", (e) => {
+          const obj = e.target;
+          if (obj?.id) {
+            canvas.setActiveObject(obj);
+            dispatch(selectedImageIdState(obj.id));
+            setActiveObjectType("image");
+            navigate("/design/addImage", { state: imageData });
+            canvas.renderAll();
+          }
+        });
+
+        img.on("modified", (e) => {
+          const obj = e.target;
+          if (!obj) return;
+          const center = obj.getCenterPoint();
+          obj.setPositionByOrigin(center, 'center', 'center');
+          obj.setCoords();
+          globalDispatch("position", { x: obj.left, y: obj.top }, id);
+          globalDispatch("angle", obj.angle, id);
+          handleScale(e);
+          canvas.renderAll();
+          syncMirrorCanvas(activeSide);
+        });
+
+        canvas.renderAll();
+      });
+    }
+  });
+
+  updateBoundaryVisibility?.();
+};
+
 
   useEffect(() => {
     renderAllImageObjects();
@@ -1502,10 +1796,10 @@ const MainDesignTool = ({
 
     const object = canvas.getObjects().find((obj) => obj.id === selectedTextId);
     // console.log("selectedTextId", selectedTextId, object)
-    if (object) {
-      canvas.setActiveObject(object);
-      canvas.renderAll();
-    }
+    // if (object) {
+    //   canvas.setActiveObject(object);
+    //   canvas.renderAll();
+    // }
     canvas.renderAll();
   }, [selectedTextId, isRender])
 

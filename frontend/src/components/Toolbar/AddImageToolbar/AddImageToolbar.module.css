@@ -422,6 +422,17 @@ input:checked+.slider:before {
   cursor: pointer;
 
 }
+.resetButton {
+  color: #005bff;
+  text-decoration: underline;
+  cursor: pointer;
+   font-weight: 500;
+  font-size: 13px;
+  /* letter-spacing: 0.35px; */
+  /* align-items: center; */
+  margin-left: 9px;
+  margin-bottom: 10px;
+}
 
 @keyframes spin {
   to {
