@@ -127,7 +127,7 @@
   box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
 }
 
-.searchIcon {
+.searchIcon svg {
   position: absolute;
   right: 20px;
   top: 50%;

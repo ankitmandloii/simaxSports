@@ -238,7 +238,7 @@
 
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 
-const createNewText = ({ value, id }, length) => ({
+const createNewText = ({ value, id }, totalElements) => ({
   id: id,
   content: value || "New Text",
   fontWeight: "normal",
@@ -265,12 +265,12 @@ const createNewText = ({ value, id }, length) => ({
   fontSize: 20,
   position: { x: 280, y: 200 },
   locked: false,
-  layerIndex: length,
+  layerIndex: totalElements,
 });
 
 const createNewImage = (
   { src },
-  length
+  totalElements
 ) => ({
   id: nanoid(),
   src: src,
@@ -287,7 +287,7 @@ const createNewImage = (
   scaledValue: 1,
   angle: 0,
   locked: false,
-  layerIndex: length,
+  layerIndex: totalElements,
   // Ai Operation
   remomveBg: false,
   cropAndTrim: false,
@@ -391,19 +391,31 @@ const TextFrontendDesignSlice = createSlice({
     },
 
     // Add a new text object
+    // addTextState: (state, action) => {
+    //   const { value, id, side = state.activeSide } = action.payload;
+    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    //   const newText = createNewText(
+    //     { value, id },
+    //     state.present[side].texts.length
+    //   );
+    //   state.present[side].texts.push(newText);
+    //   state.present[side].selectedTextId = newText.id;
+    //   state.future[side] = [];
+    //   state.present[side].setRendering = !state.present[side].setRendering;
+    // },
     addTextState: (state, action) => {
       const { value, id, side = state.activeSide } = action.payload;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+      const totalElements = state.present[side].texts.length + state.present[side].images.length;
       const newText = createNewText(
         { value, id },
-        state.present[side].texts.length
+        totalElements
       );
       state.present[side].texts.push(newText);
       state.present[side].selectedTextId = newText.id;
       state.future[side] = [];
       state.present[side].setRendering = !state.present[side].setRendering;
     },
-
     // Duplicate an existing text object
     duplicateTextState: (state, action) => {
       const side = state.activeSide;
@@ -450,14 +462,14 @@ const TextFrontendDesignSlice = createSlice({
     },
 
     // Delete a text object
-    deleteTextState: (state, action) => {
-      const side = state.activeSide;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      state.present[side].texts = state.present[side].texts.filter(
-        (t) => t.id !== action.payload
-      );
-      state.future[side] = [];
-    },
+    // deleteTextState: (state, action) => {
+    //   const side = state.activeSide;
+    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    //   state.present[side].texts = state.present[side].texts.filter(
+    //     (t) => t.id !== action.payload
+    //   );
+    //   state.future[side] = [];
+    // },
 
     // Move text object forward (up layer)
     moveTextForwardState: (state, action) => {
@@ -713,10 +725,15 @@ const TextFrontendDesignSlice = createSlice({
     addImageState: (state, action) => {
       const { src, id = nanoid(), side = state.activeSide } = action.payload;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+      const totalElements = state.present[side].texts.length + state.present[side].images.length;
       const newImage = createNewImage(
         { src },
-        state.present[side].images.length
+        totalElements
       );
+      // const newImage = createNewImage(
+      //   { src },
+      //   state.present[side].images.length
+      // );
       state.present[side].selectedImageId = newImage.id;
       state.present[side].images.push(newImage);
       state.future[side] = [];
@@ -784,16 +801,88 @@ const TextFrontendDesignSlice = createSlice({
       state.present[side].setRendering = !state.present[side].setRendering;
     },
 
+    // deleteeee reducers
+    deleteTextState: (state, action) => {
+      const side = state.activeSide;
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
+      const deletedText = state.present[side].texts.find(t => t.id === action.payload);
+      const deletedLayerIndex = deletedText?.layerIndex || 0;
+
+      // Remove the text
+      state.present[side].texts = state.present[side].texts.filter(
+        (t) => t.id !== action.payload
+      );
+
+      const allElements = [
+        ...state.present[side].texts,
+        ...state.present[side].images
+      ].sort((a, b) => a.layerIndex - b.layerIndex);
+
+      allElements.forEach((element, index) => {
+        if (element.layerIndex > deletedLayerIndex) {
+          if (element.type === 'text') {
+            const textIndex = state.present[side].texts.findIndex(t => t.id === element.id);
+            if (textIndex !== -1) {
+              state.present[side].texts[textIndex].layerIndex = index;
+            }
+          } else {
+            const imageIndex = state.present[side].images.findIndex(i => i.id === element.id);
+            if (imageIndex !== -1) {
+              state.present[side].images[imageIndex].layerIndex = index;
+            }
+          }
+        }
+      });
+
+      state.future[side] = [];
+      state.present[side].setRendering = !state.present[side].setRendering;
+    },
 
     deleteImageState: (state, action) => {
       const side = state.activeSide;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+      const deletedImage = state.present[side].images.find(i => i.id === action.payload);
+      const deletedLayerIndex = deletedImage?.layerIndex || 0;
+
       state.present[side].images = state.present[side].images.filter(
         (img) => img.id !== action.payload
       );
+
+      const allElements = [
+        ...state.present[side].texts,
+        ...state.present[side].images
+      ].sort((a, b) => a.layerIndex - b.layerIndex);
+
+      allElements.forEach((element, index) => {
+        if (element.layerIndex > deletedLayerIndex) {
+          if (element.type === 'text') {
+            const textIndex = state.present[side].texts.findIndex(t => t.id === element.id);
+            if (textIndex !== -1) {
+              state.present[side].texts[textIndex].layerIndex = index;
+            }
+          } else {
+            const imageIndex = state.present[side].images.findIndex(i => i.id === element.id);
+            if (imageIndex !== -1) {
+              state.present[side].images[imageIndex].layerIndex = index;
+            }
+          }
+        }
+      });
+
       state.future[side] = [];
+      state.present[side].setRendering = !state.present[side].setRendering;
     },
+
+    // deleteImageState: (state, action) => {
+    //   const side = state.activeSide;
+    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    //   state.present[side].images = state.present[side].images.filter(
+    //     (img) => img.id !== action.payload
+    //   );
+    //   state.future[side] = [];
+    // },
 
     restoreDesignFromSavedState(state, action) {
       return { ...state, ...action.payload };
@@ -832,13 +921,153 @@ const TextFrontendDesignSlice = createSlice({
       state.present[toSide].setRendering = !state.present[toSide].setRendering;
       state.future[toSide] = [];
     },
+    // -------------layering new
+    moveElementForwardState: (state, action) => {
+      const side = state.activeSide;
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
+      // Combine texts and images into a single array with type identifiers
+      const allElements = [
+        ...state.present[side].texts.map(t => ({ ...t, type: 'text' })),
+        ...state.present[side].images.map(i => ({ ...i, type: 'image' }))
+      ].sort((a, b) => a.layerIndex - b.layerIndex);
+
+      const index = allElements.findIndex(e => e.id === action.payload);
+      if (index !== -1 && index < allElements.length - 1) {
+        // Swap layer indices
+        const temp = allElements[index].layerIndex;
+        allElements[index].layerIndex = allElements[index + 1].layerIndex;
+        allElements[index + 1].layerIndex = temp;
+
+        // Update the original arrays
+        allElements.forEach(element => {
+          if (element.type === 'text') {
+            const textIndex = state.present[side].texts.findIndex(t => t.id === element.id);
+            if (textIndex !== -1) {
+              state.present[side].texts[textIndex].layerIndex = element.layerIndex;
+            }
+          } else {
+            const imageIndex = state.present[side].images.findIndex(i => i.id === element.id);
+            if (imageIndex !== -1) {
+              state.present[side].images[imageIndex].layerIndex = element.layerIndex;
+            }
+          }
+        });
+      }
+
+      state.present[side].setRendering = !state.present[side].setRendering;
+      state.future[side] = [];
+    },
+
+    moveElementBackwardState: (state, action) => {
+      const side = state.activeSide;
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+      // Combine texts and images into a single array with type identifiers
+      const allElements = [
+        ...state.present[side].texts.map(t => ({ ...t, type: 'text' })),
+        ...state.present[side].images.map(i => ({ ...i, type: 'image' }))
+      ].sort((a, b) => a.layerIndex - b.layerIndex);
+
+      const index = allElements.findIndex(e => e.id === action.payload);
+      if (index > 0) {
+        // Swap layer indices
+        const temp = allElements[index].layerIndex;
+        allElements[index].layerIndex = allElements[index - 1].layerIndex;
+        allElements[index - 1].layerIndex = temp;
+
+        // Update the original arrays
+        allElements.forEach(element => {
+          if (element.type === 'text') {
+            const textIndex = state.present[side].texts.findIndex(t => t.id === element.id);
+            if (textIndex !== -1) {
+              state.present[side].texts[textIndex].layerIndex = element.layerIndex;
+            }
+          } else {
+            const imageIndex = state.present[side].images.findIndex(i => i.id === element.id);
+            if (imageIndex !== -1) {
+              state.present[side].images[imageIndex].layerIndex = element.layerIndex;
+            }
+          }
+        });
+      }
+
+      state.present[side].setRendering = !state.present[side].setRendering;
+      state.future[side] = [];
+    },
+    moveElementToTopmost: (state, action) => {
+      const side = state.activeSide;
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+      // Combine all elements and find max layer index
+      const allElements = [
+        ...state.present[side].texts.map(t => ({ ...t, type: 'text' })),
+        ...state.present[side].images.map(i => ({ ...i, type: 'image' }))
+      ];
+
+      const maxLayerIndex = Math.max(...allElements.map(el => el.layerIndex), 0);
+      const elementToMove = allElements.find(e => e.id === action.payload);
+
+      if (elementToMove && elementToMove.layerIndex !== maxLayerIndex) {
+        // Update the element's layer index to be highest
+        if (elementToMove.type === 'text') {
+          const textIndex = state.present[side].texts.findIndex(t => t.id === action.payload);
+          if (textIndex !== -1) {
+            state.present[side].texts[textIndex].layerIndex = maxLayerIndex + 1;
+          }
+        } else {
+          const imageIndex = state.present[side].images.findIndex(i => i.id === action.payload);
+          if (imageIndex !== -1) {
+            state.present[side].images[imageIndex].layerIndex = maxLayerIndex + 1;
+          }
+        }
+      }
+
+      state.present[side].setRendering = !state.present[side].setRendering;
+      state.future[side] = [];
+    },
+
+    moveElementToLowest: (state, action) => {
+      const side = state.activeSide;
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+      // Combine all elements and find min layer index
+      const allElements = [
+        ...state.present[side].texts.map(t => ({ ...t, type: 'text' })),
+        ...state.present[side].images.map(i => ({ ...i, type: 'image' }))
+      ];
+
+      const minLayerIndex = Math.min(...allElements.map(el => el.layerIndex), 0);
+      const elementToMove = allElements.find(e => e.id === action.payload);
+
+      if (elementToMove && elementToMove.layerIndex !== minLayerIndex) {
+        // Update the element's layer index to be lowest
+        if (elementToMove.type === 'text') {
+          const textIndex = state.present[side].texts.findIndex(t => t.id === action.payload);
+          if (textIndex !== -1) {
+            state.present[side].texts[textIndex].layerIndex = minLayerIndex - 1;
+          }
+        } else {
+          const imageIndex = state.present[side].images.findIndex(i => i.id === action.payload);
+          if (imageIndex !== -1) {
+            state.present[side].images[imageIndex].layerIndex = minLayerIndex - 1;
+          }
+        }
+      }
+
+      state.present[side].setRendering = !state.present[side].setRendering;
+      state.future[side] = [];
+    },
 
   },
 });
 
 // ✅ Export Actions
 export const {
+  moveElementToLowest,
+  moveElementToTopmost,
+  moveElementBackwardState,
+  moveElementForwardState,
   addTextState,
   updateTextState,
   setSelectedTextState,

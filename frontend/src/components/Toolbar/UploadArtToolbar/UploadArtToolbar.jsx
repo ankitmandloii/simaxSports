@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { ChooseFileIcon } from "../../iconsSvg/CustomIcon";
 import dropBox from '../../images/dropBox.png';
 import googleDrive from "../../images/googleDrive.png";
@@ -10,6 +10,8 @@ import { addImageState } from "../../../redux/FrontendDesign/TextFrontendDesignS
 import style from './UploadArtToolbar.module.css';
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useGoogleLogin } from "@react-oauth/google";
+
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
 const DEVELOPER_KEY = process.env.REACT_APP_DEVELOPER_KEY;
 
@@ -22,21 +24,19 @@ const UploadArtToolbar = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+  const [googleAccessToken, setGoogleAccessToken] = useState(null);
+  const [shouldOpenPicker, setShouldOpenPicker] = useState(false); // 🔁 new state
 
-  // const handleFiles = (files) => {
-  //   console.log("file length", files.length)
-  //   if (files.length > 0) {
-  //     const file = files[0];
-  //     const src = URL.createObjectURL(file);
-  //     dispatch(addImageState({ src }));
-
-  //     setIsLoading(true);
-  //     setTimeout(() => {
-  //       navigate("/design/addImage");
-  //     }, 4000);
-  //   }
-  // };
-
+  const fetchGoogleDriveFileAsBlob = async (fileId, accessToken) => {
+    const response = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    const blob = await response.blob();
+    return blob;
+  };
 
   const handleFiles = async (files) => {
     const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -47,33 +47,25 @@ const UploadArtToolbar = () => {
       formData.append("images", files[i]);
     }
 
-
     try {
       setIsLoading(true);
-
       const response = await axios.post(
         `${BASE_URL}imageOperation/upload`,
         formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
-      // console.log("Uploaded successfully", response.data.files);
+
       response.data.files.forEach((fileObj) => {
-        // console.log("URL form imgix API",fileObj.url);
         dispatch(addImageState({ src: fileObj.url }));
       });
       navigate("/design/addImage");
     } catch (err) {
-      toast.error(" Error uploading files");
+      toast.error("Error uploading files");
       console.error("Upload error:", err.response?.data || err.message);
     } finally {
       setIsLoading(false);
     }
   };
-
 
   const handleDrop = async (e) => {
     e.preventDefault();
@@ -86,42 +78,66 @@ const UploadArtToolbar = () => {
 
   const handleClick = () => inputRef.current.click();
 
-
-  const getDriveImageUrl = (file) => {
-    const fileId = file.id;
-    return `https://drive.google.com/uc?export=view&id=${fileId}`;
-  };
-
-
   const handleOpenGoogleDrivePicker = () => {
     openPicker({
       clientId: CLIENT_ID,
       developerKey: DEVELOPER_KEY,
       viewId: "DOCS",
+      token: googleAccessToken,
       showUploadView: true,
       showUploadFolders: true,
       supportDrives: true,
       multiselect: true,
-      callbackFunction: (data) => {
+      callbackFunction: async (data) => {
         if (data.action === "cancel") return;
 
         if (data.docs && data.docs.length > 0) {
-          const file = data.docs[0];
-          handleFiles(file);
-          // const src = getDriveImageUrl(file);
-          // console.log("Selected file URL:", src);
-          // dispatch(addImageState({ src }));
+          const driveFilesMeta = data.docs;
 
-          // setIsLoading(true);
-          // setTimeout(() => {
-          //   navigate("/design/addImage");
-          // }, 4000);
+          const filesToUpload = await Promise.all(
+            driveFilesMeta.map(async (doc) => {
+              try {
+                const response = await fetch(
+                  `https://www.googleapis.com/drive/v3/files/${doc.id}?alt=media`,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${googleAccessToken}`,
+                    },
+                  }
+                );
+                const blob = await response.blob();
+                return new File([blob], doc.name, { type: doc.mimeType });
+              } catch (err) {
+                toast.error(`Error fetching ${doc.name}`);
+                return null;
+              }
+            })
+          );
 
-          setDriveFiles(data.docs);
+          const filteredFiles = filesToUpload.filter((f) => f !== null);
+          if (filteredFiles.length > 0) {
+            await handleFiles(filteredFiles);
+            setDriveFiles(driveFilesMeta);
+          }
         }
       },
     });
   };
+
+  const loginToGoogle = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      setGoogleAccessToken(tokenResponse.access_token);
+    },
+    scope: "https://www.googleapis.com/auth/drive.readonly",
+  });
+
+  // 🔁 Trigger picker after login
+  useEffect(() => {
+    if (googleAccessToken && shouldOpenPicker) {
+      handleOpenGoogleDrivePicker();
+      setShouldOpenPicker(false); // reset
+    }
+  }, [googleAccessToken, shouldOpenPicker]);
 
   return (
     <div className="toolbar-main-container">
@@ -133,7 +149,6 @@ const UploadArtToolbar = () => {
 
       {!isLoading ? (
         <div className={style.toolbarBox}>
-          {/* Drag & Drop */}
           <div
             className={style.dropZone}
             onDrop={handleDrop}
@@ -147,7 +162,6 @@ const UploadArtToolbar = () => {
             </button>
           </div>
 
-          {/* Local Files */}
           {files.length > 0 && (
             <div className={style.fileList}>
               <h4>Selected files:</h4>
@@ -171,7 +185,6 @@ const UploadArtToolbar = () => {
             </div>
           )}
 
-          {/* Google Drive Files */}
           {driveFiles.length > 0 && (
             <div className={style.fileList}>
               <h4>Google Drive files:</h4>
@@ -197,7 +210,6 @@ const UploadArtToolbar = () => {
             </div>
           )}
 
-          {/* Dropbox Files */}
           {dropboxFiles.length > 0 && (
             <div className={style.fileList}>
               <h4>Dropbox files:</h4>
@@ -223,28 +235,47 @@ const UploadArtToolbar = () => {
             </div>
           )}
 
-          {/* Upload Options */}
           <div className={style.uploadBtnFlexContainer}>
-            <div className={style.uploadOptionBtn} onClick={handleOpenGoogleDrivePicker}>
+            <div
+              className={style.uploadOptionBtn}
+              onClick={() => {
+                if (!googleAccessToken) {
+                  setShouldOpenPicker(true); // 🔁 set flag
+                  loginToGoogle();           // login first
+                } else {
+                  handleOpenGoogleDrivePicker(); // already logged in
+                }
+              }}
+            >
               <img src={googleDrive} alt="Google Drive" />
               <p>Use Google Drive</p>
             </div>
 
-            <DropboxPicker onFilesSelected={(files) => {
-              if (files && files.length > 0) {
-                handleFiles(files);
-                // const file = files[0];
-                // const src = file.link || file.preview;
-                // dispatch(addImageState({ src }));
+            <DropboxPicker
+              onFilesSelected={async (files) => {
+                if (files && files.length > 0) {
+                  console.log("Dropbox selected files:", files);
+                  const fetchedFiles = await Promise.all(
+                    files.map(async (fileMeta) => {
+                      try {
+                        const downloadUrl = fileMeta.link;
+                        const response = await fetch(downloadUrl);
+                        const blob = await response.blob();
+                        return new File([blob], fileMeta.name, { type: blob.type });
+                      } catch (err) {
+                        toast.error(`Error downloading ${fileMeta.name}`);
+                        return null;
+                      }
+                    })
+                  );
+                  const validFiles = fetchedFiles.filter(Boolean);
+                  if (validFiles.length > 0) {
+                    await handleFiles(validFiles);
+                  }
+                }
+              }}
+            >
 
-                // setIsLoading(true);
-                // setTimeout(() => {
-                //   navigate("/design/addImage");
-                // }, 4000);
-
-                setDropboxFiles(files);
-              }
-            }}>
               <div className={style.uploadOptionBtn}>
                 <img src={dropBox} alt="Dropbox" />
                 <p>Use Dropbox</p>

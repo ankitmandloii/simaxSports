@@ -19,7 +19,7 @@ import {
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox.jsx';
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox.jsx';
 import { useDispatch, useSelector } from 'react-redux';
-import { duplicateImageState, toggleImageLockState, toggleLockState, updateImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
+import { duplicateImageState, moveElementBackwardState, moveElementForwardState, toggleImageLockState, toggleLockState, updateImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 import { useNavigate } from 'react-router-dom';
 // import { setCenterState, setFlipXState, setFlipYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState, setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
 // import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
@@ -40,6 +40,8 @@ const AddImageToolbar = () => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
+
+  const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   const allImageData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   const img = allImageData.find((img) => img.id == selectedImageId);
   console.log("--img", img)
@@ -134,8 +136,8 @@ const AddImageToolbar = () => {
     const parsed = parseFloat(rawValue);
     if (isNaN(parsed) || parsed < 0.2 || parsed > 10) return;
 
-    const scaleX = img.scaleX;
-    const scaleY = img.scaleY;
+    const scaleX = img?.scaleX;
+    const scaleY = img?.scaleY;
 
     // Use average of current X and Y scale as "prev size"
     const currentAvg = (scaleX + scaleY) / 2;
@@ -309,42 +311,78 @@ const AddImageToolbar = () => {
   }
 
   const handleBringBackward = () => {
-
+    // console.log("sending id ", selectedTextId)
     // dispatch(moveTextBackwardState(selectedTextId));
+    dispatch(moveElementBackwardState(selectedImageId));
+
   };
   const handleBringForward = () => {
-    //dispatch(moveTextForwardState(selectedTextId));
+    // dispatch(moveTextForwardState(selectedTextId));
+    dispatch(moveElementForwardState(selectedImageId));
+
   };
 
+
   function getRenderIconForSendToTop() {
-    // if (!imageContaintObject || !allTextInputData) return;
-    // // console.log(imageContaintObject.layerIndex + 1, allTextInputData.length, "both values");
-    // const layerIndex = imageContaintObject.layerIndex;
-    // const ArraySize = allTextInputData.length - 1;
+    if (!img || (!allTextInputData && !allImageData)) return;
 
+    // Calculate total number of elements (texts + images)
+    const totalElements = (allTextInputData?.length || 0) + (allImageData?.length || 0);
+    const layerIndex = img.layerIndex;
 
-    // // console.log(layerIndex, ArraySize, "layer data")
+    // If the element is already at the top (highest layerIndex)
+    if (layerIndex >= totalElements - 1) return true;
 
-    // if (layerIndex > 0 && layerIndex < ArraySize) return false;
-
-    // if (layerIndex < ArraySize) return false
-
-    // return true;
-
+    return false;
   }
+
   function getRenderIconForSendToBack() {
-    // if (!imageContaintObject || !allTextInputData) return;
-    // const layerIndex = imageContaintObject.layerIndex;
-    // const ArraySize = allTextInputData.length;
+    if (!img || (!allTextInputData && !allImageData)) return;
 
-    // // console.log(layerIndex, ArraySize, "layer data")
+    const layerIndex = img.layerIndex;
 
-    // if (layerIndex > 0 && layerIndex < ArraySize) return false;
+    // If the element is already at the bottom (layerIndex 0)
+    if (layerIndex <= 0) return true;
 
-    // if (layerIndex > 0) return false
-
-    // return true;
+    return false;
   }
+  // function getRenderIconForSendToTop() {
+  //   if (!img || (!allTextInputData && !allImageData)) return true;
+
+  //   // Combine all elements
+  //   const allElements = [
+  //     ...(allTextInputData || []),
+  //     ...(allImageData || [])
+  //   ];
+
+  //   // If no elements or only one element exists
+  //   if (allElements.length <= 1) return true;
+
+  //   // Get max layer index in all elements
+  //   const maxLayerIndex = Math.max(...allElements.map(el => el.layerIndex));
+
+  //   // Return true (disable button) ONLY if this element is already at top
+  //   return img.layerIndex === maxLayerIndex;
+  // }
+
+  // function getRenderIconForSendToBack() {
+  //   if (!img || (!allTextInputData && !allImageData)) return true;
+
+  //   // Combine all elements
+  //   const allElements = [
+  //     ...(allTextInputData || []),
+  //     ...(allImageData || [])
+  //   ];
+
+  //   // If no elements or only one element exists
+  //   if (allElements.length <= 1) return true;
+
+  //   // Get min layer index in all elements
+  //   const minLayerIndex = Math.min(...allElements.map(el => el.layerIndex));
+
+  //   // Return true (disable button) ONLY if this element is already at bottom
+  //   return img.layerIndex === minLayerIndex;
+  // }
 
   function removeBackgroundHandler(e) {
     // update local state
@@ -677,14 +715,14 @@ const AddImageToolbar = () => {
 
                   {
                     getRenderIconForSendToTop() ? <div className={styles.toolbarBoxIconsContainerLayering1}> <span><LayeringFirstIcon /></span> </div> : <div className={styles.toolbarBoxIconsContainerLayering1}
-                    // onClick={() => handleBringForward()}
+                      onClick={() => handleBringForward()}
                     >
                       <span><LayeringFirstIconWithBlackBg /></span></div>
                   }
 
                   {
                     getRenderIconForSendToBack() ? <div className={styles.toolbarBoxIconsContainerLayering2} > <span><LayeringSecondIcon /></span> </div> : <div className={styles.toolbarBoxIconsContainerLayering2}
-                    // onClick={() => handleBringBackward()}
+                      onClick={() => handleBringBackward()}
                     >  <span><LayeringSecondIconWithBlackBg /></span></div>
                   }
                 </div>

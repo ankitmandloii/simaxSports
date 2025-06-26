@@ -10,6 +10,10 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   deleteImageState,
   deleteTextState,
+  moveElementBackwardState,
+  moveElementForwardState,
+  moveElementToLowest,
+  moveElementToTopmost,
   moveTextBackwardState,
   moveTextForwardState,
   selectedImageIdState,
@@ -70,7 +74,7 @@ const MainDesignTool = ({
 
 
 
-// **********************************************************************************************************************************************************
+  // **********************************************************************************************************************************************************
   //                                                                                    USE CALLBACKS AREA
   // **********************************************************************************************************************************************************
 
@@ -179,23 +183,23 @@ const MainDesignTool = ({
       switch (action) {
         case "bringForward":
           selectedObject.bringForward();
-          dispatch(moveTextForwardState(objectId));
+          dispatch(moveElementToTopmost(objectId));
           selectedObject.canvas.requestRenderAll(); // Add this line
           setSelectedpopup(!selectedpopup);
           break;
         case "sendBackward":
           selectedObject.sendBackwards();
-          dispatch(moveTextBackwardState(objectId));
+          dispatch(moveElementToLowest(objectId));
           selectedObject.canvas.requestRenderAll(); // Add this line
           break;
         case "bringToFront":
           selectedObject.bringToFront();
-          dispatch(moveTextForwardState(objectId));
+          dispatch(moveElementForwardState(objectId));
           selectedObject.canvas.requestRenderAll(); // Add this line
           break;
         case "sendToBack":
           selectedObject.sendToBack();
-          dispatch(moveTextBackwardState(objectId));
+          dispatch(moveElementBackwardState(objectId));
 
           selectedObject.canvas.requestRenderAll(); // Add this line
           break;
@@ -1284,9 +1288,56 @@ const MainDesignTool = ({
 
   useEffect(() => {
     renderAllImageObjects();
+    renderAllElements();
   }, [imageContaintObject, activeSide, isRender]); // 👈 Reacts to previewUrl change
 
+  const renderAllElements = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
 
+    // Clean up existing objects
+    const existingObjects = canvas.getObjects();
+    existingObjects.forEach(obj => {
+      if (
+        (obj.type === 'curved-text' || obj.type === 'textbox') &&
+        (!textContaintObject || !textContaintObject.some(t => t.id === obj.id))
+      ) {
+        canvas.remove(obj);
+      }
+      if (
+        obj.type === 'image' &&
+        (!imageContaintObject || !imageContaintObject.some(i => i.id === obj.id))
+      ) {
+        canvas.remove(obj);
+      }
+    });
+
+    // Render text objects
+    if (textContaintObject && textContaintObject.length > 0) {
+      textContaintObject.forEach(renderCurveTextObjects);
+    }
+
+    // Render image objects
+    if (imageContaintObject && imageContaintObject.length > 0) {
+      imageContaintObject.forEach(renderAllImageObjects);
+    }
+
+    // Apply proper z-ordering for all elements
+    const allElements = [
+      ...(textContaintObject || []),
+      ...(imageContaintObject || [])
+    ].sort((a, b) => a.layerIndex - b.layerIndex);
+
+    allElements.forEach(element => {
+      const obj = canvas.getObjects().find(o => o.id === element.id);
+      if (obj) {
+        canvas.bringToFront(obj);
+      }
+    });
+
+    canvas.renderAll();
+    updateBoundaryVisibility?.();
+  };
   // **********************************************************************************************************************************************************
   //                                                                                    NAME AND NUMBER OBJECTS AREA
   // **********************************************************************************************************************************************************
@@ -1296,7 +1347,7 @@ const MainDesignTool = ({
       // console.warn("Canvas or nameAndNumberDesignState is missing.");
       return;
     }
-    
+
     const {
       name,
       number,
@@ -1306,9 +1357,9 @@ const MainDesignTool = ({
       fontSize,
       id,
     } = nameAndNumberDesignState;
-    
+
     const objectId = id;
-    
+
     if (!addName && !addNumber) {
       const existingGroup = canvas.getObjects().find(obj => obj.id === objectId);
       if (existingGroup) {
@@ -1317,20 +1368,20 @@ const MainDesignTool = ({
       }
       return;
     }
-    
+
     const fontSizeMap = {
       small: 60,
       medium: 100,
       large: 150,
     };
     const baseFontSize = fontSizeMap[fontSize] || 80;
-    
+
     // Remove old group if it exists
     const oldGroup = canvas.getObjects().filter(obj => obj.isDesignGroup === true);
     oldGroup.forEach((oldGroup) => canvas.remove(oldGroup));
-    
+
     const textObjects = [];
-    
+
     if (addName && name) {
       const nameText = new fabric.Text(name, {
         fontSize: baseFontSize * 0.3,
@@ -1343,7 +1394,7 @@ const MainDesignTool = ({
       nameText.left = -nameText.width / 2;
       textObjects.push(nameText);
     }
-    
+
     if (addNumber && number) {
       const numberText = new fabric.Text(number, {
         fontSize: baseFontSize,
@@ -1353,7 +1404,7 @@ const MainDesignTool = ({
         originY: 'top',
       });
       numberText.left = (-numberText.width) / 2;
-      
+
       // Stack below name if present
       if (textObjects.length > 0) {
         const previous = textObjects[textObjects.length - 1];
@@ -1362,9 +1413,9 @@ const MainDesignTool = ({
       }
       textObjects.push(numberText);
     }
-    
+
     if (textObjects.length === 0) return;
-    
+
     const group = new fabric.Group(textObjects, {
       id: objectId,
       left: position?.x || canvas.getWidth() / 2,
@@ -1379,12 +1430,12 @@ const MainDesignTool = ({
       evented: true,
       isSync: true,
     });
-    
+
     group.on(("modified"), (e) => {
       const obj = e.target;
       if (!obj) return;
       const center = obj.getCenterPoint();
-      
+
       obj.setPositionByOrigin(center, 'center', 'center');
       obj.setCoords();
       dispatch(updateNameAndNumberDesignState({
@@ -1392,12 +1443,12 @@ const MainDesignTool = ({
           "position": { x: obj.left, y: obj.top },
         }
       }));
-      
+
     })
     group.on("mousedown", () => {
       navigate("/design/addNames");
     })
-    
+
     // console.log("group ", group, group.type);
     // Force recalculation of bounds
     group._calcBounds();
@@ -1406,14 +1457,14 @@ const MainDesignTool = ({
       width: fontSize === "small" ? 60 : 190,
       left: position?.x || canvas.getWidth() / 2,
       top: position?.y || canvas.getHeight() / 2,
-      
+
       // originX: 'center',
       // originY: 'center',
       isDesignGroup: true,
       hasBorders: false,
-      
+
     });
-    
+
     group.setCoords();
     canvas.add(group);
     canvas.requestRenderAll();
@@ -1426,16 +1477,16 @@ const MainDesignTool = ({
       }
       renderNameAndNumber();
     };
-    
+
     loadAndRender();
   }, [isRender, addName, addNumber, nameAndNumberDesignState, activeSide]);
-  
-  
-  
-    // **********************************************************************************************************************************************************
-    //                                                                                    OTHER USE EFFECTS
-    // **********************************************************************************************************************************************************
-  
+
+
+
+  // **********************************************************************************************************************************************************
+  //                                                                                    OTHER USE EFFECTS
+  // **********************************************************************************************************************************************************
+
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
     const existingObjects = canvas.getObjects();
@@ -1448,7 +1499,7 @@ const MainDesignTool = ({
         canvas.remove(obj);
       }
     });
-    
+
     const object = canvas.getObjects().find((obj) => obj.id === selectedTextId);
     // console.log("selectedTextId", selectedTextId, object)
     if (object) {
@@ -1457,11 +1508,11 @@ const MainDesignTool = ({
     }
     canvas.renderAll();
   }, [selectedTextId, isRender])
-  
-  
-  
-  
-  
+
+
+
+
+
 
   return (
     <div id={style.canvas} style={{ position: "relative", top: 5 }} >
@@ -1470,7 +1521,7 @@ const MainDesignTool = ({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onLayerAction={handleLayerAction}
-        />
+      />
 
     </div>
   );

@@ -48,7 +48,6 @@ const ProductToolbar = () => {
     }
     return { ...color };
   };
-
   // Open popup for changing/adding product
   const openChangeProductPopup = (isAdd = false, index = null) => {
     setIsAddingProduct(isAdd);
@@ -61,7 +60,6 @@ const ProductToolbar = () => {
     setEditingProductIndex(null);
     setAddProduct(true);
   };
-
   // Handle product selection and update/add it to Redux store
   const handleProductSelect = (product, selectedColor = null) => {
     const fallbackImg = product?.img || product?.imgurl || product?.selectedImage || '';
@@ -90,7 +88,6 @@ const ProductToolbar = () => {
     setIsAddingProduct(false);
     setAddProduct(false);
   };
-  console.log("----activeProduct", activeProduct)
 
   const handleDeleteProduct = (indexToDelete) => {
     // Remove product at index
@@ -146,200 +143,41 @@ const ProductToolbar = () => {
   };
 
 
-  // const getNextActiveProduct = (products, targetIndex) => {
-  //   console.log("getNextActiveProduct",products.length)
-  //   console.log("getNextActiveProducttargetIndex",targetIndex)
-  //   if (products.length === 0) {
-  //     return null;
-  //   }
-
-  //   // Try to use the product at targetIndex, fallback to last product
-  //   const current = products[targetIndex] || products[products.length - 1];
-  //   const addedColors = current.addedColors || [];
-
-  //   let nextColor = null;
-
-  //   if (addedColors.length > 0) {
-  //     nextColor = addedColors[0]; // Pick the first added color
-  //   } else {
-  //     nextColor = current.selectedColor; // Fallback to main product color
-  //   }
-
-  //   return {
-  //     ...current,
-  //     selectedColor: safeCloneColor(nextColor, current.imgurl),
-  //     imgurl: nextColor?.img || current.imgurl,
-  //   };
-  // };
-
-
-  // const getNextActiveProduct = (products, targetIndex, colorIndex) => {
-  //   if (products.length === 0) return null;
-  //   console.log("data.............", products, targetIndex, colorIndex);
-  //   const safeIndex = Math.min(targetIndex, products.length - 1);
-  //   const current = products[safeIndex];
-
-  //   const addedColors = current.addedColors || [];
-  //   const nextColor = addedColors.length > 0
-  //     ? addedColors[0]
-  //     : current.selectedColor;
-
-  //   const isMainColor = colorIndex === 0;
-  //   console.log("color index", colorIndex);
-  //   const clickedColor = isMainColor
-  //     ? addedColors[0]
-  //     : addedColors[colorIndex - 2] || addedColors[colorIndex] || null;
-
-  //   // const updatedActiveProduct = {
-  //   //   ...product,
-  //   //   selectedColor: safeCloneColor(clickedColor, product.imgurl),
-  //   //   imgurl: clickedColor?.img || product.imgurl,
-  //   // };
-  //   return {
-  //     ...current,
-  //     selectedColor: safeCloneColor(clickedColor, current.imgurl),
-  //     imgurl: clickedColor?.img || current.imgurl,
-  //   };
-  // };
 
   const getNextActiveProduct = (products, targetIndex, colorIndex) => {
     if (products.length === 0) return null;
 
+    console.log("data.............", products, targetIndex, colorIndex);
     const safeIndex = Math.min(targetIndex, products.length - 1);
     const current = products[safeIndex];
 
-    // If we're deleting the main color (colorIndex 0)
-    if (colorIndex === 0) {
-      console.log("color Index ===0")
-      // If there are added colors, use the first one
-      if (current.addedColors?.length > 0) {
-        console.log("current.addedColors?.length ")
-        return {
-          ...current,
-          selectedColor: safeCloneColor(current.addedColors[0], current.addedColors[0].img),
-          imgurl: current.addedColors[0].img,
-        };
-      }
-      // If no added colors left, return null (product will be deleted)
-      return null;
-    }
-
-    // For other cases (deleting added colors)
     const addedColors = current.addedColors || [];
     const nextColor = addedColors.length > 0
       ? addedColors[0]
       : current.selectedColor;
 
+    console.log("color index", colorIndex);
+
+    const clickedColor = colorIndex === 0
+      ? current.selectedColor
+      : addedColors[colorIndex - 2] || addedColors[colorIndex] || null;
+
     return {
       ...current,
-      selectedColor: safeCloneColor(nextColor, current.imgurl),
-      imgurl: nextColor?.img || current.imgurl,
+      selectedColor: safeCloneColor(clickedColor, current.imgurl),
+      imgurl: clickedColor?.img || current.imgurl,
     };
   };
-  // const handleDeleteColorThumbnail = (productIndex, colorIndex) => {
-  //   //  const product = selectedProducts[productIndex];
-  //   // const productid = product.id;
-  //   // if (productid) {
-  //   //   dispatch(removeNameAndNumberProduct(productid));
-  //   // }
-
-  //   const updated = [...selectedProducts];
-  //   const originalProduct = selectedProducts[productIndex];
-  //   const product = {
-  //     ...originalProduct,
-  //     addedColors: [...(originalProduct.addedColors || [])],
-  //     selectedColor: { ...originalProduct.selectedColor },
-  //   };
-  //   // const totalThumbnails = 1 + (product.addedColors?.length || 0);
-  //   // if (totalThumbnails === 1) {
-  //   //   handleDeleteProduct(productIndex);
-  //   //   return;
-  //   // }
-
-  //   // Remove the color from addedColors
-  //   // if (colorIndex === 0) {
-  //   //   // Deleting main color
-  //   //   if (product.addedColors.length > 0) {
-  //   //     const [firstColor, ...rest] = product.addedColors;
-  //   //     product.selectedColor = safeCloneColor(firstColor, product.imgurl);
-  //   //     product.imgurl = firstColor.img;
-  //   //     product.addedColors = rest;
-  //   //   } else {
-  //   //     // No added colors left — remove the product
-  //   //     updated.splice(productIndex, 1);
-  //   //   }
-  //   // } else {
-  //   //   // Remove added color
-  //   //   product.addedColors.splice(colorIndex - 1, 1);
-  //   //   updated[productIndex] = product;
-  //   // }
-  //   if (colorIndex === 0) {
-  //     // Deleting main color
-  //     if (product.addedColors.length > 0) {
-  //       // Promote the first added color to be the new main color
-  //       const [firstColor, ...rest] = product.addedColors;
-  //       product.selectedColor = safeCloneColor(firstColor, firstColor.img);
-  //       product.imgurl = firstColor.img;
-  //       product.addedColors = rest;
-  //       updated[productIndex] = product;
-
-  //       // Set the new active product to this updated product
-  //       const newActiveProduct = {
-  //         ...product,
-  //         selectedColor: safeCloneColor(firstColor, firstColor.img),
-  //         imgurl: firstColor.img,
-  //       };
-  //       console.log("----newActiveProduct", newActiveProduct);
-  //       dispatch(setActiveProduct(newActiveProduct));
-  //     } else {
-  //       // No added colors left - delete the entire product
-  //       updated.splice(productIndex, 1);
-
-  //       // Find the nearest product to activate
-  //       const newIndex = Math.min(productIndex, updated.length - 1);
-  //       const newActiveProduct = updated[newIndex]
-  //         ? {
-  //           ...updated[newIndex],
-  //           selectedColor: safeCloneColor(updated[newIndex].selectedColor, updated[newIndex].imgurl),
-  //           imgurl: updated[newIndex].imgurl,
-  //         }
-  //         : null;
-  //       dispatch(setActiveProduct(newActiveProduct));
-  //       console.log("----newActive66", newActiveProduct);
-
-
-  //     }
-  //   }
-  //   else {
-  //     // Remove added color
-  //     console.log("----newActive22");
-
-  //     product.addedColors.splice(colorIndex - 1, 1);
-  //     updated[productIndex] = product;
-  //   }
-
-
-  //   // Update the product list in Redux
-  //   dispatch(setSelectedProductsAction(updated));
-
-  //   // Determine new active product
 
 
 
-  //   const newActiveProduct = getNextActiveProduct(updated, productIndex, colorIndex);
-
-  //   // Set the new active product
-  //   if (newActiveProduct) {
-  //     dispatch(setActiveProduct(newActiveProduct));
-  //   } else {
-  //     // If no products left
-  //     dispatch(setActiveProduct(null));
-  //   }
-
-  //   setActiveThumbnail({ productIndex: null, colorIndex: null });
-  //   console.log("---selectedProduct", selectedProducts)
-  // };
   const handleDeleteColorThumbnail = (productIndex, colorIndex) => {
+    //  const product = selectedProducts[productIndex];
+    // const productid = product.id;
+    // if (productid) {
+    //   dispatch(removeNameAndNumberProduct(productid));
+    // }
+
     const updated = [...selectedProducts];
     const originalProduct = selectedProducts[productIndex];
     const product = {
@@ -347,7 +185,29 @@ const ProductToolbar = () => {
       addedColors: [...(originalProduct.addedColors || [])],
       selectedColor: { ...originalProduct.selectedColor },
     };
+    // const totalThumbnails = 1 + (product.addedColors?.length || 0);
+    // if (totalThumbnails === 1) {
+    //   handleDeleteProduct(productIndex);
+    //   return;
+    // }
 
+    // Remove the color from addedColors
+    // if (colorIndex === 0) {
+    //   // Deleting main color
+    //   if (product.addedColors.length > 0) {
+    //     const [firstColor, ...rest] = product.addedColors;
+    //     product.selectedColor = safeCloneColor(firstColor, product.imgurl);
+    //     product.imgurl = firstColor.img;
+    //     product.addedColors = rest;
+    //   } else {
+    //     // No added colors left — remove the product
+    //     updated.splice(productIndex, 1);
+    //   }
+    // } else {
+    //   // Remove added color
+    //   product.addedColors.splice(colorIndex - 1, 1);
+    //   updated[productIndex] = product;
+    // }
     if (colorIndex === 0) {
       // Deleting main color
       if (product.addedColors.length > 0) {
@@ -357,22 +217,49 @@ const ProductToolbar = () => {
         product.imgurl = firstColor.img;
         product.addedColors = rest;
         updated[productIndex] = product;
+
+        // Set the new active product to this updated product
+        const newActiveProduct = {
+          ...product,
+          selectedColor: safeCloneColor(firstColor, firstColor.img),
+          imgurl: firstColor.img,
+        };
+
+        dispatch(setActiveProduct(newActiveProduct));
       } else {
         // No added colors left - delete the entire product
         updated.splice(productIndex, 1);
+
+        // Find the nearest product to activate
+        const newIndex = Math.min(productIndex, updated.length - 1);
+        const newActiveProduct = updated[newIndex]
+          ? {
+            ...updated[newIndex],
+            selectedColor: safeCloneColor(updated[newIndex].selectedColor, updated[newIndex].imgurl),
+            imgurl: updated[newIndex].imgurl,
+          }
+          : null;
+
+        dispatch(setActiveProduct(newActiveProduct));
+
       }
-    } else {
+    }
+    else {
       // Remove added color
       product.addedColors.splice(colorIndex - 1, 1);
       updated[productIndex] = product;
     }
 
+
     // Update the product list in Redux
     dispatch(setSelectedProductsAction(updated));
-    console.log("prrIndex", productIndex, "colorIndex", colorIndex);
+
     // Determine new active product
+
+
+
     const newActiveProduct = getNextActiveProduct(updated, productIndex, colorIndex);
-    console.log("----------nnn", newActiveProduct)
+
     // Set the new active product
     if (newActiveProduct) {
       dispatch(setActiveProduct(newActiveProduct));
@@ -382,7 +269,9 @@ const ProductToolbar = () => {
     }
 
     setActiveThumbnail({ productIndex: null, colorIndex: null });
+    console.log("---selectedProduct", selectedProducts)
   };
+
 
   const { list: rawProducts, loading, error } = useSelector(
     (state) => state.products
@@ -464,6 +353,18 @@ const ProductToolbar = () => {
                     },
                     ...(product?.addedColors || []),
                   ].map((color, i) => {
+                    // console.log('🔍 Thumbnail check', {
+                    //   "index": index,
+                    //   "colorIndex": i,
+                    //   "productId": product.id,
+                    //   "productColorName": i === 0 ? product?.selectedColor?.name : product?.addedColors?.[i - 1]?.name,
+                    //   "activeColorName": activeProduct?.selectedColor?.name,
+                    //   " isActive": activeProduct?.id === product?.id &&
+                    //     (
+                    //       (i === 0 && activeProduct?.selectedColor?.name === product?.selectedColor?.name) ||
+                    //       (i > 0 && activeProduct?.selectedColor?.name === product?.addedColors?.[i - 1]?.name)
+                    //     )
+                    // });
                     const isHovered = hoveredThumbnail.productIndex === index && hoveredThumbnail.colorIndex === i;
                     const imgSrc = isHovered ? hoveredThumbnail.color.img : color.img;
 
@@ -472,12 +373,22 @@ const ProductToolbar = () => {
                         key={i}
                         className={`mini-prod-img-container ${activeProduct?.id === product?.id &&
                           (
-                            (i === 0 && activeProduct?.selectedColor?.name === product?.selectedColor?.name) ||
-                            (i > 0 && activeProduct?.selectedColor?.name === product?.addedColors?.[i - 1]?.name)
+                            (i === 0 &&
+                              (
+                                activeProduct?.selectedColor?.name === product?.selectedColor?.name ||
+                                !activeProduct?.selectedColor ||
+                                activeProduct?.selectedColor?.name === 'null'
+                              )
+                            ) ||
+                            (i > 0 &&
+                              activeProduct?.selectedColor?.name === product?.addedColors?.[i - 1]?.name
+                            )
                           )
                           ? style.activeThumbnail
                           : ''
                           }`}
+
+
                         onClick={() => {
                           const clickedColor = i === 0 ? product.selectedColor : product.addedColors?.[i - 1];
                           const updatedActiveProduct = {

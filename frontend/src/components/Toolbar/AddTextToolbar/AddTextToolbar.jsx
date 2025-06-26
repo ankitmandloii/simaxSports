@@ -22,7 +22,7 @@ import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox';
 import { useDispatch, useSelector } from 'react-redux';
 // import { setCenterState, setFlipXState, setFlipYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState, setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
 // import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
-import { duplicateTextState, addTextState, updateTextState, toggleLockState, moveTextForwardState, moveTextBackwardState } from '../../..//redux/FrontendDesign/TextFrontendDesignSlice.js';
+import { duplicateTextState, addTextState, updateTextState, toggleLockState, moveTextForwardState, moveTextBackwardState, moveElementForwardState, moveElementBackwardState } from '../../..//redux/FrontendDesign/TextFrontendDesignSlice.js';
 // import { setSelectedBackTextState } from '../../../redux/BackendDesign/TextBackendDesignSlice.js';
 
 const AddTextToolbar = () => {
@@ -31,6 +31,7 @@ const AddTextToolbar = () => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const [currentTextToolbarId, setCurrentTextToolbarId] = useState(String(Date.now()));  // current id of toolbar
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
+  const allImagesData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   let textContaintObject = allTextInputData.find((text) => text.id === currentTextToolbarId);
   // console.log(allTextInputData, textContaintObject, "render data");
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
@@ -121,27 +122,27 @@ const AddTextToolbar = () => {
   //  [dispatch,selectedTextId, selectedBackTextId ])
 
 
-const handleRangeInputSizeChange = (e) => {
-  const rawValue = e.target.value;
-  setRangeValuesSize(rawValue);
+  const handleRangeInputSizeChange = (e) => {
+    const rawValue = e.target.value;
+    setRangeValuesSize(rawValue);
 
-  const parsed = parseFloat(rawValue);
-  if (isNaN(parsed) || parsed < 0.2 || parsed > 10) return;
+    const parsed = parseFloat(rawValue);
+    if (isNaN(parsed) || parsed < 0.2 || parsed > 10) return;
 
-  const scaleX = textContaintObject.scaleX;
-  const scaleY = textContaintObject.scaleY;
+    const scaleX = textContaintObject.scaleX;
+    const scaleY = textContaintObject.scaleY;
 
-  // Use average of current X and Y scale as "prev size"
-  const currentAvg = (scaleX + scaleY) / 2; 
+    // Use average of current X and Y scale as "prev size"
+    const currentAvg = (scaleX + scaleY) / 2;
 
-  const scaleRatio = parsed / currentAvg;
+    const scaleRatio = parsed / currentAvg;
 
-  globalDispatch("scaleX", scaleX * scaleRatio);
-  globalDispatch("scaleY", scaleY * scaleRatio);
-  globalDispatch("scaledValue", parsed);
+    globalDispatch("scaleX", scaleX * scaleRatio);
+    globalDispatch("scaleY", scaleY * scaleRatio);
+    globalDispatch("scaledValue", parsed);
 
-  setPrevSize(parsed); // if shared across
-};
+    setPrevSize(parsed); // if shared across
+  };
 
 
   const handleBlur = () => {
@@ -374,41 +375,67 @@ const handleRangeInputSizeChange = (e) => {
 
   const handleBringBackward = () => {
     // console.log("sending id ", selectedTextId)
-    dispatch(moveTextBackwardState(selectedTextId));
+    // dispatch(moveTextBackwardState(selectedTextId));
+    dispatch(moveElementBackwardState(selectedTextId));
+
   };
   const handleBringForward = () => {
-    dispatch(moveTextForwardState(selectedTextId));
+    // dispatch(moveTextForwardState(selectedTextId));
+    dispatch(moveElementForwardState(selectedTextId));
+
   };
-
   function getRenderIconForSendToTop() {
-    if (!textContaintObject || !allTextInputData) return;
-    // console.log(textContaintObject.layerIndex + 1, allTextInputData.length, "both values");
+    if (!textContaintObject || (!allTextInputData && !allImagesData)) return;
+
+    // Calculate total number of elements (texts + images)
+    const totalElements = (allTextInputData?.length || 0) + (allImagesData?.length || 0);
     const layerIndex = textContaintObject.layerIndex;
-    const ArraySize = allTextInputData.length - 1;
 
+    // If the element is already at the top (highest layerIndex)
+    if (layerIndex >= totalElements - 1) return true;
 
-    // console.log(layerIndex, ArraySize, "layer data")
-
-    if (layerIndex > 0 && layerIndex < ArraySize) return false;
-
-    if (layerIndex < ArraySize) return false
-
-    return true;
-
+    return false;
   }
+
   function getRenderIconForSendToBack() {
-    if (!textContaintObject || !allTextInputData) return;
+    if (!textContaintObject || (!allTextInputData && !allImagesData)) return;
+
     const layerIndex = textContaintObject.layerIndex;
-    const ArraySize = allTextInputData.length;
 
-    // console.log(layerIndex, ArraySize, "layer data")
+    // If the element is already at the bottom (layerIndex 0)
+    if (layerIndex <= 0) return true;
 
-    if (layerIndex > 0 && layerIndex < ArraySize) return false;
-
-    if (layerIndex > 0) return false
-
-    return true;
+    return false;
   }
+  // function getRenderIconForSendToTop() {
+  //   if (!textContaintObject || !allTextInputData) return;
+  //   // console.log(textContaintObject.layerIndex + 1, allTextInputData.length, "both values");
+  //   const layerIndex = textContaintObject.layerIndex;
+  //   const ArraySize = allTextInputData.length - 1;
+
+
+  //   // console.log(layerIndex, ArraySize, "layer data")
+
+  //   if (layerIndex > 0 && layerIndex < ArraySize) return false;
+
+  //   if (layerIndex < ArraySize) return false
+
+  //   return true;
+
+  // }
+  // function getRenderIconForSendToBack() {
+  //   if (!textContaintObject || !allTextInputData) return;
+  //   const layerIndex = textContaintObject.layerIndex;
+  //   const ArraySize = allTextInputData.length;
+
+  //   // console.log(layerIndex, ArraySize, "layer data")
+
+  //   if (layerIndex > 0 && layerIndex < ArraySize) return false;
+
+  //   if (layerIndex > 0) return false
+
+  //   return true;
+  // }
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.focus();
