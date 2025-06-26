@@ -1351,7 +1351,8 @@ const MainDesignTool = ({
         const dotCount = 5;
         const dotRadius = 6;
         const dotSpacing = 15;
-        const colors = Array(dotCount).fill('#000000');
+        // const colors = Array(dotCount).fill('#000000');
+        const colors = ['black','#005bff','black','#005bff','black'];
         const dots = [];
 
         for (let i = 0; i < dotCount; i++) {
