@@ -63,7 +63,7 @@ const AddImageToolbar = () => {
   const [activeTransform, setActiveTransform] = useState('');
   const [cropAndTrim, setCropAndTrim] = useState(false);
   const [superResolution, setSuperResolution] = useState(false);
-  const [bgColor, setBgColor] = useState("#000000");
+  const [bgColor, setBgColor] = useState("var(--black-color)");
 
   const [resetDefault, setResetDefault] = useState(false);
   const imgRef = useRef(null);
@@ -412,18 +412,18 @@ const AddImageToolbar = () => {
 
 
 
-const bGReplaceColorChangedFunctionCalled = (color) => {
-  const hex = color.replace('#', '');
-  const value = isActive(`bg-remove=true&bg=${hex}`);
-  toggle(`bg-remove=true&bg=${hex}`, value);
+  const bGReplaceColorChangedFunctionCalled = (color) => {
+    const hex = color.replace('#', '');
+    const value = isActive(`bg-remove=true&bg=${hex}`);
+    toggle(`bg-remove=true&bg=${hex}`, value);
 
-  setBgColor(color);
-  setResetDefault(false);
+    setBgColor(color);
+    setResetDefault(false);
 
-  const imgixParam = `bg-remove=true&bg=${hex}`;
-  globalDispatch("replaceBackgroundColor", color);
-  globalDispatch("replaceBgParamValue", imgixParam);
-};
+    const imgixParam = `bg-remove=true&bg=${hex}`;
+    globalDispatch("replaceBackgroundColor", color);
+    globalDispatch("replaceBgParamValue", imgixParam);
+  };
 
   // const bGReplaceColorChangedFunctionCalled = (color) => {
   //   // Get current toggle state (true/false)
@@ -491,7 +491,7 @@ const bGReplaceColorChangedFunctionCalled = (color) => {
       removeBg: false,
       cropAndTrim: false,
       superResolution: false,
-      replaceBackgroundColor: "#000000"
+      replaceBackgroundColor: "var(--black-color)"
     };
 
     dispatch(updateImageState({ id: selectedImageId, changes }));
@@ -502,7 +502,7 @@ const bGReplaceColorChangedFunctionCalled = (color) => {
     setSuperResolution(false);
     setActiveTransform('');
     setBGColorPopup(false);
-    setBgColor("#000000");
+    setBgColor("var(--black-color)");
     // 3. Remove active transformations via `toggle`
     // const removeBgKey = 'bg-remove=true';
     // const cropKey = 'trim=color';
@@ -720,17 +720,17 @@ const bGReplaceColorChangedFunctionCalled = (color) => {
               <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Replace Background With AI<span className={styles.aiBadge}>AI</span></div>
 
-               
-                  <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleBGReplaceColorPopup}>
-                    <SpanColorBox color={bgColor} />
-                    {bgColorPopup && (
-                      <ReplaceBackgroundColorPicker
-                        closePopupHandler={toggleBGReplaceColorPopup}
-                        defaultColor={bgColor}
-                        onApply={bGReplaceColorChangedFunctionCalled}
-                      />
-                    )}
-                 
+
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleBGReplaceColorPopup}>
+                  <SpanColorBox color={bgColor} />
+                  {bgColorPopup && (
+                    <ReplaceBackgroundColorPicker
+                      closePopupHandler={toggleBGReplaceColorPopup}
+                      defaultColor={bgColor}
+                      onApply={bGReplaceColorChangedFunctionCalled}
+                    />
+                  )}
+
 
                   {/* <span><AngleActionIcon /></span> */}
 

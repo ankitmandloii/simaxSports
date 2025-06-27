@@ -28,7 +28,7 @@
 }
 
 .navSpanNumberActive {
-  color: #005bff;
+  color: var(--blue-color);
 }
 
 a.step:first-child:after {
@@ -62,9 +62,9 @@ a.step:first-child:after {
 .navSteps {
   display: flex;
   gap: 78px;
-  font-weight: 600;
+  font-weight: 400;
   /* text-transform: uppercase; */
-  font-size: 14px;
+  font-size: 16px;
   color: #888;
 }
 
@@ -84,7 +84,7 @@ a.step:first-child:after {
 
 
 .stepActive {
-  color: #005bff !important;
+  color: var(--blue-color) !important;
   /* border-bottom: 2px solid red; */
   padding-bottom: 2px;
   position: relative;
@@ -96,7 +96,7 @@ a.step:first-child:after {
 }
 
 .stepActive .navSpanNumber {
-  background-color: #005bff;
+  background-color: var(--blue-color);
 }
 
 .rightSection {

@@ -61,7 +61,7 @@
 }
 
 .active .bottomBarIcon {
-  color: #005BFF;
+  color: var(--blue-color);
 }
 
 .active .label {
@@ -71,7 +71,7 @@
 
 .spannAi {
   position: absolute;
-  background-color: #005bff;
+  background-color: var(--blue-color);
   color: #ffffff;
   top: 0px;
   font-size: 8px;

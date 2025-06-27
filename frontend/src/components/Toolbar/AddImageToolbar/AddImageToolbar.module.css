@@ -212,7 +212,7 @@ textarea {
   align-items: center;
   height: 18px;
   justify-content: center;
-  border: 2px solid #D2D5D9;
+  border: 2px solid var(--borderColor);
   display: flex;
   /* background-color: black; */
 }
@@ -258,7 +258,7 @@ textarea {
 .addImageResetText {
   cursor: pointer;
   font-size: 10px;
-  color: #005bff;
+  color: var(--blue-color);
 }
 
 /* 
@@ -355,7 +355,7 @@ input:checked+.slider:before {
 }
 
 .filterOptionActive {
-  border-color: #005bff;
+  border-color: var(--blue-color);
   position: relative;
 }
 
@@ -369,16 +369,16 @@ input:checked+.slider:before {
   padding: 3px;
   color: #fff;
   font-size: 12px;
-  /* background-color: var(--red); */
-  background: linear-gradient(90deg, #005bff 0%, #C183FF 100%);
+  /* background-color: var(--blue-color); */
+  background: linear-gradient(90deg, var(--blue-color) 0%, #C183FF 100%);
 
   border-radius: 5px;
 }
 
 .filterOptionActive .filterLabel {
-  color: #005bff;
+  color: var(--blue-color);
   font-weight: bold;
-  border-top: 2px solid #005bff;
+  border-top: 2px solid var(--blue-color);
   /* padding-top: 4px; */
 }
 
@@ -422,11 +422,12 @@ input:checked+.slider:before {
   cursor: pointer;
 
 }
+
 .resetButton {
-  color: #005bff;
+  color: var(--blue-color);
   text-decoration: underline;
   cursor: pointer;
-   font-weight: 500;
+  font-weight: 500;
   font-size: 13px;
   /* letter-spacing: 0.35px; */
   /* align-items: center; */

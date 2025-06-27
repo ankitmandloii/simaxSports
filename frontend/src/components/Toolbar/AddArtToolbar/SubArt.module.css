@@ -164,7 +164,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border-left-color: #000000;
+  border-left-color: var(--black-color);
   /* Indigo or your primary color */
   animation: spin 1s ease infinite;
   margin-bottom: 10px;

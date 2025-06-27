@@ -46,7 +46,7 @@
   width: 98px;
   max-width: 98px;
   height: 100%;
-  background-color: #000000;
+  background-color: var(--black-color);
   border-radius: 20px 0 0 20px;
 }
 
@@ -106,7 +106,7 @@
 
 .spannAi {
   position: absolute;
-  background-color: #005bff;
+  background-color: var(--blue-color);
   color: #ffffff;
   top: 10px;
   font-size: 10px;
@@ -125,5 +125,5 @@
 }
 
 .active .sidebarIcon path {
-  fill: #005bff;
+  fill: var(--blue-color);
 }

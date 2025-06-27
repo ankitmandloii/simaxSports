@@ -5,7 +5,7 @@
 //   id: id,
 //   content: value || 'New Text',
 //   fontFamily: 'Montserrat',
-//   textColor: '#000000',
+//   textColor: 'var(--black-color)',
 //   outline: 'none',
 //   size: 1,
 //   scaleX: 1,

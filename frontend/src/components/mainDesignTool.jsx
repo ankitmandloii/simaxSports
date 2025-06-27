@@ -131,7 +131,7 @@ const MainDesignTool = ({
     dispatch(
       updateImageState({
         "id": id,
-        changes: { [lable]: (lable=="angle"?Number(value).toFixed(1):value) },
+        changes: { [lable]: (lable == "angle" ? Number(value).toFixed(1) : value) },
       })
     );
     dispatch(
@@ -211,50 +211,50 @@ const MainDesignTool = ({
   const bringPopup = () => {
     setIsModalOpen(true);
   };
- const handleScale = (e) => {
-  const clamp = (value, min = 0.2, max = 20) => Math.max(min, Math.min(value, max));
-  const obj = e.target;
-  const canvas = fabricCanvasRef.current;
+  const handleScale = (e) => {
+    const clamp = (value, min = 0.2, max = 20) => Math.max(min, Math.min(value, max));
+    const obj = e.target;
+    const canvas = fabricCanvasRef.current;
 
-  if (!obj || !obj.id || !e.transform || !['scale', 'scaleX', 'scaleY'].includes(e.transform.action)) return;
+    if (!obj || !obj.id || !e.transform || !['scale', 'scaleX', 'scaleY'].includes(e.transform.action)) return;
 
-  const imageData = imageContaintObject?.find(img => img.id === obj.id);
-  if (!imageData) return;
+    const imageData = imageContaintObject?.find(img => img.id === obj.id);
+    if (!imageData) return;
 
-  const center = obj.getCenterPoint();
-  const originalWidth = obj.width;
-  const originalHeight = obj.height;
+    const center = obj.getCenterPoint();
+    const originalWidth = obj.width;
+    const originalHeight = obj.height;
 
-  const MAX_WIDTH = 300;
-  const MAX_HEIGHT = 300;
+    const MAX_WIDTH = 300;
+    const MAX_HEIGHT = 300;
 
-  // Calculate base (initial bounding box) scale
-  const boundingScale = Math.min(MAX_WIDTH / originalWidth, MAX_HEIGHT / originalHeight);
+    // Calculate base (initial bounding box) scale
+    const boundingScale = Math.min(MAX_WIDTH / originalWidth, MAX_HEIGHT / originalHeight);
 
-  // Actual current scale relative to that base
-  const relativeScaleX = obj.scaleX / boundingScale;
-  const relativeScaleY = obj.scaleY / boundingScale;
+    // Actual current scale relative to that base
+    const relativeScaleX = obj.scaleX / boundingScale;
+    const relativeScaleY = obj.scaleY / boundingScale;
 
-  // Clamp to avoid extreme zoom in/out
-  const clampedScaleX = clamp(relativeScaleX);
-  const clampedScaleY = clamp(relativeScaleY);
+    // Clamp to avoid extreme zoom in/out
+    const clampedScaleX = clamp(relativeScaleX);
+    const clampedScaleY = clamp(relativeScaleY);
 
-  // Apply scaled values
-  obj.scaleX = boundingScale * clampedScaleX;
-  obj.scaleY = boundingScale * clampedScaleY;
+    // Apply scaled values
+    obj.scaleX = boundingScale * clampedScaleX;
+    obj.scaleY = boundingScale * clampedScaleY;
 
-  // Maintain center position
-  obj.setPositionByOrigin(center, 'center', 'center');
-  obj.setCoords();
+    // Maintain center position
+    obj.setPositionByOrigin(center, 'center', 'center');
+    obj.setCoords();
 
-  // Dispatch relative scale values (user control)
-  globalDispatch("scaleX", parseFloat(clampedScaleX.toFixed(1)), obj.id);
-  globalDispatch("scaleY", parseFloat(clampedScaleY.toFixed(1)), obj.id);
-  globalDispatch("scaledValue", parseFloat(((clampedScaleX + clampedScaleY) / 2).toFixed(1)), obj.id);
+    // Dispatch relative scale values (user control)
+    globalDispatch("scaleX", parseFloat(clampedScaleX.toFixed(1)), obj.id);
+    globalDispatch("scaleY", parseFloat(clampedScaleY.toFixed(1)), obj.id);
+    globalDispatch("scaledValue", parseFloat(((clampedScaleX + clampedScaleY) / 2).toFixed(1)), obj.id);
 
-  canvas?.renderAll();
-  syncMirrorCanvas(activeSide);
-};
+    canvas?.renderAll();
+    syncMirrorCanvas(activeSide);
+  };
 
 
   // **********************************************************************************************************************************************************
@@ -274,7 +274,7 @@ const MainDesignTool = ({
 
   const isLocked = (_eventData, transform) => {
     const id = transform.target.id;
-    const foundObject = textContaintObject?.find((obj) => obj.id === id ) || imageContaintObject?.find((obj) => obj.id === id);
+    const foundObject = textContaintObject?.find((obj) => obj.id === id) || imageContaintObject?.find((obj) => obj.id === id);
     const isLocked = foundObject?.locked ?? false;
     return isLocked;
   }
@@ -1146,7 +1146,7 @@ const MainDesignTool = ({
   //               dispatch(selectedImageIdState(obj.id));
   //               setActiveObjectType("Image");
   //               navigate("/design/addImage", { state: imageData });
-                
+
   //             }
   //           });
 
@@ -1352,7 +1352,7 @@ const MainDesignTool = ({
         const dotRadius = 6;
         const dotSpacing = 15;
         // const colors = Array(dotCount).fill('#000000');
-        const colors = ['black','#005bff','black','#005bff','black'];
+        const colors = ['black', '#005bff', 'black', '#005bff', 'black'];
         const dots = [];
 
         for (let i = 0; i < dotCount; i++) {

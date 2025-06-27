@@ -5,9 +5,9 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(to bottom right, #cbd5e1, #f5f3f7);
-  color: #005bff;
+  color: var(--blue-color);
   padding: 1rem;
-  font-family: 'Inter', sans-serif;
+  font-family: "Roboto-Regular", sans-serif;
   overflow: hidden;
   position: relative;
 }
@@ -58,7 +58,7 @@
 }
 
 .errorDigit {
-  color: #005bff;
+  color: var(--blue-color);
 }
 
 /* Heading and description */
@@ -90,7 +90,7 @@
 }
 
 .button:hover {
-  background-color: #000000;
+  background-color: var(--black-color);
   transform: scale(1.05);
 }
 

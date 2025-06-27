@@ -1,0 +1,48 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: sans-serif;
+  margin-bottom: 5px
+}
+
+.circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: conic-gradient(from 0deg,
+      #FF0000,
+      #FF7F00,
+      #FFFF00,
+      #00FF00,
+      #0000FF,
+      #4B0082,
+      #9400D3,
+      #FF0000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.circle::before {
+  content: '';
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: white;
+}
+
+.plus {
+  position: relative;
+  font-size: 25px;
+  font-weight: 500;
+  color: black;
+}
+
+.label {
+  margin-top: 4px;
+  font-size: 14px;
+}

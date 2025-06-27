@@ -29,7 +29,7 @@
   text-align: center;
   height: 20px;
   outline: none;
-  border: 1px solid #D2D5D9;
+  border: 1px solid var(--borderColor);
   border-radius: 4px;
 }
 
@@ -154,7 +154,7 @@
   outline: none;
   cursor: pointer;
   border-radius: 100px;
-  border: 1px solid #d2d5d9;
+  border: 1px solid var(--borderColor);
   padding-left: 14px;
   margin-top: 10px;
   /* position: absolute;

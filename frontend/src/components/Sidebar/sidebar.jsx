@@ -53,7 +53,7 @@ const AdminSidebar = () => {
     {
       path: "/design/addArt",
       icon: <SelectArtIcon />,
-      label: "Add Art",
+      label: "Select Art",
     },
     {
       path: "/design/addNames",

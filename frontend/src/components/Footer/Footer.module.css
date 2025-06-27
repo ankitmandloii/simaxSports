@@ -19,31 +19,41 @@
   color: black;
   border: 1px solid rgb(34, 32, 32);
   border-radius: 100px;
-  font-size: 11px;
+  font-size: 14px;
   display: flex;
   justify-content: center;
   display: inline-flex;
   gap: 10px;
   align-items: center;
-  font-weight: 600;
+  font-weight: 500;
   padding: 3px 8px;
   cursor: pointer;
   /* transition: background-color 0.3s ease, transform 0.2s ease; */
   padding: 3.5px 26px;
+  transition: .3s ease;
 }
+
 .saveButton {
   color: white;
-  background-color: #005bff;
-  border: none;              /* REMOVE the black border */
+  background-color: var(--blue-color);
+  border: none;
+  /* REMOVE the black border */
   border-radius: 100px;
-  font-size: 11px;
-  display: inline-flex;       /* clean up duplicate display lines */
+  font-size: 14px;
+  display: inline-flex;
+  /* clean up duplicate display lines */
   justify-content: center;
   gap: 10px;
   align-items: center;
-  font-weight: 600;
+  font-weight: 500;
   padding: 7.5px 26px;
   cursor: pointer;
+  transition: .3s ease;
+}
+
+.saveButton:hover {
+  transform: scale(1.05);
+
 }
 
 .footerBtn:hover {

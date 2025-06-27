@@ -109,14 +109,14 @@
   /* margin:5px;   */
   border-radius: 10px;
   background-color: white;
-  box-shadow: 0 0 0 1px #d2d5d9;
+  box-shadow: 0 0 0 1px var(--borderColor);
   padding: 10px;
   margin-bottom: 2px;
   transition: all 0.5s ease -in -out;
 }
 
 .ProductContainerSmallImage:hover {
-  box-shadow: 0 0 0 2px #005bff;
+  box-shadow: 0 0 0 2px var(--blue-color);
 }
 
 .ProductContainerSmallImage p {
@@ -124,7 +124,7 @@
 }
 
 .activeBorder {
-  box-shadow: 0 0 0 2px #005bff;
+  box-shadow: 0 0 0 2px var(--blue-color);
 
 }
 
@@ -184,13 +184,13 @@
 }
 
 .hoverActive {
-  box-shadow: 0 0 0 2px #005bff;
+  box-shadow: 0 0 0 2px var(--blue-color);
 }
 
 /* canvas#mirrorCanvasFront {
     width: 86px !important;
     height: 90px !important;
-    border: 2px solid #005BFF;
+    border: 2px solid var(--blue-color);
     border-radius: 10px;
     margin: 9px 5px 10px 5px;
     padding: 7px;
@@ -199,7 +199,7 @@
 canvas#mirrorCanvasBack {
   width: 86px !important;
   height: 90px !important;
-  border: 1px solid #d2d5d9;
+  border: 1px solid var(--borderColor);
   border-radius: 10px;
   margin: 0px 5px 5px 5px;
   padding: 9px;
@@ -213,6 +213,9 @@ canvas#mirrorCanvasBack {
 .cornerImgCanvaContainer p {
   text-align: center;
   font-weight: bold;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 7px;
 }
 
 #mirrorCanvas {
@@ -266,11 +269,11 @@ canvas#mirrorCanvasBack {
 
 .sleeveDesignButn {
   text-align: center;
-   display: flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
-  border: 1px solid #d2d5d9;
+  border: 1px solid var(--borderColor);
   background: #fff;
   padding: 8px 20px;
   border-radius: 10px;
@@ -282,15 +285,16 @@ canvas#mirrorCanvasBack {
 
 
 .sleeveDesignButn:hover {
-  box-shadow: 0 0 0 2px #005bff;
+  box-shadow: 0 0 0 2px var(--blue-color);
 }
 
 .sleeveDesignButn svg {
   min-width: 18px;
   min-height: 18px;
 }
-.sleeveDesignButn p{
-  font-weight: 600;
+
+.sleeveDesignButn p {
+  font-weight: 500;
   font-size: 14px;
 }
 
@@ -299,7 +303,7 @@ canvas#mirrorCanvasBack {
   justify-content: center;
   align-items: center;
   gap: 10px;
-  border: 1px solid #d2d5d9;
+  border: 1px solid var(--borderColor);
   background: #fff;
   padding: 8px 20px;
   border-radius: 100px;
@@ -309,12 +313,13 @@ canvas#mirrorCanvasBack {
   transition: all 0.4s ease -in -out;
 }
 
-.zoomContainer p{
-  font-weight: 600;
+.zoomContainer p {
+  font-weight: 500;
   font-size: 14px;
 }
+
 .zoomContainer:hover {
-  box-shadow: 0 0 0 2px #005bff;
+  box-shadow: 0 0 0 2px var(--blue-color);
 }
 
 .zoomContainer svg {

@@ -129,7 +129,7 @@
 }
 
 .commonBtn.active {
-  border: 2px solid var(--red);
+  border: 2px solid var(--blue-color);
   background-color: #F0F6FE;
   border-radius: 100px;
   padding-left: 28px;
@@ -149,7 +149,7 @@
   outline: none;
   cursor: pointer;
   border-radius: 100px;
-  border: 1px solid #D2D5D9;
+  border: 1px solid var(--borderColor);
   padding-left: 14px;
   margin-top: 10px;
   position: absolute;
@@ -295,7 +295,7 @@
 }
 
 .miniProdImgContainer:hover {
-  border: 2px solid #005bff;
+  border: 2px solid var(--blue-color);
 }
 
 /* tablet */

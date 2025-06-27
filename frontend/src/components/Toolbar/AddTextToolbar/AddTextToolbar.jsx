@@ -473,7 +473,7 @@ const AddTextToolbar = () => {
                     >
                       <span><AlignCenterIcon /></span>
                     </div>
-                    <div className='toolbar-box-heading-container'>Center</div>
+                    <div className={style.toolbarBoxHeadingContainer}>Center</div>
                   </div>
 
                   <div className={`${style.toolbarBoxIconsAndHeadingContainer} ${isLocked ? style.lockedToolbar : ''}`}>

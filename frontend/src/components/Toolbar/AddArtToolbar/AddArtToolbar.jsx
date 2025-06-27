@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SearchIcon } from '../../iconsSvg/CustomIcon';
+import { CrossIcon, SearchIcon } from '../../iconsSvg/CustomIcon';
 import { aiContent } from '../../json/aiicontent';
 import SubArtBox from './SubArtBox';
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +31,7 @@ const AddArtToolbar = () => {
         <h5 className="Toolbar-badge">Art Powered By AI</h5>
         <h2>Add Art</h2>
         <p>Add your own artwork or choose from our library to personalize your design.</p>
+
       </div>
 
       {subArt ? (

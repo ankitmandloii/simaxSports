@@ -69,7 +69,7 @@
   position: absolute;
   top: 30px;
   left: 100px;
-  background-color: #005BFF;
+  background-color: var(--blue-color);
   color: #fff;
   font-size: 10px;
   height: .8rem;
@@ -145,3 +145,10 @@
   height: 20px;
   fill: currentColor;
 } */
+.crossIcon {
+  position: absolute;
+  right: 0;
+  cursor: pointer;
+  top: 0;
+
+}

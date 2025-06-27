@@ -20,6 +20,7 @@ import { removeNameAndNumberProduct, setRendering } from '../../../redux/Fronten
 // import { setInitialPopupShown } from '../../../redux/ContinueDesign/ContinueDesignSlice';
 // import { fetchProducts } from '../../../redux/ProductSlice/ProductSlice';
 import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSlice';
+import AddColorBtn from '../../CommonComponent/AddColorBtn/AddColorBtn';
 // import io from 'socket.io-client';
 // import { updateAdminSettingsFromSocket } from '../../../redux/SettingsSlice/SettingsSlice';
 // const socket = io(process.env.REACT_APP_BASE_URL, {
@@ -322,7 +323,6 @@ const ProductToolbar = () => {
           <h2>Manage Your Products</h2>
           <p>You can select multiple products and colors</p>
         </div>
-
         <div className={style.toolbarBox}>
 
           {selectedProducts.map((product, index) => (
@@ -511,7 +511,9 @@ const ProductToolbar = () => {
                       className={style.addCartButton}
                       onClick={() => setColorChangeTarget({ productIndex: index, colorIndex: -1, actionType: 'addColor' })}
                     >
-                      <img src={colorwheel} alt="color wheel" className={style.colorImg} />
+                      {/* <img src={colorwheel} alt="color wheel" className={style.colorImg} /> */}
+                      <AddColorBtn />
+
                       <p>Add Color</p>
                     </div>
 

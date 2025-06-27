@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { requestExport } from '../../redux/CanvasExportDesign/canvasExportSlice.js';
 import MobileFAB from '../MobileFab/MobileFab.jsx';
+import { RiShareForwardLine } from "react-icons/ri";
 const Footer = () => {
   const [savedesignpopup, setSavedesignPopup] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -46,7 +47,7 @@ const Footer = () => {
       {!isMobile && !sleevedesignn && (
         <div className={footerStyle.footerContainer}>
           <button className={footerStyle.footerBtn} onClick={setSavedesignPopupHandler}>
-            <IoShareSocialOutline /> Share
+            <RiShareForwardLine /> Share
           </button>
           <button className={footerStyle.footerBtn} onClick={setNavigate}>
             <IoPricetagOutline /> Get Price

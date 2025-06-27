@@ -31,10 +31,10 @@ body {
 }
 
 :root {
-  --red: #005bff;
-  --borderColor: #d2d5d9;
   --blue-color: #005bff;
+  --borderColor: #d2d5d9;
   --grey-color: #8a9099;
+  --black-color: #000000;
 }
 
 h2,
@@ -55,7 +55,7 @@ a {
 }
 
 h4 {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 20px;
 }
@@ -143,7 +143,7 @@ h4 {
 }
 
 .black-button {
-  background-color: #000000;
+  background-color: var(--black-color);
   color: white;
   border: none;
   height: 27px;
@@ -165,8 +165,9 @@ h4 {
  
 } */
 .toolbar-main-heading .Toolbar-badge {
-  background-color: #005bff;
-  font-size: 12px;
+  background-color: var(--blue-color);
+  font-size: 14px;
+  font-weight: 500;
   color: white;
   width: fit-content;
   /* width: 78px;s */
@@ -219,7 +220,7 @@ input[type="range"]::-webkit-slider-thumb {
   height: 15px;
   border-radius: 50%;
   background: white;
-  border: 2px solid #005bff;
+  border: 2px solid var(--blue-color);
   cursor: pointer;
   /* margin-top: -6px; */
   transition: background 0.2s ease, border 0.2s ease;
@@ -231,7 +232,7 @@ input[type="range"]::-moz-range-thumb {
   height: 15px;
   border-radius: 50%;
   background: white;
-  border: 2px solid #005bff;
+  border: 2px solid var(--blue-color);
   cursor: pointer;
 }
 
@@ -296,7 +297,7 @@ input[type="range"]::-moz-range-track {
 /* @media only screen and (max-width: 600px) and (min-width: 300px) */
 /* @media only screen and (max-width: 600px) and (min-width: 300px) */
 .footer-container .footer-btn:last-child {
-  background: #005bff;
+  background: var(--blue-color);
   color: #fff;
   border-color: #fff;
 }
@@ -333,7 +334,7 @@ hr {
 
 .loader {
   border: 6px solid #f3f3f3;
-  border-top: 6px solid #005bff;
+  border-top: 6px solid var(--black-color);
   /* Blue */
   border-radius: 50%;
   width: 40px;
@@ -384,7 +385,7 @@ hr {
 }
 
 .add-product-btn-popup {
-  background-color: #000000;
+  background-color: var(--black-color);
   color: white;
   border: none;
   padding: 6px 12px;
@@ -453,7 +454,7 @@ hr {
 }
 
 .mini-prod-img-container:hover {
-  border: 2px solid #005bff;
+  border: 2px solid var(--blue-color);
 }
 
 .product-mini-img {
@@ -477,7 +478,7 @@ hr {
   outline: none;
   cursor: pointer;
   border-radius: 100px;
-  border: 1px solid #d2d5d9;
+  border: 1px solid var(--borderColor);
   padding-left: 14px;
   margin-top: 10px;
   position: absolute;
@@ -531,7 +532,7 @@ hr {
 .loader-spinner {
   border: 8px solid #f3f3f3;
   /* Light gray */
-  border-top: 8px solid #005bff;
+  border-top: 8px solid var(--blue-color);
   /* Blue */
   border-radius: 50%;
   width: 80px;

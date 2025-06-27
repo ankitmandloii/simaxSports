@@ -75,8 +75,9 @@ const CollectionPopupList = ({ onCollectionSelect }) => {
           </li>
         ))}
       </ul>
+      {/* {loading && <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt="loading" className={styles.filterImage} />} */}
 
-      {loading && <div className={styles.loader}>Loading...</div>}
+      {/* {loading && <div className={styles.loader}>Loading...</div>} */}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 :root {
-  --primary-color: #005bff;
+  --primary-color: var(--blue-color);
   --secondary-color: #0039a3;
   --accent-color: #ff2d75;
   --bg-color: #f8f9fa;
@@ -19,7 +19,8 @@
   align-items: center;
   height: 100vh;
   width: 100vw;
-  font-family: "Poppins", sans-serif;
+  /* font-family: "Poppins", sans-serif; */
+  font-family: "Roboto-Regular", sans-serif;
   color: var(--text-color);
   overflow: hidden;
 }
@@ -93,15 +94,19 @@
 .simaxText span:nth-child(1) {
   animation-delay: 0.1s;
 }
+
 .simaxText span:nth-child(2) {
   animation-delay: 0.2s;
 }
+
 .simaxText span:nth-child(3) {
   animation-delay: 0.3s;
 }
+
 .simaxText span:nth-child(4) {
   animation-delay: 0.4s;
 }
+
 .simaxText span:nth-child(5) {
   animation-delay: 0.5s;
 }
@@ -123,13 +128,13 @@
   font-size: 1.5rem;
   font-weight: 600;
   position: relative;
-      
-  font-family: "Lucida Handwriting", "cursive";
+
+  /* font-family: "Lucida Handwriting", "cursive"; */
 }
 
 .progressText {
-    
-  font-family: "Lucida Handwriting", "cursive";
+
+  /* font-family: "Lucida Handwriting", "cursive"; */
   color: black;
   display: block;
   margin-top: 0.5rem;
@@ -148,6 +153,7 @@
   0% {
     transform: scaleX(0);
   }
+
   100% {
     transform: scaleX(1);
   }
@@ -158,6 +164,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -168,15 +175,19 @@
   0% {
     content: "";
   }
+
   25% {
     content: ".";
   }
+
   50% {
     content: "..";
   }
+
   75% {
     content: "...";
   }
+
   100% {
     content: "";
   }
@@ -186,6 +197,7 @@
   0% {
     width: 0%;
   }
+
   100% {
     width: 100%;
   }
@@ -196,6 +208,7 @@
     opacity: 0;
     transform: translateY(-20px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -207,12 +220,15 @@
   .loaderCard {
     padding: 1.5rem;
   }
+
   .simaxText {
     font-size: 2.5rem;
   }
+
   .sportsText {
     font-size: 1.2rem;
   }
+
   .loaderText {
     font-size: 1.2rem;
   }
@@ -226,7 +242,8 @@
     --light-color: #1e1e1e;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   }
+
   .simaxText {
-    color: #005bff;
+    color: var(--blue-color);
   }
 }
