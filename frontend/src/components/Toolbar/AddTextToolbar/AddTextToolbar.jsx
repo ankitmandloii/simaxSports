@@ -53,7 +53,7 @@ const AddTextToolbar = () => {
   const [outlineColor, setOutlineColor] = useState(textContaintObject ? textContaintObject.outLineColor : '');
   const [outlineSize, setOutlineSize] = useState(textContaintObject ? textContaintObject.outlineSize : 0);
   const [rangeValuesSize, setRangeValuesSize] = useState(textContaintObject ? textContaintObject.scaledValue : 1);
-  const [rangeValuesRotate, setRangeValuesRotate] = useState(textContaintObject ? textContaintObject.rotate : 0);
+  const [rangeValuesRotate, setRangeValuesRotate] = useState(textContaintObject ? textContaintObject.angle : 0);
   const [rangeValuesSpacing, setRangeValuesSpacing] = useState(textContaintObject ? textContaintObject.Spacing : 0);
   const [flipXValue, setflipXValue] = useState(textContaintObject ? textContaintObject.flipX : false);
   const [flipYValue, setflipYValue] = useState(textContaintObject ? textContaintObject.flipY : false);
@@ -112,7 +112,7 @@ const AddTextToolbar = () => {
     setRangeValuesSize(textContaintObject?.scaledValue);
     setRangeValuesSpacing(textContaintObject?.spacing);
     setRangeValuesArc(textContaintObject?.arc);
-    setRangeValuesRotate(parseFloat(textContaintObject?.rotate));
+    setRangeValuesRotate(parseFloat(textContaintObject?.angle));
 
     return () => {
       // dispatch(setSelectedTextState(null));
@@ -196,11 +196,6 @@ const AddTextToolbar = () => {
   };
 
 
-  // const handleRangeInputRotateChange = (e) => {
-  //   const { value } = e.target;
-  //   setRangeValuesRotate(value);
-  //   globalDispatch("rotate", parseFloat(value));
-  // };
 
 
 
@@ -211,7 +206,7 @@ const AddTextToolbar = () => {
     const parsed = parseFloat(rawValue);
     if (isNaN(parsed) || parsed < 0 || parsed > 360) return;
 
-    globalDispatch("rotate", parsed);
+    globalDispatch("angle", parsed);
   };
 
 
@@ -219,9 +214,10 @@ const AddTextToolbar = () => {
     const parsed = parseFloat(rangeValuesRotate);
     if (isNaN(parsed) || parsed < 0 || parsed > 360) {
       setRangeValuesRotate("0");
-      globalDispatch("rotate", 0);
+      globalDispatch("angle", 0);
     }
   };
+
 
 
 
