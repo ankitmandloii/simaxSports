@@ -284,8 +284,11 @@ function App() {
       const { addName, addNumber, present, activeSide } =
         savedState.TextFrontendDesignSlice;
       const textObjects = present?.[activeSide]?.texts || [];
+      
+      const imgObjects = present?.[activeSide]?.images || [];
 
-      if ((textObjects.length > 0) || addName || addNumber) {
+
+      if ((textObjects.length > 0) ||(imgObjects.length > 0) || addName || addNumber) {
         setWillRenderContinue(true);
         setContinueEditPopup(true);
       }

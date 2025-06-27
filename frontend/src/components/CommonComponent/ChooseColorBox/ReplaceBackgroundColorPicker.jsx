@@ -53,6 +53,7 @@ const ReplaceBackgroundColorPicker = ({
           color={color}
           onChange={handleColorChange}
           hideInput={["hsv", "rgb"]}
+          hideAlpha={true}
           dark
         />
       </div>
