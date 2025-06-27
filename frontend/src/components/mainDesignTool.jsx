@@ -349,6 +349,7 @@ const MainDesignTool = ({
   const deleteObject = (_eventData, transform) => {
 
     if (!isLocked(_eventData, transform)) {
+      navigate("/design/product");
       const canvas = transform.target.canvas;
       dispatch(deleteTextState(transform.target.id));
       dispatch(deleteImageState(transform.target.id));
@@ -356,7 +357,6 @@ const MainDesignTool = ({
       canvas.remove(transform.target);
       canvas.requestRenderAll();
       // setSelectedHeight("");
-      navigate("/design/product");
     }
   };
 
@@ -650,9 +650,9 @@ const MainDesignTool = ({
         { crossOrigin: "anonymous" }
       );
     }
-    renderCurveTextObjects();
-    renderNameAndNumber(); //note : we have to call it for render object after canvas initialize
-    renderAllImageObjects();
+    // renderCurveTextObjects();
+    // renderNameAndNumber(); //note : we have to call it for render object after canvas initialize
+    // renderAllImageObjects();
     //want to do same for image 
 
     return () => {
@@ -892,7 +892,7 @@ const MainDesignTool = ({
   }
   useEffect(() => {
     // console.log("renderiing on layer index changed");
-    renderCurveTextObjects();
+    // renderCurveTextObjects();
 
   }, [activeSide, isRender, dispatch, id, textContaintObject]);
 
@@ -1410,7 +1410,7 @@ const MainDesignTool = ({
           globalDispatch("angle", obj.angle, id);
           handleScale(e);
         });
-
+        
         canvas.add(loader);
         canvas.bringToFront(loader);
 
@@ -1449,7 +1449,11 @@ const MainDesignTool = ({
       }
 
       // Replace Image
-      if (existingObj && existingObj.getSrc() !== src) {
+      const normalizeUrl = (url) => decodeURIComponent(url.trim().toLowerCase());
+   if (existingObj && normalizeUrl(existingObj.getSrc()) !== normalizeUrl(src)) {
+        
+        console.log("src....00", src, "prev src", existingObj.getSrc());
+        console.log("→ Replacing image (src changed):", id);
         canvas.remove(existingObj);
         fabric.Image.fromURL(src, (newImg) => {
           const { scaleX: finalX, scaleY: finalY } = getScaled(newImg, scaleX, scaleY);
@@ -1506,6 +1510,9 @@ const MainDesignTool = ({
         );
 
       } else if (existingObj) {
+        
+        console.log("src....00", src, "prev src", existingObj.getSrc());
+        console.log("→ updaing existing image :", id);
         const { scaleX: finalX, scaleY: finalY } = getScaled(existingObj, scaleX, scaleY);
 
         existingObj.set({
@@ -1528,6 +1535,9 @@ const MainDesignTool = ({
         canvas.renderAll();
 
       } else {
+        
+        console.log("src....00", src);
+        console.log("→ creating nwe image ", id);
         fabric.Image.fromURL(src, (img) => {
           const { scaleX: finalX, scaleY: finalY } = getScaled(img, scaleX, scaleY);
 
@@ -1588,9 +1598,9 @@ const MainDesignTool = ({
 
 
   useEffect(() => {
-    renderAllImageObjects();
+    // renderAllImageObjects();
     renderAllElements();
-  }, [imageContaintObject, activeSide, isRender]); // 👈 Reacts to previewUrl change
+  }, [imageContaintObject,activeSide, isRender]); // 👈 Reacts to previewUrl change
 
   const renderAllElements = () => {
     const canvas = fabricCanvasRef.current;
@@ -1615,12 +1625,12 @@ const MainDesignTool = ({
 
     // Render text objects
     if (textContaintObject && textContaintObject.length > 0) {
-      textContaintObject.forEach(renderCurveTextObjects);
+      renderCurveTextObjects();
     }
 
     // Render image objects
     if (imageContaintObject && imageContaintObject.length > 0) {
-      imageContaintObject.forEach(renderAllImageObjects);
+     renderAllImageObjects();
     }
 
     // Apply proper z-ordering for all elements

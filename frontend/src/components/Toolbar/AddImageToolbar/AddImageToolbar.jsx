@@ -1,3 +1,4 @@
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './AddImageToolbar.module.css'
 import {
@@ -30,7 +31,7 @@ import ReplaceBackgroundColorPicker from '../../CommonComponent/ChooseColorBox/R
 
 const BASE_FILTERS = [
   { name: 'Normal', transform: '' },
-  { name: 'Single Color', transform: '?monochrome=fff000&invert=false' },
+  { name: 'Single Color', transform: '?monochrome=red' },
   { name: 'Black/White', transform: '?sat=-100' },
 ];
 
@@ -46,7 +47,6 @@ const AddImageToolbar = () => {
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   const allImageData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   const img = allImageData.find((img) => img.id == selectedImageId);
-  console.log("--img", img)
   const [rangeValuesSize, setRangeValuesSize] = useState(0);
   const [rangeValuesRotate, setRangeValuesRotate] = useState(0);
   const [flipXValue, setflipXValue] = useState(false);
@@ -56,7 +56,7 @@ const AddImageToolbar = () => {
   const [removeBackground, setRemoveBackground] = useState(false);
   // const [isLocked, setIsLocked] = useState(false);
   const isLocked = img?.locked;
-  console.log("isLocked", isLocked);
+  // console.log("isLocked", isLocked);
   const [selectedFilter, setSelectedFilter] = useState('Normal');
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -64,6 +64,8 @@ const AddImageToolbar = () => {
   const [cropAndTrim, setCropAndTrim] = useState(false);
   const [superResolution, setSuperResolution] = useState(false);
   const [bgColor, setBgColor] = useState("var(--black-color)");
+  const [invertColor, setInvertColor] = useState(false);
+  const [solidColor, setSolidColor] = useState(false);
 
   const [resetDefault, setResetDefault] = useState(false);
   const imgRef = useRef(null);
@@ -86,12 +88,29 @@ const AddImageToolbar = () => {
   // console.log("-----------imggg", imageContaintObject);
   // Init from store
   useEffect(() => {
-    if (!img) return;
+    // console.log("--img", img)
+    if (!img) return handleBack();
     setRangeValuesSize(img.scaledValue || 1);
     setRangeValuesRotate(img.angle || 0);
     setflipXValue(img.flipX || false);
     setflipYValue(img.flipY || false);
-    setPreviewUrl(img.src || '');
+    setSelectedFilter(img?.selectedFilter||"Normal")
+    // const tempImage = new Image();
+    // globalDispatch("loading", true);
+    // setLoading(true);
+    // tempImage.onload = () => {
+    //   setLoading(false);
+    //   globalDispatch("loading", false)
+    //   setPreviewUrl(img.src || '');
+    // }
+    // tempImage.onerror = () => {
+    //   console.error("Failed to load image:", img?.src);
+    //   setPreviewUrl("https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif");
+    //   setLoading(false);
+    //   globalDispatch("loading", false);
+    // };
+
+    // tempImage.src = img?.src
     try {
       const params = img.src?.split('?')[1] || '';
       const currentTransform = params ? `?${params}` : '';
@@ -107,21 +126,52 @@ const AddImageToolbar = () => {
       setRemoveBackground(img.removeBg);
       setSuperResolution(img.superResolution);
       setCropAndTrim(img.cropAndTrim);
+      setInvertColor(img.invertColor);
+      setSolidColor(img.solidColor);
 
       // const baseFilter = BASE_FILTERS.find(f =>
       //   currentTransform.includes(f.transform.replace('?', ''))
       // ) || BASE_FILTERS[0];
       // setSelectedFilter(baseFilter.name);
     } catch { }
-  }, [img, selectedImageId, resetDefault]);
+  }, [img, selectedImageId,resetDefault]);
+
+  useEffect(() => {
+    const tempImage = new Image();
+    // globalDispatch("loading", true);
+    setLoading(true);
+    tempImage.onload = () => {
+      setLoading(false);
+      globalDispatch("loading", false)
+      setPreviewUrl(img.src || '');
+    }
+    tempImage.onerror = () => {
+      console.error("Failed to load image:", img?.src);
+      setPreviewUrl("https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif");
+      setLoading(false);
+      globalDispatch("loading", false);
+    };
+
+    tempImage.src = img?.src
+  }, [])
 
 
   useEffect(() => {
+    // console.log("%%%%%%%%%%%%%%%%Actiev efect", activeEffects)
     setFilters(BASE_FILTERS.map(filter => {
+      const newActiveEffects = activeEffects.filter((f) => f != "invert=true");
       if (filter.name === 'Normal') {
         return {
           ...filter,
-          transform: activeEffects.length ? `?${activeEffects.join('&')}` : ''
+          transform: activeEffects.length ? `?${newActiveEffects.join('&')}` : ''
+        };
+      }
+      if (filter.name === "Black/White") {
+        const baseParams = filter.transform.replace('?', '').split('&').filter(Boolean);
+        const allParams = [...new Set([...baseParams, ...newActiveEffects])];
+        return {
+          ...filter,
+          transform: allParams.length ? `?${allParams.join('&')}` : ''
         };
       }
 
@@ -132,6 +182,7 @@ const AddImageToolbar = () => {
         transform: allParams.length ? `?${allParams.join('&')}` : ''
       };
     }));
+    // console.log(filters, "&&&&&&&&&&&&")
   }, [activeEffects]);
 
   const handleRangeInputSizeChange = (e) => {
@@ -209,7 +260,10 @@ const AddImageToolbar = () => {
   //   { name: 'Single Color', transform: '?monochrome=ff0000' },
   //   { name: 'Black/White', transform: '?sat=-100' }
   // ]);
-  const buildUrl = useCallback((transform, resetAll) => {
+
+
+  const buildUrl = useCallback((transform, resetAll, filterName) => {
+    // console.log(transform, filterName, filterName, "<<<<<<<<<<<<<<<<<<<<<<")
     const base = img?.src?.split('?')[0] || '';
     if (resetAll) {
       return base;
@@ -249,7 +303,7 @@ const AddImageToolbar = () => {
           transform.includes("bg-remove=true") ? "bg-remove=true" : ""
         );
 
-        console.log("URL..............", newUrl)
+        // console.log("URL..............", newUrl)
 
         setLoading(false);
       };
@@ -288,7 +342,30 @@ const AddImageToolbar = () => {
     });
   };
 
-  const toggle = (param, condition) => applyTransform(condition ? activeTransform.replace(new RegExp(`${param}(&|$)`), '',) : `${activeTransform}${activeTransform ? '&' : '?'}${param}`);
+  // Toggle a URL query parameter (like 'bg-remove=true') on/off in the activeTransform
+  const toggle = (param, condition, filterName) => {
+    // console.log("active tranform .......", activeTransform)
+
+    // If condition is true, we want to **remove** the param from the activeTransform
+    if (condition) {
+      // Use a RegExp to find and remove the param and its trailing '&' if present
+      // Example: '?invert=true&bg-remove=true' -> remove 'bg-remove=true'
+      const cleaned = activeTransform.replace(new RegExp(`${param}(&|$)`), '');
+
+      // Call applyTransform with the new transform string (with param removed)
+      return applyTransform(cleaned);
+    }
+
+    // If condition is false, we want to **add** the param to the activeTransform
+    // Decide whether to add with `?` or `&` depending on whether transform is empty or not
+    const separator = activeTransform ? '&' : '?';
+
+    // Build the new transform string with param added
+    const updated = `${activeTransform}${separator}${param}`;
+
+    // Call applyTransform with the new transform string (with param added)
+    return applyTransform(updated);
+  };
 
   const isActive = useCallback((param) => activeTransform.includes(param), [activeTransform]);
 
@@ -297,7 +374,7 @@ const AddImageToolbar = () => {
     const value = !(img.flipX);
     setflipXValue(value);
     globalDispatch("flipX", value);
-    console.log("clicked", value);
+    // console.log("clicked", value);
     setResetDefault(false);
   }
 
@@ -410,6 +487,26 @@ const AddImageToolbar = () => {
     setResetDefault(false);
   }
 
+  function invertColorHandler(e) {
+    // update local state
+    const value = isActive('invert=true');
+    toggle('invert=true', value)
+    setInvertColor(!invertColor);
+    // update redux store
+    globalDispatch("invertColor", !invertColor);
+    setResetDefault(false);
+  }
+
+  function solidColorHandler(e) {
+    // update local state
+    const value = isActive('solid=true');
+    toggle('solid=true', value)
+    setRemoveBackground(!solidColor);
+    // update redux store
+    globalDispatch("solidColor", !solidColor);
+    setResetDefault(false);
+  }
+
 
 
   const bGReplaceColorChangedFunctionCalled = (color) => {
@@ -511,7 +608,9 @@ const AddImageToolbar = () => {
       applyTransform('', true);
     }
     setResetDefault(true);
-    setSelectedFilter("Normal")
+    // setSelectedFilter("Normal")
+
+
     // if (isActive(removeBgKey)) toggle(removeBgKey, true);      // turns OFF
     // if (isActive(cropKey)) toggle(cropKey, true);              // turns OFF
     // if (isActive(enhanceKey)) toggle(enhanceKey, true);        // turns OFF
@@ -525,7 +624,7 @@ const AddImageToolbar = () => {
 
   useEffect(() => {
     if (img?.src?.split("?").length <= 1) {
-      applyTransform("?auto=enhance");
+      // applyTransform("?auto=enhance");
     }
   }, [])
   // console.log("previewUrl", previewUrl, "image src", img?.src);
@@ -556,13 +655,15 @@ const AddImageToolbar = () => {
                       key={f.name}
                       className={`${styles.filterOption}${selectedFilter === f.name ? ' ' + styles.filterOptionActive : ''}`}
                       onClick={() => {
-                        applyTransform(f.transform);
+                        // applyTransform(f.transform);
                         setSelectedFilter(f.name);
+                        globalDispatch("src", buildUrl(f.transform, false, f.name));
+                        globalDispatch("selectedFilter",f.name);
                         if (f.name != "Normal") setResetDefault(false);
                       }}
                     >
                       {
-                        loading ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} /></> : <> {previewUrl && <img src={buildUrl(f.transform)} alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} />}</>
+                        loading ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} /></> : <> {previewUrl && <img src={buildUrl(f.transform, false, f.name)} alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} />}</>
                       }
 
 
@@ -631,8 +732,9 @@ const AddImageToolbar = () => {
                 <label className={styles.switch}>
                   <input
                     type="checkbox"
-                  // checked={"removeBackground"}
-                  // onChange={"toggleRemoveBackground"}
+                    checked={invertColor}
+                    onChange={invertColorHandler}
+                    disabled={loading}
                   />
                   <span className={styles.slider}></span>
                 </label>
@@ -650,8 +752,9 @@ const AddImageToolbar = () => {
                 <label className={styles.switch}>
                   <input
                     type="checkbox"
-                  // checked={"removeBackground"}
-                  // onChange={"toggleRemoveBackground"}
+                    checked={solidColor}
+                    onChange={solidColorHandler}
+                    disabled={loading}
                   />
                   <span className={styles.slider}></span>
                 </label>
