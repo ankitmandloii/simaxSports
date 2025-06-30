@@ -13,6 +13,11 @@
   justify-content: flex-end;
 }
 
+.collectionProductPara {
+  text-align: center;
+  margin: 5px 0;
+}
+
 .modalProduct {
   position: relative;
   width: 12rem;

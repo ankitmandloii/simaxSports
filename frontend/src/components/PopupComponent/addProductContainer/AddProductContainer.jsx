@@ -143,7 +143,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                       onLoad={() => handleImageLoad(productKey)}
                     />
                   </div>
-                  <p>{name}</p>
+                  <p className={styles.addProductPara}>{name}</p>
                 </div>
 
                 {colors.length > 0 && (

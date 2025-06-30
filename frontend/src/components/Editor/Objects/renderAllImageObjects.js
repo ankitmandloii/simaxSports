@@ -14,7 +14,8 @@ const renderAllImageObjects = (
   selectedImageId,
   globalDispatch,
   activeSide,
-  handleScale
+  handleScale,
+  bringPopup
 ) => {
   const canvas = fabricCanvasRef.current;
   if (!canvas) return;
@@ -149,7 +150,7 @@ const renderAllImageObjects = (
       });
 
       if (typeof createControls === "function") {
-        loader.controls = createControls();
+        loader.controls = createControls(bringPopup);
       }
 
       loader.on("mousedown", () => {
@@ -260,7 +261,7 @@ const renderAllImageObjects = (
             mtr: false,
           });
 
-          newImg.controls = createControls();
+          newImg.controls = createControls(bringPopup);
           canvas.add(newImg);
 
           newImg.on("mousedown", (e) => {
@@ -328,7 +329,7 @@ const renderAllImageObjects = (
         mtr: false,
       });
 
-      existingObj.controls = createControls();
+      existingObj.controls = createControls(bringPopup);
       const center = existingObj.getCenterPoint();
       existingObj.setPositionByOrigin(center, "center", "center");
       existingObj.setCoords();
@@ -382,7 +383,7 @@ const renderAllImageObjects = (
             mtr: false,
           });
 
-          img.controls = createControls();
+          img.controls = createControls(bringPopup);
           canvas.add(img);
 
           img.on("mousedown", (e) => {

@@ -55,8 +55,8 @@ const createNewImage = (
   replaceBgParamValue: "bg-remove=true&bg=AABB22",
   cropAndTrim: false,
   superResolution: false,
-  invertColor:false,
-  solidColor:false,
+  invertColor: false,
+  solidColor: false,
   cropAndTrimParamValue:
     "fit=crop&crop=entropy&trim=color&w=400&h=400&dpr=2&quality=100&format=webp",
   superResolutionParamValue:
@@ -64,8 +64,8 @@ const createNewImage = (
   removeBgParamValue: "?remove-bg=true&dpr=2&quality=100&format=webp",
   loading: false,
   loadingSrc: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s",
-  replaceSrc:false,
-  selectedFilter:"Normal"
+  replaceSrc: false,
+  selectedFilter: "Normal"
 });
 
 const initialState = {
@@ -126,12 +126,14 @@ const initialState = {
       selectedTextId: null,
       selectedImageId: null,
       texts: [],
+      images: [],
       setRendering: false,
     },
     rightSleeve: {
       selectedTextId: null,
       selectedImageId: null,
       texts: [],
+      images: [],
       setRendering: false,
     },
   },
@@ -173,12 +175,12 @@ const TextFrontendDesignSlice = createSlice({
     addTextState: (state, action) => {
       const { value, id, side = state.activeSide } = action.payload;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      const totalElements = state.present[side].texts.length + state.present[side].images.length;
+      const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
       const newText = createNewText(
         { value, id },
         totalElements
       );
-      state.present[side].texts.push(newText);
+      state.present[side].texts?.push(newText);
       state.present[side].selectedTextId = newText.id;
       state.future[side] = [];
       state.present[side].setRendering = !state.present[side].setRendering;
@@ -187,13 +189,16 @@ const TextFrontendDesignSlice = createSlice({
     duplicateTextState: (state, action) => {
       const side = state.activeSide;
       const idToDuplicate = action.payload;
-      const textToDuplicate = state.present[side].texts.find(
+      const textToDuplicate = state.present[side]?.texts?.find(
         (t) => t.id === idToDuplicate
       );
 
-      if (!textToDuplicate) return; // Exit early if text doesn't exist
+      if (!textToDuplicate) return;
 
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+      // Calculate total elements for proper layer indexing
+      const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
 
       const newText = {
         ...JSON.parse(JSON.stringify(textToDuplicate)),
@@ -202,7 +207,7 @@ const TextFrontendDesignSlice = createSlice({
           x: textToDuplicate.position.x + 20,
           y: textToDuplicate.position.y + 20,
         },
-        layerIndex: state.present[side].texts.length,
+        layerIndex: totalElements, // Use totalElements instead of just texts length
       };
 
       state.present[side].texts.push(newText);
@@ -211,6 +216,42 @@ const TextFrontendDesignSlice = createSlice({
       state.present[side].setRendering = !state.present[side].setRendering;
     },
 
+    duplicateImageState: (state, action) => {
+      const side = state.activeSide;
+      const idToDuplicate = action.payload;
+
+      if (!state.present[side]?.images) return;
+
+      const imageToDuplicate = state.present[side]?.images?.find(
+        (img) => img.id === idToDuplicate
+      );
+
+      if (!imageToDuplicate || imageToDuplicate.locked) return;
+
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+      // Calculate total elements for proper layer indexing
+      const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
+
+      const newPosition = {
+        x: imageToDuplicate.position.x + 20,
+        y: imageToDuplicate.position.y + 20,
+      };
+
+      const newImage = {
+        ...JSON.parse(JSON.stringify(imageToDuplicate)),
+        id: nanoid(),
+        position: newPosition,
+        left: newPosition.x,
+        top: newPosition.y,
+        layerIndex: totalElements, // Use totalElements instead of just images length
+      };
+
+      state.present[side].images.push(newImage);
+      state.present[side].selectedImageId = newImage.id;
+      state.future[side] = [];
+      state.present[side].setRendering = !state.present[side].setRendering;
+    },
     // Update a text object
     updateTextState: (state, action) => {
       const {
@@ -242,7 +283,7 @@ const TextFrontendDesignSlice = createSlice({
     moveTextForwardState: (state, action) => {
       const side = state.activeSide;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      const texts = state.present[side].texts;
+      const texts = state.present[side]?.texts;
       const index = texts.findIndex((t) => t.id === action.payload);
       if (index !== -1 && index < texts.length - 1) {
         [texts[index], texts[index + 1]] = [texts[index + 1], texts[index]];
@@ -256,7 +297,7 @@ const TextFrontendDesignSlice = createSlice({
     moveTextBackwardState: (state, action) => {
       const side = state.activeSide;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      const texts = state.present[side].texts;
+      const texts = state.present[side]?.texts;
       const index = texts.findIndex((t) => t.id === action.payload);
       if (index > 0) {
         [texts[index], texts[index - 1]] = [texts[index - 1], texts[index]];
@@ -340,6 +381,11 @@ const TextFrontendDesignSlice = createSlice({
         front: {
           selectedTextId: null,
           texts: [],
+          // ---
+          selectedImageId: null,
+          images: [],
+          setRendering: false,
+          // ===
           nameAndNumberDesignState: {
             id: "front",
             name: "NAME",
@@ -354,6 +400,11 @@ const TextFrontendDesignSlice = createSlice({
         back: {
           selectedTextId: null,
           texts: [],
+          // ---
+          selectedImageId: null,
+          images: [],
+          setRendering: false,
+          // ===
           nameAndNumberDesignState: {
             id: "front",
             name: "NAME",
@@ -365,8 +416,14 @@ const TextFrontendDesignSlice = createSlice({
           },
           setRendering: false,
         },
-        leftSleeve: { selectedTextId: null, texts: [], setRendering: false },
-        rightSleeve: { selectedTextId: null, texts: [], setRendering: false },
+        leftSleeve: {
+          selectedTextId: null,
+          selectedImageId: null,
+          texts: [],
+          images: [],
+          setRendering: false
+        },
+        rightSleeve: { selectedTextId: null, texts: [], images: [], selectedImageId: null, setRendering: false },
       };
       state.future = {
         front: [],
@@ -490,7 +547,7 @@ const TextFrontendDesignSlice = createSlice({
     },
 
     addImageState: (state, action) => {
-      const { src, id = nanoid(), side = state.activeSide ,isRenderOrNot} = action.payload;
+      const { src, id = nanoid(), side = state.activeSide, isRenderOrNot } = action.payload;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
       const newImage = createNewImage(
@@ -526,50 +583,50 @@ const TextFrontendDesignSlice = createSlice({
       }
       state.future[side] = [];
     },
-    duplicateImageState: (state, action) => {
-      const side = state.activeSide;
-      const idToDuplicate = action.payload;
+    // duplicateImageState: (state, action) => {
+    //   const side = state.activeSide;
+    //   const idToDuplicate = action.payload;
 
-      if (!state.present[side]?.images) {
-        return;
-      }
+    //   if (!state.present[side]?.images) {
+    //     return;
+    //   }
 
-      const imageToDuplicate = state.present[side].images.find(
-        (img) => img.id === idToDuplicate
-      );
+    //   const imageToDuplicate = state.present[side].images.find(
+    //     (img) => img.id === idToDuplicate
+    //   );
 
-      if (!imageToDuplicate) {
-        return;
-      }
+    //   if (!imageToDuplicate) {
+    //     return;
+    //   }
 
-      if (imageToDuplicate.locked) {
-        return;
-      }
+    //   if (imageToDuplicate.locked) {
+    //     return;
+    //   }
 
 
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
-      const newPosition = {
-        x: imageToDuplicate.position.x + 20,
-        y: imageToDuplicate.position.y + 20,
-      };
+    //   const newPosition = {
+    //     x: imageToDuplicate.position.x + 20,
+    //     y: imageToDuplicate.position.y + 20,
+    //   };
 
-      const newImage = {
-        ...JSON.parse(JSON.stringify(imageToDuplicate)),
-        id: nanoid(),
-        position: newPosition,
-        left: newPosition.x,
-        top: newPosition.y,
-        layerIndex: state.present[side].images.length,
-      };
+    //   const newImage = {
+    //     ...JSON.parse(JSON.stringify(imageToDuplicate)),
+    //     id: nanoid(),
+    //     position: newPosition,
+    //     left: newPosition.x,
+    //     top: newPosition.y,
+    //     layerIndex: state.present[side].images.length,
+    //   };
 
-      // console.log("New duplicated image:", newImage);
+    //   // console.log("New duplicated image:", newImage);
 
-      state.present[side].images.push(newImage);
-      state.present[side].selectedImageId = newImage.id;
-      state.future[side] = [];
-      state.present[side].setRendering = !state.present[side].setRendering;
-    },
+    //   state.present[side].images.push(newImage);
+    //   state.present[side].selectedImageId = newImage.id;
+    //   state.future[side] = [];
+    //   state.present[side].setRendering = !state.present[side].setRendering;
+    // },
 
     // deleteeee reducers
     deleteTextState: (state, action) => {
@@ -663,34 +720,85 @@ const TextFrontendDesignSlice = createSlice({
       state.present[side].selectedImageId = id;
       state.present[side].setRendering = !state.present[side].setRendering;
     },
+    copyElementToSide: (state, action) => {
+      const { fromSide, toSide, elementId, elementType } = action.payload;
 
-    copyTextToSide: (state, action) => {
-      const { fromSide, toSide, textId } = action.payload;
-      const textToCopy = state.present[fromSide].texts.find(
-        (t) => t.id === textId
-      );
+      // Find the element to copy (either text or image)
+      let elementToCopy;
+      if (elementType === 'text') {
+        elementToCopy = state.present[fromSide]?.texts?.find(t => t.id === elementId);
+      } else if (elementType === 'image') {
+        elementToCopy = state.present[fromSide]?.images?.find(i => i.id === elementId);
+      }
 
-      if (!textToCopy) return;
+      if (!elementToCopy) return;
 
-      state.past[toSide].push(
-        JSON.parse(JSON.stringify(state.present[toSide]))
-      );
+      // Save current state for undo
+      state.past[toSide].push(JSON.parse(JSON.stringify(state.present[toSide])));
 
-      const newText = {
-        ...JSON.parse(JSON.stringify(textToCopy)),
+      // Calculate total elements for proper layer indexing
+      const totalElements = state.present[toSide]?.texts?.length + state.present[toSide]?.images?.length;
+
+      // Create the new element
+      const newElement = {
+        ...JSON.parse(JSON.stringify(elementToCopy)),
         id: nanoid(),
         position: {
-          x: textToCopy.position.x + 20, // Offset to avoid overlap
-          y: textToCopy.position.y + 20,
+          x: elementToCopy.position.x + 20, // Offset to avoid overlap
+          y: elementToCopy.position.y + 20,
         },
-        layerIndex: state.present[toSide].texts.length,
+        layerIndex: totalElements,
       };
 
-      state.present[toSide].texts.push(newText);
-      state.present[toSide].selectedTextId = newText.id;
+      // Update left/top for images if they exist
+      if (elementType === 'image') {
+        newElement.left = newElement.position.x;
+        newElement.top = newElement.position.y;
+      }
+
+      // Add to the appropriate array
+      if (elementType === 'text') {
+        state.present[toSide]?.texts?.push(newElement);
+        state.present[toSide].selectedTextId = newElement.id;
+        state.present[toSide].selectedImageId = null;
+      } else {
+        state.present[toSide]?.images?.push(newElement);
+        state.present[toSide].selectedImageId = newElement.id;
+        state.present[toSide].selectedTextId = null;
+      }
+
+      // Trigger render and clear redo history
       state.present[toSide].setRendering = !state.present[toSide].setRendering;
       state.future[toSide] = [];
     },
+    // copyTextToSide: (state, action) => {
+    //   const { fromSide, toSide, textId } = action.payload;
+    //   const imageToCopy = state.present[fromSide]?.images.find((i) => i.id === textId);
+    //   const textToCopy = state.present[fromSide]?.texts.find(
+    //     (t) => t.id === textId
+    //   );
+
+    //   if (!textToCopy) return;
+
+    //   state.past[toSide].push(
+    //     JSON.parse(JSON.stringify(state.present[toSide]))
+    //   );
+
+    //   const newText = {
+    //     ...JSON.parse(JSON.stringify(textToCopy)),
+    //     id: nanoid(),
+    //     position: {
+    //       x: textToCopy.position.x + 20, // Offset to avoid overlap
+    //       y: textToCopy.position.y + 20,
+    //     },
+    //     layerIndex: state.present[toSide].texts.length,
+    //   };
+
+    //   state.present[toSide].texts.push(newText);
+    //   state.present[toSide].selectedTextId = newText.id;
+    //   state.present[toSide].setRendering = !state.present[toSide].setRendering;
+    //   state.future[toSide] = [];
+    // },
     // -------------layering new
     moveElementForwardState: (state, action) => {
       const side = state.activeSide;
@@ -813,12 +921,12 @@ const TextFrontendDesignSlice = createSlice({
       if (elementToMove && elementToMove.layerIndex !== minLayerIndex) {
         // Update the element's layer index to be lowest
         if (elementToMove.type === 'text') {
-          const textIndex = state.present[side].texts.findIndex(t => t.id === action.payload);
+          const textIndex = state.present[side]?.texts.findIndex(t => t.id === action.payload);
           if (textIndex !== -1) {
             state.present[side].texts[textIndex].layerIndex = minLayerIndex - 1;
           }
         } else {
-          const imageIndex = state.present[side].images.findIndex(i => i.id === action.payload);
+          const imageIndex = state.present[side]?.images.findIndex(i => i.id === action.payload);
           if (imageIndex !== -1) {
             state.present[side].images[imageIndex].layerIndex = minLayerIndex - 1;
           }
@@ -864,7 +972,7 @@ export const {
   deleteImageState,
   restoreDesignFromSavedState,
   toggleSleeveDesign,
-  copyTextToSide,
+  copyElementToSide,
   selectedImageIdState
 } = TextFrontendDesignSlice.actions;
 

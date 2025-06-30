@@ -12,7 +12,8 @@ const renderCurveTextObjects = (
   fabric,
   setSelectedTextState,
   globalDispatch,
-  activeSide
+  activeSide,
+  bringPopup
 ) => {
   const canvas = fabricCanvasRef.current;
   if (textContaintObject && textContaintObject.length === 0) {
@@ -80,7 +81,7 @@ const renderCurveTextObjects = (
         existingObj.dirty = true;
         existingObj.setCoords();
         canvas.requestRenderAll();
-        existingObj.controls = createControls();
+        existingObj.controls = createControls(bringPopup);
         canvas.renderAll();
       } else if (!existingObj) {
         const curved = new fabric.CurvedText(textInput.content, {
@@ -216,7 +217,7 @@ const renderCurveTextObjects = (
           mtr: false,
         });
 
-        curved.controls = createControls(); // your custom controls
+        curved.controls = createControls(bringPopup); // your custom controls
         canvas.add(curved);
       }
     });

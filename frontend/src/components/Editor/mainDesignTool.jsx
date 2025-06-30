@@ -143,6 +143,62 @@ const MainDesignTool = ({
   const syncMirrorCanvasHelper = (activeSide) => {
     syncMirrorCanvas(fabric, fabricCanvasRef, activeSide, setFrontPreviewImage, setBackPreviewImage, setLeftSleevePreviewImage, setRightSleevePreviewImage);
   }
+  const renderCurveTextObjectsHelper = () => {
+    renderCurveTextObjects(
+      fabricCanvasRef,
+      dispatch,
+      textContaintObject,
+      setActiveObjectType,
+      updateBoundaryVisibility,
+      createControls,
+      syncMirrorCanvasHelper,
+      navigate,
+      fabric,
+      setSelectedTextState,
+      globalDispatch,
+      activeSide,
+      bringPopup
+
+    )
+  }
+  const renderNameAndNumberHelper = () => {
+    renderNameAndNumber(
+      fabricCanvasRef,
+      dispatch,
+      nameAndNumberDesignState,
+      setActiveObjectType,
+      updateBoundaryVisibility,
+      createControls,
+      syncMirrorCanvasHelper,
+      navigate,
+      fabric,
+      globalDispatch,
+      activeSide,
+      addNumber,
+      addName,
+      updateNameAndNumberDesignState,
+      bringPopup
+    );
+  }
+  const renderAllImageObjectsHelper = () => {
+    renderAllImageObjects(
+      fabricCanvasRef,
+      dispatch,
+      imageContaintObject,
+      setActiveObjectType,
+      updateBoundaryVisibility,
+      createControls,
+      syncMirrorCanvasHelper,
+      navigate,
+      fabric,
+      selectedImageIdState,
+      selectedImageId,
+      globalDispatch,
+      activeSide,
+      handleScale,
+      bringPopup
+    )
+  }
 
   const loadFont = (fontName) => {
     return new Promise((resolve) => {
@@ -183,7 +239,10 @@ const MainDesignTool = ({
     }
   };
   const bringPopup = () => {
+    // alert("medam present")
     setIsModalOpen(true);
+
+
   };
 
   const handleScale = (e) => {
@@ -292,6 +351,7 @@ const MainDesignTool = ({
       left: boxLeft + boxWidth / 2, // center horizontally
       top: boxTop + 5, // add padding from top
       fontSize: 16,
+      fontFamily: "Roboto-Regular",
       fill: warningColor || "#00F8E7FF",
       selectable: false,
       evented: false,
@@ -307,28 +367,29 @@ const MainDesignTool = ({
     canvas.add(boundaryBox);
     canvas.add(warningText);
 
-    function updateBoundaryVisibility() {
-      const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text");
-      textObjects.forEach((obj) => obj.setCoords());
+    // function updateBoundaryVisibility() {
+    //   console.log("lal code....");
+    //   const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text");
+    //   textObjects.forEach((obj) => obj.setCoords());
 
-      const allInside = textObjects.every((obj) => {
-        const objBounds = obj.getBoundingRect(true);
-        const boxBounds = boundaryBox.getBoundingRect(true);
+    //   const allInside = textObjects.every((obj) => {
+    //     const objBounds = obj.getBoundingRect(true);
+    //     const boxBounds = boundaryBox.getBoundingRect(true);
 
-        return (
-          objBounds.left >= boxBounds.left &&
-          objBounds.top >= boxBounds.top &&
-          objBounds.left + objBounds.width <= boxBounds.left + boxBounds.width &&
-          objBounds.top + objBounds.height <= boxBounds.top + boxBounds.height
-        );
-      });
+    //     return (
+    //       objBounds.left >= boxBounds.left &&
+    //       objBounds.top >= boxBounds.top &&
+    //       objBounds.left + objBounds.width <= boxBounds.left + boxBounds.width &&
+    //       objBounds.top + objBounds.height <= boxBounds.top + boxBounds.height
+    //     );
+    //   });
 
-      boundaryBox.visible = !allInside;
-      warningText.visible = !allInside;
-      canvas.bringToFront(boundaryBox);
-      canvas.bringToFront(warningText);
-      canvas.requestRenderAll();
-    }
+    //   boundaryBox.visible = !allInside;
+    //   warningText.visible = !allInside;
+    //   canvas.bringToFront(boundaryBox);
+    //   canvas.bringToFront(warningText);
+    //   canvas.requestRenderAll();
+    // }
 
     const handleSelection = (e) => {
       if (e.selected.length > 1) {
@@ -362,7 +423,24 @@ const MainDesignTool = ({
 
     const handleMoving = (e) => {
       checkBoundary(e);
-      updateBoundaryVisibility(fabricCanvasRef);
+      const canvas = fabricCanvasRef.current;
+      if (!canvas) return;
+
+      console.log("babu code....");
+
+      const boundaryBox = canvas
+        .getObjects()
+        .find((obj) => obj.type === "rect" && !obj.selectable); // identify your boundary box
+      const warningText = canvas
+        .getObjects()
+        .find(
+          (obj) =>
+            obj.type === "text" && obj.text === "Please keep design inside the box"
+        );
+      boundaryBox.visible = true;
+      warningText.visible = true;
+
+      // updateBoundaryVisibility(fabricCanvasRef);
     }
 
     const events = [
@@ -409,8 +487,9 @@ const MainDesignTool = ({
       );
     }
     // renderCurveTextObjects();
-    // renderNameAndNumber(); //note : we have to call it for render object after canvas initialize
-    // renderAllImageObjects();
+    renderCurveTextObjectsHelper();
+    renderNameAndNumberHelper(); //note : we have to call it for render object after canvas initialize
+    renderAllImageObjectsHelper();
     //want to do same for image 
 
     return () => {
@@ -495,22 +574,7 @@ const MainDesignTool = ({
     // Render image objects
     if (imageContaintObject && imageContaintObject.length > 0) {
       // renderAllImageObjects();
-      renderAllImageObjects(
-        fabricCanvasRef,
-        dispatch,
-        imageContaintObject,
-        setActiveObjectType,
-        updateBoundaryVisibility,
-        createControls,
-        syncMirrorCanvasHelper,
-        navigate,
-        fabric,
-        selectedImageIdState,
-        selectedImageId,
-        globalDispatch,
-        activeSide,
-        handleScale
-      )
+      renderAllImageObjectsHelper();
     }
 
     // Apply proper z-ordering for all elements
@@ -538,22 +602,7 @@ const MainDesignTool = ({
       if (nameAndNumberDesignState?.fontFamily) {
         await loadFont(nameAndNumberDesignState.fontFamily);
       }
-      renderNameAndNumber(
-        fabricCanvasRef,
-        dispatch,
-        nameAndNumberDesignState,
-        setActiveObjectType,
-        updateBoundaryVisibility,
-        createControls,
-        syncMirrorCanvasHelper,
-        navigate,
-        fabric,
-        globalDispatch,
-        activeSide,
-        addNumber,
-        addName,
-        updateNameAndNumberDesignState
-      );
+      renderNameAndNumberHelper();
     };
 
     loadAndRender();

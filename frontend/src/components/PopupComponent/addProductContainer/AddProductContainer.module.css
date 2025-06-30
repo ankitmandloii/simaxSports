@@ -256,6 +256,11 @@
   opacity: 0;
 }
 
+.addProductPara {
+  text-align: center;
+  margin: 5px 0;
+}
+
 
 /* ======================= */
 /* ✅ Responsive Media Queries */

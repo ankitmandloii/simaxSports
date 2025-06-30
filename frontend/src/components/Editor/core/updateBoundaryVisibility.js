@@ -4,6 +4,7 @@ const updateBoundaryVisibility = (fabricCanvasRef) => {
   const canvas = fabricCanvasRef.current;
   if (!canvas) return;
 
+
   const boundaryBox = canvas
     .getObjects()
     .find((obj) => obj.type === "rect" && !obj.selectable); // identify your boundary box
@@ -18,7 +19,7 @@ const updateBoundaryVisibility = (fabricCanvasRef) => {
 
   const textObjects = canvas
     .getObjects()
-    .filter((obj) => obj.type === "curved-text");
+    .filter((obj) => obj.type === "curved-text" || obj.type === "image");
 
   textObjects.forEach((obj) => obj.setCoords());
 

@@ -192,7 +192,7 @@ const CollectionProductPopup = ({
                       />
                     </div>
                   </div>
-                  <p>{product.title}</p>
+                  <p className={style.collectionProductPara}>{product.title}</p>
                   <div className={style.modalProductcolorContainer}>
                     <img
                       src={ColorWheel}

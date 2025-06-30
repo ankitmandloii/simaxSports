@@ -46,7 +46,7 @@ const AddImageToolbar = () => {
 
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   const allImageData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
-  const img = allImageData.find((img) => img.id == selectedImageId);
+  const img = allImageData?.find((img) => img.id == selectedImageId);
   const [rangeValuesSize, setRangeValuesSize] = useState(0);
   const [rangeValuesRotate, setRangeValuesRotate] = useState(0);
   const [flipXValue, setflipXValue] = useState(false);
@@ -94,7 +94,7 @@ const AddImageToolbar = () => {
     setRangeValuesRotate(img.angle || 0);
     setflipXValue(img.flipX || false);
     setflipYValue(img.flipY || false);
-    setSelectedFilter(img?.selectedFilter||"Normal")
+    setSelectedFilter(img?.selectedFilter || "Normal")
     // const tempImage = new Image();
     // globalDispatch("loading", true);
     // setLoading(true);
@@ -134,7 +134,7 @@ const AddImageToolbar = () => {
       // ) || BASE_FILTERS[0];
       // setSelectedFilter(baseFilter.name);
     } catch { }
-  }, [img, selectedImageId,resetDefault]);
+  }, [img, selectedImageId, resetDefault]);
 
   useEffect(() => {
     const tempImage = new Image();
@@ -658,7 +658,7 @@ const AddImageToolbar = () => {
                         // applyTransform(f.transform);
                         setSelectedFilter(f.name);
                         globalDispatch("src", buildUrl(f.transform, false, f.name));
-                        globalDispatch("selectedFilter",f.name);
+                        globalDispatch("selectedFilter", f.name);
                         if (f.name != "Normal") setResetDefault(false);
                       }}
                     >

@@ -14,7 +14,8 @@ const renderNameAndNumber = (
   activeSide,
   addNumber,
   addName,
-  updateNameAndNumberDesignState
+  updateNameAndNumberDesignState,
+  bringPopup
 ) => {
   const canvas = fabricCanvasRef.current;
   if (!canvas || !nameAndNumberDesignState) {
