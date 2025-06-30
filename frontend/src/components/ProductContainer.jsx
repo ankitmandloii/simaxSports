@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveSide, setRendering, toggleSleeveDesign } from '../redux/FrontendDesign/TextFrontendDesignSlice';
-import MainDesignTool from './mainDesignTool';
+import MainDesignTool from './Editor/mainDesignTool';
 import { GrZoomOut } from "react-icons/gr";
 import { BsZoomIn } from "react-icons/bs";
 // import { MagnifyGlassIcon } from './iconsSvg/CustomIcon';
