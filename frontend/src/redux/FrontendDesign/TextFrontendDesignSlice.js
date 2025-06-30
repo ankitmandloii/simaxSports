@@ -501,6 +501,9 @@ const TextFrontendDesignSlice = createSlice({
       //   { src },
       //   state.present[side].images.length
       // );
+      if(!state.present[side].images){
+         state.present[side].images = [];
+      }
       state.present[side].selectedImageId = newImage.id;
       state.present[side].images.push(newImage);
       state.future[side] = [];
