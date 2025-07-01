@@ -1,4 +1,5 @@
 import { fabric } from 'fabric';
+import { deleteImageState, deleteTextState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 
 // This will be injected from the outside
 let iconImages = {};
@@ -41,8 +42,10 @@ const deleteObject = (_eventData, transform) => {
   if (!isLocked(_eventData, transform)) {
     navigate("/design/product");
     const canvas = transform.target.canvas;
-    dispatch({ type: 'DELETE_TEXT', id: transform.target.id });
-    dispatch({ type: 'DELETE_IMAGE', id: transform.target.id });
+       dispatch(deleteTextState(transform.target.id));
+       dispatch(deleteImageState(transform.target.id))
+    // dispatch({ type: 'DELETE_TEXT', id: transform.target.id });
+    // dispatch({ type: 'DELETE_IMAGE', id: transform.target.id });
     canvas.remove(transform.target);
     canvas.requestRenderAll();
   }
