@@ -18,8 +18,6 @@ const QuantityToolbar = () => {
     greek: false,
   });
 
-  const [isExpanded, setIsExpanded] = useState(true); // Toggle state
-
   const handleQuantityChange = (category, size, value) => {
     const key = `${category}-${size}`;
     setQuantities(prev => ({
@@ -27,6 +25,7 @@ const QuantityToolbar = () => {
       [key]: value
     }));
   };
+
   const toggleProductExpansion = (productId) => {
     setExpandedProducts(prev => ({
       ...prev,
@@ -34,7 +33,6 @@ const QuantityToolbar = () => {
     }));
   };
 
-  // restore all selected products locally in product array state
   useEffect(() => {
     if (!selectedProducts || selectedProducts.length === 0) return;
 
@@ -61,23 +59,19 @@ const QuantityToolbar = () => {
         imgurl: product?.imgurl,
         color: product?.selectedColor?.name,
         size: product.selectedColor?.variant?.selectedOptions[1]?.value,
-        sizes: getSizeOptions(product), // assume this is a valid function in scope
+        sizes: getSizeOptions(product),
         title: consistentTitle,
         selections: [],
       };
-      // Add main product and its variants
+
       newAllProducts.push(mainProduct, ...extraProducts);
     });
 
     setAllProducts(newAllProducts);
 
-
   }, [selectedProducts]);
 
-
-  // Function to get all  sizes of product
   const getSizeOptions = (product) => {
-    // Case 1: Custom-structured product
     if (product?.allVariants?.length) {
       const sizeVariantPairs = product.allVariants.flatMap((variant) => {
         const sizeOption = variant.selectedOptions.find((opt) => opt.name === 'Size');
@@ -86,7 +80,6 @@ const QuantityToolbar = () => {
       return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
     }
 
-    // Case 2: Shopify-style structure
     if (product?.variants?.edges?.length) {
       const sizeVariantPairs = product.variants.edges.flatMap(({ node }) => {
         const sizeOption = node.selectedOptions.find((opt) => opt.name === 'Size');
@@ -98,13 +91,23 @@ const QuantityToolbar = () => {
     return [];
   };
 
-  // Function to get all available  sizes of product
   const getAvailableSizes = (product) => {
     if (product.sizes && product.sizes.length > 0) {
       return product.sizes.map(item => item.size);
     }
     return product.name?.toLowerCase().includes('women') ? womenSizes : adultSizes;
   };
+
+  // New helper function to sum quantities per product
+  const getTotalQuantityForProduct = (product) => {
+    const sizes = getAvailableSizes(product);
+    return sizes.reduce((total, size) => {
+      const key = `${product.id}-${size}`;
+      const quantity = parseInt(quantities[key]) || 0;
+      return total + quantity;
+    }, 0);
+  };
+
   return (
     <div className={` ${style.toolbarMainContainer} ${style.toolbarMargin}`}>
 
@@ -134,9 +137,12 @@ const QuantityToolbar = () => {
                     alt='product'
                   />
                 </div>
-                <div>
+                <div className={style.rightProductQtyTitle}>
                   <h4>{product.title}</h4>
-                  {product.color && <p className={style.toolbarSpan}>{product.color}</p>}
+                  <div className={style.rightProductTitleQty}>
+                    {product.color && <p className={style.toolbarSpan}>{product.color}</p>}
+                    <p className={style.totalQtyitems}>{getTotalQuantityForProduct(product)} items</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -158,28 +164,6 @@ const QuantityToolbar = () => {
                       </div>
                     ))}
                   </div>
-
-                </div>
-              </div>
-            )}
-            {expandedProducts[product.id] && (
-              <div className={style.sizeSection}>
-                <div className={style.sizeGroup}>
-                  <h5>Women Sizes</h5>
-                  <div className={style.sizeInputs}>
-                    {getAvailableSizes(product).map(size => (
-                      <div className={style.sizeBox} key={`${product.id}-${size}`}>
-                        <label>{size}</label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={quantities[`${product.id}-${size}`] || ''}
-                          onChange={(e) => handleQuantityChange(product.id, size, e.target.value)}
-                        />
-                      </div>
-                    ))}
-                  </div>
-
                 </div>
               </div>
             )}

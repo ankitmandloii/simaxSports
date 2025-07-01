@@ -13,7 +13,7 @@
 .sizeInputs {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 37px;
 }
 
 .sizeBox {
@@ -24,10 +24,10 @@
 }
 
 .sizeBox input {
-  width: 30px;
+  width: 50px;
   /* padding: 5px; */
   text-align: center;
-  height: 20px;
+  height: 26px;
   outline: none;
   border: 1px solid var(--borderColor);
   border-radius: 4px;
@@ -230,4 +230,21 @@
   .toolbarMainContainer {
     padding: 10px;
   }
+}
+
+/* === */
+.rightProductTitleQty {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* background-color: aquamarine; */
+}
+
+.rightProductQtyTitle {
+  width: 100%;
+}
+
+.totalQtyitems {
+  font-size: 13px;
+  /* color: red; */
 }

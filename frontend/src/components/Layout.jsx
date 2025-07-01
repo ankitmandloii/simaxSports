@@ -35,7 +35,7 @@ const Layout = () => {
           </div>
         </div>
       </div>
-      {!isQuantityPage && <Footer />}
+      <Footer />
 
     </>
 

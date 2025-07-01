@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import style from './ProductToolbar.module.css';
 import { getHexFromName } from '../../utils/colorUtils';
 import { IoAdd } from 'react-icons/io5';
-import colorwheel from '../../images/color-wheel.png';
+// import colorwheel from '../../images/color-wheel.png';
+import colorwheel from '../../images/AddColorBtn.png';
 import ChangePopup from '../../PopupComponent/ChangeProductPopup/ChangePopup';
 import AddProductContainer from '../../PopupComponent/addProductContainer/AddProductContainer';
 import ProductAvailableColor from '../../PopupComponent/ProductAvailableColor/ProductAvailableColor';
@@ -35,6 +36,7 @@ const ProductToolbar = () => {
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
   // const { setActiveProduct } = useOutletContext();
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
+  console.log("---activeProduct", activeProduct);
   const [changeProductPopup, setChangeProductPopup] = useState(false);
   const [editingProductIndex, setEditingProductIndex] = useState(null);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
@@ -62,6 +64,33 @@ const ProductToolbar = () => {
     setAddProduct(true);
   };
   // Handle product selection and update/add it to Redux store
+  // const handleProductSelect = (product, selectedColor = null) => {
+  //   const fallbackImg = product?.img || product?.imgurl || product?.selectedImage || '';
+  //   const clonedColor = selectedColor
+  //     ? safeCloneColor(selectedColor, fallbackImg)
+  //     : product.selectedColor
+  //       ? safeCloneColor(product.selectedColor, fallbackImg)
+  //       : product.colors?.[0]
+  //         ? safeCloneColor(product.colors[0], fallbackImg)
+  //         : null;
+
+  //   const updatedProduct = {
+  //     ...product,
+  //     selectedColor: clonedColor,
+  //     imgurl: clonedColor?.img || fallbackImg,
+  //   };
+
+  //   if (isAddingProduct) {
+  //     dispatch(addProductAction(updatedProduct));
+  //   } else if (editingProductIndex !== null) {
+  //     dispatch(updateProductAction({ index: editingProductIndex, product: updatedProduct }));
+  //   }
+  //   // Reset all modal states
+  //   setChangeProductPopup(false);
+  //   setEditingProductIndex(null);
+  //   setIsAddingProduct(false);
+  //   setAddProduct(false);
+  // };
   const handleProductSelect = (product, selectedColor = null) => {
     const fallbackImg = product?.img || product?.imgurl || product?.selectedImage || '';
     const clonedColor = selectedColor
@@ -80,9 +109,17 @@ const ProductToolbar = () => {
 
     if (isAddingProduct) {
       dispatch(addProductAction(updatedProduct));
+      // Set the newly added product as active and its first thumbnail as active
+      const newIndex = selectedProducts.length; // Index of the new product
+      dispatch(setActiveProduct(updatedProduct));
+      setActiveThumbnail({ productIndex: newIndex, colorIndex: 0 });
     } else if (editingProductIndex !== null) {
       dispatch(updateProductAction({ index: editingProductIndex, product: updatedProduct }));
+      // Set the updated product as active and its first thumbnail as active
+      dispatch(setActiveProduct(updatedProduct));
+      setActiveThumbnail({ productIndex: editingProductIndex, colorIndex: 0 });
     }
+
     // Reset all modal states
     setChangeProductPopup(false);
     setEditingProductIndex(null);
@@ -511,8 +548,8 @@ const ProductToolbar = () => {
                       className={style.addCartButton}
                       onClick={() => setColorChangeTarget({ productIndex: index, colorIndex: -1, actionType: 'addColor' })}
                     >
-                      {/* <img src={colorwheel} alt="color wheel" className={style.colorImg} /> */}
-                      <AddColorBtn />
+                      <img src={colorwheel} alt="color wheel" className={style.colorImg} />
+                      {/* <AddColorBtn /> */}
 
                       <p>Add Color</p>
                     </div>
@@ -564,7 +601,9 @@ const ProductToolbar = () => {
 
                             updated[index] = current;
                             dispatch(setSelectedProductsAction(updated));
+
                             setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null });
+
                           }}
                           onHoverColor={(color) =>
                             setHoveredThumbnail({ productIndex: index, colorIndex: colorChangeTarget.colorIndex, color })

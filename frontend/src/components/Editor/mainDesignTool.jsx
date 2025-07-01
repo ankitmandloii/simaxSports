@@ -567,7 +567,9 @@ const MainDesignTool = ({
         fabric,
         setSelectedTextState,
         globalDispatch,
-        activeSide
+        activeSide,
+        bringPopup
+
       )
     }
 

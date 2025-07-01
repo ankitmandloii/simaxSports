@@ -294,8 +294,8 @@ const renderAllImageObjects = (
         }
       );
     } else if (existingObj) {
-      console.log("src....00", src, "prev src", existingObj.getSrc());
-      console.log("→ updaing existing image :", id);
+      // console.log("src....00", src, "prev src", existingObj.getSrc());
+      // console.log("→ updaing existing image :", id);
       const { scaleX: finalX, scaleY: finalY } = getScaled(
         existingObj,
         scaleX,
