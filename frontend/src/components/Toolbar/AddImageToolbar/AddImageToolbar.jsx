@@ -916,6 +916,7 @@ const AddImageToolbar = () => {
               </div>
 
               <hr></hr>
+
               <p className={styles.resetButton} onClick={handleReset}>Reset To Defaults</p>
 
             </div>

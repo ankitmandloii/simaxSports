@@ -247,6 +247,7 @@ const renderAllImageObjects = (
             customType,
             isSync: true,
             layerIndex,
+            lockScalingFlip: true,
           });
 
           newImg.setControlsVisibility({
@@ -369,6 +370,7 @@ const renderAllImageObjects = (
             customType,
             isSync: true,
             layerIndex,
+            lockScalingFlip: true,
           });
 
           img.setControlsVisibility({

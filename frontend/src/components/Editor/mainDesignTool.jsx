@@ -246,7 +246,7 @@ const MainDesignTool = ({
   };
 
   const handleScale = (e) => {
-    const clamp = (value, min = 0.2, max = 20) => Math.max(min, Math.min(value, max));
+    const clamp = (value, min = 0.01, max = 20) => Math.max(min, Math.min(value, max));
     const obj = e.target;
     const canvas = fabricCanvasRef.current;
 
@@ -426,7 +426,6 @@ const MainDesignTool = ({
       const canvas = fabricCanvasRef.current;
       if (!canvas) return;
 
-      console.log("babu code....");
 
       const boundaryBox = canvas
         .getObjects()
@@ -650,6 +649,7 @@ const MainDesignTool = ({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onLayerAction={handleLayerAction}
+        fabricCanvas={fabricCanvasRef.current}
       />
 
     </div>
