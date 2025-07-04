@@ -73,14 +73,14 @@
 
 .crossProdICon {
   position: absolute;
-  right: -13px;
+  right: -17px;
   height: 1rem;
   display: flex;
   justify-content: center;
   width: 1rem;
   align-items: center;
   /* width: 16px; */
-  top: -4px;
+  top: -14px;
   cursor: pointer;
   background-color: #ffffff;
   border-radius: 100%;

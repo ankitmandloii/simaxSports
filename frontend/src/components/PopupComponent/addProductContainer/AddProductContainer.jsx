@@ -7,6 +7,7 @@ import colorwheel1 from "../../images/color-wheel1.png";
 import { CrossIcon } from "../../iconsSvg/CustomIcon";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { IoCloudyNight } from "react-icons/io5";
 
 const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProductPopup }) => {
   const { list: rawProducts, loading, error } = useSelector((state) => state.products);
@@ -15,7 +16,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
   const [products, setProducts] = useState([]);
   const [productStates, setProductStates] = useState({});
   const [imageLoadStates, setImageLoadStates] = useState({});
-
+  console.log("-----------------prodd", products);
   useEffect(() => {
     if (rawProducts.length > 0) {
       const productsWithKeys = rawProducts.map((product) => ({

@@ -20,7 +20,7 @@ import {
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox.jsx';
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox.jsx';
 import { useDispatch, useSelector } from 'react-redux';
-import { duplicateImageState, moveElementBackwardState, moveElementForwardState, toggleImageLockState, toggleLockState, updateImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
+import { duplicateImageState, moveElementBackwardState, moveElementForwardState, toggleImageLockState, toggleLoading, toggleLockState, updateImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 import { useNavigate } from 'react-router-dom';
 import ReplaceBackgroundColorPicker from '../../CommonComponent/ChooseColorBox/ReplaceBackgroundColorPicker.jsx';
 
@@ -142,7 +142,7 @@ const AddImageToolbar = () => {
     setLoading(true);
     tempImage.onload = () => {
       setLoading(false);
-      globalDispatch("loading", false)
+      // globalDispatch("loading", false)
       setPreviewUrl(img.src || '');
     }
     tempImage.onerror = () => {
@@ -281,10 +281,14 @@ const AddImageToolbar = () => {
       // Set loading: true in local + global state
       setLoading(true);
       setPreviewUrl(loadingPlaceholder);
-
-      globalDispatch("loading", true);
+      const changes = {
+        loading: true,
+        position: img.position
+      }
+      dispatch(toggleLoading({ changes }));
       globalDispatch("loadingSrc", loadingPlaceholder);
       globalDispatch("src", img.src); // keep old src while loading
+      globalDispatch("loading", true); // keep old src while loading
       globalDispatch("transform", transform);
 
       // Load transformed image
@@ -295,8 +299,9 @@ const AddImageToolbar = () => {
         setActiveTransform(transform);
 
         globalDispatch("src", newUrl);
-        globalDispatch("loading", false);
+        dispatch(toggleLoading({ changes: { loading: false } }));
         globalDispatch("loadingSrc", null);
+        globalDispatch("loading", false);
         globalDispatch("removeBg", transform.includes("bg-remove=true"));
         globalDispatch(
           "removeBgParamValue",
@@ -310,7 +315,7 @@ const AddImageToolbar = () => {
 
       tempImage.onerror = () => {
         console.error("Failed to load image:", newUrl);
-        setPreviewUrl("/placeholder.png");
+        setPreviewUrl(img.src);
         setLoading(false);
         globalDispatch("loading", false);
         globalDispatch("loadingSrc", null);

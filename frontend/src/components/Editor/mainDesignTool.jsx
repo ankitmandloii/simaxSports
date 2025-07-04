@@ -55,7 +55,9 @@ const MainDesignTool = ({
   const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   const isRender = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].setRendering);
-  const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId)
+  const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
+  const loadingState = useSelector(state => state.TextFrontendDesignSlice.present[activeSide].loadingState);
+  console.log("loadingState redux ........", loadingState)
 
   // **********************************************************************************************************************************************************
   //                                                                                    USE REFS AREA
@@ -70,6 +72,7 @@ const MainDesignTool = ({
   const [activeObjectType, setActiveObjectType] = useState("image");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedObject, setSelectedObject] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // **********************************************************************************************************************************************************
   //                                                                                    USE DISPTACHS AREA
@@ -247,6 +250,7 @@ const MainDesignTool = ({
 
   const handleScale = (e) => {
     const clamp = (value, min = 0.01, max = 20) => Math.max(min, Math.min(value, max));
+
     const obj = e.target;
     const canvas = fabricCanvasRef.current;
 
@@ -255,36 +259,36 @@ const MainDesignTool = ({
     const imageData = imageContaintObject?.find(img => img.id === obj.id);
     if (!imageData) return;
 
+    // Preserve center before scaling
     const center = obj.getCenterPoint();
+
     const originalWidth = obj.width;
     const originalHeight = obj.height;
 
-    const MAX_WIDTH = 300;
-    const MAX_HEIGHT = 300;
+    const MAX_WIDTH = 200;
+    const MAX_HEIGHT = 200;
 
-    // Calculate base (initial bounding box) scale
     const boundingScale = Math.min(MAX_WIDTH / originalWidth, MAX_HEIGHT / originalHeight);
 
-    // Actual current scale relative to that base
-    const relativeScaleX = obj.scaleX / boundingScale;
-    const relativeScaleY = obj.scaleY / boundingScale;
+    let relativeScaleX = obj.scaleX / boundingScale;
+    let relativeScaleY = obj.scaleY / boundingScale;
 
-    // Clamp to avoid extreme zoom in/out
-    const clampedScaleX = clamp(relativeScaleX);
-    const clampedScaleY = clamp(relativeScaleY);
+    // Clamp small values safely (even below 0.1)
+    relativeScaleX = clamp(relativeScaleX);
+    relativeScaleY = clamp(relativeScaleY);
 
-    // Apply scaled values
-    obj.scaleX = boundingScale * clampedScaleX;
-    obj.scaleY = boundingScale * clampedScaleY;
+    obj.set({
+      scaleX: boundingScale * relativeScaleX,
+      scaleY: boundingScale * relativeScaleY,
+    });
 
-    // Maintain center position
+    // Keep the object centered visually
     obj.setPositionByOrigin(center, 'center', 'center');
     obj.setCoords();
 
-    // Dispatch relative scale values (user control)
-    globalDispatch("scaleX", parseFloat(clampedScaleX.toFixed(1)), obj.id);
-    globalDispatch("scaleY", parseFloat(clampedScaleY.toFixed(1)), obj.id);
-    globalDispatch("scaledValue", parseFloat(((clampedScaleX + clampedScaleY) / 2).toFixed(1)), obj.id);
+    globalDispatch("scaleX", parseFloat(relativeScaleX.toFixed(3)), obj.id);
+    globalDispatch("scaleY", parseFloat(relativeScaleY.toFixed(3)), obj.id);
+    globalDispatch("scaledValue", parseFloat(((relativeScaleX + relativeScaleY) / 2).toFixed(3)), obj.id);
 
     canvas?.renderAll();
     syncMirrorCanvasHelper(activeSide);
@@ -292,11 +296,15 @@ const MainDesignTool = ({
 
 
 
-
   // **********************************************************************************************************************************************************
   //                                                                                    USE EFFECTS 
   // **********************************************************************************************************************************************************
+  useEffect(() => {
 
+    console.log("loading reduxt is ", loadingState)
+    setLoading(loadingState?.loading);
+    console.log("loading state is ", loading)
+  }, [loadingState])
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
     if (canvas && canvas.setZoom) {
@@ -438,16 +446,21 @@ const MainDesignTool = ({
         );
       boundaryBox.visible = true;
       warningText.visible = true;
-
       // updateBoundaryVisibility(fabricCanvasRef);
+    }
+
+    const showBoundaryOnAction = () => {
+      boundaryBox.visible = true;
+      warningText.visible = true;
     }
 
     const events = [
       ["object:added", handleObjectAdded],
       ["object:removed", handleObjectAdded],
-      ["object:modified", handleObjectModified],
+      ["object:modified", handleObjectModified],  
       ["object:moving", handleMoving],
-      ["object:scaling", updateBoundaryVisibility],
+      ["object:scaling", showBoundaryOnAction],
+      ["object:rotating", showBoundaryOnAction],
       ["selection:created", handleSelection],
       ["selection:updated", handleSelection],
       ["selection:cleared", handleSelectionCleared],
@@ -651,7 +664,14 @@ const MainDesignTool = ({
         onLayerAction={handleLayerAction}
         fabricCanvas={fabricCanvasRef.current}
       />
-
+      {/* <div class="tenor-gif-embed" data-postid="6449096453315144907" data-share-method="host" data-aspect-ratio="0.991667" data-width="100%" style={{ zIndex: 9999999, position: "absolute", top: "50%", left: "50%" }}>
+        <a href="https://tenor.com/view/loading-gif-6449096453315144907">Loading Sticker</a>from <a href="https://tenor.com/search/loading-stickers"
+        >Loading Stickers</a></div> */}
+      {/* <img src="https://cdn.pixabay.com/animation/2023/08/11/21/18/21-18-05-265_512.gif" height={200} width={200} style={{ zIndex: 9999999, position: "absolute", top: "50%", left: "50%" }}></img> */}
+      {loading && <div className={style.loaderWrapper} style={{ left: loadingState.position.x - 50, top: loadingState.position.y }}>
+        <div className={style.loader}></div>
+        <p>Loading...</p>
+      </div>}
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { act } from "react";
 
 const createNewText = ({ value, id }, totalElements) => ({
   id: id,
@@ -80,6 +81,10 @@ const initialState = {
     front: {
       selectedTextId: null,
       selectedImageId: null,
+      loadingState: {
+        loading: false,
+        position: { x: 290, y: 200 }
+      },
       texts: [],
       images: [],
       setRendering: false,
@@ -106,6 +111,10 @@ const initialState = {
       texts: [],
       images: [],
       setRendering: false,
+      loadingState: {
+        loading: false,
+        position: { x: 290, y: 200 }
+      },
 
       // 🆕 Design settings for Name & Number (back)
       nameAndNumberDesignState: {
@@ -128,6 +137,10 @@ const initialState = {
       texts: [],
       images: [],
       setRendering: false,
+      loadingState: {
+        loading: false,
+        position: { x: 290, y: 200 }
+      },
     },
     rightSleeve: {
       selectedTextId: null,
@@ -135,6 +148,10 @@ const initialState = {
       texts: [],
       images: [],
       setRendering: false,
+      loadingState: {
+        loading: false,
+        position: { x: 290, y: 200 }
+      },
     },
   },
   future: {
@@ -558,8 +575,8 @@ const TextFrontendDesignSlice = createSlice({
       //   { src },
       //   state.present[side].images.length
       // );
-      if(!state.present[side].images){
-         state.present[side].images = [];
+      if (!state.present[side].images) {
+        state.present[side].images = [];
       }
       state.present[side].selectedImageId = newImage.id;
       state.present[side].images.push(newImage);
@@ -936,6 +953,14 @@ const TextFrontendDesignSlice = createSlice({
       state.present[side].setRendering = !state.present[side].setRendering;
       state.future[side] = [];
     },
+        toggleLoading: (state, action) => {
+          const side = state.activeSide;
+          const { changes } = action.payload;
+          console.log("changes which we want to add", changes);
+          if (changes) {
+            Object.assign(state.present[side].loadingState, changes); // ✅ merge changes into side object
+          }
+    }
 
   },
 });
@@ -973,7 +998,8 @@ export const {
   restoreDesignFromSavedState,
   toggleSleeveDesign,
   copyElementToSide,
-  selectedImageIdState
+  selectedImageIdState,
+  toggleLoading
 } = TextFrontendDesignSlice.actions;
 
 // ✅ Export Selectors
