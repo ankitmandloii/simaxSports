@@ -30,6 +30,7 @@ module.exports.SuccessMessage = {
 };
 //Error messages
 module.exports.ErrorMessage = {
+  NO_PRODUCTS_SYNCED: "No Products SYNCED",
   NEWPASSWORD_SAME_AS_OLD: "New password must be different from the current password",
   ONLY_ADMIN_CAN_CHANGE_PASSWORD: "Only Admin Can Change Password.",
   ADMIN_NOT_FOUND: "Admin Not Found.",
