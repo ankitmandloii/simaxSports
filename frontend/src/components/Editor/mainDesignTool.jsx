@@ -457,7 +457,7 @@ const MainDesignTool = ({
     const events = [
       ["object:added", handleObjectAdded],
       ["object:removed", handleObjectAdded],
-      ["object:modified", handleObjectModified],  
+      ["object:modified", handleObjectModified],
       ["object:moving", handleMoving],
       ["object:scaling", showBoundaryOnAction],
       ["object:rotating", showBoundaryOnAction],

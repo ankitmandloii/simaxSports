@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import style from './ProductToolbar.module.css';
 import { getHexFromName } from '../../utils/colorUtils';
 import { IoAdd } from 'react-icons/io5';
@@ -8,6 +8,7 @@ import AddProductContainer from '../../PopupComponent/addProductContainer/AddPro
 import ProductAvailableColor from '../../PopupComponent/ProductAvailableColor/ProductAvailableColor';
 import { AddColorSvgIcon, CrossIcon } from '../../iconsSvg/CustomIcon';
 import { useSelector, useDispatch } from 'react-redux';
+import { batch } from 'react-redux';
 import {
   addProduct as addProductAction,
   updateProduct as updateProductAction,
@@ -242,6 +243,11 @@ const ProductToolbar = () => {
     (state) => state.products
   );
 
+  // Debug effect to track active product changes
+  useEffect(() => {
+    console.log("Active Product Updated:", activeProduct);
+  }, [activeProduct]);
+
   return (
     <div className={style.toolbarMainContainer}>
       <div className={style.productToolbar}>
@@ -282,38 +288,6 @@ const ProductToolbar = () => {
                       <div
                         key={i}
                         className={`mini-prod-img-container ${activeProduct?.id === product?.id &&
-                            (
-                              (i === 0 &&
-                                (
-                                  activeProduct?.selectedColor?.name === product?.selectedColor?.name ||
-                                  !activeProduct?.selectedColor ||
-                                  activeProduct?.selectedColor?.name === 'null'
-                                )
-                              ) ||
-                              (i > 0 &&
-                                activeProduct?.selectedColor?.name === product?.addedColors?.[i - 1]?.name
-                              )
-                            )
-                            ? style.activeThumbnail
-                            : ''
-                          }`}
-                        onClick={() => {
-                          const clickedColor = i === 0 ? product.selectedColor : product.addedColors?.[i - 1];
-                          const updatedActiveProduct = {
-                            ...product,
-                            selectedColor: safeCloneColor(clickedColor, product.imgurl),
-                            imgurl: clickedColor?.img || product.imgurl,
-                          };
-                          dispatch(setActiveProduct(updatedActiveProduct));
-                          setTimeout(() => dispatch(setRendering()), 10);
-                          setActiveThumbnail((prev) =>
-                            prev.productIndex === index && prev.colorIndex === i
-                              ? { productIndex: null, colorIndex: null }
-                              : { productIndex: index, colorIndex: i }
-                          );
-                        }}
-                      >
-                        {activeProduct?.id === product?.id &&
                           (
                             (i === 0 &&
                               (
@@ -325,104 +299,157 @@ const ProductToolbar = () => {
                             (i > 0 &&
                               activeProduct?.selectedColor?.name === product?.addedColors?.[i - 1]?.name
                             )
-                          ) && (
-                            <div className="style.thumbnail-actions">
-                              {!(
-                                selectedProducts.length === 1 &&
-                                (1 + (selectedProducts[index]?.addedColors?.length || 0)) === 1
-                              ) && (
-                                  <span
-                                    className={style.crossProdIConofSingleProduct}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleDeleteColorThumbnail(index, i);
-                                    }}
-                                  >
-                                    <CrossIcon />
-                                  </span>
-                                )}
-                              <button
-                                className={style.toolbarSpan}
-                                style={{ '--indicator-color': getHexFromName(color?.name) }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setColorChangeTarget({ productIndex: index, colorIndex: i, actionType: 'change' });
-                                }}
-                              >
-                                Change
-                              </button>
-                            </div>
-                          )}
+                          ) || activeThumbnail.productIndex === index && activeThumbnail.colorIndex === i
+                          ? style.activeThumbnail
+                          : ''
+                          }`}
 
-                        {colorChangeTarget.productIndex === index && colorChangeTarget.actionType === 'change' && colorChangeTarget.colorIndex === i && (
-                          <ProductAvailableColor
-                            actionType={colorChangeTarget.actionType}
-                            product={product}
-                            availableColors={getAvailableColorsForProduct(product)}
-                            onClose={() => setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null })}
-                            onAddColor={(productData, color) => {
-                              const updated = [...selectedProducts];
-                              const current = { ...updated[index] };
-                              const newColor = safeCloneColor(color);
+                        onClick={(e) => {
+                          const clickedColor = i === 0 ? product.selectedColor : product.addedColors?.[i - 1];
+                          const clickedColorName = clickedColor?.name;
+                          const currentActiveName = activeProduct?.selectedColor?.name;
 
-                              const allVariants = normalizeVariants(productData);
-                              const colorName = color.name.toLowerCase().trim();
-                              const sizeVariantPairs = allVariants
-                                .filter(variant => {
-                                  const colorOpt = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'color');
-                                  return colorOpt?.value.toLowerCase().trim() === colorName;
-                                })
-                                .map(variant => {
-                                  const sizeOpt = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'size');
-                                  return sizeOpt?.value ? { size: sizeOpt.value, variantId: variant.id } : null;
-                                })
-                                .filter(Boolean);
+                          if (clickedColorName && clickedColorName !== currentActiveName) {
+                            const updatedActiveProduct = {
+                              ...product,
+                              selectedColor: safeCloneColor(clickedColor),
+                              imgurl: clickedColor?.img || product.imgurl,
+                            };
+                            dispatch(setActiveProduct(updatedActiveProduct));
+                          }
+                          setActiveThumbnail({ productIndex: index, colorIndex: i });
+                        }}
+                      >
 
-                              newColor.sizes = sizeVariantPairs;
+                        {(activeProduct?.id === product?.id &&
+                          (
+                            (i === 0 &&
+                              (
+                                activeProduct?.selectedColor?.name === product?.selectedColor?.name ||
+                                !activeProduct?.selectedColor ||
+                                activeProduct?.selectedColor?.name === 'null'
+                              )
+                            ) ||
+                            (i > 0 &&
+                              activeProduct?.selectedColor?.name === product?.addedColors?.[i - 1]?.name
+                            )
+                          )) ||
+                          (activeThumbnail.productIndex === index && activeThumbnail.colorIndex === i) ||
+                          (colorChangeTarget.productIndex === index &&
+                            colorChangeTarget.colorIndex === i &&
+                            colorChangeTarget.actionType === 'change') ? (
+                          <div className={style.thumbnailActions}>
+                            {!(
+                              selectedProducts.length === 1 &&
+                              (1 + (selectedProducts[index]?.addedColors?.length || 0)) === 1
+                            ) && (
+                                <span
+                                  className={style.crossProdIConofSingleProduct}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteColorThumbnail(index, i);
+                                  }}
+                                >
+                                  <CrossIcon />
+                                </span>
+                              )}
+                            <button
+                              className={style.toolbarSpan}
+                              style={{ '--indicator-color': getHexFromName(color?.name) }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setColorChangeTarget({ productIndex: index, colorIndex: i, actionType: 'change' });
+                              }}
+                            >
+                              Change
+                            </button>
+                          </div>
+                        ) : null}
 
-                              if (colorChangeTarget.colorIndex === 0) {
-                                current.selectedColor = newColor;
-                                current.imgurl = newColor.img;
-                              } else if (colorChangeTarget.colorIndex > 0) {
-                                const newAddedColors = [...(current.addedColors || [])];
-                                current.addedColors = [
-                                  ...newAddedColors.slice(0, colorChangeTarget.colorIndex - 1),
-                                  newColor,
-                                  ...newAddedColors.slice(colorChangeTarget.colorIndex),
-                                ];
-                              } else {
-                                const alreadyExists = current.addedColors?.some((c) => c.name === newColor.name);
-                                if (!alreadyExists) {
-                                  current.addedColors = [...(current.addedColors || []), newColor];
-                                }
+                        {colorChangeTarget.productIndex === index &&
+                          colorChangeTarget.actionType === 'change' &&
+                          colorChangeTarget.colorIndex === i && (
+                            <ProductAvailableColor
+                              actionType={colorChangeTarget.actionType}
+                              product={product}
+                              availableColors={getAvailableColorsForProduct(product)}
+                              onClose={() =>
+                                setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null })
                               }
 
-                              updated[index] = current;
-                              dispatch(setSelectedProductsAction(updated));
+                              // In the ProductAvailableColor's onAddColor handler:
+                              onAddColor={(productData, color) => {
+                                const updated = JSON.parse(JSON.stringify(selectedProducts));
+                                const current = { ...updated[index] };
+                                const newColor = { ...color };
 
-                              // Set the updated product as active with the new color
-                              const updatedActiveProduct = {
-                                ...current,
-                                selectedColor: newColor,
-                                imgurl: newColor.img,
-                              };
-                              dispatch(setActiveProduct(updatedActiveProduct));
-                              // Set the thumbnail of the new color as active
-                              setActiveThumbnail({
-                                productIndex: index,
-                                colorIndex: colorChangeTarget.colorIndex === 0 ? 0 : colorChangeTarget.colorIndex,
-                              });
+                                // Process variants data
+                                const allVariants = normalizeVariants(productData);
+                                const colorName = color.name.toLowerCase().trim();
+                                const sizeVariantPairs = allVariants
+                                  .filter((variant) => {
+                                    const colorOpt = variant.selectedOptions.find(
+                                      (opt) => opt.name.toLowerCase() === 'color'
+                                    );
+                                    return colorOpt?.value.toLowerCase().trim() === colorName;
+                                  })
+                                  .map((variant) => {
+                                    const sizeOpt = variant.selectedOptions.find(
+                                      (opt) => opt.name.toLowerCase() === 'size'
+                                    );
+                                    return sizeOpt?.value ? { size: sizeOpt.value, variantId: variant.id } : null;
+                                  })
+                                  .filter(Boolean);
 
-                              setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null });
-                            }}
-                            onHoverColor={(color) =>
-                              setHoveredThumbnail({ productIndex: index, colorIndex: colorChangeTarget.colorIndex, color })
-                            }
-                            onLeaveColor={() =>
-                              setHoveredThumbnail({ productIndex: null, colorIndex: null, color: null })
-                            }
-                          />
-                        )}
+                                newColor.sizes = sizeVariantPairs;
+
+                                // Update the targeted color
+                                if (colorChangeTarget.colorIndex === 0) {
+                                  // Changing main color
+                                  current.selectedColor = newColor;
+                                  current.imgurl = newColor.img;
+                                } else {
+                                  // Changing a variant color
+                                  if (!current.addedColors) current.addedColors = [];
+                                  const variantIndex = colorChangeTarget.colorIndex - 1;
+                                  current.addedColors[variantIndex] = newColor;
+                                }
+
+                                updated[index] = current;
+
+                                // Create the new active product - always use the changed color
+                                const newActiveProduct = {
+                                  ...current,
+                                  selectedColor: newColor,
+                                  imgurl: newColor.img
+                                };
+
+                                // Dispatch updates in batch
+                                batch(() => {
+                                  dispatch(setSelectedProductsAction(updated));
+                                  dispatch(setActiveProduct(newActiveProduct));
+                                  dispatch(setRendering());
+                                });
+
+                                // Update UI states
+                                setActiveThumbnail({
+                                  productIndex: index,
+                                  colorIndex: colorChangeTarget.colorIndex
+                                });
+                                setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null });
+                              }}
+                              onHoverColor={(color) =>
+                                setHoveredThumbnail({
+                                  productIndex: index,
+                                  colorIndex: colorChangeTarget.colorIndex,
+                                  color,
+                                })
+                              }
+                              onLeaveColor={() =>
+                                setHoveredThumbnail({ productIndex: null, colorIndex: null, color: null })
+                              }
+                            />
+                          )}
                         <div className={style.imgThumbnaillContainer}>
                           <img src={imgSrc} className="product-mini-img" alt={color.name} title={color.name} />
                         </div>
@@ -459,47 +486,42 @@ const ProductToolbar = () => {
                           const allVariants = normalizeVariants(productData);
                           const colorName = color.name.toLowerCase().trim();
                           const sizeVariantPairs = allVariants
-                            .filter(variant => {
-                              const colorOpt = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'color');
+                            .filter((variant) => {
+                              const colorOpt = variant.selectedOptions.find(
+                                (opt) => opt.name.toLowerCase() === 'color'
+                              );
                               return colorOpt?.value.toLowerCase().trim() === colorName;
                             })
-                            .map(variant => {
-                              const sizeOpt = variant.selectedOptions.find(opt => opt.name.toLowerCase() === 'size');
+                            .map((variant) => {
+                              const sizeOpt = variant.selectedOptions.find(
+                                (opt) => opt.name.toLowerCase() === 'size'
+                              );
                               return sizeOpt?.value ? { size: sizeOpt.value, variantId: variant.id } : null;
                             })
                             .filter(Boolean);
 
                           newColor.sizes = sizeVariantPairs;
 
-                          if (colorChangeTarget.colorIndex === 0) {
-                            current.selectedColor = newColor;
-                            current.imgurl = newColor.img;
-                          } else if (colorChangeTarget.colorIndex > 0) {
-                            const newAddedColors = [...(current.addedColors || [])];
-                            current.addedColors = [
-                              ...newAddedColors.slice(0, colorChangeTarget.colorIndex - 1),
-                              newColor,
-                              ...newAddedColors.slice(colorChangeTarget.colorIndex),
-                            ];
-                          } else {
-                            const alreadyExists = current.addedColors?.some((c) => c.name === newColor.name);
-                            if (!alreadyExists) {
-                              current.addedColors = [...(current.addedColors || []), newColor];
-                            }
-                          }
-
-                          updated[index] = current;
-                          dispatch(setSelectedProductsAction(updated));
-
-                          // Set the updated product as active with the new color
-                          const updatedActiveProduct = {
-                            ...current,
-                            selectedColor: newColor,
-                            imgurl: newColor.img,
+                          // Create a completely new product reference
+                          const updatedProduct = {
+                            ...JSON.parse(JSON.stringify(current)), // Deep clone
+                            addedColors: [...(current.addedColors || []), newColor]
                           };
-                          dispatch(setActiveProduct(updatedActiveProduct));
+
+                          updated[index] = updatedProduct;
+
+                          // Dispatch both updates together
+                          batch(() => {
+                            dispatch(setSelectedProductsAction(updated));
+                            dispatch(setActiveProduct({
+                              ...updatedProduct,
+                              selectedColor: newColor,
+                              imgurl: newColor.img
+                            }));
+                          });
+
                           // Set the thumbnail of the new color as active
-                          const newColorIndex = current.addedColors.length; // Index of the newly added color
+                          const newColorIndex = updatedProduct.addedColors.length;
                           setActiveThumbnail({ productIndex: index, colorIndex: newColorIndex });
 
                           setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null });
