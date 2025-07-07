@@ -288,7 +288,7 @@ const MainDesignTool = ({
 
     globalDispatch("scaleX", parseFloat(relativeScaleX.toFixed(3)), obj.id);
     globalDispatch("scaleY", parseFloat(relativeScaleY.toFixed(3)), obj.id);
-    globalDispatch("scaledValue", parseFloat(((relativeScaleX + relativeScaleY) / 2).toFixed(3)), obj.id);
+    globalDispatch("scaledValue", parseFloat(((relativeScaleX + relativeScaleY) / 2).toFixed(2)), obj.id);
 
     canvas?.renderAll();
     syncMirrorCanvasHelper(activeSide);
@@ -668,7 +668,7 @@ const MainDesignTool = ({
         <a href="https://tenor.com/view/loading-gif-6449096453315144907">Loading Sticker</a>from <a href="https://tenor.com/search/loading-stickers"
         >Loading Stickers</a></div> */}
       {/* <img src="https://cdn.pixabay.com/animation/2023/08/11/21/18/21-18-05-265_512.gif" height={200} width={200} style={{ zIndex: 9999999, position: "absolute", top: "50%", left: "50%" }}></img> */}
-      {loading && <div className={style.loaderWrapper} style={{ left: loadingState.position.x - 50, top: loadingState.position.y }}>
+      {loading && <div className={style.loaderWrapper} style={{ transform: "translate(-50%, -50%)" }}>
         <div className={style.loader}></div>
         <p>Loading...</p>
       </div>}

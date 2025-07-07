@@ -857,7 +857,7 @@ const AddImageToolbar = () => {
                   <input
                     type="range"
                     name="size"
-                    min="0.2"
+                    min="0.1"
                     max="10"
                     step="0.1"
                     value={rangeValuesSize}

@@ -1,48 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { SearchIcon } from '../../iconsSvg/CustomIcon'; // Assuming this path is correct
+import { SearchIcon } from '../../iconsSvg/CustomIcon';
 import { RxCross1 } from 'react-icons/rx';
 import { Link, useNavigate } from 'react-router-dom';
-import style from './SubArt.module.css'; // Assuming this path is correct
+import style from './SubArt.module.css';
 import { useDispatch } from 'react-redux';
-import { addImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice'; // Assuming this path is correct
-import { toast } from 'react-toastify'; // Assuming you have react-toastify installed
-import UploadBox from '../../utils/UploadBox'; // Path to your UploadBox component
+import { addImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
+import { toast } from 'react-toastify';
+import UploadBox from '../../utils/UploadBox';
 
 const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }) => {
   const [unsplashImages, setUnsplashImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-
-  // States for controlling the UploadBox
   const [showUploadBox, setShowUploadBox] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadStatus, setUploadStatus] = useState(''); // 'fetching', 'uploading', 'complete', 'error'
-  const [currentUploadFileInfo, setCurrentUploadFileInfo] = useState(null); // Stores { file: File, imageUrl: string, name: string }
+  const [uploadStatus, setUploadStatus] = useState('');
+  const [currentUploadFileInfo, setCurrentUploadFileInfo] = useState(null);
+  const [uploadAbortController, setUploadAbortController] = useState(null); // 🔥 NEW
 
   const [hasMore, setHasMore] = useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const clid = process.env.REACT_APP_UNSPLASH_CID; // Ensure this env variable is set
+  const clid = process.env.REACT_APP_UNSPLASH_CID;
 
   const fetchUnsplashImages = async (query, pageNumber = 1) => {
     if (!query) return;
     setLoading(true);
     try {
-      const response = await axios.get(
-        `https://api.unsplash.com/search/photos`,
-        {
-          params: {
-            query,
-            page: pageNumber,
-            per_page: 20,
-          },
-          headers: {
-            Authorization: `Client-ID ${clid}`,
-          },
-        }
-      );
+      const response = await axios.get(`https://api.unsplash.com/search/photos`, {
+        params: {
+          query,
+          page: pageNumber,
+          per_page: 20,
+        },
+        headers: {
+          Authorization: `Client-ID ${clid}`,
+        },
+      });
       const newResults = response.data.results;
       setUnsplashImages(prev =>
         pageNumber === 1 ? newResults : [...prev, ...newResults]
@@ -50,7 +45,6 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
       setHasMore(newResults.length > 0);
     } catch (err) {
       console.error("Unsplash API error:", err);
-      // Optionally show a toast error for Unsplash API
       toast.error("Failed to fetch images from Unsplash.");
     } finally {
       setLoading(false);
@@ -82,46 +76,44 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
   };
 
   const handleFiles = async (img) => {
-    // 1. Show the UploadBox immediately with the Unsplash small image
     setShowUploadBox(true);
-    setUploadProgress(0); // Reset progress
-    setUploadStatus('fetching'); // Initial status
+    setUploadProgress(0);
+    setUploadStatus('fetching');
     setCurrentUploadFileInfo({
-      file: null, // Actual File object will come later
-      imageUrl: img.urls.small, // Immediate thumbnail
-      name: img.alt_description || `${img.id}.jpg` // Display name
+      file: null,
+      imageUrl: img.urls.small,
+      name: img.alt_description || `${img.id}.jpg`,
     });
 
-    const BASE_URL = process.env.REACT_APP_BASE_URL; // Ensure this env variable is set
+    const BASE_URL = process.env.REACT_APP_BASE_URL;
     if (!img?.urls?.full) {
       toast.error("Image URL from Unsplash not found.");
-      setUploadStatus('error'); // Set status to error
-      // Keep box open briefly to show error, then close
+      setUploadStatus('error');
       setTimeout(() => {
         setShowUploadBox(false);
         setCurrentUploadFileInfo(null);
-      }, 2000); // Show error for 2 seconds
+      }, 2000);
       return;
     }
 
+    const controller = new AbortController(); // 🔥 create new controller
+    setUploadAbortController(controller);     // 🔥 save it globally
+
     try {
-      // 2. Fetch image from Unsplash (this part still takes time)
-      const response = await fetch(img.urls.full);
+      const response = await fetch(img.urls.full, { signal: controller.signal });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const blob = await response.blob();
       const file = new File([blob], `${img.id}.jpg`, { type: blob.type });
 
-      // Update the UploadBox with the actual File object now that it's available
-      setCurrentUploadFileInfo(prev => ({ ...prev, file: file }));
-      setUploadStatus('uploading'); // Change status to uploading
+      setCurrentUploadFileInfo(prev => ({ ...prev, file }));
+      setUploadStatus('uploading');
 
-      // 3. Create FormData and append File
       const formData = new FormData();
       formData.append("images", file);
 
-      // 4. Upload to server with progress tracking
       const uploadResponse = await axios.post(
         `${BASE_URL}imageOperation/upload`,
         formData,
@@ -129,69 +121,67 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
           headers: {
             "Content-Type": "multipart/form-data"
           },
+          signal: controller.signal, // 🔥 attach signal to axios
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            setUploadProgress(percentCompleted); // Update progress for the UploadBox
+            setUploadProgress(percentCompleted);
           }
         }
       );
 
-      console.log("Uploaded successfully:", uploadResponse.data.files);
-      setUploadStatus('complete'); // Set status to complete
-
+      setUploadStatus('complete');
       uploadResponse.data.files.forEach((fileObj) => {
         dispatch(addImageState({ src: fileObj.url }));
       });
 
-     
-      // 5. Keep the UploadBox open briefly to show "Complete!"
-      setTimeout(() => {
-        setShowUploadBox(false); // Hide the box
-        setCurrentUploadFileInfo(null); // Clear info
-        navigate("/design/addImage"); // Navigate AFTER box is hidden
-      }, 1500); // Show "Complete!" for 1.5 seconds
-
-    } catch (err) {
-      toast.error("Error uploading image");
-      console.error("Upload error:", err.response?.data || err.message);
-      setUploadStatus('error'); // Set status to error
-      setUploadProgress(0); // Reset progress
-
-      // Keep box open briefly to show error, then close
       setTimeout(() => {
         setShowUploadBox(false);
         setCurrentUploadFileInfo(null);
-      }, 2000); // Show error for 2 seconds
+        navigate("/design/addImage");
+      }, 1500);
 
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        console.log("Upload aborted.");
+      } else {
+        toast.error("Error uploading image");
+        console.error("Upload error:", err.response?.data || err.message);
+      }
+
+      setUploadStatus('error');
+      setUploadProgress(0);
+      setTimeout(() => {
+        setShowUploadBox(false);
+        setCurrentUploadFileInfo(null);
+      }, 2000);
     }
   };
 
   const handleCloseUploadBox = () => {
-    // This function is called by the 'X' button on UploadBox
-    // Or internally when an upload process needs to be cleared.
+    if (uploadAbortController) {
+      uploadAbortController.abort(); // 🔥 cancel ongoing fetch/axios
+      setUploadAbortController(null);
+    }
+
     setShowUploadBox(false);
     setUploadProgress(0);
     setUploadStatus('');
     setCurrentUploadFileInfo(null);
-    // If you have a way to cancel the ongoing axios request, you'd do it here.
-    // For example, by using AbortController and passing a signal to axios.
   };
-
 
   return (
     <div className={style.toolbarMainContainerClipArt}>
-      {showUploadBox && currentUploadFileInfo ? ( // Render UploadBox based on showUploadBox state
+      {showUploadBox && currentUploadFileInfo ? (
         <UploadBox
-          file={currentUploadFileInfo.file} // Will be null initially, then updated
-          imageUrl={currentUploadFileInfo.imageUrl} // Always available for initial display
-          fileName={currentUploadFileInfo.name} // Pass the display name
+          file={currentUploadFileInfo.file}
+          imageUrl={currentUploadFileInfo.imageUrl}
+          fileName={currentUploadFileInfo.name}
           onRemoveFile={handleCloseUploadBox}
-          progress={uploadProgress} // Controlled by SubArtBox
-          status={uploadStatus}     // Controlled by SubArtBox
+          progress={uploadProgress}
+          status={uploadStatus}
         />
       ) : (
         <div className="toolbar-box">
-          {/* Your existing UI for searching and displaying Unsplash images */}
           <Link to="/design/uploadArt">
             <button className={style.uploadButton}>Upload Your Own Image</button>
           </Link>
@@ -236,7 +226,6 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
               <p>Loading amazing art...</p>
             </div>
           )}
-
 
           <div className={style.clipartGrid}>
             {unsplashImages.length > 0 ? (
