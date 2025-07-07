@@ -189,8 +189,8 @@ exports.syncProducts = async (req, res) => {
         //save in DB the ssProducts
 
 
-        const shopifyFormatted = await mapProducts(allProducts.slice(0,100));
-       
+        const shopifyFormatted = await mapProducts(allProducts.slice(0,10));
+        console.log(shopifyFormatted);
 
         const uploaded = await uploadToShopify(shopifyFormatted);
 

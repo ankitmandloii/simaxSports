@@ -125,6 +125,7 @@ exports.mapProducts = (ssProducts) => {
     ].filter(Boolean);
 
     const imageUrls = imagePaths.map(img => `https://cdn.ssactivewear.com/${img}`);
+    // console.log("checkkkkkkkkkkkkk",imageUrls);
     imageUrls.forEach(img => grouped[key].images.add(img));
 
     grouped[key].variants.push({
@@ -136,7 +137,9 @@ exports.mapProducts = (ssProducts) => {
       inventory_management: "shopify",
       fulfillment_service: "manual",
       taxable: true,
-      imageSrc: imageUrls[0] || null, // pick primary image per variant
+      imageSrc: imageUrls[0] || null,
+      
+      // pick primary image per variant
     });
 
     grouped[key].colorOptions.add(item.colorName);
@@ -184,11 +187,11 @@ exports.mapProducts = (ssProducts) => {
           {
             namespace: "custom",
             key: "images",
-            value: Array.from(images).map(src => ({
+            value: JSON.stringify(Array.from(images).map(src => ({
               src,
               altText: `${base.styleName}`
-            })),
-            type: "file"
+            }))),
+            type: "json"
           }
         ]
       });

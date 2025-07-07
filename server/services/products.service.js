@@ -8,48 +8,104 @@ exports.getProductsList = async (limit, cursor = null) => {
 
   const afterClause = cursor ? `, after: "${cursor}"` : "";
 
-  const query = `{
-    products(first: ${limit}${afterClause}) {
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-        hasPreviousPage
-      }
-      edges {
-        cursor
-        node {
-          id
-          title
-          variants(first: 250) {
-            edges {
-              node {
-                id
-                title
-                image {
-                  originalSrc
-                }
-                selectedOptions {
-                  name
-                  value
-                }
-              }
-            }
-            pageInfo {
-              hasNextPage
-            }
-          }
-          images(first: 1) {
-            edges {
-              node {
+  // const query = `{
+  //   products(first: ${limit}${afterClause}) {
+  //     pageInfo {
+  //       startCursor
+  //       endCursor
+  //       hasNextPage
+  //       hasPreviousPage
+  //     }
+  //     edges {
+  //       cursor
+  //       node {
+  //         id
+  //         title
+  //         variants(first: 250) {
+  //           edges {
+  //             node {
+  //               id
+  //               title
+  //               image {
+  //                 originalSrc
+  //               }
+  //               selectedOptions {
+  //                 name
+  //                 value
+  //               }
+  //             }
+  //           }
+  //           pageInfo {
+  //             hasNextPage
+  //           }
+  //         }
+  //         images(first: 10) {
+  //           edges {
+  //             node {
+  //               originalSrc
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }`;
+
+  const query = `
+{
+  products(first: ${limit}${afterClause}) {
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+    edges {
+      cursor
+      node {
+        id
+        title
+        variants(first: 50) {
+          edges {
+            node {
+              id
+              title
+              image {
                 originalSrc
               }
+              selectedOptions {
+                name
+                value
+              }
+              metafields(first: 50, namespace: "custom") {
+                edges {
+                  node {
+                    id
+                    key
+                    namespace
+                    value
+                    type
+                  }
+                }
+              }
+            }
+          }
+          pageInfo {
+            hasNextPage
+          }
+        }
+        images(first: 50) {
+          edges {
+            node {
+              originalSrc
             }
           }
         }
       }
     }
-  }`;
+  }
+}
+`;
 
   try {
     const response = await fetch(SHOPIFY_API_URL, {
