@@ -251,7 +251,7 @@ exports.mapProducts = (ssProducts) => {
       taxable: true,
       imageSrc: imageUrls[0] || null,
       weight: parseFloat(item.unitWeight || item.caseWeight / item.caseQty || 0),
-      weight_unit: "lb",
+      weight_unit: "POUNDS",
       variantImages: imageUrls.map((src) => ({
         src,
         altText: `${item.colorName} ${item.sizeName}`,

@@ -178,18 +178,18 @@ exports.syncProducts = async (req, res) => {
   try {
     // console.log("[SYNC] Fetching style IDs...");
     // const styleIds = await fetchAllStyleIds(); //may be it will fetch from DB Id's
-    // const styleIds =  [39]; //for testing purpose
+    const styleIds =  [39]; //for testing purpose
 
 
-    // const ssProducts = await SyncServices.fetchSSProductsByStyleIds(styleIds);
+    const ssProducts = await SyncServices.fetchSSProductsByStyleIds(styleIds);
 
-    const allProducts = await SyncServices.getProductsFromDb()
+    // const allProducts = await SyncServices.getProductsFromDb()
 
 
     //save in DB the ssProducts
 
 
-    const shopifyFormatted = await mapProducts(allProducts.slice(0, 15));
+    const shopifyFormatted = await mapProducts(ssProducts.slice(0, 5));
 
 
     const uploaded = await uploadToShopify(shopifyFormatted);
@@ -214,7 +214,7 @@ exports.syncProducts = async (req, res) => {
 
 
 
-    return sendResponse(res, statusCode.OK, true, "Products fetched successfully", allProducts);
+    return sendResponse(res, statusCode.OK, true, "Products fetched successfully", shopifyFormatted);
   } catch (error) {
     console.error("[SYNC ERROR]", error.message);
     return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, error.message);
