@@ -36,7 +36,7 @@ const LoadingScreen = () => {
               <span key={index}>{char}</span>
             ))}
           </div>
-          <div className={styles.sportsText}>APPAREL</div>
+          <div className={styles.sportsText}>DESIGN</div>
         </div>
         <div className={styles.loaderText}>
         Let's Create Something Amazing Today<span className={styles.dots}></span>
