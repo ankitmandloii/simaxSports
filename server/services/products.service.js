@@ -33,6 +33,16 @@ exports.getProductsList = async (limit, cursor = null) => {
                   name
                   value
                 }
+                metafields(first: 50, namespace: "custom") {
+                  edges {
+                    node {
+                      key
+                      namespace
+                      value
+                      type
+                    }
+                  }
+                }
               }
             }
             pageInfo {

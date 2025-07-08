@@ -201,10 +201,10 @@ exports.syncProducts = async (req, res) => {
 
 
 
-    if (!uploaded || uploaded.length === 0) {
-      console.error("Nothing was uploaded", uploaded);
-      return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.NO_PRODUCTS_SYNCED);
-    }
+    // if (!uploaded || uploaded.length === 0) {
+    //   console.error("Nothing was uploaded", uploaded);
+    //   return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.NO_PRODUCTS_SYNCED);
+    // }
 
 
     // return sendResponse(res, statusCode.OK, true, "Products fetched successfully", {
@@ -214,7 +214,7 @@ exports.syncProducts = async (req, res) => {
 
 
 
-    return sendResponse(res, statusCode.OK, true, "Products fetched successfully", shopifyFormatted);
+    return sendResponse(res, statusCode.OK, true, "Products fetched successfully", allProducts);
   } catch (error) {
     console.error("[SYNC ERROR]", error.message);
     return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, error.message);

@@ -913,10 +913,402 @@ const updateProduct = async (productId, product) => {
 
 
 
+// const addOrUpdateVariants = async (productId, newVariants) => {
+//   console.log("addOrUpdateVariants CALLED", newVariants);
+
+//   const locationId = await getDefaultLocationId();
+
+//   // Step 1: Fetch existing variants
+//   const fetchQuery = `
+//     query GetVariants($id: ID!) {
+//       product(id: $id) {
+//         variants(first: 100) {
+//           edges {
+//             node {
+//               id
+//               sku
+//               price
+//               inventoryItem {
+//                 id
+//               }
+//               selectedOptions {
+//                 name
+//                 value
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   `;
+
+//   const productGID = `gid://shopify/Product/${productId}`;
+//   const fetchResponse = await axios.post(
+//     `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+//     {
+//       query: fetchQuery,
+//       variables: { id: productGID }
+//     },
+//     {
+//       headers: {
+//         "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//         "Content-Type": "application/json"
+//       }
+//     }
+//   );
+
+//   const existingVariants = fetchResponse.data.data.product.variants.edges.map(e => e.node);
+//   const existingVariantsMap = new Map();
+//   for (const v of existingVariants) {
+//     existingVariantsMap.set(v.sku, v);
+//   }
+
+//   const toCreate = [];
+//   const toUpdate = [];
+
+//   for (const variant of newVariants) {
+//     const existing = existingVariantsMap.get(variant.sku);
+//     if (!existing) {
+//       toCreate.push(variant);
+//     } else {
+//       const option1 = existing.selectedOptions.find(o => o.name === "Size")?.value;
+//       const option2 = existing.selectedOptions.find(o => o.name === "Color")?.value;
+
+//       const isChanged =
+//         parseFloat(existing.price) !== parseFloat(variant.price) ||
+//         option1 !== variant.option1 ||
+//         option2 !== variant.option2;
+
+//       if (isChanged) {
+//         toUpdate.push({
+//           id: existing.id,
+//           sku: variant.sku,
+//           price: parseFloat(variant.price),
+//           option1: variant.option1,
+//           option2: variant.option2,
+//           inventoryItemId: existing.inventoryItem.id,
+//           inventory_quantity: variant.inventory_quantity,
+//           imageSrc: variant.imageSrc || null
+//         });
+//       }
+//     }
+//   }
+
+//   // Step 2: Create new variants
+//   if (toCreate.length) {
+//     const mutation = `
+//       mutation productVariantsBulkCreate($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
+//         productVariantsBulkCreate(productId: $productId, variants: $variants) {
+//           productVariants {
+//             id
+//             title
+//             sku
+//           }
+//           userErrors {
+//             field
+//             message
+//           }
+//         }
+//       }
+//     `;
+
+//     const formatted = toCreate.map(v => ({
+//       sku: v.sku,
+//       price: parseFloat(v.price),
+//       optionValues: [
+//         { name: "Size", value: v.option1 },
+//         { name: "Color", value: v.option2 }
+//       ],
+//       inventoryQuantities: [
+//         {
+//           locationId: `gid://shopify/Location/${locationId}`,
+//           availableQuantity: v.inventory_quantity ?? 0
+//         }
+//       ],
+//       ...(v.imageSrc ? { image: { src: v.imageSrc } } : {})
+//       // ...(v.imageSrc && { image: { src: v.imageSrc } })
+//     }));
+
+//     const variables = {
+//       productId: productGID,
+//       variants: formatted
+//     };
+
+//     const response = await axios.post(
+//       `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+//       { query: mutation, variables },
+//       {
+//         headers: {
+//           "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//           "Content-Type": "application/json"
+//         }
+//       }
+//     );
+
+//     const errors = response.data.data?.productVariantsBulkCreate?.userErrors;
+//     if (errors?.length) {
+//       console.error("[❌ Variant Creation Failed]", errors);
+//       throw new Error(JSON.stringify(errors));
+//     }
+
+//     console.log(`[✅ Created ${toCreate.length} variants]`);
+
+//     // 👉 Step 2.1: Set metafields for created variants
+//     const createdVariants = response.data.data?.productVariantsBulkCreate?.productVariants || [];
+//     console.log("createdVarints", createdVariants)
+//     const metafieldsSetMutation = `
+//       mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
+//         metafieldsSet(metafields: $metafields) {
+//           metafields {
+//             key
+//             namespace
+//             value
+//             type
+//           }
+//           userErrors {
+//             field
+//             message
+//           }
+//         }
+//       }
+//     `;
+
+//     for (let i = 0; i < createdVariants.length; i++) {
+//       const created = createdVariants[i];
+//       const original = toCreate[i];
+
+//       if (!original || !created?.id || !original.imageSrc) continue;
+
+//       const metafieldVariables = {
+//         metafields: [
+//           {
+//             ownerId: created?.id || v.id, // depending on whether it's create or update
+//             namespace: "custom",
+//             key: "variant_images",
+//             value: JSON.stringify(original.variantImages || []),
+//             type: "json"
+//           }
+//         ]
+//       };
+//       const metafieldResponse = await axios.post(
+//         `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+//         {
+//           query: metafieldsSetMutation,
+//           variables: metafieldVariables
+//         },
+//         {
+//           headers: {
+//             "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//             "Content-Type": "application/json"
+//           }
+//         }
+//       );
+
+//       const mfErrors = metafieldResponse.data?.data?.metafieldsSet?.userErrors;
+//       if (mfErrors?.length) {
+//         console.error("[❌ Metafield Set Error (Create)]", created.sku, mfErrors);
+//       } else {
+//         console.log(`[✅ Set metafield for variant: ${created.sku}]`);
+//       }
+//     }
+//   }
+
+//   // Step 3: Update existing variants
+//   for (const v of toUpdate) {
+//     const mutation = `
+//       mutation productVariantUpdate($input: ProductVariantInput!) {
+//         productVariantUpdate(input: $input) {
+//           productVariant {
+//             id
+//             sku
+//           }
+//           userErrors {
+//             field
+//             message
+//           }
+//         }
+//       }
+//     `;
+
+//     const variables = {
+//       input: {
+//         id: v.id,
+//         price: v.price,
+//         options: [v.option1, v.option2],
+//         sku: v.sku,
+//         ...(v.imageSrc && { image: { src: v.imageSrc } })
+//       }
+//     };
+
+//     const updateResponse = await axios.post(
+//       `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+//       { query: mutation, variables },
+//       {
+//         headers: {
+//           "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//           "Content-Type": "application/json"
+//         }
+//       }
+//     );
+
+//     const errors = updateResponse.data.data?.productVariantUpdate?.userErrors;
+//     if (errors?.length) {
+//       console.error("[❌ Variant Update Failed]", errors);
+//     } else {
+//       console.log(`[✅ Updated variant: ${v.sku}]`);
+//     }
+
+//     // Step 3.1: Update metafield for updated variant
+//     if (v.imageSrc) {
+//       const metafieldsSetMutation = `
+//         mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
+//           metafieldsSet(metafields: $metafields) {
+//             metafields {
+//               key
+//               namespace
+//               value
+//               type
+//             }
+//             userErrors {
+//               field
+//               message
+//             }
+//           }
+//         }
+//       `;
+
+//       const metafieldVariables = {
+//         metafields: [
+//           {
+//             ownerId: created.id || v.id, // depending on whether it's create or update
+//             namespace: "custom",
+//             key: "variant_images",
+//             value: JSON.stringify(v.variantImages || []),
+//             type: "json"
+//           }
+//         ]
+//       };
+//       const metafieldResponse = await axios.post(
+//         `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+//         {
+//           query: metafieldsSetMutation,
+//           variables: metafieldVariables
+//         },
+//         {
+//           headers: {
+//             "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//             "Content-Type": "application/json"
+//           }
+//         }
+//       );
+
+//       const mfErrors = metafieldResponse.data?.data?.metafieldsSet?.userErrors;
+//       if (mfErrors?.length) {
+//         console.error("[❌ Metafield Set Error (Update)]", v.sku, mfErrors);
+//       } else {
+//         console.log(`[✅ Updated metafield for variant: ${v.sku}]`);
+//       }
+//     }
+
+//     // Step 4: Update inventory (if needed)
+//     if (v.inventory_quantity !== undefined) {
+//       const inventoryMutation = `
+//         mutation inventorySetOnHandQuantity($input: InventorySetOnHandQuantityInput!) {
+//           inventorySetOnHandQuantity(input: $input) {
+//             inventoryLevel {
+//               id
+//               available
+//             }
+//             userErrors {
+//               field
+//               message
+//             }
+//           }
+//         }
+//       `;
+
+//       await axios.post(
+//         `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+//         {
+//           query: inventoryMutation,
+//           variables: {
+//             input: {
+//               inventoryItemId: v.inventoryItemId,
+//               locationId: `gid://shopify/Location/${locationId}`,
+//               availableQuantity: parseInt(v.inventory_quantity)
+//             }
+//           }
+//         },
+//         {
+//           headers: {
+//             "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//             "Content-Type": "application/json"
+//           }
+//         }
+//       );
+//     }
+//   }
+
+//   return {
+//     created: toCreate.length,
+//     updated: toUpdate.length
+//   };
+// };
+
+
+
+const updateInventoryItemWeight = async (inventoryItemId, weight) => {
+  const mutation = `
+    mutation inventoryItemUpdate($input: InventoryItemUpdateInput!) {
+      inventoryItemUpdate(input: $input) {
+        inventoryItem {
+          id
+          weight
+          weightUnit
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }`;
+
+  const variables = {
+    input: {
+      id: inventoryItemId,
+      weight: parseFloat(weight),
+      weightUnit: "POUNDS" // or "KILOGRAMS", "OUNCES", "GRAMS"
+    }
+  };
+
+  const response = await axios.post(
+    `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+    {
+      query: mutation,
+      variables
+    },
+    {
+      headers: {
+        "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+        "Content-Type": "application/json"
+      }
+    }
+  );
+
+  const errors = response.data?.data?.inventoryItemUpdate?.userErrors;
+  if (errors?.length) {
+    console.error(`[❌ Weight Update Error] ${inventoryItemId}`, errors);
+  } else {
+    console.log(`[⚖️ Weight Updated] ${inventoryItemId} → ${weight} lb`);
+  }
+};
+
+
 const addOrUpdateVariants = async (productId, newVariants) => {
   console.log("addOrUpdateVariants CALLED", newVariants);
 
   const locationId = await getDefaultLocationId();
+  const productGID = `gid://shopify/Product/${productId}`;
 
   // Step 1: Fetch existing variants
   const fetchQuery = `
@@ -942,7 +1334,6 @@ const addOrUpdateVariants = async (productId, newVariants) => {
     }
   `;
 
-  const productGID = `gid://shopify/Product/${productId}`;
   const fetchResponse = await axios.post(
     `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
     {
@@ -988,7 +1379,9 @@ const addOrUpdateVariants = async (productId, newVariants) => {
           option2: variant.option2,
           inventoryItemId: existing.inventoryItem.id,
           inventory_quantity: variant.inventory_quantity,
-          imageSrc: variant.imageSrc || null
+          imageSrc: variant.imageSrc || null,
+          variantImages: variant.variantImages || [],
+          weight: parseFloat(variant.weight || 0) // ✅ Add weight here
         });
       }
     }
@@ -1025,18 +1418,14 @@ const addOrUpdateVariants = async (productId, newVariants) => {
           availableQuantity: v.inventory_quantity ?? 0
         }
       ],
-      ...(v.imageSrc ? { image: { src: v.imageSrc } } : {})
-      // ...(v.imageSrc && { image: { src: v.imageSrc } })
+      ...(v.imageSrc ? { image: { src: v.imageSrc } } : {}),
+      weight: parseFloat(v.weight || 0),
+      weightUnit: v.weight_unit || "lb"
     }));
-
-    const variables = {
-      productId: productGID,
-      variants: formatted
-    };
 
     const response = await axios.post(
       `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
-      { query: mutation, variables },
+      { query: mutation, variables: { productId: productGID, variants: formatted } },
       {
         headers: {
           "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
@@ -1053,9 +1442,7 @@ const addOrUpdateVariants = async (productId, newVariants) => {
 
     console.log(`[✅ Created ${toCreate.length} variants]`);
 
-    // 👉 Step 2.1: Set metafields for created variants
     const createdVariants = response.data.data?.productVariantsBulkCreate?.productVariants || [];
-    console.log("createdVarints", createdVariants)
     const metafieldsSetMutation = `
       mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
         metafieldsSet(metafields: $metafields) {
@@ -1077,7 +1464,7 @@ const addOrUpdateVariants = async (productId, newVariants) => {
       const created = createdVariants[i];
       const original = toCreate[i];
 
-      if (!original || !created?.id || !original.imageSrc) continue;
+      if (!original || !created?.id || !original.variantImages?.length) continue;
 
       const metafieldVariables = {
         metafields: [
@@ -1085,12 +1472,7 @@ const addOrUpdateVariants = async (productId, newVariants) => {
             ownerId: created.id,
             namespace: "custom",
             key: "variant_images",
-            value: JSON.stringify([
-              {
-                src: original.imageSrc,
-                altText: original.option1
-              }
-            ]),
+            value: JSON.stringify(original.variantImages || []),
             type: "json"
           }
         ]
@@ -1164,8 +1546,13 @@ const addOrUpdateVariants = async (productId, newVariants) => {
       console.log(`[✅ Updated variant: ${v.sku}]`);
     }
 
-    // Step 3.1: Update metafield for updated variant
-    if (v.imageSrc) {
+    // ✅ Step 3.1: Update InventoryItem weight
+    if (v.weight !== undefined && v.inventoryItemId) {
+      await updateInventoryItemWeight(v.inventoryItemId, v.weight);
+    }
+
+    // ✅ Step 3.2: Update variant metafields
+    if (v.variantImages?.length) {
       const metafieldsSetMutation = `
         mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
           metafieldsSet(metafields: $metafields) {
@@ -1189,12 +1576,7 @@ const addOrUpdateVariants = async (productId, newVariants) => {
             ownerId: v.id,
             namespace: "custom",
             key: "variant_images",
-            value: JSON.stringify([
-              {
-                src: v.imageSrc,
-                altText: v.option1
-              }
-            ]),
+            value: JSON.stringify(v.variantImages),
             type: "json"
           }
         ]
@@ -1222,7 +1604,7 @@ const addOrUpdateVariants = async (productId, newVariants) => {
       }
     }
 
-    // Step 4: Update inventory (if needed)
+    // ✅ Step 4: Update inventory
     if (v.inventory_quantity !== undefined) {
       const inventoryMutation = `
         mutation inventorySetOnHandQuantity($input: InventorySetOnHandQuantityInput!) {
@@ -1266,6 +1648,350 @@ const addOrUpdateVariants = async (productId, newVariants) => {
     updated: toUpdate.length
   };
 };
+
+// const addOrUpdateVariants = async (productId, newVariants) => {
+//   console.log("addOrUpdateVariants CALLED", newVariants);
+
+//   const locationId = await getDefaultLocationId();
+//   const productGID = `gid://shopify/Product/${productId}`;
+
+//   // Step 1: Fetch existing variants
+//   const fetchQuery = `
+//     query GetVariants($id: ID!) {
+//       product(id: $id) {
+//         variants(first: 100) {
+//           edges {
+//             node {
+//               id
+//               sku
+//               price
+//               inventoryItem {
+//                 id
+//               }
+//               selectedOptions {
+//                 name
+//                 value
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   `;
+
+//   const fetchResponse = await axios.post(
+//     `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+//     {
+//       query: fetchQuery,
+//       variables: { id: productGID }
+//     },
+//     {
+//       headers: {
+//         "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//         "Content-Type": "application/json"
+//       }
+//     }
+//   );
+
+//   const existingVariants = fetchResponse.data.data.product.variants.edges.map(e => e.node);
+//   const existingVariantsMap = new Map();
+//   for (const v of existingVariants) {
+//     existingVariantsMap.set(v.sku, v);
+//   }
+
+//   const toCreate = [];
+//   const toUpdate = [];
+
+//   for (const variant of newVariants) {
+//     const existing = existingVariantsMap.get(variant.sku);
+//     if (!existing) {
+//       toCreate.push(variant);
+//     } else {
+//       const option1 = existing.selectedOptions.find(o => o.name === "Size")?.value;
+//       const option2 = existing.selectedOptions.find(o => o.name === "Color")?.value;
+
+//       const isChanged =
+//         parseFloat(existing.price) !== parseFloat(variant.price) ||
+//         option1 !== variant.option1 ||
+//         option2 !== variant.option2;
+
+//       if (isChanged) {
+//         toUpdate.push({
+//           id: existing.id,
+//           sku: variant.sku,
+//           price: parseFloat(variant.price),
+//           option1: variant.option1,
+//           option2: variant.option2,
+//           inventoryItemId: existing.inventoryItem.id,
+//           inventory_quantity: variant.inventory_quantity,
+//           imageSrc: variant.imageSrc || null,
+//           variantImages: variant.variantImages || []
+//         });
+//       }
+//     }
+//   }
+
+//   // Step 2: Create new variants
+//   if (toCreate.length) {
+//     const mutation = `
+//       mutation productVariantsBulkCreate($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
+//         productVariantsBulkCreate(productId: $productId, variants: $variants) {
+//           productVariants {
+//             id
+//             title
+//             sku
+//           }
+//           userErrors {
+//             field
+//             message
+//           }
+//         }
+//       }
+//     `;
+
+//     const formatted = toCreate.map(v => ({
+//       sku: v.sku,
+//       price: parseFloat(v.price),
+//       optionValues: [
+//         { name: "Size", value: v.option1 },
+//         { name: "Color", value: v.option2 }
+//       ],
+//       inventoryQuantities: [
+//         {
+//           locationId: `gid://shopify/Location/${locationId}`,
+//           availableQuantity: v.inventory_quantity ?? 0
+//         }
+//       ],
+//       ...(v.imageSrc ? { image: { src: v.imageSrc } } : {}),
+//       weight: parseFloat(v.weight || 0),
+//       weightUnit: v.weight_unit || "lb"
+//     }));
+
+//     const response = await axios.post(
+//       `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+//       { query: mutation, variables: { productId: productGID, variants: formatted } },
+//       {
+//         headers: {
+//           "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//           "Content-Type": "application/json"
+//         }
+//       }
+//     );
+
+//     const errors = response.data.data?.productVariantsBulkCreate?.userErrors;
+//     if (errors?.length) {
+//       console.error("[❌ Variant Creation Failed]", errors);
+//       throw new Error(JSON.stringify(errors));
+//     }
+
+//     console.log(`[✅ Created ${toCreate.length} variants]`);
+
+//     // Set metafields for created variants
+//     const createdVariants = response.data.data?.productVariantsBulkCreate?.productVariants || [];
+//     const metafieldsSetMutation = `
+//       mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
+//         metafieldsSet(metafields: $metafields) {
+//           metafields {
+//             key
+//             namespace
+//             value
+//             type
+//           }
+//           userErrors {
+//             field
+//             message
+//           }
+//         }
+//       }
+//     `;
+
+//     for (let i = 0; i < createdVariants.length; i++) {
+//       const created = createdVariants[i];
+//       const original = toCreate[i];
+
+//       if (!original || !created?.id || !original.variantImages?.length) continue;
+
+//       const metafieldVariables = {
+//         metafields: [
+//           {
+//             ownerId: created.id,
+//             namespace: "custom",
+//             key: "variant_images",
+//             value: JSON.stringify(original.variantImages || []),
+//             type: "json"
+//           }
+//         ]
+//       };
+
+//       const metafieldResponse = await axios.post(
+//         `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+//         {
+//           query: metafieldsSetMutation,
+//           variables: metafieldVariables
+//         },
+//         {
+//           headers: {
+//             "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//             "Content-Type": "application/json"
+//           }
+//         }
+//       );
+
+//       const mfErrors = metafieldResponse.data?.data?.metafieldsSet?.userErrors;
+//       if (mfErrors?.length) {
+//         console.error("[❌ Metafield Set Error (Create)]", created.sku, mfErrors);
+//       } else {
+//         console.log(`[✅ Set metafield for variant: ${created.sku}]`);
+//       }
+//     }
+//   }
+
+//   // Step 3: Update existing variants
+//   for (const v of toUpdate) {
+//     const mutation = `
+//       mutation productVariantUpdate($input: ProductVariantInput!) {
+//         productVariantUpdate(input: $input) {
+//           productVariant {
+//             id
+//             sku
+//           }
+//           userErrors {
+//             field
+//             message
+//           }
+//         }
+//       }
+//     `;
+
+//     const variables = {
+//       input: {
+//         id: v.id,
+//         price: v.price,
+//         options: [v.option1, v.option2],
+//         sku: v.sku,
+//         ...(v.imageSrc && { image: { src: v.imageSrc } }),
+//         ...(v.weight !== undefined && {
+//           weight: parseFloat(v.weight),
+//           weightUnit: v.weight_unit || "lb"
+//         })
+//       }
+//     };
+
+//     const updateResponse = await axios.post(
+//       `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+//       { query: mutation, variables },
+//       {
+//         headers: {
+//           "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//           "Content-Type": "application/json"
+//         }
+//       }
+//     );
+
+//     const errors = updateResponse.data.data?.productVariantUpdate?.userErrors;
+//     if (errors?.length) {
+//       console.error("[❌ Variant Update Failed]", errors);
+//     } else {
+//       console.log(`[✅ Updated variant: ${v.sku}]`);
+//     }
+
+//     // Step 3.1: Update variant metafields
+//     if (v.variantImages?.length) {
+//       const metafieldsSetMutation = `
+//         mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
+//           metafieldsSet(metafields: $metafields) {
+//             metafields {
+//               key
+//               namespace
+//               value
+//               type
+//             }
+//             userErrors {
+//               field
+//               message
+//             }
+//           }
+//         }
+//       `;
+
+//       const metafieldVariables = {
+//         metafields: [
+//           {
+//             ownerId: v.id,
+//             namespace: "custom",
+//             key: "variant_images",
+//             value: JSON.stringify(v.variantImages),
+//             type: "json"
+//           }
+//         ]
+//       };
+
+//       const metafieldResponse = await axios.post(
+//         `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+//         {
+//           query: metafieldsSetMutation,
+//           variables: metafieldVariables
+//         },
+//         {
+//           headers: {
+//             "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//             "Content-Type": "application/json"
+//           }
+//         }
+//       );
+
+//       const mfErrors = metafieldResponse.data?.data?.metafieldsSet?.userErrors;
+//       if (mfErrors?.length) {
+//         console.error("[❌ Metafield Set Error (Update)]", v.sku, mfErrors);
+//       } else {
+//         console.log(`[✅ Updated metafield for variant: ${v.sku}]`);
+//       }
+//     }
+
+//     // Step 4: Update inventory
+//     if (v.inventory_quantity !== undefined) {
+//       const inventoryMutation = `
+//         mutation inventorySetOnHandQuantity($input: InventorySetOnHandQuantityInput!) {
+//           inventorySetOnHandQuantity(input: $input) {
+//             inventoryLevel {
+//               id
+//               available
+//             }
+//             userErrors {
+//               field
+//               message
+//             }
+//           }
+//         }
+//       `;
+
+//       await axios.post(
+//         `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+//         {
+//           query: inventoryMutation,
+//           variables: {
+//             input: {
+//               inventoryItemId: v.inventoryItemId,
+//               locationId: `gid://shopify/Location/${locationId}`,
+//               availableQuantity: parseInt(v.inventory_quantity)
+//             }
+//           }
+//         },
+//         {
+//           headers: {
+//             "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//             "Content-Type": "application/json"
+//           }
+//         }
+//       );
+//     }
+//   }
+
+//   return {
+//     created: toCreate.length,
+//     updated: toUpdate.length
+//   };
+// };
 
 // const addOrUpdateVariants = async (productId, newVariants) => {
 //   console.log("addOrUpdateVariants CALLED");
@@ -1809,43 +2535,85 @@ const setProductMetafields = async (productGID, metafields) => {
   );
 };
 
+// exports.uploadToShopify = async (products) => {
+//   // console.log("----------productssss", products);
+//   const uploadedProducts = [];
+
+//   for (const product of products) {
+//     try {
+//       // console.log(`[🧾 Handle] ${product.handle}`);
+//       const existingProductId = await findProductByHandle(product.handle);
+//       let productId;
+
+//       if (existingProductId) {
+//         // console.log(`[🔄 Updating] ${product.title}`);
+//         productId = await updateProduct(existingProductId, product);
+//       } else {
+//         // console.log(`[🆕 Creating] ${product.title}`);
+//         productId = await createProductGraphQL(product);
+//         const productGID = `gid://shopify/Product/${productId}`;
+//         await publishProductToSalesChannel(productGID);
+
+//         if (product.metafields && product.metafields.length > 0) {
+//           await setProductMetafields(productGID, product.metafields);
+//         }
+//       }
+
+//       // Prevent duplicate images
+//       if (product.images.length > 0) {
+//         // console.log("product.images length for upload", product.images.length);
+//         await addProductImagesIfNotExists(productId, product.images); // Avoid duplication
+//       }
+
+//       // Update or add variants
+//       await addOrUpdateVariants(productId, product.variants); // New version that handles update vs add
+
+
+//       console.log("product.images length for upload", product.images);
+//       await addProductImagesIfNotExists(productId, product.images); // Avoid duplication
+
+
+//       uploadedProducts.push({
+//         id: productId,
+//         title: product.title,
+//         handle: product.handle,
+//       });
+
+//       await updateSSMappingWithShopifyData(productId, product.variants);
+//       // console.log(`[✅ Synced] ${product.title}`);
+//     } catch (error) {
+//       // console.error(`[❌ Failed] ${product.title} | ${error.message}`);
+//     }
+//   }
+
+//   return uploadedProducts;
+// };
+
 exports.uploadToShopify = async (products) => {
-  // console.log("----------productssss", products);
   const uploadedProducts = [];
 
   for (const product of products) {
     try {
-      // console.log(`[🧾 Handle] ${product.handle}`);
       const existingProductId = await findProductByHandle(product.handle);
       let productId;
 
       if (existingProductId) {
-        // console.log(`[🔄 Updating] ${product.title}`);
         productId = await updateProduct(existingProductId, product);
       } else {
-        // console.log(`[🆕 Creating] ${product.title}`);
         productId = await createProductGraphQL(product);
         const productGID = `gid://shopify/Product/${productId}`;
         await publishProductToSalesChannel(productGID);
 
-        if (product.metafields && product.metafields.length > 0) {
-          await setProductMetafields(productGID, product.metafields);
-        }
+        // ✅ Removed product-level metafields
       }
 
       // Prevent duplicate images
       if (product.images.length > 0) {
-        // console.log("product.images length for upload", product.images.length);
-        await addProductImagesIfNotExists(productId, product.images); // Avoid duplication
+        await addProductImagesIfNotExists(productId, product.images);
       }
 
-      // Update or add variants
-      await addOrUpdateVariants(productId, product.variants); // New version that handles update vs add
-
-
-      console.log("product.images length for upload", product.images);
-      await addProductImagesIfNotExists(productId, product.images); // Avoid duplication
-
+      // ✅ This now handles variant creation + metafields
+      await addOrUpdateVariants(productId, product.variants);
 
       uploadedProducts.push({
         id: productId,
@@ -1854,9 +2622,9 @@ exports.uploadToShopify = async (products) => {
       });
 
       await updateSSMappingWithShopifyData(productId, product.variants);
-      // console.log(`[✅ Synced] ${product.title}`);
+
     } catch (error) {
-      // console.error(`[❌ Failed] ${product.title} | ${error.message}`);
+      console.error(`[❌ Failed] ${product.title} | ${error.message}`);
     }
   }
 
