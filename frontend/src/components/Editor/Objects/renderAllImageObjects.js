@@ -79,17 +79,132 @@ const renderAllImageObjects = (
       loadingSrc,
     } = imageData;
 
+    // const spinnerId = `spinner-${id}`;
     const existingObj = canvas.getObjects("image").find((obj) => obj.id === id);
 
-    const spinnerId = `spinner-${id}`;
-    // Loader (Spinner)
-    if (loading) {
-      canvas.getObjects().forEach((obj) => {
-        if (obj.id === selectedImageId) canvas.remove(obj);
-      });
-      return;
-    }
+    // // Loader (Spinner)
+    // if (loading) {
+    //   canvas.getObjects().forEach((obj) => {
+    //     if (obj.id === selectedImageId) canvas.remove(obj);
+    //   });
 
+    //   const existingSpinner = canvas
+    //     .getObjects()
+    //     .find((o) => o.id === spinnerId);
+    //   if (existingSpinner) return;
+
+    //   const dotCount = 5;
+    //   const dotRadius = 6;
+    //   const dotSpacing = 15;
+    //   // const colors = Array(dotCount).fill('#000000');
+    //   const colors = ["black", "black", "black", "black", "black"];
+    //   const dots = [];
+
+    //   for (let i = 0; i < dotCount; i++) {
+    //     dots.push(
+    //       new fabric.Circle({
+    //         radius: dotRadius,
+    //         fill: colors[i],
+    //         left:
+    //           position.x +
+    //           i * dotSpacing -
+    //           (dotCount * dotSpacing) / 2 +
+    //           dotSpacing / 2,
+    //         top: position.y,
+    //         originX: "center",
+    //         originY: "center",
+    //         opacity: 0.3,
+    //         selectable: false,
+    //         evented: false,
+    //       })
+    //     );
+    //   }
+
+    //   const loader = new fabric.Group(dots, {
+    //     id: spinnerId,
+    //     scaleX: 1,
+    //     scaleY: 1,
+    //     originX: "center",
+    //     originY: "center",
+    //     left: position.x,
+    //     top: position.y,
+    //     selectable: true,
+    //     evented: false,
+    //     lockMovementX: true,
+    //     lockMovementY: true,
+    //     objectCaching: false,
+    //     borderColor: "skyblue",
+    //     borderDashArray: [4, 4],
+    //   });
+
+    //   loader.setControlsVisibility({
+    //     mt: true,
+    //     mb: true,
+    //     ml: true,
+    //     mr: true,
+    //     tl: true,
+    //     tr: true,
+    //     bl: true,
+    //     br: true,
+    //     mtr: true,
+    //   });
+
+    //   if (typeof createControls === "function") {
+    //     loader.controls = createControls(bringPopup);
+    //   }
+
+    //   loader.on("mousedown", () => {
+    //     setActiveObjectType("image");
+    //     dispatch?.(selectedImageIdState(id));
+    //   });
+
+    //   loader.on("modified", (e) => {
+    //     const obj = e.target;
+    //     if (!obj) return;
+    //     const center = obj.getCenterPoint();
+    //     obj.setPositionByOrigin(center, "center", "center");
+    //     obj.setCoords();
+    //     globalDispatch("position", { x: obj.left, y: obj.top }, id);
+    //     globalDispatch("angle", obj.angle, id);
+    //     handleScale(e);
+    //   });
+
+    //   canvas.add(loader);
+    //   canvas.bringToFront(loader);
+
+    //   let animationStep = 0;
+    //   const animationSpeed = 0.15;
+    //   let animationFrameId = null;
+
+    //   const animateDots = () => {
+    //     if (!canvas.getObjects().includes(loader)) return;
+
+    //     animationStep += animationSpeed;
+    //     loader.getObjects().forEach((dot, i) => {
+    //       const waveOffset = i * 0.8;
+    //       const scale = 0.6 + Math.sin(animationStep + waveOffset) * 0.4;
+    //       const opacity = 0.4 + scale * 0.6;
+    //       dot.set({ scaleX: scale, scaleY: scale, opacity });
+    //     });
+
+    //     canvas.requestRenderAll();
+    //     animationFrameId = requestAnimationFrame(animateDots);
+    //   };
+
+    //   animateDots();
+    //   loader.cleanup = () => {
+    //     if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    //     canvas.remove(loader);
+    //   };
+
+    //   // return loader;
+    // }
+
+    // const oldSpinner = canvas.getObjects().find((o) => o.id === spinnerId);
+    // if (oldSpinner) {
+    //   clearTimeout(oldSpinner.__spinnerTimer);
+    //   canvas.remove(oldSpinner);
+    // }
 
 
     // Replace Image

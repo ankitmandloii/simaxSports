@@ -681,7 +681,7 @@ const AddImageToolbar = () => {
                 </div>
               </div>
 
-              {selectedFilter === "Normal" || selectedFilter === "Single Color" && (<hr />)}
+              {/* {selectedFilter === "Normal" || selectedFilter === "Single Color" && (<hr />)} */}
 
               {/* {selectedFilter === "Normal" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Edit Colors</div>
@@ -705,9 +705,9 @@ const AddImageToolbar = () => {
 
 
 
-              {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Colors</div>
-                {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleTextColorPopup}>
+              {/* {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}> */}
+              {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Colors</div> */}
+              {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleTextColorPopup}>
                   <SpanColorBox color={textColor} />
                   <span><AngleActionIcon /></span>
                   {textColorPopup && (
@@ -721,7 +721,7 @@ const AddImageToolbar = () => {
 
                   )}
                 </div> */}
-              </div>)}
+              {/* </div>)} */}
               {selectedFilter === "Black/Whte" && null}
 
 
