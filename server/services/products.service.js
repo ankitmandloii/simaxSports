@@ -8,104 +8,58 @@ exports.getProductsList = async (limit, cursor = null) => {
 
   const afterClause = cursor ? `, after: "${cursor}"` : "";
 
-  // const query = `{
-  //   products(first: ${limit}${afterClause}) {
-  //     pageInfo {
-  //       startCursor
-  //       endCursor
-  //       hasNextPage
-  //       hasPreviousPage
-  //     }
-  //     edges {
-  //       cursor
-  //       node {
-  //         id
-  //         title
-  //         variants(first: 250) {
-  //           edges {
-  //             node {
-  //               id
-  //               title
-  //               image {
-  //                 originalSrc
-  //               }
-  //               selectedOptions {
-  //                 name
-  //                 value
-  //               }
-  //             }
-  //           }
-  //           pageInfo {
-  //             hasNextPage
-  //           }
-  //         }
-  //         images(first: 10) {
-  //           edges {
-  //             node {
-  //               originalSrc
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // }`;
-
-  const query = `
-{
-  products(first: ${limit}${afterClause}) {
-    pageInfo {
-      startCursor
-      endCursor
-      hasNextPage
-      hasPreviousPage
-    }
-    edges {
-      cursor
-      node {
-        id
-        title
-        variants(first: 50) {
-          edges {
-            node {
-              id
-              title
-              image {
-                originalSrc
-              }
-              selectedOptions {
-                name
-                value
-              }
-              metafields(first: 50, namespace: "custom") {
-                edges {
-                  node {
-                    id
-                    key
-                    namespace
-                    value
-                    type
+  const query = `{
+    products(first: ${limit}${afterClause}) {
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+      edges {
+        cursor
+        node {
+          id
+          title
+          variants(first: 250) {
+            edges {
+              node {
+                id
+                title
+                image {
+                  originalSrc
+                }
+                selectedOptions {
+                  name
+                  value
+                }
+                metafields(first: 50, namespace: "custom") {
+                  edges {
+                    node {
+                      key
+                      namespace
+                      value
+                      type
+                    }
                   }
                 }
               }
             }
+            pageInfo {
+              hasNextPage
+            }
           }
-          pageInfo {
-            hasNextPage
-          }
-        }
-        images(first: 50) {
-          edges {
-            node {
-              originalSrc
+          images(first: 50) {
+            edges {
+              node {
+                originalSrc
+              }
             }
           }
         }
       }
     }
-  }
-}
-`;
+  }`;
 
   try {
     const response = await fetch(SHOPIFY_API_URL, {
@@ -139,89 +93,130 @@ exports.getProductFilter = async (title, limit, isCursor) => {
   try {
 
 
+    // const query = `{
+    //   search(query: "${title}", first: ${limit} types: PRODUCT) {
+    //     edges {
+    //       node {
+    //         ... on Product {
+    //           options(first: 50) {
+    //             id
+    //             name
+    //             values
+    //           }
+    //           collections(first: 250) {
+    //             edges {
+    //               node {
+    //                 description
+    //                 descriptionHtml
+    //                 handle
+    //                 id
+    //                 updatedAt
+    //                 title
+    //               }
+    //             }
+    //           }
+    //           id
+    //           handle
+    //           variants(first: 3) {
+    //             edges {
+    //               node {
+    //                 priceV2 {
+    //                   amount
+    //                   currencyCode
+    //                 }
+    //                 title
+    //                 image {
+    //                   altText
+    //                   originalSrc
+    //                   id
+    //                 }
+    //                 compareAtPriceV2 {
+    //                   amount
+    //                   currencyCode
+    //                 }
+    //                 weightUnit
+    //                 weight
+    //                 availableForSale
+    //                 sku
+    //                 requiresShipping
+    //                 id
+    //                 quantityAvailable
+    //               }
+    //             }
+    //           }
+    //           onlineStoreUrl
+    //           productType
+    //           publishedAt
+    //           tags
+    //           updatedAt
+    //           vendor
+    //           title
+    //           availableForSale
+    //           createdAt
+    //           description
+    //           descriptionHtml
+    //           images(first: 250) {
+    //             edges {
+    //               node {
+    //                 altText
+    //                 id
+    //                 originalSrc
+    //               }
+    //             }
+    //           }
+    //         }
+    //       }
+    //     }
+    //     pageInfo {
+    //       startCursor
+    //       endCursor
+    //       hasNextPage
+    //       hasPreviousPage
+    //     }
+    //   }
+    // }`;
     const query = `{
-      search(query: "${title}", first: ${limit} types: PRODUCT) {
-        edges {
-          node {
-            ... on Product {
-              options(first: 50) {
-                id
-                name
-                values
-              }
-              collections(first: 250) {
-                edges {
-                  node {
-                    description
-                    descriptionHtml
-                    handle
-                    id
-                    updatedAt
-                    title
-                  }
-                }
-              }
+  products(${args.join(", ")}) {
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+    edges {
+      cursor
+      node {
+        id
+        title
+        variants(first: 250) {
+          edges {
+            node {
               id
-              handle
-              variants(first: 3) {
-                edges {
-                  node {
-                    priceV2 {
-                      amount
-                      currencyCode
-                    }
-                    title
-                    image {
-                      altText
-                      originalSrc
-                      id
-                    }
-                    compareAtPriceV2 {
-                      amount
-                      currencyCode
-                    }
-                    weightUnit
-                    weight
-                    availableForSale
-                    sku
-                    requiresShipping
-                    id
-                    quantityAvailable
-                  }
-                }
-              }
-              onlineStoreUrl
-              productType
-              publishedAt
-              tags
-              updatedAt
-              vendor
               title
-              availableForSale
-              createdAt
-              description
-              descriptionHtml
-              images(first: 250) {
-                edges {
-                  node {
-                    altText
-                    id
-                    originalSrc
-                  }
-                }
+              image {
+                originalSrc
+              }
+              selectedOptions {
+                name
+                value
               }
             }
           }
+          pageInfo {
+            hasNextPage
+          }
         }
-        pageInfo {
-          startCursor
-          endCursor
-          hasNextPage
-          hasPreviousPage
+        images(first: 10) {
+          edges {
+            node {
+              originalSrc
+            }
+          }
         }
       }
-    }`;
-
+    }
+  }
+}`;
     const response = await axios.post(
       SHOPIFY_API_URL,
       { query },

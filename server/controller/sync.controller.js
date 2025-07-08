@@ -1,7 +1,7 @@
 const { sendResponse } = require("../utils/sendResponse.js");
 const { SuccessMessage, ErrorMessage } = require("../constant/messages.js");
 const { statusCode } = require("../constant/statusCodes.js");
-const SyncServices =  require("../services/ssApi.service.js")
+const SyncServices = require("../services/ssApi.service.js")
 const { uploadToShopify } = require("../services/shopify.service.js");
 const { mapProducts } = require("../utils/mapper.js");
 const StyleId = require("../model/Style.js");
@@ -51,28 +51,28 @@ exports.getAllStyleIdsFromDb = async (req, res) => {
 
 //save all the style Id in DB 
 exports.saveStyleIdsToDb = async (req, res) => {
-    try {
-        const styleIdsRes = await SyncServices.fetchAllStyleIdsFromSandS();
+  try {
+    const styleIdsRes = await SyncServices.fetchAllStyleIdsFromSandS();
 
-        const ids = styleIdsRes;
+    const ids = styleIdsRes;
 
-        const bulkOps = ids.map((sid) => ({
-            updateOne: {
-                filter: { styleId: sid },
-                update: { $setOnInsert: { styleId: sid, status: "pending" } },
-                upsert: true,
-            },
-        }));
+    const bulkOps = ids.map((sid) => ({
+      updateOne: {
+        filter: { styleId: sid },
+        update: { $setOnInsert: { styleId: sid, status: "pending" } },
+        upsert: true,
+      },
+    }));
 
-        await StyleId.bulkWrite(bulkOps);
-        return sendResponse(res, statusCode.OK, true, "Style IDs has been saved In DB", { totalStyleIds: ids.length });
+    await StyleId.bulkWrite(bulkOps);
+    return sendResponse(res, statusCode.OK, true, "Style IDs has been saved In DB", { totalStyleIds: ids.length });
 
 
-    } catch (err) {
-        console.error("Error saving style IDs:", err);
-        return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, "Failed to save style IDs");
+  } catch (err) {
+    console.error("Error saving style IDs:", err);
+    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, "Failed to save style IDs");
 
-    }
+  }
 };
 
 
@@ -175,104 +175,104 @@ exports.saveSSProductsToDb = async (req, res) => {
 
 // Controller: Sync all products from S&S
 exports.syncProducts = async (req, res) => {
-    try {
-        // console.log("[SYNC] Fetching style IDs...");
-        // const styleIds = await fetchAllStyleIds(); //may be it will fetch from DB Id's
-        // const styleIds =  [39]; //for testing purpose
+  try {
+    // console.log("[SYNC] Fetching style IDs...");
+    // const styleIds = await fetchAllStyleIds(); //may be it will fetch from DB Id's
+    // const styleIds =  [39]; //for testing purpose
 
 
-        // const ssProducts = await SyncServices.fetchSSProductsByStyleIds(styleIds);
-        
-            const allProducts = await SyncServices.getProductsFromDb()
-            
-           
-        //save in DB the ssProducts
+    // const ssProducts = await SyncServices.fetchSSProductsByStyleIds(styleIds);
+
+    const allProducts = await SyncServices.getProductsFromDb()
 
 
-        const shopifyFormatted = await mapProducts(allProducts.slice(0,10));
-        console.log(shopifyFormatted);
-
-        const uploaded = await uploadToShopify(shopifyFormatted);
-
-        console.log(`[API] Upload complete: ${uploaded.length} products synced to Shopify.`);
+    //save in DB the ssProducts
 
 
+    const shopifyFormatted = await mapProducts(allProducts.slice(0, 15));
 
+
+    const uploaded = await uploadToShopify(shopifyFormatted);
+
+    // console.log(`[API] Upload complete: ${uploaded.length} products synced to Shopify.`);
 
 
 
-        if (!uploaded || uploaded.length === 0) {
-            console.error("Nothing was uploaded", uploaded);
-            return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.NO_PRODUCTS_SYNCED);
-        }
-
-
-        // return sendResponse(res, statusCode.OK, true, "Products fetched successfully", {
-        //     count: ssProducts.length,
-        //     sample: ssProducts.slice(0,5),
-        // });
 
 
 
-        return sendResponse(res, statusCode.OK, true, "Products fetched successfully", shopifyFormatted);
-    } catch (error) {
-        console.error("[SYNC ERROR]", error.message);
-        return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, error.message);
-    }
+    // if (!uploaded || uploaded.length === 0) {
+    //   console.error("Nothing was uploaded", uploaded);
+    //   return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.NO_PRODUCTS_SYNCED);
+    // }
+
+
+    // return sendResponse(res, statusCode.OK, true, "Products fetched successfully", {
+    //     count: ssProducts.length,
+    //     sample: ssProducts.slice(0,5),
+    // });
+
+
+
+    return sendResponse(res, statusCode.OK, true, "Products fetched successfully", allProducts);
+  } catch (error) {
+    console.error("[SYNC ERROR]", error.message);
+    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, error.message);
+  }
 };
 
 exports.productDataGetFromSS = async (req, res) => {
-    try {
-        // console.log("[SYNC] Fetching style IDs...");
-        // const styleIds = await fetchAllStyleIds(); //may be it will fetch from DB Id's
-        const styleIds =  [39]; //for testing purpose
+  try {
+    // console.log("[SYNC] Fetching style IDs...");
+    // const styleIds = await fetchAllStyleIds(); //may be it will fetch from DB Id's
+    const styleIds = [39]; //for testing purpose
 
 
-        const ssProducts = await SyncServices.fetchSSProductsByStyleIds(styleIds);
-        
-            // const allProducts = await SyncServices.getProductsFromDb()
-            
-           
-        //save in DB the ssProducts
+    const ssProducts = await SyncServices.fetchSSProductsByStyleIds(styleIds);
+
+    // const allProducts = await SyncServices.getProductsFromDb()
 
 
-        // const shopifyFormatted = await mapProducts(allProducts.slice(0, 50));
+    //save in DB the ssProducts
 
 
-        // const uploaded = await uploadToShopify(shopifyFormatted);
-
-        // console.log(`[API] Upload complete: ${uploaded.length} products synced to Shopify.`);
+    // const shopifyFormatted = await mapProducts(allProducts.slice(0, 50));
 
 
+    // const uploaded = await uploadToShopify(shopifyFormatted);
 
+    // console.log(`[API] Upload complete: ${uploaded.length} products synced to Shopify.`);
 
 
 
-        // if (!uploaded || uploaded.length === 0) {
-        //     console.error("Nothing was uploaded", uploaded);
-        //     return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.NO_PRODUCTS_SYNCED);
-        // }
-
-
-        // return sendResponse(res, statusCode.OK, true, "Products fetched successfully", {
-        //     count: ssProducts.length,
-        //     sample: ssProducts.slice(0,5),
-        // });
 
 
 
-        return sendResponse(res, statusCode.OK, true, "Products fetched successfully", ssProducts);
-    } catch (error) {
-        console.error("[SYNC ERROR]", error.message);
-        return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, error.message);
-    }
+    // if (!uploaded || uploaded.length === 0) {
+    //     console.error("Nothing was uploaded", uploaded);
+    //     return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.NO_PRODUCTS_SYNCED);
+    // }
+
+
+    // return sendResponse(res, statusCode.OK, true, "Products fetched successfully", {
+    //     count: ssProducts.length,
+    //     sample: ssProducts.slice(0,5),
+    // });
+
+
+
+    return sendResponse(res, statusCode.OK, true, "Products fetched successfully", ssProducts);
+  } catch (error) {
+    console.error("[SYNC ERROR]", error.message);
+    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, error.message);
+  }
 };
 
 exports.getProductsFromDb = async (req, res) => {
   try {
     // Fetch all product mappings directly from the database
-       const allProducts = await SyncServices.getProductsFromDb()
-    
+    const allProducts = await SyncServices.getProductsFromDb()
+
 
     return sendResponse(res, statusCode.OK, true, "All raw products fetched from DB", {
       count: allProducts.length,
@@ -290,15 +290,15 @@ exports.fetchAndSaveSpecsDataFromSS = async (req, res) => {
   try {
     // const { styleId } = req.params;
 
-    const styleId  = 39;
+    const styleId = 39;
     if (!styleId) {
       return sendResponse(res, statusCode.BAD_REQUEST, false, "styleId is required");
     }
 
     const specs = await SyncServices.fetchSSpecsByStyleId(styleId);
-    
-    
-    
+
+
+
     const bulkOps = specs.map((spec) => ({
       updateOne: {
         filter: { specID: spec.specID },
@@ -311,7 +311,7 @@ exports.fetchAndSaveSpecsDataFromSS = async (req, res) => {
       await specSchema.bulkWrite(bulkOps);
     }
 
-   
+
 
     sendResponse(res, statusCode.OK, true, "Specs fetched from S&S", {
       styleId,
@@ -344,17 +344,17 @@ exports.fetchSpecsDataFromDb = async (req, res) => {
 
 
 //fetch inventory data from SS and save to db 
-exports.fetchAndSaveSInventoryFromSS = async (req,res) => {
- try {
+exports.fetchAndSaveSInventoryFromSS = async (req, res) => {
+  try {
     // const { styleId } = req.params;
 
-    const styleId  = 39;
+    const styleId = 39;
     if (!styleId) {
       return sendResponse(res, statusCode.BAD_REQUEST, false, "styleId is required");
     }
 
     const inventory = await SyncServices.fetchSSInventoryByStyleId(styleId);
-    
+
     const flattened = [];
     for (const item of inventory) {
       const base = {
@@ -386,8 +386,8 @@ exports.fetchAndSaveSInventoryFromSS = async (req,res) => {
     if (bulkOps.length > 0) {
       await inventorySchema.bulkWrite(bulkOps);
     }
-    
-   
+
+
 
     sendResponse(res, statusCode.OK, true, "inventory fetched from S&S", {
       styleId,
@@ -401,7 +401,7 @@ exports.fetchAndSaveSInventoryFromSS = async (req,res) => {
 
 
 //fetch inventory data from db 
-exports.fetchInventoryDataFromDb  = async (req, res) => {
+exports.fetchInventoryDataFromDb = async (req, res) => {
   try {
     // Fetch  AllInventoryData directly from the database
     const AllInventoryData = await inventorySchema.find().lean();
