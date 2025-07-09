@@ -185,11 +185,11 @@ exports.syncProducts = async (req, res) => {
 
     // const allProducts = await SyncServices.getProductsFromDb()
 
-
+    const specs = await SyncServices.fetchSSpecsByStyleId(styleIds);
     //save in DB the ssProducts
 
 
-    const shopifyFormatted = await mapProducts(ssProducts.slice(0, 5));
+    const shopifyFormatted = await mapProducts(ssProducts.slice(0, 5),specs);
 
 
     const uploaded = await uploadToShopify(shopifyFormatted);
