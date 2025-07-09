@@ -336,10 +336,8 @@ const createProductGraphQL = async (product) => {
 
 
 
-
-
-
-
+ 
+ 
 const publishProductToSalesChannel = async (productGID) => {
   const publicationsQuery = `
     query {
@@ -353,7 +351,6 @@ const publishProductToSalesChannel = async (productGID) => {
       }
     }
   `;
-
   // Step 1: Get publication ID (like "Online Store")
   const pubResponse = await axios.post(
     `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
@@ -373,31 +370,30 @@ const publishProductToSalesChannel = async (productGID) => {
     console.warn("[⚠️] Online Store publication ID not found.");
     return;
   }
-
   const publicationId = onlineStore.node.id;
-
   // Step 2: Publish product to that sales channel
   const publishMutation = `
-    mutation publishToSalesChannel($input: PublishablePublishInput!) {
-      publishablePublish(input: $input) {
-        publishable {
-          id
-        }
-        userErrors {
-          field
-          message
-        }
+mutation publishablePublish($id: ID!, $publicationId: ID!) {
+  publishablePublish(id: $id, input: { publicationId: $publicationId }) {
+    publishable {
+      ... on Product {
+        id
+      }
+      ... on Collection {
+        id
       }
     }
-  `;
-
-  const publishVariables = {
-    input: {
-      id: productGID, // Full GID required
-      publicationIds: [publicationId]
+    userErrors {
+      field
+      message
     }
+  }
+}
+`;
+  const publishVariables = {
+    id: productGID, // Full GID required
+    publicationId: publicationId
   };
-
   const publishResponse = await axios.post(
     `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
     {
@@ -411,7 +407,6 @@ const publishProductToSalesChannel = async (productGID) => {
       }
     }
   );
-
   const errors = publishResponse.data?.data?.publishablePublish?.userErrors;
   if (errors?.length) {
     console.error("[❌ Publish Failed]", errors);
@@ -419,6 +414,89 @@ const publishProductToSalesChannel = async (productGID) => {
     console.log("[✅ Product published to Online Store]");
   }
 };
+ 
+
+
+
+// const publishProductToSalesChannel = async (productGID) => {
+//   const publicationsQuery = `
+//     query {
+//       publications(first: 5) {
+//         edges {
+//           node {
+//             id
+//             name
+//           }
+//         }
+//       }
+//     }
+//   `;
+
+//   // Step 1: Get publication ID (like "Online Store")
+//   const pubResponse = await axios.post(
+//     `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+//     { query: publicationsQuery },
+//     {
+//       headers: {
+//         "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//         "Content-Type": "application/json"
+//       }
+//     }
+//   );
+
+//   const publications = pubResponse.data?.data?.publications?.edges || [];
+//   const onlineStore = publications.find(p => p.node.name === "Online Store");
+
+//   if (!onlineStore) {
+//     console.warn("[⚠️] Online Store publication ID not found.");
+//     return;
+//   }
+
+//   const publicationId = onlineStore.node.id;
+
+//   // Step 2: Publish product to that sales channel
+//   const publishMutation = `
+//     mutation publishToSalesChannel($input: PublishablePublishInput!) {
+//       publishablePublish(input: $input) {
+//         publishable {
+//           id
+//         }
+//         userErrors {
+//           field
+//           message
+//         }
+//       }
+//     }
+//   `;
+
+//   const publishVariables = {
+//     input: {
+//       id: productGID, // Full GID required
+//       publicationIds: [publicationId]
+//     }
+//   };
+
+//   const publishResponse = await axios.post(
+//     `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-04/graphql.json`,
+//     {
+//       query: publishMutation,
+//       variables: publishVariables
+//     },
+//     {
+//       headers: {
+//         "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//         "Content-Type": "application/json"
+//       }
+//     }
+//   );
+
+//   const errors = publishResponse.data?.data?.publishablePublish?.userErrors;
+//   if (errors?.length) {
+//     console.error("[❌ Publish Failed]", errors);
+//   } else {
+//     console.log("[✅ Product published to Online Store]");
+//   }
+// };
 
 
 

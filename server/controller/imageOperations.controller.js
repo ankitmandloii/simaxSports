@@ -216,46 +216,38 @@ exports.readFile = async (request, response, path) => {
 
 
 // exports.generateImage = async (req, res) => {
-//     const { prompt } = req.body;
 
-//   try {
 
-    
-//     // Step 1: Create prediction
-//     const startResponse = await axios.post(
-//       'https://api.replicate.com/v1/predictions',
-//       {
-//         version: '8b10794665aed907bb98a1asTesta5324cd1d3a8bea0e9b31e65210967fb9c9e2e08ed',
-//         input: { prompt }
-//       },
-//       {
-//         headers: {
-//           Authorization: `kdsfjksajdfkjjdstest`,
-//           'Content-Type': 'application/json',
-//         },
-//       }
-//     );
 
-//     const prediction = startResponse.data;
+const crypto = require("crypto");
 
-//     // Step 2: Poll until completed
-//     let result = prediction;
-//     while (result.status !== 'succeeded' && result.status !== 'failed') {
-//       await new Promise(r => setTimeout(r, 2000));
-//       const poll = await axios.get(`https://api.replicate.com/v1/predictions/${result.id}`, {
-//         headers: { Authorization: `Token ${REPLICATE_API_TOKEN}` },
-//       });
-//       result = poll.data;
-//     }
+const IMGIX_DOMAIN = process.env.IMGIX_DOMAIN; // e.g. simaxdesigns.imgix.net
+const SECURE_TOKEN = process.env.SECURE_TOKEN; // your imgix signing token
 
-//     if (result.status === 'succeeded') {
-//       const imageUrl = result.output[0];
-//       res.json({ success: true, imageUrl });
-//     } else {
-//       res.status(500).json({ success: false, error: 'Image generation failed' });
-//     }
-//   } catch (error) {
-//     console.error(error.response?.data || error.message);
-//     res.status(500).json({ success: false, error: 'Something went wrong' });
-//   }
-// };
+exports.generateImage = async (req, res) => {
+  const { prompt } = req.body;
+
+  if (!prompt) {
+    return res.status(400).json({ success: false, error: "Prompt is required" });
+  }
+
+  try {
+    const encodedPrompt = encodeURIComponent(prompt);
+    const pathAndQuery = `/ai?text2image=true&prompt=${encodedPrompt}`;
+
+    // Generate HMAC SHA1 signature
+    const signature = crypto
+      .createHmac("sha1", SECURE_TOKEN)
+      .update(pathAndQuery)
+      .digest("hex");
+
+    const signedUrl = `https://${IMGIX_DOMAIN}${pathAndQuery}&s=${signature}`;
+
+    // Optional: You could check the image status via Imgix if it supports polling (currently it doesn’t)
+    // For now, return the signed URL for the client to use
+    return res.json({ success: true, imageUrl: signedUrl });
+  } catch (error) {
+    console.error("Error generating Imgix image:", error);
+    return res.status(500).json({ success: false, error: "Something went wrong with image generation" });
+  }
+};
