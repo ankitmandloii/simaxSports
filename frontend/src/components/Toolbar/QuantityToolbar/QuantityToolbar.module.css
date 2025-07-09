@@ -13,7 +13,7 @@
 .sizeInputs {
   display: flex;
   flex-wrap: wrap;
-  gap: 37px;
+  gap: 50px;
 }
 
 .sizeBox {
@@ -24,10 +24,10 @@
 }
 
 .sizeBox input {
-  width: 50px;
+  width: 65px;
   /* padding: 5px; */
   text-align: center;
-  height: 26px;
+  height: 30px;
   outline: none;
   border: 1px solid var(--borderColor);
   border-radius: 4px;
@@ -53,7 +53,8 @@
 }
 
 .sizeBox label {
-  font-size: 8px;
+  font-size: 12px;
+  margin-bottom: 8px;
 }
 
 .licenseOptions label {

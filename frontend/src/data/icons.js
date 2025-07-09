@@ -48,50 +48,76 @@ const svgRotateIcon2 = encodeURIComponent(`
   </defs>
 </svg>
 `);
+const layerIcon = encodeURIComponent(`
+<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="25" cy="25" r="25" fill="white"></circle>
+<path d="M10.93 28.36C10.93 28.54 11.025 28.705 11.18 28.795L24.7 36.6C24.775 36.645 24.865 36.665 24.95 36.665C25.035 36.665 25.12 36.645 25.2 36.6L38.82 28.74C38.975 28.65 39.07 28.485 39.07 28.305C39.07 28.125 38.975 27.96 38.82 27.87L33.795 24.975L38.82 22.075C38.975 21.985 39.07 21.82 39.07 21.64C39.07 21.46 38.975 21.295 38.82 21.205L25.3 13.4C25.145 13.31 24.955 13.31 24.8 13.4L11.18 21.265C11.025 21.355 10.93 21.52 10.93 21.695C10.93 21.875 11.025 22.04 11.18 22.13L16.205 25.03L11.18 27.925C11.025 28.015 10.93 28.18 10.93 28.36ZM12.43 21.695L25.05 14.41L37.57 21.64L32.57 24.525C32.56 24.53 32.545 24.535 32.535 24.545L24.95 28.925L23.275 27.96C23.24 27.935 23.205 27.915 23.17 27.9L17.45 24.595L12.43 21.695Z" fill="black"></path>
+</svg>
+`);
 
-
-
+const deletee = encodeURIComponent(`
+<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="25" cy="25" r="25" fill="white"></circle>
+<g clip-path="url(#clip0_12_132)">
+<path d="M28.3104 21.6953C28 21.6953 27.7484 21.9469 27.7484 22.2573V32.8802C27.7484 33.1905 28 33.4423 28.3104 33.4423C28.6209 33.4423 28.8725 33.1905 28.8725 32.8802V22.2573C28.8725 21.9469 28.6209 21.6953 28.3104 21.6953Z" fill="black"></path>
+<path d="M21.6781 21.6953C21.3677 21.6953 21.1161 21.9469 21.1161 22.2573V32.8802C21.1161 33.1905 21.3677 33.4423 21.6781 33.4423C21.9886 33.4423 22.2402 33.1905 22.2402 32.8802V22.2573C22.2402 21.9469 21.9886 21.6953 21.6781 21.6953Z" fill="black"></path>
+<path d="M16.8444 20.145V33.9929C16.8444 34.8114 17.1446 35.5801 17.6689 36.1316C18.1908 36.6847 18.917 36.9986 19.6771 36.9999H30.3115C31.0718 36.9986 31.7981 36.6847 32.3197 36.1316C32.844 35.5801 33.1442 34.8114 33.1442 33.9929V20.145C34.1864 19.8683 34.8617 18.8615 34.7223 17.792C34.5827 16.7228 33.6718 15.9229 32.5933 15.9227H29.7156V15.2201C29.7189 14.6293 29.4853 14.062 29.067 13.6446C28.6488 13.2275 28.0806 12.9952 27.4898 13H22.4988C21.908 12.9952 21.3398 13.2275 20.9216 13.6446C20.5033 14.062 20.2697 14.6293 20.273 15.2201V15.9227H17.3953C16.3169 15.9229 15.4059 16.7228 15.2663 17.792C15.1269 18.8615 15.8022 19.8683 16.8444 20.145ZM30.3115 35.8758H19.6771C18.7161 35.8758 17.9686 35.0503 17.9686 33.9929V20.1944H32.02V33.9929C32.02 35.0503 31.2725 35.8758 30.3115 35.8758ZM21.3971 15.2201C21.3934 14.9275 21.5084 14.6458 21.7161 14.4392C21.9236 14.2326 22.206 14.1191 22.4988 14.1241H27.4898C27.7826 14.1191 28.065 14.2326 28.2725 14.4392C28.4802 14.6456 28.5952 14.9275 28.5915 15.2201V15.9227H21.3971V15.2201ZM17.3953 17.0468H32.5933C33.1521 17.0468 33.605 17.4998 33.605 18.0585C33.605 18.6173 33.1521 19.0703 32.5933 19.0703H17.3953C16.8365 19.0703 16.3836 18.6173 16.3836 18.0585C16.3836 17.4998 16.8365 17.0468 17.3953 17.0468Z" fill="black"></path>
+<path d="M24.9943 21.6953C24.6839 21.6953 24.4323 21.9469 24.4323 22.2573V32.8802C24.4323 33.1905 24.6839 33.4423 24.9943 33.4423C25.3048 33.4423 25.5564 33.1905 25.5564 32.8802V22.2573C25.5564 21.9469 25.3048 21.6953 24.9943 21.6953Z" fill="black"></path>
+</g>
+<defs>
+<clipPath id="clip0_12_132">
+<rect width="24" height="24" fill="white" transform="translate(13 13)"></rect>
+</clipPath>
+</defs>
+</svg>
+`);
 const resizeIcon = `data:image/svg+xml;charset=utf-8,${svgRotateIcon} `
 const rotateIcon2 = `data:image/svg+xml;charset=utf-8,${svgRotateIcon2} `
+const layerIconn = `data:image/svg+xml;charset=utf-8,${layerIcon} `
+const deleteIconn = `data:image/svg+xml;charset=utf-8,${deletee} `
+
 
 
 const icons = {
 
-    delete: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cline x1='20' y1='20' x2='44' y2='44' stroke='%23000' stroke-width='4'/%3E%3Cline x1='44' y1='20' x2='20' y2='44' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E",
-    // "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64' fill='none'%3E%3Ccircle cx='25' cy='25' r='25' fill='white'/%3E%3Cg clip-path='url(%23clip0_12_132)'%3E%3Cpath d='M28.3104 21.6953C28 21.6953 27.7484 21.9469 27.7484 22.2573V32.8802C27.7484 33.1905 28 33.4423 28.3104 33.4423C28.6209 33.4423 28.8725 33.1905 28.8725 32.8802V22.2573C28.8725 21.9469 28.6209 21.6953 28.3104 21.6953Z' fill='black'/%3E%3Cpath d='M21.6781 21.6953C21.3677 21.6953 21.1161 21.9469 21.1161 22.2573V32.8802C21.1161 33.1905 21.3677 33.4423 21.6781 33.4423C21.9886 33.4423 22.2402 33.1905 22.2402 32.8802V22.2573C22.2402 21.9469 21.9886 21.6953 21.6781 21.6953Z' fill='black'/%3E%3Cpath d='M16.8444 20.145V33.9929C16.8444 34.8114 17.1446 35.5801 17.6689 36.1316C18.1908 36.6847 18.917 36.9986 19.6771 36.9999H30.3115C31.0718 36.9986 31.7981 36.6847 32.3197 36.1316C32.844 35.5801 33.1442 34.8114 33.1442 33.9929V20.145C34.1864 19.8683 34.8617 18.8615 34.7223 17.792C34.5827 16.7228 33.6718 15.9229 32.5933 15.9227H29.7156V15.2201C29.7189 14.6293 29.4853 14.062 29.067 13.6446C28.6488 13.2275 28.0806 12.9952 27.4898 13H22.4988C21.908 12.9952 21.3398 13.2275 20.9216 13.6446C20.5033 14.062 20.2697 14.6293 20.273 15.2201V15.9227H17.3953C16.3169 15.9229 15.4059 16.7228 15.2663 17.792C15.1269 18.8615 15.8022 19.8683 16.8444 20.145ZM30.3115 35.8758H19.6771C18.7161 35.8758 17.9686 35.0503 17.9686 33.9929V20.1944H32.02V33.9929C32.02 35.0503 31.2725 35.8758 30.3115 35.8758ZM21.3971 15.2201C21.3934 14.9275 21.5084 14.6458 21.7161 14.4392C21.9236 14.2326 22.206 14.1191 22.4988 14.1241H27.4898C27.7826 14.1191 28.065 14.2326 28.2725 14.4392C28.4802 14.6456 28.5952 14.9275 28.5915 15.2201V15.9227H21.3971V15.2201ZM17.3953 17.0468H32.5933C33.1521 17.0468 33.605 17.4998 33.605 18.0585C33.605 18.6173 33.1521 19.0703 32.5933 19.0703H17.3953C16.8365 19.0703 16.3836 18.6173 16.3836 18.0585C16.3836 17.4998 16.8365 17.0468 17.3953 17.0468Z' fill='black'/%3E%3Cpath d='M24.9943 21.6953C24.6839 21.6953 24.4323 21.9469 24.4323 22.2573V32.8802C24.4323 33.1905 24.6839 33.4423 24.9943 33.4423C25.3048 33.4423 25.5564 33.1905 25.5564 32.8802V22.2573C25.5564 21.9469 25.3048 21.6953 24.9943 21.6953Z' fill='black'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='clip0_12_132'%3E%3Crect width='24' height='24' fill='white' transform='translate(13 13)'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E",
-    rotate:
-        rotateIcon2,
-    // "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' cx='32' cy='32' r='32'/%3E%3Cpath fill='%23000' d='M32 12a20 20 0 1 1-14.14 5.86l3.54 3.54A16 16 0 1 0 32 16v6l8-8-8-8v6z'/%3E%3C/svg%3E",
+  delete:
+    deleteIconn,
+  // "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cline x1='20' y1='20' x2='44' y2='44' stroke='%23000' stroke-width='4'/%3E%3Cline x1='44' y1='20' x2='20' y2='44' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E",
+  // "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64' fill='none'%3E%3Ccircle cx='25' cy='25' r='25' fill='white'/%3E%3Cg clip-path='url(%23clip0_12_132)'%3E%3Cpath d='M28.3104 21.6953C28 21.6953 27.7484 21.9469 27.7484 22.2573V32.8802C27.7484 33.1905 28 33.4423 28.3104 33.4423C28.6209 33.4423 28.8725 33.1905 28.8725 32.8802V22.2573C28.8725 21.9469 28.6209 21.6953 28.3104 21.6953Z' fill='black'/%3E%3Cpath d='M21.6781 21.6953C21.3677 21.6953 21.1161 21.9469 21.1161 22.2573V32.8802C21.1161 33.1905 21.3677 33.4423 21.6781 33.4423C21.9886 33.4423 22.2402 33.1905 22.2402 32.8802V22.2573C22.2402 21.9469 21.9886 21.6953 21.6781 21.6953Z' fill='black'/%3E%3Cpath d='M16.8444 20.145V33.9929C16.8444 34.8114 17.1446 35.5801 17.6689 36.1316C18.1908 36.6847 18.917 36.9986 19.6771 36.9999H30.3115C31.0718 36.9986 31.7981 36.6847 32.3197 36.1316C32.844 35.5801 33.1442 34.8114 33.1442 33.9929V20.145C34.1864 19.8683 34.8617 18.8615 34.7223 17.792C34.5827 16.7228 33.6718 15.9229 32.5933 15.9227H29.7156V15.2201C29.7189 14.6293 29.4853 14.062 29.067 13.6446C28.6488 13.2275 28.0806 12.9952 27.4898 13H22.4988C21.908 12.9952 21.3398 13.2275 20.9216 13.6446C20.5033 14.062 20.2697 14.6293 20.273 15.2201V15.9227H17.3953C16.3169 15.9229 15.4059 16.7228 15.2663 17.792C15.1269 18.8615 15.8022 19.8683 16.8444 20.145ZM30.3115 35.8758H19.6771C18.7161 35.8758 17.9686 35.0503 17.9686 33.9929V20.1944H32.02V33.9929C32.02 35.0503 31.2725 35.8758 30.3115 35.8758ZM21.3971 15.2201C21.3934 14.9275 21.5084 14.6458 21.7161 14.4392C21.9236 14.2326 22.206 14.1191 22.4988 14.1241H27.4898C27.7826 14.1191 28.065 14.2326 28.2725 14.4392C28.4802 14.6456 28.5952 14.9275 28.5915 15.2201V15.9227H21.3971V15.2201ZM17.3953 17.0468H32.5933C33.1521 17.0468 33.605 17.4998 33.605 18.0585C33.605 18.6173 33.1521 19.0703 32.5933 19.0703H17.3953C16.8365 19.0703 16.3836 18.6173 16.3836 18.0585C16.3836 17.4998 16.8365 17.0468 17.3953 17.0468Z' fill='black'/%3E%3Cpath d='M24.9943 21.6953C24.6839 21.6953 24.4323 21.9469 24.4323 22.2573V32.8802C24.4323 33.1905 24.6839 33.4423 24.9943 33.4423C25.3048 33.4423 25.5564 33.1905 25.5564 32.8802V22.2573C25.5564 21.9469 25.3048 21.6953 24.9943 21.6953Z' fill='black'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='clip0_12_132'%3E%3Crect width='24' height='24' fill='white' transform='translate(13 13)'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E",
+  rotate:
+    rotateIcon2,
+  // "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' cx='32' cy='32' r='32'/%3E%3Cpath fill='%23000' d='M32 12a20 20 0 1 1-14.14 5.86l3.54 3.54A16 16 0 1 0 32 16v6l8-8-8-8v6z'/%3E%3C/svg%3E",
 
-    // "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpath fill='%23000' d='M32 12a20 20 0 1 1-14.14 5.86l3.54 3.54A16 16 0 1 0 32 16v6l8-8-8-8v6z'/%3E%3C/svg%3E",
+  // "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpath fill='%23000' d='M32 12a20 20 0 1 1-14.14 5.86l3.54 3.54A16 16 0 1 0 32 16v6l8-8-8-8v6z'/%3E%3C/svg%3E",
 
-    resize:
-        resizeIcon,
-    // "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDY0IDY0Ij48Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIzMiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGZpbGw9IiM2NjYiIGQ9Ik00NCA0NEgzNnY0aDh2LThoLTRaTTIwIDIwaDh2LTRoLTh2OGg0WiIvPjwvc3ZnPg==",
+  resize:
+    resizeIcon,
+  // "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDY0IDY0Ij48Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIzMiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGZpbGw9IiM2NjYiIGQ9Ik00NCA0NEgzNnY0aDh2LThoLTRaTTIwIDIwaDh2LTRoLTh2OGg0WiIvPjwvc3ZnPg==",
 
-    // "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpath fill='%23000' d='M20 20h4v-4h-8v8h4v-4zm20 20h-4v4h8v-8h-4v4z'/%3E%3C/svg%3E",
+  // "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpath fill='%23000' d='M20 20h4v-4h-8v8h4v-4zm20 20h-4v4h8v-8h-4v4z'/%3E%3C/svg%3E",
 
-    layer:
-        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpath fill='%23000' d='M32 16l16 8-16 8-16-8 16-8zm0 20l16-8v4l-16 8-16-8v-4l16 8zm0 8l16-8v4l-16 8-16-8v-4l16 8z'/%3E%3C/svg%3E",
+  layer:
+    layerIconn,
+  // "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpath fill='%23000' d='M32 16l16 8-16 8-16-8 16-8zm0 20l16-8v4l-16 8-16-8v-4l16 8zm0 8l16-8v4l-16 8-16-8v-4l16 8z'/%3E%3C/svg%3E",
 
-    width:
+  width:
 
-        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpath stroke='%23000' stroke-width='2' fill='none' d='M16 32h32M20 28l-8 4 8 4M44 28l8 4-8 4'/%3E%3C/svg%3E",
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpath stroke='%23000' stroke-width='2' fill='none' d='M16 32h32M20 28l-8 4 8 4M44 28l8 4-8 4'/%3E%3C/svg%3E",
 
-    height:
-        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpath stroke='%23000' stroke-width='2' fill='none' d='M32 16v32M28 20l4-8 4 8M28 44l4 8 4-8'/%3E%3C/svg%3E",
+  height:
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpath stroke='%23000' stroke-width='2' fill='none' d='M32 16v32M28 20l4-8 4 8M28 44l4 8 4-8'/%3E%3C/svg%3E",
 
-    layerUp:
-        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpolygon fill='%23000' points='32,16 24,28 40,28'/%3E%3C/svg%3E",
+  layerUp:
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpolygon fill='%23000' points='32,16 24,28 40,28'/%3E%3C/svg%3E",
 
-    layerDown:
-        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpolygon fill='%23000' points='32,48 24,36 40,36'/%3E%3C/svg%3E",
+  layerDown:
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpolygon fill='%23000' points='32,48 24,36 40,36'/%3E%3C/svg%3E",
 
-    layerTop:
-        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpolygon fill='%23000' points='32,12 24,24 40,24'/%3E%3C/svg%3E",
+  layerTop:
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpolygon fill='%23000' points='32,12 24,24 40,24'/%3E%3C/svg%3E",
 
-    layerBottom:
-        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpolygon fill='%23000' points='32,52 24,40 40,40'/%3E%3C/svg%3E",
+  layerBottom:
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Ccircle fill='%23FFFFFF' stroke='%23000' stroke-width='2' cx='32' cy='32' r='30'/%3E%3Cpolygon fill='%23000' points='32,52 24,40 40,40'/%3E%3C/svg%3E",
 
 };
 

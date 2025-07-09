@@ -179,7 +179,7 @@ const QuantityToolbar = () => {
             />
             Collegiate License (Has college name in design)
           </label>
-          <label>
+          {/* <label>
             <input
               type="checkbox"
               style={{ marginRight: "5px" }}
@@ -187,7 +187,7 @@ const QuantityToolbar = () => {
               onChange={() => setLicenses(prev => ({ ...prev, greek: !prev.greek }))}
             />
             Greek License (Has greek organization in design)
-          </label>
+          </label> */}
         </div>
         <button className={style.calculateBtn}>CALCULATE PRICING</button>
       </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import style from './ProductToolbar.module.css';
 import { getHexFromName } from '../../utils/colorUtils';
 import { IoAdd } from 'react-icons/io5';
-import colorwheel from '../../images/adddColor.png';
+import colorwheel from '../../images/colourwheel.png';
 import ChangePopup from '../../PopupComponent/ChangeProductPopup/ChangePopup';
 import AddProductContainer from '../../PopupComponent/addProductContainer/AddProductContainer';
 import ProductAvailableColor from '../../PopupComponent/ProductAvailableColor/ProductAvailableColor';
@@ -135,6 +135,7 @@ const ProductToolbar = () => {
 
   // Get list of colors not already used by the product
   const getAvailableColorsForProduct = (product) => {
+    console.log("===============availableeeprodddd", product)
     const allColors = product.colors?.length ? product.colors : normalizeColorsFromShopify(product);
     if (!allColors.length) return [];
 

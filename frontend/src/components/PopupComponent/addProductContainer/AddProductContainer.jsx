@@ -17,6 +17,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
   const [productStates, setProductStates] = useState({});
   const [imageLoadStates, setImageLoadStates] = useState({});
   console.log("-----------------prodd", products);
+  console.log("-----rawProductsss", rawProducts);
   useEffect(() => {
     if (rawProducts.length > 0) {
       const productsWithKeys = rawProducts.map((product) => ({
