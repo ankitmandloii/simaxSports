@@ -11,6 +11,7 @@ import {
   SkeletonDisplayText,
   Modal,
 } from '@shopify/polaris';
+import Left from './images/leftttt.jpg'
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -19,12 +20,13 @@ export default function ProductDesignList() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [cursors, setCursors] = useState([]); // store visited cursors for Prev
+  const [cursors, setCursors] = useState([]);
   const [endCursor, setEndCursor] = useState(null);
   const [startCursor, setStartCursor] = useState(null);
   const [hasNext, setHasNext] = useState(false);
   const [hasPrev, setHasPrev] = useState(false);
-   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const perPage = 25;
 
   const fetchProducts = (cursor = null, direction = null) => {
@@ -71,9 +73,9 @@ export default function ProductDesignList() {
 
         setCursors(prev => {
           if (direction === 'next') {
-            return [...prev, cursor]; // push current cursor
+            return [...prev, cursor];
           } else if (direction === 'prev') {
-            return prev.slice(0, -1); // pop last one
+            return prev.slice(0, -1);
           } else {
             return prev;
           }
@@ -92,16 +94,28 @@ export default function ProductDesignList() {
       });
   };
 
-
   useEffect(() => {
-    fetchProducts(null); // initial fetch
+    fetchProducts(null);
   }, []);
 
   useEffect(() => {
     const formatted = products.map(product => [
-      // product.id.toString(),
       product.name,
-      <img src={product.imgurl} alt="product" style={{ height: '40px', objectFit: 'contain', cursor: 'pointer' }} onClick={() => setSelectedImage(product.imgurl)}/>
+      <img
+        src={product.imgurl}
+        alt="product"
+        style={{ height: '40px', objectFit: 'contain', cursor: 'pointer' }}
+        onClick={() => {
+          const frontImage = product.imgurl;
+          const staticBack = Left;
+          const staticLeft = product.imgurl;
+          const staticRight = Left;
+
+          setSelectedImages([frontImage, staticBack, staticLeft, staticRight]);
+          setCurrentIndex(0);
+        }}
+      />,
+      "10*10"
     ]);
     setRows(formatted);
   }, [products]);
@@ -118,10 +132,9 @@ export default function ProductDesignList() {
           <>
             <div style={{ overflowX: 'auto', maxHeight: '600px' }}>
               <DataTable
-                columnContentTypes={['text', 'text']}
-                headings={['Title', 'Image']}
+                columnContentTypes={['text', 'text', 'text']}
+                headings={['Title', 'Image', `Dimension`]}
                 rows={rows}
-               
               />
             </div>
 
@@ -142,24 +155,54 @@ export default function ProductDesignList() {
             </InlineStack>
           </>
         )}
-         {selectedImage && (
-                <Modal
-                  open={true}
-                  onClose={() => setSelectedImage(null)}
-                  title="Product Image"
-                  large
-                >
-                  <Modal.Section>
-                    <div style={{ textAlign: 'center' }}>
-                      <img
-                        src={selectedImage}
-                        alt="Product"
-                        style={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain' }}
-                      />
-                    </div>
-                  </Modal.Section>
-                </Modal>
-              )}
+
+        {selectedImages.length > 0 && (
+          <Modal
+            open={true}
+            onClose={() => {
+              setSelectedImages([]);
+              setCurrentIndex(0);
+            }}
+            title="Product Images"
+            large
+          >
+            <Modal.Section>
+              <div style={{ textAlign: 'center', position: 'relative' }}>
+                <img
+                  src={selectedImages[currentIndex]}
+                  alt={`Product view ${currentIndex + 1}`}
+                  style={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain' }}
+                />
+
+                {selectedImages.length > 1 && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: 0,
+                      right: 0,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      padding: '0 20px',
+                      transform: 'translateY(-50%)',
+                    }}
+                  >
+                    <Button
+                      onClick={() => setCurrentIndex((i) => (i > 0 ? i - 1 : selectedImages.length - 1))}
+                    >
+                      ‹
+                    </Button>
+                    <Button
+                      onClick={() => setCurrentIndex((i) => (i + 1) % selectedImages.length)}
+                    >
+                      ›
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </Modal.Section>
+          </Modal>
+        )}
       </Card>
     </Page>
   );

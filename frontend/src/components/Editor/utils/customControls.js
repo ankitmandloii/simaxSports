@@ -26,16 +26,38 @@ const isLocked = (_eventData, transform) => {
 };
 
 // 🎨 Icon renderer
+// const renderIcon = (key) => {
+//   return function (ctx, left, top, _styleOverride, fabricObject) {
+//     const size = this.cornerSize;
+//     ctx.save();
+//     ctx.translate(left, top);
+//     ctx.rotate(fabric.util.degreesToRadians(fabricObject.angle));
+//     ctx.drawImage(iconImages[key], -size / 2, -size / 2, size, size);
+//     ctx.restore();
+//   };
+// };
 const renderIcon = (key) => {
   return function (ctx, left, top, _styleOverride, fabricObject) {
     const size = this.cornerSize;
+
     ctx.save();
     ctx.translate(left, top);
     ctx.rotate(fabric.util.degreesToRadians(fabricObject.angle));
+
+    // Draw white circle background
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    ctx.arc(0, 0, size / 2, 0, 2 * Math.PI);
+    ctx.arc(0, 0, size / 2 + 4, 0, 2 * Math.PI);
+    ctx.fill();
+
+    // Draw the icon image on top
     ctx.drawImage(iconImages[key], -size / 2, -size / 2, size, size);
+
     ctx.restore();
   };
 };
+
 
 // ❌ Delete object
 const deleteObject = (_eventData, transform) => {
@@ -91,7 +113,7 @@ export const createControls = (bringPopup) => ({
     cursorStyle: "pointer",
     mouseUpHandler: deleteObject,
     render: renderIcon("delete"),
-    cornerSize: 20,
+    cornerSize: 15,
   }),
   resizeControl: new fabric.Control({
     x: 0.5,
@@ -102,7 +124,7 @@ export const createControls = (bringPopup) => ({
     actionHandler: scaleFromCenter,
     actionName: "scale",
     render: renderIcon("resize"),
-    cornerSize: 20,
+    cornerSize: 15,
   }),
   rotateControl: new fabric.Control({
     x: -0.5,
@@ -113,7 +135,7 @@ export const createControls = (bringPopup) => ({
     actionHandler: rotateWithCenter,
     actionName: "rotate",
     render: renderIcon("rotate"),
-    cornerSize: 20,
+    cornerSize: 15,
   }),
   bringToFrontControl: new fabric.Control({
     x: -0.5,
@@ -124,7 +146,7 @@ export const createControls = (bringPopup) => ({
     cursorStyle: "pointer",
     mouseUpHandler: bringPopup,
     render: renderIcon("layer"),
-    cornerSize: 20,
+    cornerSize: 15,
   }),
   increaseHeight: new fabric.Control({
     x: 0,
@@ -134,7 +156,7 @@ export const createControls = (bringPopup) => ({
     actionHandler: scaleYFromCenter,
     actionName: "scaleY",
     render: renderIcon("height"),
-    cornerSize: 20,
+    cornerSize: 15,
   }),
   increaseWidth: new fabric.Control({
     x: 0.5,
@@ -144,6 +166,6 @@ export const createControls = (bringPopup) => ({
     actionHandler: scaleXFromCenter,
     actionName: "scaleX",
     render: renderIcon("width"),
-    cornerSize: 20,
+    cornerSize: 15,
   }),
 });

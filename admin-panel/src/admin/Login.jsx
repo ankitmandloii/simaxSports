@@ -12,8 +12,9 @@ import {
 } from '@shopify/polaris';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useToast } from './ToastContext';
+import Logo from './images/simaxDesignLogo.png'
 import {
-  EnterIcon
+    EnterIcon
 } from '@shopify/polaris-icons';
 
 export default function Login() {
@@ -68,7 +69,7 @@ export default function Login() {
 
             if (!response.ok) throw new Error(data?.message || 'Login failed');
 
-          
+
             showToast({
                 content: 'Welcome back!',
                 icon: <Icon source={EnterIcon} tone="success" />
@@ -138,7 +139,9 @@ export default function Login() {
                         >
                             <Box padding="400">
                                 <img
-                                    src="https://simaxapparel.com/cdn/shop/files/SimaxApparel_Logo.png?v=1734029356&width=340"
+                                    src={Logo}
+
+                                    // src="https://simaxapparel.com/cdn/shop/files/SimaxApparel_Logo.png?v=1734029356&width=340"
                                     alt="Logo"
                                     style={{ maxWidth: '100%', padding: '0 16px' }}
                                 />

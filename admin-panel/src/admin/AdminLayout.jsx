@@ -3,7 +3,7 @@ import {
   Icon
 } from '@shopify/polaris';
 import {
-  HomeIcon, ListNumberedIcon, OrderIcon, ProductIcon, SettingsIcon,PersonAddIcon
+  HomeIcon, ListNumberedIcon, OrderIcon, ProductIcon, SettingsIcon, PersonAddIcon
 } from '@shopify/polaris-icons';
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -12,6 +12,7 @@ import {
   ExitIcon
 } from '@shopify/polaris-icons';
 import { useToast } from './ToastContext';
+import Logo from './images/simaxDesignLogo.png'
 
 export default function AdminLayout({ children }) {
   const { showToast } = useToast();
@@ -78,7 +79,8 @@ export default function AdminLayout({ children }) {
     <Navigation location={location.pathname}>
       <Box padding="400">
         <img
-          src="https://simaxapparel.com/cdn/shop/files/SimaxApparel_Logo.png?v=1734029356&width=340"
+          src={Logo}
+          // src="https://simaxapparel.com/cdn/shop/files/SimaxApparel_Logo.png?v=1734029356&width=340"
           alt="Logo"
           style={{ maxWidth: '100%', padding: '0 16px' }}
         />
