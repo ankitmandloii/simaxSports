@@ -411,7 +411,7 @@ const MainDesignTool = ({
       top: boxTop + 330,
       width: boxWidth - 20,           // ✅ important for wrapping
       fontSize: 13,
-       fontFamily: "Poppins",
+      fontFamily: "Poppins",
       fill: warningColor || "#00F8E7FF",
       selectable: false,
       evented: false,
@@ -427,7 +427,7 @@ const MainDesignTool = ({
       top: boxTop + 105,
       // width: boxWidth - 20,             // ✅ important for wrapping
       fontSize: 13,
-       fontFamily: "Poppins",
+      fontFamily: "Poppins",
       fill: warningColor || "#00F8E7FF",
       selectable: false,
       evented: false,
@@ -445,7 +445,7 @@ const MainDesignTool = ({
       top: boxTop + 300,
       width: boxWidth - 20,           // ✅ important for wrapping
       fontSize: 13,
-      fontFamily: "Poppins,Montserrat",
+      fontFamily: "Poppins",
       fill: warningColor || "#00F8E7FF",
       selectable: false,
       evented: false,
