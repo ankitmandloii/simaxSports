@@ -20,8 +20,8 @@ const renderAllImageObjects = (
   const canvas = fabricCanvasRef.current;
   if (!canvas) return;
 
-  const MAX_WIDTH = 250;
-  const MAX_HEIGHT = 250;
+  const MAX_WIDTH = 300;
+  const MAX_HEIGHT = 300;
 
   const getScaled = (img, userScaleX = 1, userScaleY = 1) => {
     const scale = Math.min(MAX_WIDTH / img.width, MAX_HEIGHT / img.height);

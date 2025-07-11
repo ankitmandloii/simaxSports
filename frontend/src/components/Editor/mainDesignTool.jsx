@@ -265,8 +265,8 @@ const MainDesignTool = ({
     const originalWidth = obj.width;
     const originalHeight = obj.height;
 
-    const MAX_WIDTH = 250;
-    const MAX_HEIGHT = 250;
+    const MAX_WIDTH = 300;
+    const MAX_HEIGHT = 300;
 
     const boundingScale = Math.min(MAX_WIDTH / originalWidth, MAX_HEIGHT / originalHeight);
 
