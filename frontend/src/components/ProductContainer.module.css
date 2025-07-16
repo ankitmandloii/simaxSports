@@ -7,6 +7,10 @@
   /* background-color: aqua; */
 }
 
+.controllContainer {
+  z-index: 9999;
+}
+
 .ProductContainerButton {
   background-color: #e9ecef;
   border: 1px solid rgb(34, 32, 32);
@@ -98,6 +102,7 @@
   border-radius: 10px;
   gap: 17.86px;
   width: 104px;
+  z-index: 999;
   align-items: center;
 }
 
@@ -351,12 +356,11 @@ canvas#mirrorCanvasBack {
   .controllContainer {
     position: fixed;
     left: 0;
-    z-index: 999;
+    z-index: 99999;
     display: flex;
     top: 25px;
     position: fixed;
     left: 0;
-    z-index: 999;
     flex-direction: column;
     justify-content: center;
     height: 100%;

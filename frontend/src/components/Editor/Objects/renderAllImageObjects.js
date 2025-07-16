@@ -18,10 +18,21 @@ const renderAllImageObjects = (
   bringPopup
 ) => {
   const canvas = fabricCanvasRef.current;
+
   if (!canvas) return;
 
-  const MAX_WIDTH = 300;
-  const MAX_HEIGHT = 300;
+  const removeAllHtmlControls = (canvas) => {
+    canvas.getObjects().forEach((obj) => {
+      if (obj._htmlControls) {
+        Object.values(obj._htmlControls).forEach((el) => el.remove());
+        obj._htmlControls = null;
+      }
+    });
+  };
+  removeAllHtmlControls(canvas);
+
+  const MAX_WIDTH = 180;
+  const MAX_HEIGHT = 180;
 
   const getScaled = (img, userScaleX = 1, userScaleY = 1) => {
     const scale = Math.min(MAX_WIDTH / img.width, MAX_HEIGHT / img.height);
@@ -262,6 +273,7 @@ const renderAllImageObjects = (
             br: false,
             mtr: false,
           });
+          removeAllHtmlControls(canvas);
 
           newImg.controls = createControls(bringPopup);
           canvas.add(newImg);
@@ -330,7 +342,7 @@ const renderAllImageObjects = (
         br: false,
         mtr: false,
       });
-
+      removeAllHtmlControls(canvas);
       existingObj.controls = createControls(bringPopup);
       const center = existingObj.getCenterPoint();
       existingObj.setPositionByOrigin(center, "center", "center");

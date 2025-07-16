@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useMemo, useState, useCallback } from "react";
 import { fabric } from "fabric";
-import icons from "../../data/icons";
+// import icons from "../../data/icons";
 // import { TbArrowForwardUp } from "react-icons/tb";
 // import { TbArrowBack } from "react-icons/tb";
 // import { VscZoomIn } from "react-icons/vsc";
@@ -30,7 +30,7 @@ import { useNavigate } from "react-router-dom";
 import LayerModal from "../CommonComponent/layerComponent/layerComponent";
 import CurvedText from "../fabric/fabric.TextCurved"; // Adjust path if needed
 import syncMirrorCanvas from "./core/syncMirrorCanvas";
-import { initControlContext, createControls } from "./utils/customControls";
+import { createControls } from "./utils/customControls";
 
 fabric.CurvedText = CurvedText;
 const MainDesignTool = ({
@@ -57,7 +57,7 @@ const MainDesignTool = ({
   const isRender = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].setRendering);
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
   const loadingState = useSelector(state => state.TextFrontendDesignSlice.present[activeSide].loadingState);
-  console.log("loadingState redux ........", loadingState)
+  // console.log("loadingState redux ........", loadingState)
 
   // **********************************************************************************************************************************************************
   //                                                                                    USE REFS AREA
@@ -86,11 +86,11 @@ const MainDesignTool = ({
   // **********************************************************************************************************************************************************
   const iconImages = useMemo(() => {
     const imgs = {};
-    for (const key in icons) {
-      const img = new Image();
-      img.src = icons[key];
-      imgs[key] = img;
-    }
+    // for (const key in icons) {
+    //   const img = new Image();
+    //   img.src = icons[key];
+    //   imgs[key] = img;
+    // }
     return imgs;
   }, []);
 
@@ -265,8 +265,8 @@ const MainDesignTool = ({
     const originalWidth = obj.width;
     const originalHeight = obj.height;
 
-    const MAX_WIDTH = 300;
-    const MAX_HEIGHT = 300;
+    const MAX_WIDTH = 180;
+    const MAX_HEIGHT = 180;
 
     const boundingScale = Math.min(MAX_WIDTH / originalWidth, MAX_HEIGHT / originalHeight);
 
@@ -318,22 +318,33 @@ const MainDesignTool = ({
     }
   }, [zoomLevel]);
 
-
+  const removeAllHtmlControls = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    canvas.getObjects().forEach((obj) => {
+      if (obj._htmlControls) {
+        Object.values(obj._htmlControls).forEach((el) => el.remove());
+        obj._htmlControls = null;
+        canvas.requestRenderAll();
+      }
+    });
+  }
 
   useEffect(() => {
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      width: 550,
-      height: 450,
-      // backgroundColor: "gray"
-    });
+    const canvasElement = canvasRef.current;
+    const wrapperElement = canvasElement.parentNode;
 
-    canvas.preserveObjectStacking = true;
+    const canvasWidth = wrapperElement.clientWidth;
+    const canvasHeight = wrapperElement.clientHeight;
+
+    const canvas = new fabric.Canvas(canvasElement, {
+      width: canvasWidth,
+      height: canvasHeight,
+    });
     fabricCanvasRef.current = canvas;
 
     const boxWidth = 270;
     const boxHeight = 335;
-    const canvasWidth = canvas.getWidth();
-    const canvasHeight = canvas.getHeight();
 
     const boxLeft = (canvasWidth - boxWidth) / 2;
     const boxTop = (canvasHeight - boxHeight) / 2;
@@ -559,16 +570,26 @@ const MainDesignTool = ({
     // }
 
     const handleSelection = (e) => {
+      removeAllHtmlControls();
       if (e.selected.length > 1) {
         canvas.discardActiveObject();
         canvas.requestRenderAll();
       } else {
         setSelectedObject(e.selected[0]);
       }
+      const active = e.selected?.[0];
+      canvas.getObjects().forEach((obj) => {
+        if (obj !== active && obj._htmlControls) {
+          Object.values(obj._htmlControls).forEach((el) => el.remove());
+          obj._htmlControls = null;
+        }
+      });
+      canvas.requestRenderAll();
     };
 
     const handleSelectionCleared = () => {
       // setSelectedObject(null);
+      removeAllHtmlControls();
       dispatch(setSelectedTextState(null));
     };
 
@@ -576,9 +597,19 @@ const MainDesignTool = ({
 
 
     // Consolidated handlers
-    const handleObjectAdded = (e) => {
+    const handleObjectRemoved = (e) => {
+      const removedObject = e.target;
+      removeAllHtmlControls();
       syncMirrorCanvasHelper(activeSide);
       updateBoundaryVisibility(fabricCanvasRef);
+      dispatch(deleteTextState(removedObject.id));
+      dispatch(deleteImageState(removedObject.id));
+
+
+    };
+    const handleObjectAdded = (e) => {
+      removeAllHtmlControls();
+      syncMirrorCanvasHelper(activeSide);
     };
 
     const handleObjectModified = (e) => {
@@ -756,9 +787,11 @@ const MainDesignTool = ({
 
     }
 
+
+
     const events = [
       ["object:added", handleObjectAdded],
-      ["object:removed", handleObjectAdded],
+      ["object:removed", handleObjectRemoved],
       ["object:modified", handleObjectModified],
       ["object:moving", handleMoving],
       ["object:scaling", showBoundaryOnAction],
@@ -769,8 +802,30 @@ const MainDesignTool = ({
       ["editing:exited", updateBoundaryVisibility],
       ["text:cut", updateBoundaryVisibility],
       ["text:changed", handleObjectAdded],
+
       // ["object:moving", moveHandler], // Uncomment if needed
     ];
+    // canvas.on("selection:created", (e) => {
+    //   const active = e.selected?.[0];
+    //   canvas.getObjects().forEach((obj) => {
+    //     if (obj !== active && obj._htmlControls) {
+    //       Object.values(obj._htmlControls).forEach((el) => el.remove());
+    //       obj._htmlControls = null;
+    //     }
+    //   });
+    //   canvas.requestRenderAll(); // force re-render to show controls on new selection
+    // });
+
+    // canvas.on("selection:updated", (e) => {
+    //   const active = e.selected?.[0];
+    //   canvas.getObjects().forEach((obj) => {
+    //     if (obj !== active && obj._htmlControls) {
+    //       Object.values(obj._htmlControls).forEach((el) => el.remove());
+    //       obj._htmlControls = null;
+    //     }
+    //   });
+    //   canvas.requestRenderAll();
+    // });
 
 
 
@@ -780,21 +835,30 @@ const MainDesignTool = ({
       fabric.Image.fromURL(
         backgroundImage,
         (img) => {
-          const scaleX = 590 / img.width;
-          const scaleY = 450 / img.height;
+          const imgWidth = img.width;
+          const imgHeight = img.height;
+
+          // Calculate scale based on the parent container size
+          const scaleX = 590 / imgWidth;
+          const scaleY = 450 / imgHeight;
+
+          // Apply the scale to ensure the image fits within the canvas while maintaining aspect ratio
+          const scale = Math.max(scaleX, scaleY);
 
           img.set({
-            left: canvas.width / 2,
-            top: canvas.height / 2,
+            left: canvasWidth / 2,
+            top: canvasHeight / 2,
             originX: "center",
             originY: "center",
-            scaleX,
-            scaleY,
+            scaleX: scaleX,
+            scaleY: scaleY,
             selectable: false,
             evented: false,
           });
 
-          canvas.setBackgroundImage(img, () => fabricCanvasRef.current.renderAll());
+          canvas.setBackgroundImage(img, () => {
+            fabricCanvasRef.current.renderAll();
+          });
           syncMirrorCanvasHelper(activeSide);
           updateBoundaryVisibility(fabricCanvasRef);
         },
@@ -808,7 +872,7 @@ const MainDesignTool = ({
     //want to do same for image 
 
     return () => {
-
+      removeAllHtmlControls();
       // Remove all listeners
       events.forEach(([event, handler]) => canvas.off(event, handler));
 
@@ -830,15 +894,31 @@ const MainDesignTool = ({
   // **********************************************************************************************************************************************************
 
   useEffect(() => {
+    const handleResize = () => {
+      if (fabricCanvasRef.current) {
+        console.log("repostioning......................")
+        fabricCanvasRef.current.requestRenderAll(); // this will reposition all controls
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("scroll", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [activeSide]);
+  useEffect(() => {
     // console.log("renderiing on layer index changed");
     // renderCurveTextObjects();
-    initControlContext({
-      iconImages,
-      textContaintObject,
-      imageContaintObject,
-      navigate,
-      dispatch,
-    });
+    // ontrolContext({
+    //   iconImages,
+    //   textContaintObject,
+    //   imageContaintObject,
+    //   navigate,
+    //   dispatch,
+    // });
   }, [activeSide, isRender, dispatch, id, textContaintObject, imageContaintObject]);
 
   // **********************************************************************************************************************************************************
@@ -861,12 +941,14 @@ const MainDesignTool = ({
         (obj.type === 'curved-text' || obj.type === 'textbox') &&
         (!textContaintObject || !textContaintObject.some(t => t.id === obj.id))
       ) {
+        removeAllHtmlControls();
         canvas.remove(obj);
       }
       if (
         obj.type === 'image' &&
         (!imageContaintObject || !imageContaintObject.some(i => i.id === obj.id))
       ) {
+        removeAllHtmlControls();
         canvas.remove(obj);
       }
     });
@@ -944,6 +1026,7 @@ const MainDesignTool = ({
         obj.id &&
         !textContaintObject.find((txt) => txt.id === obj.id)
       ) {
+        removeAllHtmlControls();
         canvas.remove(obj);
       }
     });
@@ -963,8 +1046,8 @@ const MainDesignTool = ({
 
 
   return (
-    <div id={style.canvas} style={{ position: "relative", top: 5 }} >
-      <canvas ref={canvasRef} />
+    <div class="canvas-wrapper" style={{ position: "relative", top: 5 }} >
+      <canvas ref={canvasRef} id="canvas" />
       <LayerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -975,6 +1058,10 @@ const MainDesignTool = ({
         <a href="https://tenor.com/view/loading-gif-6449096453315144907">Loading Sticker</a>from <a href="https://tenor.com/search/loading-stickers"
         >Loading Stickers</a></div> */}
       {/* <img src="https://cdn.pixabay.com/animation/2023/08/11/21/18/21-18-05-265_512.gif" height={200} width={200} style={{ zIndex: 9999999, position: "absolute", top: "50%", left: "50%" }}></img> */}
+      {/* <!-- index.html or in React root --> */}
+
+
+
 
     </div>
   );

@@ -227,11 +227,14 @@ function ProductContainer() {
     }
   }, [exportRequested]);
 
+
+
   return (
     <div className={style.ProductContainerMainDiv}>
+
       <div className={style.flex}>
         <div className={style.controllContainer}>
-          {!isDesignProduct && <RedoundoComponent />}
+          {<RedoundoComponent />}
           <ViewControlButtons
             ShowBack={ShowBack}
             ShowFront={ShowFront}
@@ -256,7 +259,7 @@ function ProductContainer() {
           />
         </div>
 
-        <div style={{ display: activeSide === "back" ? "block" : "none" }}>
+        <div style={{ display: activeSide === "back" ? "block" : "none"}}>
           <MainDesignTool
             warningColor={invertedColor}
             id="mirrorCanvasBack"
@@ -297,7 +300,7 @@ function ProductContainer() {
             setLeftSleevePreviewImage={setLeftSleevePreviewImage}
           />
         </div>
-
+    
         {/* Side Preview Thumbnails */}
         {!isQuantityPage && <div className={style.ProuductMirrorContainer} >
           <div className={style.ProuductMirrorLeftContainer}>

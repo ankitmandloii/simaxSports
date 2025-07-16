@@ -83,7 +83,7 @@ h4 {
   width: 100%;
   height: 100vh;
   /* margin-top: 5px; */
-  overflow-y: auto;
+  overflow-y: hidden;
   background-color: #f1f1f1;
   position: relative;
 }
@@ -116,7 +116,8 @@ h4 {
   display: flex;
   /* max-width: 1901px; */
   /* margin: 0 auto; */
-  margin-top: 90px;
+  margin-top: 80px;
+  z-index: 999;
 }
 
 .layout-toolbar {
@@ -128,6 +129,7 @@ h4 {
   max-width: 530px;
   height: 90vh;
   margin-left: 21px;
+  z-index: 999;
 }
 
 .layout-product {
@@ -292,6 +294,7 @@ input[type="range"]::-moz-range-track {
   border-radius: 0px 20px 20px 0px;
   padding-inline: 10px;
   padding-top: 26.87px;
+  padding-bottom: 50px;
 }
 
 /* @media only screen and (max-width: 600px) and (min-width: 300px) */
@@ -550,40 +553,69 @@ hr {
   }
 }
 
-.canvas-container {
-  height: 90vh !important;
-  /* Height is based on viewport height */
-  width: calc(90vh * (3 / 3)) !important;
-  /* Width is calculated from height */
-  /* max-width: 900px !important; */
-  /* Limit max width */
+.canvas-wrapper {
+  height: 90vh;
+  aspect-ratio: 1 / 1;
+  /* or 3 / 3 = 1 */
   margin: 0 auto;
+  max-width: 100%;
 }
 
-#canvas,
+#canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.fabric-icon {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  display: none;
+  /* gets toggled by JS to 'flex' */
+  z-index: 9999;
+  pointer-events: auto;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+
+.fabric-icon img {
+  width: 16px;
+  height: 16px;
+  pointer-events: auto;
+}
+
+/* .canvas-container {
+  height: 90vh !important;
+  width: calc(90vh * (3 / 3)) !important;
+  margin: 0 auto;
+} */
+
+/* #canvas,
 .upper-canvas,
 .lower-canvas {
   width: 100% !important;
   height: 100% !important;
-}
+} */
 
 @media (max-width: 370px) {
-  .canvas-container {
+  /* .canvas-container {
     height: 70vh !important;
-    /* Height is based on viewport height */
     width: calc(70vh * (3 / 3)) !important;
-    /* Width is calculated from height */
     max-width: 900px !important;
-    /* Limit max width */
     margin: 0 auto;
-  }
+  } */
 
-  #canvas,
+  /* #canvas,
   .upper-canvas,
   .lower-canvas {
     width: 100% !important;
     height: 100% !important;
-  }
+  } */
 }
 
 /* ≤ 1200px: Adjust layout and scale canvas */
@@ -604,13 +636,10 @@ hr {
 
 /* Tablet: up to 1024px */
 @media (max-width: 1200px) {
-  .canvas-container {
+  /* .canvas-container {
     height: 70vh !important;
-    /* Height is based on viewport height */
     width: calc(70vh * (3 / 3)) !important;
-    /* Width is calculated from height */
     max-width: 900px !important;
-    /* Limit max width */
     margin: 0 auto;
   }
 
@@ -619,7 +648,7 @@ hr {
   .lower-canvas {
     width: 100% !important;
     height: 100% !important;
-  }
+  } */
 }
 
 @media only screen and (max-width: 1200px) {
