@@ -34,7 +34,7 @@ import { createControls } from "./utils/customControls";
 
 fabric.CurvedText = CurvedText;
 const MainDesignTool = ({
-  warningColor,
+
   id,
   backgroundImage,
   zoomLevel,
@@ -44,6 +44,7 @@ const MainDesignTool = ({
   setRightSleevePreviewImage,
   setPreviewForCurrentSide
 }) => {
+  const warningColor = "skyblue"
 
   // **********************************************************************************************************************************************************
   //                                                                                    USE SELECTORS AREA
@@ -73,6 +74,7 @@ const MainDesignTool = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedObject, setSelectedObject] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [resize, setResize] = useState(0);
 
   // **********************************************************************************************************************************************************
   //                                                                                    USE DISPTACHS AREA
@@ -343,11 +345,11 @@ const MainDesignTool = ({
     });
     fabricCanvasRef.current = canvas;
 
-    const boxWidth = 270;
-    const boxHeight = 335;
+    const boxWidth = 250;
+    const boxHeight = 395;
 
     const boxLeft = (canvasWidth - boxWidth) / 2;
-    const boxTop = (canvasHeight - boxHeight) / 2;
+    const boxTop = ((canvasHeight - boxHeight) / 2) - 30;
 
     const boundaryBox = new fabric.Rect({
       left: boxLeft,
@@ -381,7 +383,7 @@ const MainDesignTool = ({
       name: "boundaryBoxInner"
     });
     const boundaryBoxLeft = new fabric.Rect({
-      left: boxLeft + 165,
+      left: boxLeft + 145,
       top: boxTop + 25,
       width: 100,
       height: 100,
@@ -403,8 +405,8 @@ const MainDesignTool = ({
       left: boxLeft + boxWidth / 2,
       top: boxTop + 30,
       fontSize: 15,
-      fontFamily: "Poppins",
-      fill: warningColor || "#00F8E7FF",
+      fontFamily: "proxima-soft, sans-serif",
+      fill: "white" || "#00F8E7FF",
       selectable: false,
       evented: false,
       visible: true,
@@ -419,11 +421,11 @@ const MainDesignTool = ({
 
     const adultText = new fabric.Text("Adult", {
       left: boxLeft + boxWidth / 2,
-      top: boxTop + 330,
+      top: boxTop + 390,
       width: boxWidth - 20,           // ✅ important for wrapping
       fontSize: 13,
-      fontFamily: "Poppins",
-      fill: warningColor || "#00F8E7FF",
+      fontFamily: "proxima-soft, sans-serif",
+      fill: "white" || "#00F8E7FF",
       selectable: false,
       evented: false,
       visible: false,                  // ✅ visible for testing
@@ -434,12 +436,12 @@ const MainDesignTool = ({
       name: "adultText",
     });
     const leftChestText = new fabric.Text("Left Chest", {
-      left: boxLeft + 80 + boxWidth / 2,
+      left: boxLeft + 70 + boxWidth / 2,
       top: boxTop + 105,
       // width: boxWidth - 20,             // ✅ important for wrapping
       fontSize: 13,
-      fontFamily: "Poppins",
-      fill: warningColor || "#00F8E7FF",
+      fontFamily: "proxima-soft, sans-serif",
+      fill: "white" || "#00F8E7FF",
       selectable: false,
       evented: false,
       visible: false,                  // ✅ visible for testing
@@ -453,11 +455,11 @@ const MainDesignTool = ({
     });
     const youthText = new fabric.Text("Youth", {
       left: boxLeft + boxWidth / 2,
-      top: boxTop + 300,
+      top: boxTop + 350,
       width: boxWidth - 20,           // ✅ important for wrapping
       fontSize: 13,
-      fontFamily: "Poppins",
-      fill: warningColor || "#00F8E7FF",
+      fontFamily: "proxima-soft, sans-serif",
+      fill: "white" || "#00F8E7FF",
       selectable: false,
       evented: false,
       visible: false,                  // ✅ visible for testing
@@ -545,30 +547,6 @@ const MainDesignTool = ({
 
 
 
-    // function updateBoundaryVisibility() {
-    //   console.log("lal code....");
-    //   const textObjects = canvas.getObjects().filter((obj) => obj.type === "curved-text");
-    //   textObjects.forEach((obj) => obj.setCoords());
-
-    //   const allInside = textObjects.every((obj) => {
-    //     const objBounds = obj.getBoundingRect(true);
-    //     const boxBounds = boundaryBox.getBoundingRect(true);
-
-    //     return (
-    //       objBounds.left >= boxBounds.left &&
-    //       objBounds.top >= boxBounds.top &&
-    //       objBounds.left + objBounds.width <= boxBounds.left + boxBounds.width &&
-    //       objBounds.top + objBounds.height <= boxBounds.top + boxBounds.height
-    //     );
-    //   });
-
-    //   boundaryBox.visible = !allInside;
-    //   warningText.visible = !allInside;
-    //   canvas.bringToFront(boundaryBox);
-    //   canvas.bringToFront(warningText);
-    //   canvas.requestRenderAll();
-    // }
-
     const handleSelection = (e) => {
       removeAllHtmlControls();
       if (e.selected.length > 1) {
@@ -577,14 +555,14 @@ const MainDesignTool = ({
       } else {
         setSelectedObject(e.selected[0]);
       }
-      const active = e.selected?.[0];
-      canvas.getObjects().forEach((obj) => {
-        if (obj !== active && obj._htmlControls) {
-          Object.values(obj._htmlControls).forEach((el) => el.remove());
-          obj._htmlControls = null;
-        }
-      });
-      canvas.requestRenderAll();
+      // const active = e.selected?.[0];
+      // canvas.getObjects().forEach((obj) => {
+      //   if (obj !== active && obj._htmlControls) {
+      //     Object.values(obj._htmlControls).forEach((el) => el.remove());
+      //     obj._htmlControls = null;
+      //   }
+      // });
+      // canvas.requestRenderAll();
     };
 
     const handleSelectionCleared = () => {
@@ -598,12 +576,13 @@ const MainDesignTool = ({
 
     // Consolidated handlers
     const handleObjectRemoved = (e) => {
+      console.warn("removedObject................", e.target)
       const removedObject = e.target;
       removeAllHtmlControls();
       syncMirrorCanvasHelper(activeSide);
       updateBoundaryVisibility(fabricCanvasRef);
       dispatch(deleteTextState(removedObject.id));
-      dispatch(deleteImageState(removedObject.id));
+      // dispatch(deleteImageState(removedObject.id));
 
 
     };
@@ -678,103 +657,6 @@ const MainDesignTool = ({
       canvas.requestRenderAll();
     };
 
-    // const handleMoving = (e) => {
-    //   checkBoundary(e);
-    //   const canvas = fabricCanvasRef.current;
-    //   if (!canvas) return;
-
-    //   const objects = canvas.getObjects();
-
-    //   const boundaryBox = objects.find((obj) => obj.name === "boundaryBox");
-    //   const boundaryBoxInner = objects.find((obj) => obj.name === "boundaryBoxInner");
-    //   const boundaryBoxLeft = objects.find((obj) => obj.name === "boundaryBoxLeft");
-    //   const centerVerticalLine = objects.find((obj) => obj.name === "centerVerticalLine");
-    //   const warningText = objects.find((obj) => obj.name === "warningText");
-
-    //   if (!boundaryBox || !warningText || !centerVerticalLine) return;
-
-    //   boundaryBox.visible = true;
-    //   warningText.visible = true;
-    //   centerVerticalLine.visible = true;
-    //   boundaryBoxInner.visible = true;
-    //   boundaryBoxLeft.visible = true;
-
-    //   const canvasCenterX = canvas.getWidth() / 2;
-    //   const canvasHeight = canvas.getHeight();
-
-    //   const y1 = centerVerticalLine.y1 ?? 0;
-    //   const y2 = centerVerticalLine.y2 ?? canvasHeight;
-
-    //   let leftBorder = objects.find((obj) => obj.name === "centerVerticalLineLeftBorder");
-    //   let rightBorder = objects.find((obj) => obj.name === "centerVerticalLineRightBorder");
-
-    //   // Create only once, and make invisible initially
-    //   if (!leftBorder) {
-    //     leftBorder = new fabric.Line([canvasCenterX - 2, y1, canvasCenterX - 2, y2], {
-    //       stroke: 'limegreen',
-    //       strokeWidth: 1,
-    //       selectable: false,
-    //       evented: false,
-    //       visible: false,
-    //       name: 'centerVerticalLineLeftBorder',
-    //     });
-    //     canvas.add(leftBorder);
-    //     canvas.sendToBack(leftBorder);
-    //   }
-
-    //   if (!rightBorder) {
-    //     rightBorder = new fabric.Line([canvasCenterX + 2, y1, canvasCenterX + 2, y2], {
-    //       stroke: 'limegreen',
-    //       strokeWidth: 1,
-    //       selectable: false,
-    //       evented: false,
-    //       visible: false,
-    //       name: 'centerVerticalLineRightBorder',
-    //     });
-    //     canvas.add(rightBorder);
-    //     canvas.sendToBack(rightBorder);
-    //   }
-
-    //   const textObjects = objects.filter(
-    //     (obj) => obj.type === "curved-text" || obj.type === "image"
-    //   );
-
-    //   let anyObjectAtCenter = false;
-
-    //   textObjects.forEach((obj) => {
-    //     obj.setCoords();
-
-    //     const objCenterX = obj.getCenterPoint().x;
-    //     const delta = Math.abs(objCenterX - canvasCenterX);
-
-    //     if (delta <= 2) {
-    //       anyObjectAtCenter = true;
-
-    //       // Lock X movement temporarily
-    //       obj.lockMovementX = true;
-    //       canvas.requestRenderAll();
-
-    //       setTimeout(() => {
-    //         obj.lockMovementX = false;
-    //         canvas.requestRenderAll();
-    //       }, 1000);
-    //     }
-    //   });
-
-    //   // Set visibility of left/right border lines
-    //   leftBorder.visible = anyObjectAtCenter;
-    //   rightBorder.visible = anyObjectAtCenter;
-
-    //   // Handle center vertical line color
-    //   const originalStroke = centerVerticalLine.originalStroke || centerVerticalLine.stroke || "skyblue";
-    //   if (!centerVerticalLine.originalStroke) {
-    //     centerVerticalLine.originalStroke = originalStroke;
-    //   }
-    //   centerVerticalLine.set("stroke", anyObjectAtCenter ? "orange" : originalStroke);
-
-    //   canvas.requestRenderAll();
-    // };
-
     const showBoundaryOnAction = () => {
       boundaryBox.visible = true;
       warningText.visible = true;
@@ -805,30 +687,6 @@ const MainDesignTool = ({
 
       // ["object:moving", moveHandler], // Uncomment if needed
     ];
-    // canvas.on("selection:created", (e) => {
-    //   const active = e.selected?.[0];
-    //   canvas.getObjects().forEach((obj) => {
-    //     if (obj !== active && obj._htmlControls) {
-    //       Object.values(obj._htmlControls).forEach((el) => el.remove());
-    //       obj._htmlControls = null;
-    //     }
-    //   });
-    //   canvas.requestRenderAll(); // force re-render to show controls on new selection
-    // });
-
-    // canvas.on("selection:updated", (e) => {
-    //   const active = e.selected?.[0];
-    //   canvas.getObjects().forEach((obj) => {
-    //     if (obj !== active && obj._htmlControls) {
-    //       Object.values(obj._htmlControls).forEach((el) => el.remove());
-    //       obj._htmlControls = null;
-    //     }
-    //   });
-    //   canvas.requestRenderAll();
-    // });
-
-
-
     events.forEach(([event, handler]) => canvas.on(event, handler));
 
     if (backgroundImage) {
@@ -839,19 +697,19 @@ const MainDesignTool = ({
           const imgHeight = img.height;
 
           // Calculate scale based on the parent container size
-          const scaleX = 590 / imgWidth;
-          const scaleY = 450 / imgHeight;
+          const scaleX = canvasWidth / imgWidth;
+          const scaleY = canvasHeight / imgHeight;
 
           // Apply the scale to ensure the image fits within the canvas while maintaining aspect ratio
           const scale = Math.max(scaleX, scaleY);
 
           img.set({
             left: canvasWidth / 2,
-            top: canvasHeight / 2,
+            top: canvasHeight / 2 - 25,
             originX: "center",
             originY: "center",
-            scaleX: scaleX,
-            scaleY: scaleY,
+            scaleX: scale,
+            scaleY: scale,
             selectable: false,
             evented: false,
           });
@@ -859,6 +717,8 @@ const MainDesignTool = ({
           canvas.setBackgroundImage(img, () => {
             fabricCanvasRef.current.renderAll();
           });
+          // canvas.add(img);
+          // canvas.bringToFront(img);
           syncMirrorCanvasHelper(activeSide);
           updateBoundaryVisibility(fabricCanvasRef);
         },
@@ -870,19 +730,22 @@ const MainDesignTool = ({
     renderNameAndNumberHelper(); //note : we have to call it for render object after canvas initialize
     renderAllImageObjectsHelper();
     //want to do same for image 
-
+    // window.addEventListener("resize", (e) => {
+    //   setResize(Math.random());
+    // })
     return () => {
+      // window.removeEventListener("resize", () => { });
       removeAllHtmlControls();
       // Remove all listeners
       events.forEach(([event, handler]) => canvas.off(event, handler));
 
       // Dispose of the canvas to prevent memory leaks
       canvas.dispose();
-      fabricCanvasRef.current = null;
+      // fabricCanvasRef.current = null;
       // mirrorCanvasRef.current.dispose();
       // mirrorCanvasRef.current = null;
     };
-  }, [iconImages, id, backgroundImage, activeSide]);
+  }, [id, backgroundImage, activeSide]);
 
 
   useEffect(() => {
@@ -897,13 +760,11 @@ const MainDesignTool = ({
     const handleResize = () => {
       if (fabricCanvasRef.current) {
         console.log("repostioning......................")
-        fabricCanvasRef.current.requestRenderAll(); // this will reposition all controls
+        // fabricCanvasRef.current.requestRenderAll(); // this will reposition all controls
       }
     };
 
     window.addEventListener("resize", handleResize);
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("scroll", handleResize);
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -928,7 +789,7 @@ const MainDesignTool = ({
   useEffect(() => {
     // renderAllImageObjects();
     renderAllElements();
-  }, [imageContaintObject, activeSide, isRender]); // 👈 Reacts to previewUrl change
+  }, [imageContaintObject, textContaintObject, activeSide, isRender]); // 👈 Reacts to previewUrl change
 
   const renderAllElements = () => {
     const canvas = fabricCanvasRef.current;
@@ -1013,6 +874,7 @@ const MainDesignTool = ({
 
 
 
+
   // **********************************************************************************************************************************************************
   //                                                                                    OTHER USE EFFECTS
   // **********************************************************************************************************************************************************
@@ -1038,7 +900,7 @@ const MainDesignTool = ({
     //   canvas.renderAll();
     // }
     canvas.renderAll();
-  }, [selectedTextId, isRender])
+  }, [selectedTextId, isRender,])
 
 
 

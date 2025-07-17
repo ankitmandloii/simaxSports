@@ -173,8 +173,8 @@ const updateBoundaryVisibility = (fabricCanvasRef) => {
   if (leftChestText) leftChestText.visible = showBoundary;
   if (adultText) adultText.visible = showBoundary;
   if (youthText) youthText.visible = showBoundary;
-  if (centerVerticalLine) {centerVerticalLine.visible = showBoundary;}
-  if (warningText) {warningText.visible = showBoundary;}
+  if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+  if (warningText) { warningText.visible = showBoundary; }
   // Show / hide the left / right borders
   // leftBorder.set({ visible: anyObjectAtCenter && !showBoundary });
   // rightBorder.set({ visible: anyObjectAtCenter && !showBoundary });

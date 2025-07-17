@@ -275,7 +275,7 @@ const renderAllImageObjects = (
           });
           removeAllHtmlControls(canvas);
 
-          newImg.controls = createControls(bringPopup);
+          newImg.controls = createControls(bringPopup,dispatch);
           canvas.add(newImg);
 
           newImg.on("mousedown", (e) => {
@@ -343,7 +343,7 @@ const renderAllImageObjects = (
         mtr: false,
       });
       removeAllHtmlControls(canvas);
-      existingObj.controls = createControls(bringPopup);
+      existingObj.controls = createControls(bringPopup,dispatch);
       const center = existingObj.getCenterPoint();
       existingObj.setPositionByOrigin(center, "center", "center");
       existingObj.setCoords();
@@ -398,7 +398,7 @@ const renderAllImageObjects = (
             mtr: false,
           });
 
-          img.controls = createControls(bringPopup);
+          img.controls = createControls(bringPopup,dispatch);
           canvas.add(img);
 
           img.on("mousedown", (e) => {

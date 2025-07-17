@@ -81,7 +81,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
     setUploadStatus('fetching');
     setCurrentUploadFileInfo({
       file: null,
-      imageUrl: img.urls.small,
+      imageUrl: img.urls.full,
       name: img.alt_description || `${img.id}.jpg`,
     });
 
@@ -232,7 +232,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
               unsplashImages.map((img) => (
                 <img
                   key={img.id}
-                  src={img.urls.small}
+                  src={img.urls.full}
                   alt={img.alt_description}
                   className={style.clipartImage}
                   onClick={() => handleFiles(img)}

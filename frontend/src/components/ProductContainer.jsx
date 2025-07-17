@@ -139,13 +139,14 @@ function ProductContainer() {
   useEffect(() => {
     if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
 
-    const productId = "8847707537647"; // "8847707537647"
+    const productId = "8841667641583"; // "8847707537647"
     // console.log("productId", productId);
     // console.log(rawProducts, "productId")
-    const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/8847707537647`);
+    const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/${productId}`);
     // console.log("initiale Product", initialProduct);
     dispatch(setSelectedProducts(initialProduct));
     dispatch(setActiveProduct(initialProduct[0]));
+    
     // dispatch(setCurrentProductId(initialProduct[0]?.id));
     // dispatch(addProductDesignState({ productId: initialProduct[0]?.id }))
     if (initialProduct.length > 0) {
@@ -259,7 +260,7 @@ function ProductContainer() {
           />
         </div>
 
-        <div style={{ display: activeSide === "back" ? "block" : "none"}}>
+        <div style={{ display: activeSide === "back" ? "block" : "none" }}>
           <MainDesignTool
             warningColor={invertedColor}
             id="mirrorCanvasBack"
@@ -300,7 +301,7 @@ function ProductContainer() {
             setLeftSleevePreviewImage={setLeftSleevePreviewImage}
           />
         </div>
-    
+
         {/* Side Preview Thumbnails */}
         {!isQuantityPage && <div className={style.ProuductMirrorContainer} >
           <div className={style.ProuductMirrorLeftContainer}>

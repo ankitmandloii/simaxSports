@@ -651,6 +651,7 @@ const TextFrontendDesignSlice = createSlice({
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
       const deletedText = state.present[side].texts.find(t => t.id === action.payload);
+      if(!deletedText) return;
       const deletedLayerIndex = deletedText?.layerIndex || 0;
 
       // Remove the text
@@ -688,6 +689,7 @@ const TextFrontendDesignSlice = createSlice({
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
       const deletedImage = state.present[side].images.find(i => i.id === action.payload);
+      if (!deletedImage) return;
       const deletedLayerIndex = deletedImage?.layerIndex || 0;
 
       state.present[side].images = state.present[side].images.filter(
@@ -953,13 +955,13 @@ const TextFrontendDesignSlice = createSlice({
       state.present[side].setRendering = !state.present[side].setRendering;
       state.future[side] = [];
     },
-        toggleLoading: (state, action) => {
-          const side = state.activeSide;
-          const { changes } = action.payload;
-          console.log("changes which we want to add", changes);
-          if (changes) {
-            Object.assign(state.present[side].loadingState, changes); // ✅ merge changes into side object
-          }
+    toggleLoading: (state, action) => {
+      const side = state.activeSide;
+      const { changes } = action.payload;
+      console.log("changes which we want to add", changes);
+      if (changes) {
+        Object.assign(state.present[side].loadingState, changes); // ✅ merge changes into side object
+      }
     }
 
   },
