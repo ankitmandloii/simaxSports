@@ -110,7 +110,7 @@ function renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, d
       cursor: "pointer",
       backgroundColor: "white", // White background for the circle
       borderRadius: "50%", // Ensures it's a circle
-      border: "2px solid #B0B0B0", // Added grey border around the circle
+      border: "1px solid #B0B0B0", // Added grey border around the circle
       boxShadow: "0 0 4px rgba(0,0,0,0.2)", // Light shadow effect
       display: "flex",
       alignItems: "center", // Vertically center the icon
@@ -180,7 +180,7 @@ function renderHtmlResizeControl(ctx, left, top, _styleOverride, fabricObject) {
       height: "28px", // Same as above
       backgroundColor: "white", // White background for the circle
       borderRadius: "50%", // Ensures it's a circle
-      border: "2px solid #B0B0B0", // Grey border around the circle
+      border: "1px solid #B0B0B0", // Grey border around the circle
       boxShadow: "0 0 4px rgba(0,0,0,0.2)", // Light shadow effect
       display: "flex",
       alignItems: "center", // Vertically center the icon
@@ -288,7 +288,7 @@ function renderHtmlRotateControl(ctx, left, top, _styleOverride, fabricObject) {
       cursor: "crosshair", // Cursor style for rotate control
       backgroundColor: "white", // White background for the circle
       borderRadius: "50%", // Ensures it's a circle
-      border: "2px solid #B0B0B0", // Added grey border around the circle
+      border: "1px solid #B0B0B0", // Added grey border around the circle
       boxShadow: "0 0 4px rgba(0,0,0,0.2)", // Light shadow effect
       display: "flex",
       alignItems: "center", // Vertically center the icon
@@ -384,24 +384,25 @@ function renderHtmlHeightControl(ctx, left, top, _styleOverride, fabricObject) {
     const el = document.createElement("div");
     Object.assign(el.style, {
       position: "absolute",
-      width: "28px", // Size of the circle
+      width: "15px", // Size of the circle
       height: "28px", // Same as above
+      marginLeft: "6px",
       backgroundColor: "white", // White background for the circle
-      borderRadius: "50%", // Ensures it's a circle
-      border: "2px solid #B0B0B0", // Added grey border around the circle
+      // borderRadius: "50%", // Ensures it's a circle
+      border: "1px solid #B0B0B0", // Added grey border around the circle
       boxShadow: "0 0 4px rgba(0,0,0,0.2)", // Light shadow effect
       display: "flex",
       alignItems: "center", // Vertically center the icon
       justifyContent: "center", // Horizontally center the icon
-      padding: "2px", // Padding for icon positioning
+      // padding: "2px", // Padding for icon positioning
       zIndex: "99", // Ensure it appears on top
       pointerEvents: "none", // Prevent Fabric functionality interference
     });
 
     const img = document.createElement("img");
     img.src = heightIconDataURL; // Ensure correct height icon source
-    img.style.width = "16px"; // Icon size
-    img.style.height = "16px";
+    img.style.width = "18px"; // Icon size
+    img.style.height = "18px";
     img.style.pointerEvents = "none"; // Prevent pointer events from interfering with the icon
 
     el.appendChild(img); // Append the image inside the circle
@@ -493,15 +494,16 @@ function renderHtmlWidthControl(ctx, left, top, _styleOverride, fabricObject) {
     Object.assign(el.style, {
       position: "absolute",
       width: "28px", // Size of the circle (unchanged from original)
-      height: "28px", // Same as above
+      height: "15px", // Same as above
       backgroundColor: "white", // White background for the circle
-      borderRadius: "50%", // Ensures it's a circle
-      border: "2px solid #B0B0B0", // Added grey border around the circle
+      // borderRadius: "50%", // Ensures it's a circle
+      border: "1px solid #B0B0B0", // Added grey border around the circle
       boxShadow: "0 0 4px rgba(0,0,0,0.2)", // Light shadow effect
       display: "flex",
+      marginTop: "6px",
       alignItems: "center", // Vertically center the icon
       justifyContent: "center", // Horizontally center the icon
-      padding: "2px", // Padding for icon positioning
+      // padding: "2px",   // Padding for icon positioning
       zIndex: "99", // Ensure it appears on top
       pointerEvents: "none", // Prevent Fabric functionality interference
       transition: "background-color 0.2s", // Smooth transition for background color change
@@ -509,8 +511,8 @@ function renderHtmlWidthControl(ctx, left, top, _styleOverride, fabricObject) {
 
     const img = document.createElement("img");
     img.src = widthIconDataURL; // Ensure correct width icon source
-    img.style.width = "16px"; // Icon size (unchanged from original)
-    img.style.height = "16px";
+    img.style.width = "18px"; // Icon size (unchanged from original)
+    img.style.height = "18px";
     img.style.pointerEvents = "none"; // Prevent pointer events from interfering with the icon
 
     el.appendChild(img); // Append the image inside the circle
@@ -604,7 +606,7 @@ function renderHtmlLayerControl(ctx, left, top, _styleOverride, fabricObject, br
       cursor: "pointer", // Pointer cursor to indicate interactivity
       backgroundColor: "white", // White background for the circle
       borderRadius: "50%", // Ensures it's a circle
-      border: "2px solid #B0B0B0", // Added grey border around the circle
+      border: "1px solid #B0B0B0", // Added grey border around the circle
       boxShadow: "0 0 4px rgba(0,0,0,0.2)", // Light shadow effect for depth
       display: "flex",
       alignItems: "center", // Vertically center the icon
@@ -683,7 +685,7 @@ function RenderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, d
       cursor: "pointer",
       backgroundColor: "white", // White background for the circle
       borderRadius: "50%", // Ensures it's a circle
-      border: "2px solid #B0B0B0", // Added grey border around the circle
+      border: "1px solid #B0B0B0", // Added grey border around the circle
       boxShadow: "0 0 4px rgba(0,0,0,0.2)", // Light shadow effect
       display: "flex",
       alignItems: "center", // Vertically center the icon

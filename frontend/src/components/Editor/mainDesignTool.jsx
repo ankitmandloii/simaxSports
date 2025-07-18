@@ -307,18 +307,69 @@ const MainDesignTool = ({
     setLoading(loadingState?.loading);
     console.log("loading state is ", loading)
   }, [loadingState])
+  // useEffect(() => {
+  //   const canvas = fabricCanvasRef.current;
+  //   if (canvas && canvas.setZoom) {
+  //     const zoom = zoomLevel;
+
+  //     // Get canvas center point (in pixels)
+  //     const center = new fabric.Point(canvas.width / 2, canvas.height / 2);
+
+  //     // Zoom relative to center point
+  //     canvas.zoomToPoint(center, zoom);
+  //   }
+  // }, [zoomLevel]);
+
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
     if (canvas && canvas.setZoom) {
-      const zoom = zoomLevel;
-
       // Get canvas center point (in pixels)
-      const center = new fabric.Point(canvas.width / 2, canvas.height / 2);
+      //     const center = new fabric.Point(canvas.width / 2, canvas.height / 2);
 
-      // Zoom relative to center point
-      canvas.zoomToPoint(center, zoom);
+      //     // Zoom relative to center point
+      //     canvas.zoomToPoint(center, zoom);
+      const zoom = zoomLevel;  // Zoom level toggles between 1 and 1.4
+
+      const backgroundImage = canvas.backgroundImage;
+      console.log("backgroundImage", backgroundImage);
+
+      if (backgroundImage) {
+        // Calculate the new scale based on the zoom level
+        let newScale = backgroundImage.scaleX * zoom;
+
+        console.log("zoom", zoom)
+
+        if (zoom == 1) {
+          // Calculate scale factors based on canvas size and background image size
+          const imgWidth = backgroundImage.width;
+          const imgHeight = backgroundImage.height;
+          const canvasWidth = canvas.getWidth();
+          const canvasHeight = canvas.getHeight();
+
+          // Calculate scale to fit the image inside the canvas while maintaining aspect ratio
+          const scaleX = canvasWidth / imgWidth;
+          const scaleY = canvasHeight / imgHeight;
+
+          // Choose the maximum of the two scale values to preserve aspect ratio
+          newScale = Math.max(scaleX, scaleY);
+          console.log("new scale ", newScale);
+        }
+
+        // Ensure the background image properties are updated correctly
+        backgroundImage.set({
+          scaleX: newScale,
+          scaleY: newScale
+        });
+
+        // Re-set the background image to update the canvas background
+        canvas.setBackgroundImage(backgroundImage, () => {
+          canvas.renderAll();  // Explicitly re-render the canvas
+        });
+
+        console.log("Updated background image scale:", newScale);
+      }
     }
-  }, [zoomLevel]);
+  }, [zoomLevel]);  // Trigger effect when zoomLevel changes
 
   const removeAllHtmlControls = () => {
     const canvas = fabricCanvasRef.current;
@@ -343,6 +394,7 @@ const MainDesignTool = ({
       width: canvasWidth,
       height: canvasHeight,
     });
+
     fabricCanvasRef.current = canvas;
 
     const boxWidth = 250;
@@ -414,6 +466,8 @@ const MainDesignTool = ({
       originY: "top",
       name: "warningText",
     });
+
+    
     // canvas.add(warningText);
     canvas.bringToFront(warningText);
     // canvas.requestRenderAll();
