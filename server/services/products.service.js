@@ -360,6 +360,13 @@ export async function getProductsByCollectionId(limit, collectionId, cursor) {
                     hasNextPage
                   }
                 }
+                images(first: 250) {
+            edges {
+              node {
+                originalSrc
+              }
+            }
+          }
               }
             }
           }
