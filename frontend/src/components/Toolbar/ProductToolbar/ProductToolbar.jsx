@@ -18,6 +18,7 @@ import {
 import { removeNameAndNumberProduct, setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSlice';
 import AddColorBtn from '../../CommonComponent/AddColorBtn/AddColorBtn';
+import { removeProduct } from '../../../redux/productSelectionSlice/productSelectionSlice';
 
 const ProductToolbar = () => {
   const dispatch = useDispatch();
@@ -92,8 +93,14 @@ const ProductToolbar = () => {
     setAddProduct(false);
   };
 
-  const handleDeleteProduct = (indexToDelete) => {
+  const handleDeleteProduct = (indexToDelete, id) => {
+
+
     // Remove product at index
+
+    console.log("id.................", id);
+    let Productid = id.split("/");
+    dispatch(removeProduct(Productid[Productid.length - 1]));
     const updated = [...selectedProducts];
     updated.splice(indexToDelete, 1);
 
@@ -266,7 +273,7 @@ const ProductToolbar = () => {
                   {selectedProducts.length > 1 && (
                     <span
                       className={style.crossProdICon}
-                      onClick={() => handleDeleteProduct(index)}
+                      onClick={() => handleDeleteProduct(index, product.id)}
                       style={{ cursor: 'pointer' }}
                     >
                       <CrossIcon />
