@@ -1,11 +1,10 @@
 
 
-exports.getProductsList = async (limit, cursor = null) => {
-  const S_STORE = `${process.env.SHOPIFY_STORE_URL}`;
-  const A_TOKEN = `${process.env.SHOPIFY_API_KEY}`;
+export async function getProductsList(limit, cursor = null) {
+ 
 
-  const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
-
+  const SHOPIFY_API_URL = `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-04/graphql.json`;
+  
   const afterClause = cursor ? `, after: "${cursor}"` : "";
 
   const query = `{
@@ -66,7 +65,7 @@ exports.getProductsList = async (limit, cursor = null) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Shopify-Access-Token': A_TOKEN,
+        'X-Shopify-Access-Token': process.env.SHOPIFY_API_KEY,
       },
       body: JSON.stringify({ query }),
     });
@@ -81,7 +80,7 @@ exports.getProductsList = async (limit, cursor = null) => {
     console.error('Failed to fetch products:', error);
     throw new Error('Error fetching products from Shopify');
   }
-};
+}
 
 
 
@@ -239,7 +238,7 @@ exports.getProductsList = async (limit, cursor = null) => {
 
 
 
-exports.getAllCollectionList = async (limit = 50, cursor = null) => {
+export async function getAllCollectionList(limit = 50, cursor = null) {
   const S_STORE = `${process.env.SHOPIFY_STORE_URL}`;
   const A_TOKEN = `${process.env.SHOPIFY_API_KEY}`;
 
@@ -311,10 +310,10 @@ exports.getAllCollectionList = async (limit = 50, cursor = null) => {
     console.error("Failed to fetch collections:", error.message || error);
     throw new Error("Error fetching collections");
   }
-};
+}
 
 
-exports.getProductsByCollectionId = async (limit, collectionId, cursor) => {
+export async function getProductsByCollectionId(limit, collectionId, cursor) {
   const S_STORE = `${process.env.SHOPIFY_STORE_URL}`;
   const A_TOKEN = `${process.env.SHOPIFY_API_KEY}`;
 
@@ -388,4 +387,4 @@ exports.getProductsByCollectionId = async (limit, collectionId, cursor) => {
     console.error("Failed to fetch Products:", error.message || error);
     return null;
   }
-};
+}
