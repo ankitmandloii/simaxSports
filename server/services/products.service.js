@@ -1,8 +1,8 @@
 
 
 exports.getProductsList = async (limit, cursor = null) => {
-  const S_STORE = `${process.env.STORE}`;
-  const A_TOKEN = `${process.env.TOKEN}`;
+  const S_STORE = `${process.env.SHOPIFY_STORE_URL}`;
+  const A_TOKEN = `${process.env.SHOPIFY_API_KEY}`;
 
   const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
 
@@ -86,8 +86,8 @@ exports.getProductsList = async (limit, cursor = null) => {
 
 
 exports.getProductFilter = async (title, limit, isCursor) => {
-  const S_STORE = `${process.env.STORE}`;
-  const A_TOKEN = `${process.env.TOKEN}`;
+  const S_STORE = `${process.env.SHOPIFY_STORE_URL}`;
+  const A_TOKEN = `${process.env.SHOPIFY_API_KEY}`;
 
   const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
   try {
@@ -240,8 +240,8 @@ exports.getProductFilter = async (title, limit, isCursor) => {
 
 
 exports.getAllCollectionList = async (limit = 50, cursor = null) => {
-  const S_STORE = `${process.env.STORE}`;
-  const A_TOKEN = `${process.env.TOKEN}`;
+  const S_STORE = `${process.env.SHOPIFY_STORE_URL}`;
+  const A_TOKEN = `${process.env.SHOPIFY_API_KEY}`;
 
   const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
   try {
@@ -315,8 +315,8 @@ exports.getAllCollectionList = async (limit = 50, cursor = null) => {
 
 
 exports.getProductsByCollectionId = async (limit, collectionId, cursor) => {
-  const S_STORE = `${process.env.STORE}`;
-  const A_TOKEN = `${process.env.TOKEN}`;
+  const S_STORE = `${process.env.SHOPIFY_STORE_URL}`;
+  const A_TOKEN = `${process.env.SHOPIFY_API_KEY}`;
 
   const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
   try {
