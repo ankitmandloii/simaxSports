@@ -273,7 +273,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   const [hasNextPage, setHasNextPage] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const defaultCollectionId = 'gid://shopify/Collection/450005106927';
+  const defaultCollectionId = 'gid://shopify/Collection/289323319430';
   const effectiveCollectionId = collectionId || defaultCollectionId;
   const numericId = effectiveCollectionId.split('/').pop();
 
