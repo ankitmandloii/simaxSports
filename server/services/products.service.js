@@ -85,155 +85,155 @@ exports.getProductsList = async (limit, cursor = null) => {
 
 
 
-exports.getProductFilter = async (title, limit, isCursor) => {
-  const S_STORE = `${process.env.SHOPIFY_STORE_URL}`;
-  const A_TOKEN = `${process.env.SHOPIFY_API_KEY}`;
+// exports.getProductFilter = async (title, limit, isCursor) => {
+//   const S_STORE = `${process.env.SHOPIFY_STORE_URL}`;
+//   const A_TOKEN = `${process.env.SHOPIFY_API_KEY}`;
 
-  const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
-  try {
+//   const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
+//   try {
 
 
-    // const query = `{
-    //   search(query: "${title}", first: ${limit} types: PRODUCT) {
-    //     edges {
-    //       node {
-    //         ... on Product {
-    //           options(first: 50) {
-    //             id
-    //             name
-    //             values
-    //           }
-    //           collections(first: 250) {
-    //             edges {
-    //               node {
-    //                 description
-    //                 descriptionHtml
-    //                 handle
-    //                 id
-    //                 updatedAt
-    //                 title
-    //               }
-    //             }
-    //           }
-    //           id
-    //           handle
-    //           variants(first: 3) {
-    //             edges {
-    //               node {
-    //                 priceV2 {
-    //                   amount
-    //                   currencyCode
-    //                 }
-    //                 title
-    //                 image {
-    //                   altText
-    //                   originalSrc
-    //                   id
-    //                 }
-    //                 compareAtPriceV2 {
-    //                   amount
-    //                   currencyCode
-    //                 }
-    //                 weightUnit
-    //                 weight
-    //                 availableForSale
-    //                 sku
-    //                 requiresShipping
-    //                 id
-    //                 quantityAvailable
-    //               }
-    //             }
-    //           }
-    //           onlineStoreUrl
-    //           productType
-    //           publishedAt
-    //           tags
-    //           updatedAt
-    //           vendor
-    //           title
-    //           availableForSale
-    //           createdAt
-    //           description
-    //           descriptionHtml
-    //           images(first: 250) {
-    //             edges {
-    //               node {
-    //                 altText
-    //                 id
-    //                 originalSrc
-    //               }
-    //             }
-    //           }
-    //         }
-    //       }
-    //     }
-    //     pageInfo {
-    //       startCursor
-    //       endCursor
-    //       hasNextPage
-    //       hasPreviousPage
-    //     }
-    //   }
-    // }`;
-    const query = `{
-  products(${args.join(", ")}) {
-    pageInfo {
-      startCursor
-      endCursor
-      hasNextPage
-      hasPreviousPage
-    }
-    edges {
-      cursor
-      node {
-        id
-        title
-        variants(first: 250) {
-          edges {
-            node {
-              id
-              title
-              image {
-                originalSrc
-              }
-              selectedOptions {
-                name
-                value
-              }
-            }
-          }
-          pageInfo {
-            hasNextPage
-          }
-        }
-        images(first: 10) {
-          edges {
-            node {
-              originalSrc
-            }
-          }
-        }
-      }
-    }
-  }
-}`;
-    const response = await axios.post(
-      SHOPIFY_API_URL,
-      { query },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Access-Token': A_TOKEN,
-        },
-      }
-    );
+//     // const query = `{
+//     //   search(query: "${title}", first: ${limit} types: PRODUCT) {
+//     //     edges {
+//     //       node {
+//     //         ... on Product {
+//     //           options(first: 50) {
+//     //             id
+//     //             name
+//     //             values
+//     //           }
+//     //           collections(first: 250) {
+//     //             edges {
+//     //               node {
+//     //                 description
+//     //                 descriptionHtml
+//     //                 handle
+//     //                 id
+//     //                 updatedAt
+//     //                 title
+//     //               }
+//     //             }
+//     //           }
+//     //           id
+//     //           handle
+//     //           variants(first: 3) {
+//     //             edges {
+//     //               node {
+//     //                 priceV2 {
+//     //                   amount
+//     //                   currencyCode
+//     //                 }
+//     //                 title
+//     //                 image {
+//     //                   altText
+//     //                   originalSrc
+//     //                   id
+//     //                 }
+//     //                 compareAtPriceV2 {
+//     //                   amount
+//     //                   currencyCode
+//     //                 }
+//     //                 weightUnit
+//     //                 weight
+//     //                 availableForSale
+//     //                 sku
+//     //                 requiresShipping
+//     //                 id
+//     //                 quantityAvailable
+//     //               }
+//     //             }
+//     //           }
+//     //           onlineStoreUrl
+//     //           productType
+//     //           publishedAt
+//     //           tags
+//     //           updatedAt
+//     //           vendor
+//     //           title
+//     //           availableForSale
+//     //           createdAt
+//     //           description
+//     //           descriptionHtml
+//     //           images(first: 250) {
+//     //             edges {
+//     //               node {
+//     //                 altText
+//     //                 id
+//     //                 originalSrc
+//     //               }
+//     //             }
+//     //           }
+//     //         }
+//     //       }
+//     //     }
+//     //     pageInfo {
+//     //       startCursor
+//     //       endCursor
+//     //       hasNextPage
+//     //       hasPreviousPage
+//     //     }
+//     //   }
+//     // }`;
+//     const query = `{
+//   products(${args.join(", ")}) {
+//     pageInfo {
+//       startCursor
+//       endCursor
+//       hasNextPage
+//       hasPreviousPage
+//     }
+//     edges {
+//       cursor
+//       node {
+//         id
+//         title
+//         variants(first: 250) {
+//           edges {
+//             node {
+//               id
+//               title
+//               image {
+//                 originalSrc
+//               }
+//               selectedOptions {
+//                 name
+//                 value
+//               }
+//             }
+//           }
+//           pageInfo {
+//             hasNextPage
+//           }
+//         }
+//         images(first: 10) {
+//           edges {
+//             node {
+//               originalSrc
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }`;
+//     const response = await axios.post(
+//       SHOPIFY_API_URL,
+//       { query },
+//       {
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'X-Shopify-Access-Token': A_TOKEN,
+//         },
+//       }
+//     );
 
-    return response.data;
+//     return response.data;
 
-  } catch (error) {
-    console.error('Failed to fetch products:', error);
-  }
-};
+//   } catch (error) {
+//     console.error('Failed to fetch products:', error);
+//   }
+// };
 
 
 

@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 router.post("/list", controllers.productList);
-router.post("/filter", controllers.productFilter);
+// router.post("/filter", controllers.productFilter);
 router.post("/collectionList", controllers.getAllCollectionList);
 router.post("/collection/:id", controllers.productsByCollectionId);
 

@@ -21,29 +21,29 @@ exports.productList = async (req, res) => {
 };
 
 
-exports.productFilter = async (req, res) => {
-    try {
-        // Extract the product title from body
-        const title = req.body.title;
+// exports.productFilter = async (req, res) => {
+//     try {
+//         // Extract the product title from body
+//         const title = req.body.title;
 
-        // Set the limit for the number of items to fetch
-        const limit = req.body.limit;
+//         // Set the limit for the number of items to fetch
+//         const limit = req.body.limit;
 
-        // Determine if a cursor is provided to fetch results after a specific point
-        const cursor = req.body.cursor;
-        const isCursor = cursor ? `after:"${cursor}",` : "";
-        const result = await services.getProductFilter(title, limit, isCursor);
+//         // Determine if a cursor is provided to fetch results after a specific point
+//         const cursor = req.body.cursor;
+//         const isCursor = cursor ? `after:"${cursor}",` : "";
+//         const result = await services.getProductFilter(title, limit, isCursor);
 
 
-        if (!result) {
-            return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.PRODUCT_FETCHED);
-        }
-        return sendResponse(res, statusCode.OK, true, SuccessMessage.DATA_FETCHED, result);
-    } catch (error) {
-        console.log(error)
-        return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
-    }
-};
+//         if (!result) {
+//             return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.PRODUCT_FETCHED);
+//         }
+//         return sendResponse(res, statusCode.OK, true, SuccessMessage.DATA_FETCHED, result);
+//     } catch (error) {
+//         console.log(error)
+//         return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+//     }
+// };
 
 
 
