@@ -23,7 +23,7 @@ export const fetchProducts = createAsyncThunk(
       }
 
       const data = await response.json();
-      console.log("====data", data)
+      console.log("====reduxdata", data)
       const edges = data.result.data.products.edges;
       // const products = edges.map(({ node }) => {
       //   const variants = node.variants.edges.map((v) => v.node);
@@ -49,51 +49,56 @@ export const fetchProducts = createAsyncThunk(
       //     id: productID
       //   };
       // });
-      const products = edges.map(({ node }) => {
-        const variants = node.variants.edges.map((v) => v.node);
-        const productID = node.id;
+     const products = edges.map(({ node }) => {
+  const variants = node.variants.edges.map((v) => v.node);
+  const productID = node.id;
 
-        // Build color → image mapping
-        const colorMap = {};
-        variants.forEach((variant) => {
-          const color = variant.selectedOptions?.find((opt) => opt.name === "Color")?.value;
+  // Collect all product images
+  const productImages = node.images.edges.map((imgEdge) => imgEdge.node.originalSrc);
 
-          // Extract custom image from metafields (variant_images)
-          const metafield = variant.metafields?.edges?.find(
-            (edge) =>
-              edge.node.key === "variant_images" &&
-              edge.node.namespace === "custom"
-          );
+  // Build color → image mapping
+  const colorMap = {};
+  variants.forEach((variant) => {
+    const color = variant.selectedOptions?.find((opt) => opt.name === "Color")?.value;
 
-          let customImage = "";
-          if (metafield) {
-            try {
-              const parsed = JSON.parse(metafield.node.value);
-              if (Array.isArray(parsed) && parsed[0]?.src) {
-                customImage = parsed[0].src;
-              }
-            } catch (e) {
-              console.warn("Failed to parse variant_images metafield:", e);
-            }
-          }
+    // Extract custom image from metafields (variant_images)
+    const metafield = variant.metafields?.edges?.find(
+      (edge) =>
+        edge.node.key === "variant_images" &&
+        edge.node.namespace === "custom"
+    );
 
-          if (color && !colorMap[color]) {
-            colorMap[color] = {
-              name: color,
-              img: customImage || variant.image?.originalSrc || "", // fallback order
-              variant,
-            };
-          }
-        });
+    let customImage = "";
+    if (metafield) {
+      try {
+        const parsed = JSON.parse(metafield.node.value);
+        if (Array.isArray(parsed) && parsed[0]?.src) {
+          customImage = parsed[0].src;
+        }
+      } catch (e) {
+        console.warn("Failed to parse variant_images metafield:", e);
+      }
+    }
 
-        return {
-          name: node.title,
-          imgurl: variants[0]?.image?.originalSrc || "", // use the first variant or fallback to product image if needed
-          colors: Object.values(colorMap), // [{ name, img, variant }]
-          allVariants: variants,
-          id: productID,
-        };
-      });
+    if (color && !colorMap[color]) {
+      colorMap[color] = {
+        name: color,
+        img: customImage || variant.image?.originalSrc || "",
+        variant,
+      };
+    }
+  });
+
+  return {
+    name: node.title,
+    imgurl: variants[0]?.image?.originalSrc || productImages[0] || "", // fallback to first product image
+    images: productImages, // ✅ add this field to store all product images
+    colors: Object.values(colorMap),
+    allVariants: variants,
+    id: productID,
+  };
+});
+
 
       return products;
     } catch (error) {

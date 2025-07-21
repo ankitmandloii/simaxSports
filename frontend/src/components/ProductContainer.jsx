@@ -27,8 +27,12 @@ function ProductContainer() {
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   const exportRequested = useSelector((state) => state.canvasExport.exportRequested);
   const selectedProducts = useSelector(state => state.selectedProducts.selectedProducts);
-  const frontImage = useSelector(state => state?.selectedProducts?.activeProduct?.imgurl);
-  const backImage = useSelector(state => state?.selectedProducts?.activeProduct?.colors?.[1]?.img);
+  
+  const frontImage = useSelector(state => state?.selectedProducts?.activeProduct?.images[0]);
+    // const frontImage2 = useSelector(state => state?.selectedProducts?.activeProduct);
+  console.log("----selectedProductsContainer",selectedProducts)
+  const backImage = useSelector(state => state?.selectedProducts?.activeProduct?.images[2]);
+  const sleeveImage=useSelector(state => state?.selectedProducts?.activeProduct?.images[3]);
   const isQuantityPage = location.pathname === "/quantity" || location.pathname === '/review';
 
   function invertHexColor(hex) {
@@ -58,15 +62,15 @@ function ProductContainer() {
   const invertedColor = invertHexColor(activeProductColorHex);  //convert the color to text to hax then invert it
 
 
-  const [frontBgImage, setFrontBgImage] = useState(null);
-  const [backBgImage, setBackBgImage] = useState(frontImage);
-  const [rightSleeveBgImage, setRightSleeveBgImage] = useState(frontImage);
-  const [leftSleeveBgImage, setLeftSleeveBgImage] = useState(frontImage);
+  const [frontBgImage, setFrontBgImage] = useState(frontImage);
+  const [backBgImage, setBackBgImage] = useState(backImage);
+  const [rightSleeveBgImage, setRightSleeveBgImage] = useState(sleeveImage);
+  const [leftSleeveBgImage, setLeftSleeveBgImage] = useState(sleeveImage);
 
   const [frontPreviewImage, setFrontPreviewImage] = useState(frontImage);
-  const [backPreviewImage, setBackPreviewImage] = useState(frontImage);
-  const [rightSleevePreviewImage, setRightSleevePreviewImage] = useState(frontImage);
-  const [leftSleevePreviewImage, setLeftSleevePreviewImage] = useState(frontImage);
+  const [backPreviewImage, setBackPreviewImage] = useState(backImage);
+  const [rightSleevePreviewImage, setRightSleevePreviewImage] = useState(sleeveImage);
+  const [leftSleevePreviewImage, setLeftSleevePreviewImage] = useState(sleeveImage);
 
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isZoomedIn, setIsZoomedIn] = useState(false);
@@ -139,40 +143,44 @@ function ProductContainer() {
   useEffect(() => {
     if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
 
-    const productId = "8841667641583"; // "8847707537647"
+    const productId = "7434523443334"; // "8847707537647"
     // console.log("productId", productId);
     // console.log(rawProducts, "productId")
     const initialProduct = rawProducts.filter((p) => p.id == `gid://shopify/Product/${productId}`);
-    // console.log("initiale Product", initialProduct);
+    console.log("initiale Product", initialProduct);
     dispatch(setSelectedProducts(initialProduct));
     dispatch(setActiveProduct(initialProduct[0]));
     
     // dispatch(setCurrentProductId(initialProduct[0]?.id));
     // dispatch(addProductDesignState({ productId: initialProduct[0]?.id }))
     if (initialProduct.length > 0) {
-      const img = initialProduct[0].imgurl;
-      setFrontBgImage(img);
-      setBackBgImage(img);
-      setLeftSleeveBgImage(img);
-      setRightSleeveBgImage(img);
+    console.log("initiale Product 22", initialProduct);
 
-      setFrontPreviewImage(img);
-      setLeftSleevePreviewImage(img);
-      setRightSleevePreviewImage(img);
-      setBackPreviewImage(img);
+      // const img = initialProduct[0].images[0];
+      // console.log("----------------------img",img)
+      // setFrontBgImage(img);
+      // setBackBgImage(img);
+      // setLeftSleeveBgImage(img);
+      // setRightSleeveBgImage(img);
+
+      // setFrontPreviewImage(img);
+      // setLeftSleevePreviewImage(img);
+      // setRightSleevePreviewImage(img);
+      // setBackPreviewImage(img);
     }
   }, [rawProducts])
+  
 
   useEffect(() => {
     setFrontBgImage(frontImage);
-    setBackBgImage(frontImage);
-    setLeftSleeveBgImage(frontImage);
-    setRightSleeveBgImage(frontImage);
+    setBackBgImage(backImage);
+    setLeftSleeveBgImage(sleeveImage);
+    setRightSleeveBgImage(sleeveImage);
 
     setFrontPreviewImage(frontImage);
-    setLeftSleevePreviewImage(frontImage);
-    setRightSleevePreviewImage(frontImage);
-    setBackPreviewImage(frontImage);
+    setLeftSleevePreviewImage(sleeveImage);
+    setRightSleevePreviewImage(sleeveImage);
+    setBackPreviewImage(backImage);
 
   }, [frontImage]);
 

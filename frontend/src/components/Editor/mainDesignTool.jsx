@@ -751,8 +751,8 @@ const MainDesignTool = ({
           const imgHeight = img.height;
 
           // Calculate scale based on the parent container size
-          const scaleX = canvasWidth / imgWidth;
-          const scaleY = canvasHeight / imgHeight;
+          const scaleX = (canvasWidth-130 )/ imgWidth;
+          const scaleY = (canvasHeight-130) / imgHeight;
 
           // Apply the scale to ensure the image fits within the canvas while maintaining aspect ratio
           const scale = Math.max(scaleX, scaleY);
