@@ -562,6 +562,14 @@ hr {
   max-width: 100%;
 }
 
+.canvas-wrapper-export {
+  height: 90vh;
+  aspect-ratio: 1 / 1;
+  /* or 3 / 3 = 1 */
+  margin: 0 auto;
+  max-width: 100%;
+}
+
 #canvas {
   width: 100% !important;
   height: 100% !important;

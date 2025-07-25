@@ -125,6 +125,7 @@ function renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, d
     img.style.height = "16px"; // Icon size (unchanged from original)
     img.style.pointerEvents = "auto"; // Ensure the icon is clickable
 
+    el.setAttribute("data-fabric-control", "true");
     // Hover effect to change background and icon color
     el.onmouseenter = () => {
       el.style.backgroundColor = "#005bff"; // Blue background on hover
@@ -155,6 +156,9 @@ function renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, d
         // Remove object from canvas
         canvas.remove(fabricObject);
         canvas.requestRenderAll();
+        const buttonId = `canvas-${fabricObject.id}`;
+        const button = document.getElementById(buttonId);
+        if (button) button.remove();
       }
     };
 
@@ -197,6 +201,7 @@ function renderHtmlResizeControl(ctx, left, top, _styleOverride, fabricObject) {
     img.style.height = "16px";
     img.style.pointerEvents = "none"; // Prevent interference with the pointer events
 
+    el.setAttribute("data-fabric-control", "true");
     el.appendChild(img);
     document.body.appendChild(el);
     fabricObject._htmlControls.resize = el;
@@ -303,7 +308,7 @@ function renderHtmlRotateControl(ctx, left, top, _styleOverride, fabricObject) {
     img.style.width = "16px"; // Icon size (unchanged from original)
     img.style.height = "16px";
     img.style.pointerEvents = "none"; // Prevent pointer events from interfering with the icon
-
+    el.setAttribute("data-fabric-control", "true");
     el.appendChild(img); // Append the image inside the circle
     document.body.appendChild(el); // Add the control to the document body
     fabricObject._htmlControls.rotate = el; // Store the rotate control reference for removal later
@@ -404,7 +409,7 @@ function renderHtmlHeightControl(ctx, left, top, _styleOverride, fabricObject) {
     img.style.width = "18px"; // Icon size
     img.style.height = "18px";
     img.style.pointerEvents = "none"; // Prevent pointer events from interfering with the icon
-
+    el.setAttribute("data-fabric-control", "true");
     el.appendChild(img); // Append the image inside the circle
     document.body.appendChild(el); // Add the control to the document body
     fabricObject._htmlControls.height = el; // Store the height control reference for later removal
@@ -514,7 +519,7 @@ function renderHtmlWidthControl(ctx, left, top, _styleOverride, fabricObject) {
     img.style.width = "18px"; // Icon size (unchanged from original)
     img.style.height = "18px";
     img.style.pointerEvents = "none"; // Prevent pointer events from interfering with the icon
-
+    el.setAttribute("data-fabric-control", "true");
     el.appendChild(img); // Append the image inside the circle
     document.body.appendChild(el); // Add the control to the document body
     fabricObject._htmlControls.width = el; // Store the width control reference for later removal
@@ -640,7 +645,7 @@ function renderHtmlLayerControl(ctx, left, top, _styleOverride, fabricObject, br
         bringPopup(fabricObject); // Call the popup function with the fabricObject
       }
     };
-
+    el.setAttribute("data-fabric-control", "true");
     // Append the image to the control div
     el.appendChild(img);
     // Append the control div to the document body

@@ -264,10 +264,12 @@ const QuantityToolbar = () => {
     const newAllProducts = [];
 
     selectedProducts.forEach((product) => {
+      console.log("product.............", product)
       const addedColors = product.addedColors || [];
       const consistentTitle = product?.title || product?.name || product?.handle || 'Product';
 
       const extraProducts = addedColors.map((variantProduct) => {
+        console.log("variants......", variantProduct);
         const prod = {
           id: variantProduct?.variant?.id?.split("/").reverse()[0],
           imgurl: variantProduct?.img,
@@ -291,6 +293,8 @@ const QuantityToolbar = () => {
         sizes: getSizeOptions(product),
         title: consistentTitle,
         selections: [],
+        allImages: product.images,
+        allVariants: product.allVariants,
       };
 
       dispatch(addProduct(mainProduct));

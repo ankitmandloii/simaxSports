@@ -27,7 +27,7 @@ function ProductContainer() {
   const sleevedesign = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   const exportRequested = useSelector((state) => state.canvasExport.exportRequested);
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
-  console.log("===================activeProducttttt",activeProduct)
+  console.log("===================activeProducttttt", activeProduct)
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
 
   const isQuantityPage = location.pathname === "/quantity" || location.pathname === '/review';
@@ -207,7 +207,7 @@ function ProductContainer() {
             toggleZoom={toggleZoom}
             logo={logo}
           />
-          <DynamicDimensionBox />
+          {/* <DynamicDimensionBox /> */}
         </div>
 
         <div style={{ display: activeSide === "front" ? "block" : "none" }}>
@@ -218,9 +218,9 @@ function ProductContainer() {
             backgroundImage={frontBgImage}
             zoomLevel={zoomLevel}
             setFrontPreviewImage={setFrontPreviewImage}
-            setBackPreviewImage={() => {}}
-            setLeftSleevePreviewImage={() => {}}
-            setRightSleevePreviewImage={() => {}}
+            setBackPreviewImage={() => { }}
+            setLeftSleevePreviewImage={() => { }}
+            setRightSleevePreviewImage={() => { }}
           />
         </div>
 
@@ -231,10 +231,10 @@ function ProductContainer() {
             key="back"
             backgroundImage={backBgImage}
             zoomLevel={zoomLevel}
-            setFrontPreviewImage={() => {}}
+            setFrontPreviewImage={() => { }}
             setBackPreviewImage={setBackPreviewImage}
-            setLeftSleevePreviewImage={() => {}}
-            setRightSleevePreviewImage={() => {}}
+            setLeftSleevePreviewImage={() => { }}
+            setRightSleevePreviewImage={() => { }}
           />
         </div>
 
@@ -245,9 +245,9 @@ function ProductContainer() {
             key="rightSleeve"
             backgroundImage={rightSleeveBgImage}
             zoomLevel={zoomLevel}
-            setFrontPreviewImage={() => {}}
-            setBackPreviewImage={() => {}}
-            setLeftSleevePreviewImage={() => {}}
+            setFrontPreviewImage={() => { }}
+            setBackPreviewImage={() => { }}
+            setLeftSleevePreviewImage={() => { }}
             setRightSleevePreviewImage={setRightSleevePreviewImage}
           />
         </div>
@@ -259,9 +259,9 @@ function ProductContainer() {
             key="leftSleeve"
             backgroundImage={leftSleeveBgImage}
             zoomLevel={zoomLevel}
-            setFrontPreviewImage={() => {}}
-            setBackPreviewImage={() => {}}
-            setRightSleevePreviewImage={() => {}}
+            setFrontPreviewImage={() => { }}
+            setBackPreviewImage={() => { }}
+            setRightSleevePreviewImage={() => { }}
             setLeftSleevePreviewImage={setLeftSleevePreviewImage}
           />
         </div>

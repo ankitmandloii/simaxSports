@@ -58,6 +58,7 @@ const createNewImage = (
   superResolution: false,
   invertColor: false,
   solidColor: false,
+  removeBg: false,
   cropAndTrimParamValue:
     "fit=crop&crop=entropy&trim=color&w=400&h=400&dpr=2&quality=100&format=webp",
   superResolutionParamValue:
@@ -651,7 +652,7 @@ const TextFrontendDesignSlice = createSlice({
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
       const deletedText = state.present[side].texts.find(t => t.id === action.payload);
-      if(!deletedText) return;
+      if (!deletedText) return;
       const deletedLayerIndex = deletedText?.layerIndex || 0;
 
       // Remove the text

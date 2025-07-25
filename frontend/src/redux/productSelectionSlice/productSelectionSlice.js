@@ -22,14 +22,16 @@ const productSelectionSlice = createSlice({
   initialState,
   reducers: {
     addProduct(state, action) {
-      const { id, name, color, imgurl, sizes, title } = action.payload;
+      const { id, name, color, imgurl, sizes, title, allImages, allVariants } = action.payload;
       if (!state.products[id]) {
         state.products[id] = {
           name,
           title,
           color,
           imgurl,
-          selections: {}
+          selections: {},
+          allVariants,
+          allImages
         };
         sizes.forEach(size => {
           state.products[id].selections[size.size] = 0;

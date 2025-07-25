@@ -186,7 +186,7 @@ const AddImageToolbar = () => {
   }, [activeEffects]);
 
   // const handleRangeInputSizeChange = (e) => {
-    
+
   //   const rawValue = e.target.value;
   //   // console.log("------value", rawValue)
   //   setRangeValuesSize(rawValue);
@@ -208,35 +208,35 @@ const AddImageToolbar = () => {
   //   setResetDefault(false);
   // };
 
-const DPI = 300; // dots per inch
+  const DPI = 300; // dots per inch
 
-const handleRangeInputSizeChange = (e) => {
-  const rawValue = e.target.value;
-  setRangeValuesSize(rawValue);
+  const handleRangeInputSizeChange = (e) => {
+    const rawValue = e.target.value;
+    setRangeValuesSize(rawValue);
 
-  const inches = parseFloat(rawValue);
-  if (isNaN(inches) || inches < 0.2 || inches > 10) return;
+    const inches = parseFloat(rawValue);
+    if (isNaN(inches) || inches < 0.2 || inches > 10) return;
 
-  const nativeWidthPx = img?.width; // original image width in px
-  if (!nativeWidthPx) return;
+    const nativeWidthPx = img?.width; // original image width in px
+    if (!nativeWidthPx) return;
 
-  const newPixelWidth = inches * DPI;
-  const newScale = newPixelWidth / nativeWidthPx;
+    const newPixelWidth = inches * DPI;
+    const newScale = newPixelWidth / nativeWidthPx;
 
-  // If you're dispatching state (Redux), do this:
-  globalDispatch("scaleX", newScale);
-  globalDispatch("scaleY", newScale);
-  globalDispatch("scaledValue", inches);
-  setResetDefault(false);
+    // If you're dispatching state (Redux), do this:
+    globalDispatch("scaleX", newScale);
+    globalDispatch("scaleY", newScale);
+    globalDispatch("scaledValue", inches);
+    setResetDefault(false);
 
-  // If img is a live Fabric.js object (NOT Redux clone), also update visually:
-  if (img?.scale) {
-    img.scale(newScale);
-    img.canvas?.requestRenderAll(); // re-render canvas
-  }
-};
+    // If img is a live Fabric.js object (NOT Redux clone), also update visually:
+    if (img?.scale) {
+      img.scale(newScale);
+      img.canvas?.requestRenderAll(); // re-render canvas
+    }
+  };
 
-// ===
+  // ===
   const handleBlur = () => {
     const parsed = parseFloat(rangeValuesSize);
     if (isNaN(parsed) || parsed < 0.2 || parsed > 10) {
@@ -515,6 +515,18 @@ const handleRangeInputSizeChange = (e) => {
 
   function removeBackgroundHandler(e) {
     // update local state
+    const checked = !removeBackground;
+    const canvasToggle = document.querySelector(`[id^="canvas-"] input[type="checkbox"]`);
+    if (canvasToggle && canvasToggle.checked !== checked) {
+      canvasToggle.checked = checked;
+
+      const slider = canvasToggle.nextElementSibling;
+
+      const circle = slider?.nextElementSibling;
+      slider.style.backgroundColor = checked ? "#3b82f6" : "#ccc";
+      circle.style.transform = checked ? "translateX(18px)" : "translateX(0)";
+    }
+
     const value = isActive('bg-remove=true');
     toggle('bg-remove=true', value)
     setRemoveBackground(!removeBackground);

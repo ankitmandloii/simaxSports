@@ -21,16 +21,191 @@ const renderAllImageObjects = (
   const canvas = fabricCanvasRef.current;
 
   if (!canvas) return;
+  function createRemoveBackgroundToggle(fabricImage, canvasId, callback, removeBg) {
+    console.log("button data ", fabricImage, canvasId, callback, removeBg)
+    const id = fabricImage.id;
+    const buttonId = `canvas-${id}`;
+    const canvasElement = document.getElementById(canvasId);
+    if (!canvasElement) return;
 
-  const removeAllHtmlControls = (canvas) => {
+    // === Check if toggle already exists ===
+    let container = document.getElementById(buttonId);
+    if (container) {
+      const center = fabricImage.getCenterPoint();
+      const imageBottom = center.y + (fabricImage.getScaledHeight() / 2);
+      const imageLeft = center.x;
+      const OFFSET = 40;
+
+      container.style.top = `${imageBottom + OFFSET}px`;
+      container.style.left = `${imageLeft}px`;
+      container.style.display = "none";
+
+      const checkbox = container.querySelector('input[type="checkbox"]');
+      const slider = container.querySelector(".slider");
+      const circle = container.querySelector(".circle");
+
+      if (checkbox) checkbox.checked = removeBg;
+
+      if (slider && circle) {
+        slider.style.backgroundColor = removeBg ? "#3b82f6" : "#ccc";
+        circle.style.transform = removeBg ? "translateX(16px)" : "translateX(0)";
+      }
+
+      return;
+    }
+
+
+    // === Otherwise, create the toggle ===
+    container = document.createElement("div");
+    container.id = buttonId;
+    Object.assign(container.style, {
+      position: "absolute",
+      zIndex: "999",
+      transform: "translate(-50%, 0)",
+      display: "none",
+      alignItems: "center",
+      gap: "6px",
+      padding: "4px 10px",
+      borderRadius: "9999px",
+      backgroundColor: "white",
+      boxShadow: "0 0 4px rgba(0,0,0,0.1)",
+      fontFamily: "sans-serif",
+      fontSize: "10px",
+      maxWidth: "95vw",
+      flexWrap: "wrap",
+    });
+
+    const textSpan1 = document.createElement("span");
+    textSpan1.textContent = "Remove";
+    textSpan1.style.fontWeight = "500";
+
+    const aiBadge = document.createElement("span");
+    aiBadge.textContent = "AI";
+    Object.assign(aiBadge.style, {
+      fontSize: "10px",
+      padding: "1px 5px",
+      borderRadius: "4px",
+      backgroundImage: "linear-gradient(to right, #6C6CFF, #9CF8F8)",
+      color: "white",
+      fontWeight: "600",
+    });
+
+    const textSpan2 = document.createElement("span");
+    textSpan2.textContent = "Background";
+    textSpan2.style.fontWeight = "500";
+
+    const label = document.createElement("div");
+    label.style.display = "flex";
+    label.style.alignItems = "center";
+    label.style.gap = "3px";
+    label.appendChild(textSpan1);
+    label.appendChild(aiBadge);
+    label.appendChild(textSpan2);
+
+    const toggleWrapper = document.createElement("label");
+    Object.assign(toggleWrapper.style, {
+      position: "relative",
+      display: "inline-block",
+      width: "34px",
+      height: "18px",
+      cursor: "pointer",
+      flexShrink: "0",
+    });
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.style.opacity = "0";
+    checkbox.style.width = "0";
+    checkbox.style.height = "0";
+
+    const slider = document.createElement("span");
+    Object.assign(slider.style, {
+      position: "absolute",
+      top: "0",
+      left: "0",
+      right: "0",
+      bottom: "0",
+      backgroundColor: "#ccc",
+      borderRadius: "9999px",
+      transition: "0.2s",
+    });
+
+    const circle = document.createElement("span");
+    Object.assign(circle.style, {
+      position: "absolute",
+      left: "2px",
+      top: "2px",
+      width: "14px",
+      height: "14px",
+      backgroundColor: "white",
+      borderRadius: "50%",
+      transition: "0.2s",
+      boxShadow: "0 0 1px rgba(0,0,0,0.2)",
+    });
+
+    if (removeBg) {
+      slider.style.backgroundColor = "#3b82f6";
+      circle.style.transform = "translateX(16px)";
+    } else {
+      slider.style.backgroundColor = "#ccc";
+      circle.style.transform = "translateX(0)";
+    }
+
+
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) {
+        slider.style.backgroundColor = "#3b82f6";
+        circle.style.transform = "translateX(16px)";
+      } else {
+        slider.style.backgroundColor = "#ccc";
+        circle.style.transform = "translateX(0)";
+      }
+
+      if (callback) callback(checkbox.checked, fabricImage);
+    });
+    slider.classList.add("slider");
+    circle.classList.add("circle");
+
+
+    toggleWrapper.appendChild(checkbox);
+    toggleWrapper.appendChild(slider);
+    toggleWrapper.appendChild(circle);
+
+    container.appendChild(label);
+    container.appendChild(toggleWrapper);
+    canvasElement.parentElement.appendChild(container);
+
+    // === Initial Position Below Image ===
+    const center = fabricImage.getCenterPoint();
+    const imageBottom = center.y + fabricImage.getScaledHeight() / 2;
+    const imageLeft = center.x;
+    const OFFSET = 40;
+
+    container.style.top = `${imageBottom + OFFSET}px`;
+    container.style.left = `${imageLeft}px`;
+  }
+
+
+
+  function removeAllHtmlControls(canvas) {
+    if (!canvas) {
+      canvas = fabricCanvasRef.current;
+    }
     canvas.getObjects().forEach((obj) => {
       if (obj._htmlControls) {
-        Object.values(obj._htmlControls).forEach((el) => el.remove());
+        for (const key in obj._htmlControls) {
+          const el = obj._htmlControls[key];
+          if (el?.parentNode) el.parentNode.removeChild(el);
+        }
         obj._htmlControls = null;
       }
     });
-  };
-  removeAllHtmlControls(canvas);
+
+    // Safety net: also remove floating orphan controls (edge case fallback)
+    document.querySelectorAll('[data-fabric-control]').forEach(el => el.remove());
+  }
+
+  // removeAllHtmlControls(canvas);
 
   const MAX_WIDTH = 180;
   const MAX_HEIGHT = 180;
@@ -89,134 +264,12 @@ const renderAllImageObjects = (
       customType = "main-image",
       loading,
       loadingSrc,
+      removeBg
     } = imageData;
 
     // const spinnerId = `spinner-${id}`;
     const existingObj = canvas.getObjects("image").find((obj) => obj.id === id);
 
-    // // Loader (Spinner)
-    // if (loading) {
-    //   canvas.getObjects().forEach((obj) => {
-    //     if (obj.id === selectedImageId) canvas.remove(obj);
-    //   });
-
-    //   const existingSpinner = canvas
-    //     .getObjects()
-    //     .find((o) => o.id === spinnerId);
-    //   if (existingSpinner) return;
-
-    //   const dotCount = 5;
-    //   const dotRadius = 6;
-    //   const dotSpacing = 15;
-    //   // const colors = Array(dotCount).fill('#000000');
-    //   const colors = ["black", "black", "black", "black", "black"];
-    //   const dots = [];
-
-    //   for (let i = 0; i < dotCount; i++) {
-    //     dots.push(
-    //       new fabric.Circle({
-    //         radius: dotRadius,
-    //         fill: colors[i],
-    //         left:
-    //           position.x +
-    //           i * dotSpacing -
-    //           (dotCount * dotSpacing) / 2 +
-    //           dotSpacing / 2,
-    //         top: position.y,
-    //         originX: "center",
-    //         originY: "center",
-    //         opacity: 0.3,
-    //         selectable: false,
-    //         evented: false,
-    //       })
-    //     );
-    //   }
-
-    //   const loader = new fabric.Group(dots, {
-    //     id: spinnerId,
-    //     scaleX: 1,
-    //     scaleY: 1,
-    //     originX: "center",
-    //     originY: "center",
-    //     left: position.x,
-    //     top: position.y,
-    //     selectable: true,
-    //     evented: false,
-    //     lockMovementX: true,
-    //     lockMovementY: true,
-    //     objectCaching: false,
-    //     borderColor: "skyblue",
-    //     borderDashArray: [4, 4],
-    //   });
-
-    //   loader.setControlsVisibility({
-    //     mt: true,
-    //     mb: true,
-    //     ml: true,
-    //     mr: true,
-    //     tl: true,
-    //     tr: true,
-    //     bl: true,
-    //     br: true,
-    //     mtr: true,
-    //   });
-
-    //   if (typeof createControls === "function") {
-    //     loader.controls = createControls(bringPopup);
-    //   }
-
-    //   loader.on("mousedown", () => {
-    //     setActiveObjectType("image");
-    //     dispatch?.(selectedImageIdState(id));
-    //   });
-
-    //   loader.on("modified", (e) => {
-    //     const obj = e.target;
-    //     if (!obj) return;
-    //     const center = obj.getCenterPoint();
-    //     obj.setPositionByOrigin(center, "center", "center");
-    //     obj.setCoords();
-    //     globalDispatch("position", { x: obj.left, y: obj.top }, id);
-    //     globalDispatch("angle", obj.angle, id);
-    //     handleScale(e);
-    //   });
-
-    //   canvas.add(loader);
-    //   canvas.bringToFront(loader);
-
-    //   let animationStep = 0;
-    //   const animationSpeed = 0.15;
-    //   let animationFrameId = null;
-
-    //   const animateDots = () => {
-    //     if (!canvas.getObjects().includes(loader)) return;
-
-    //     animationStep += animationSpeed;
-    //     loader.getObjects().forEach((dot, i) => {
-    //       const waveOffset = i * 0.8;
-    //       const scale = 0.6 + Math.sin(animationStep + waveOffset) * 0.4;
-    //       const opacity = 0.4 + scale * 0.6;
-    //       dot.set({ scaleX: scale, scaleY: scale, opacity });
-    //     });
-
-    //     canvas.requestRenderAll();
-    //     animationFrameId = requestAnimationFrame(animateDots);
-    //   };
-
-    //   animateDots();
-    //   loader.cleanup = () => {
-    //     if (animationFrameId) cancelAnimationFrame(animationFrameId);
-    //     canvas.remove(loader);
-    //   };
-
-    //   // return loader;
-    // }
-
-    // const oldSpinner = canvas.getObjects().find((o) => o.id === spinnerId);
-    // if (oldSpinner) {
-    //   clearTimeout(oldSpinner.__spinnerTimer);
-    //   canvas.remove(oldSpinner);
-    // }
 
 
     // Replace Image
@@ -275,9 +328,39 @@ const renderAllImageObjects = (
             mtr: false,
           });
           removeAllHtmlControls(canvas);
-
+          function toggleVisibility(visible) {
+            const toggle = document.getElementById(`canvas-${newImg.id}`);
+            if (toggle) {
+              toggle.style.display = visible ? "flex" : "none";
+            }
+          }
           newImg.controls = createControls(bringPopup, dispatch);
+
+          const button = document.getElementById(`canvas-${id}`);
+          if (button) {
+            const center = newImg.getCenterPoint();
+            const imageBottom = center.y + (newImg.getScaledHeight() / 2);
+            const imageLeft = center.x;
+            const OFFSET = 40;
+
+            button.style.top = `${imageBottom + OFFSET}px`;
+            button.style.left = `${imageLeft}px`;
+          }
+
+          createRemoveBackgroundToggle(newImg, "canvas", (isChecked, image) => {
+            if (isChecked) {
+              console.log("Background removal ON for", image.id);
+              // Trigger your background removal logic
+            } else {
+              console.log("Background removal OFF for", image.id);
+            }
+          }, removeBg);
+
+
           canvas.add(newImg);
+          newImg.on("scaling", () => toggleVisibility(false));
+          newImg.on("rotating", () => toggleVisibility(false));
+          newImg.on("moving", () => toggleVisibility(false));
 
           newImg.on("mousedown", (e) => {
             const obj = e.target;
@@ -300,6 +383,18 @@ const renderAllImageObjects = (
             handleScale(e);
             canvas.renderAll();
             syncMirrorCanvasHelper(activeSide);
+            toggleVisibility(true);
+          });
+
+          newImg.on("selected", () => {
+            const toggle = document.getElementById(`canvas-${newImg.id}`);
+            if (toggle) toggle.style.display = "flex";
+          });
+
+          // HIDE toggle when the image is deselected
+          newImg.on("deselected", () => {
+            const toggle = document.getElementById(`canvas-${newImg.id}`);
+            if (toggle) toggle.style.display = "none";
           });
 
           canvas.renderAll();
@@ -331,6 +426,16 @@ const renderAllImageObjects = (
         customType,
         isSync: true,
       });
+      const button = document.getElementById(`canvas-${id}`);
+      if (button) {
+        const center = existingObj.getCenterPoint();
+        const imageBottom = center.y + (existingObj.getScaledHeight() / 2);
+        const imageLeft = center.x;
+        const OFFSET = 40;
+        button.style.top = `${imageBottom + OFFSET}px`;
+        button.style.left = `${imageLeft}px`;
+
+      }
 
       existingObj.setControlsVisibility({
         mt: false,
@@ -343,7 +448,7 @@ const renderAllImageObjects = (
         br: false,
         mtr: false,
       });
-      removeAllHtmlControls(canvas);
+      // removeAllHtmlControls(canvas);
       existingObj.controls = createControls(bringPopup, dispatch);
       const center = existingObj.getCenterPoint();
       existingObj.setPositionByOrigin(center, "center", "center");
@@ -400,7 +505,62 @@ const renderAllImageObjects = (
           });
 
           img.controls = createControls(bringPopup, dispatch);
+          removeAllHtmlControls(canvas);
+
+          function toggleVisibility(visible) {
+            const toggle = document.getElementById(`canvas-${img.id}`);
+            if (toggle) {
+              toggle.style.display = visible ? "flex" : "none";
+            }
+          }
+
+          // const existingButton = document.getElementById(`canvas-${id}`);
+          // if (existingButton) existingButton.remove();
+
+          // const canvasElement = document.getElementById("canvas");
+          // const button = document.createElement("button");
+          // button.id = `canvas-${id}`;
+          // button.textContent = "Edit";
+          // button.style.position = "absolute";
+          // button.style.zIndex = "999";
+          // button.style.padding = "4px 8px";
+          // button.style.border = "1px solid #888";
+          // button.style.borderRadius = "4px";
+          // button.style.backgroundColor = "#fff";
+          // button.style.cursor = "pointer";
+
+          // // Dynamically compute image's bottom-center position
+          // const center = img.getCenterPoint();
+          // const imageBottom = center.y + (img.getScaledHeight() / 2);
+          // const imageLeft = center.x;
+          // const OFFSET = 10;
+
+          // button.style.top = `${imageBottom + OFFSET}px`;
+          // button.style.left = `${imageLeft}px`;
+          // button.style.transform = "translate(-50%, 0)";
+
+          // button.onclick = () => {
+          //   navigate("/design/addImage", { state: imageData });
+          // };
+
+          // const parentElement = canvasElement.parentElement;
+          // parentElement.appendChild(button);
+
+          createRemoveBackgroundToggle(img, "canvas", (isChecked, image) => {
+            if (isChecked) {
+              console.log("Background removal ON for", image.id);
+              // Trigger your background removal logic
+            } else {
+              console.log("Background removal OFF for", image.id);
+            }
+          }, removeBg);
+
           canvas.add(img);
+
+
+          img.on("scaling", () => toggleVisibility(false));
+          img.on("rotating", () => toggleVisibility(false));
+          img.on("moving", () => toggleVisibility(false));
 
           img.on("mousedown", (e) => {
             const obj = e.target;
@@ -410,6 +570,20 @@ const renderAllImageObjects = (
               setActiveObjectType("image");
               navigate("/design/addImage", { state: imageData });
               canvas.renderAll();
+            }
+          });
+
+          img.on("moving", () => {
+            const center = img.getCenterPoint(); // current center
+            const imageBottom = center.y + (img.getScaledHeight() / 2);
+            const imageLeft = center.x;
+            const OFFSET = 40;
+
+            const button = document.getElementById(`canvas-${img.id}`);
+            if (button) {
+              button.style.top = `${imageBottom + OFFSET}px`;
+              button.style.left = `${imageLeft}px`;
+              button.style.transform = "translate(-50%, 0)";
             }
           });
 
@@ -424,8 +598,18 @@ const renderAllImageObjects = (
             handleScale(e);
             canvas.renderAll();
             syncMirrorCanvasHelper(activeSide);
+            toggleVisibility(true)
+          });
+          img.on("selected", () => {
+            const toggle = document.getElementById(`canvas-${img.id}`);
+            if (toggle) toggle.style.display = "flex";
           });
 
+          // HIDE toggle when the image is deselected
+          img.on("deselected", () => {
+            const toggle = document.getElementById(`canvas-${img.id}`);
+            if (toggle) toggle.style.display = "none";
+          });
           canvas.renderAll();
         },
         {

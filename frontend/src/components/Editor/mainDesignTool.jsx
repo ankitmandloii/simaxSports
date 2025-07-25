@@ -105,8 +105,8 @@ const MainDesignTool = ({
     dispatch(markDesignButtonClicked(activeSide)); // pass current side
     setTimeout(() => navigate(route), 50); // slight delay to allow re-render
   };
-   const hasClickedMap = useSelector((state) => state?.hoverReducer.hasClickedDesignButton);
-   const hasClicked = hasClickedMap?.[activeSide];
+  const hasClickedMap = useSelector((state) => state?.hoverReducer.hasClickedDesignButton);
+  const hasClicked = hasClickedMap?.[activeSide];
 
   // **********************************************************************************************************************************************************
   //                                                                                    HELPER FUNCTIONS AREA
@@ -383,16 +383,22 @@ const MainDesignTool = ({
     }
   }, [zoomLevel]);  // Trigger effect when zoomLevel changes
 
-  const removeAllHtmlControls = () => {
-    const canvas = fabricCanvasRef.current;
-    if (!canvas) return;
+  function removeAllHtmlControls(canvas) {
+    if (!canvas) {
+      canvas = fabricCanvasRef.current;
+    }
     canvas.getObjects().forEach((obj) => {
       if (obj._htmlControls) {
-        Object.values(obj._htmlControls).forEach((el) => el.remove());
+        for (const key in obj._htmlControls) {
+          const el = obj._htmlControls[key];
+          if (el?.parentNode) el.parentNode.removeChild(el);
+        }
         obj._htmlControls = null;
-        canvas.requestRenderAll();
       }
     });
+
+    // Safety net: also remove floating orphan controls (edge case fallback)
+    document.querySelectorAll('[data-fabric-control]').forEach(el => el.remove());
   }
 
   useEffect(() => {
@@ -479,7 +485,7 @@ const MainDesignTool = ({
       name: "warningText",
     });
 
-    
+
     // canvas.add(warningText);
     canvas.bringToFront(warningText);
     // canvas.requestRenderAll();
@@ -633,8 +639,10 @@ const MainDesignTool = ({
 
     const handleSelectionCleared = () => {
       // setSelectedObject(null);
-      removeAllHtmlControls();
+
+      removeAllHtmlControls(canvas);
       dispatch(setSelectedTextState(null));
+      // navigate("/design/product")
     };
 
 
@@ -763,8 +771,8 @@ const MainDesignTool = ({
           const imgHeight = img.height;
 
           // Calculate scale based on the parent container size
-          const scaleX = (canvasWidth-130 )/ imgWidth;
-          const scaleY = (canvasHeight-130) / imgHeight;
+          const scaleX = (canvasWidth - 130) / imgWidth;
+          const scaleY = (canvasHeight - 130) / imgHeight;
 
           // Apply the scale to ensure the image fits within the canvas while maintaining aspect ratio
           const scale = Math.max(scaleX, scaleY);
@@ -974,52 +982,52 @@ const MainDesignTool = ({
 
   return (
     <div class="canvas-wrapper" style={{ position: "relative", top: 5 }} >
-  
+
 
       <canvas ref={canvasRef} id="canvas" />
-  {!hasClicked &&
-  imageContaintObject.length == 0 &&
-  textContaintObject.length == 0 && (
-    <div className={style.buttonsroute}>
-      <button
-        onMouseEnter={() => handleHover("/design/addText")}
-        onMouseLeave={handleLeave}
-        onClick={() => handleClick("/design/addText")}
-        className={style.canvaButton}
-      >
-        <span className={style.icon}><AddProductIcon /></span> Add Text
-      </button>
+      {!hasClicked &&
+        imageContaintObject.length == 0 &&
+        textContaintObject.length == 0 && (
+          <div className={style.buttonsroute}>
+            <button
+              onMouseEnter={() => handleHover("/design/addText")}
+              onMouseLeave={handleLeave}
+              onClick={() => handleClick("/design/addText")}
+              className={style.canvaButton}
+            >
+              <span className={style.icon}><AddProductIcon /></span> Add Text
+            </button>
 
-      <button
-        onMouseEnter={() => handleHover("/design/uploadArt")}
-        onMouseLeave={handleLeave}
-        onClick={() => handleClick("/design/uploadArt")}
-        className={style.canvaButton}
-      >
-        <span className={style.icon}><AddArtIcon /></span> Upload Art
-      </button>
+            <button
+              onMouseEnter={() => handleHover("/design/uploadArt")}
+              onMouseLeave={handleLeave}
+              onClick={() => handleClick("/design/uploadArt")}
+              className={style.canvaButton}
+            >
+              <span className={style.icon}><AddArtIcon /></span> Upload Art
+            </button>
 
-      <button
-        onMouseEnter={() => handleHover("/design/addArt")}
-        onMouseLeave={handleLeave}
-        onClick={() => handleClick("/design/addArt")}
-        className={style.canvaButton}
-      >
-        <span className={style.icon}><SelectArtIcon /></span> Add Art
-      </button>
+            <button
+              onMouseEnter={() => handleHover("/design/addArt")}
+              onMouseLeave={handleLeave}
+              onClick={() => handleClick("/design/addArt")}
+              className={style.canvaButton}
+            >
+              <span className={style.icon}><SelectArtIcon /></span> Add Art
+            </button>
 
-      {activeSide === "back" && (
-        <button
-          onMouseEnter={() => handleHover("/design/addNames")}
-          onMouseLeave={handleLeave}
-          onClick={() => handleClick("/design/addNames")}
-          className={style.canvaButton}
-        >
-          <span className={style.icon}><NumberArtIcon /></span> Add Number
-        </button>
-      )}
-    </div>
-)}
+            {activeSide === "back" && (
+              <button
+                onMouseEnter={() => handleHover("/design/addNames")}
+                onMouseLeave={handleLeave}
+                onClick={() => handleClick("/design/addNames")}
+                className={style.canvaButton}
+              >
+                <span className={style.icon}><NumberArtIcon /></span> Add Number
+              </button>
+            )}
+          </div>
+        )}
 
       <LayerModal
         isOpen={isModalOpen}

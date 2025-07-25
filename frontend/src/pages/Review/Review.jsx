@@ -211,11 +211,15 @@ import { IoIosColorPalette } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { LuArrowRight } from "react-icons/lu";
+import ExportTool from "../../components/Editor/ExportTool";
+import { generateDesigns } from "../../components/Editor/utils/helper";
+import { apiConnecter } from "../../components/utils/apiConnector";
 const dummyItems = [
   { name: "Jerzees NuBlend® Fleece Sweatshirt", color: "Royal", sizes: { S: 8, YS: 9 }, image: "https://simaxdesigns.imgix.net/uploads/1753094331891_front-design.png" },
   { name: "Jerzees NuBlend® Fleece Sweatshirt", color: "Royal", sizes: { S: 8, YS: 9 }, image: "https://simaxdesigns.imgix.net/uploads/1753094331891_front-design.png" },
   { name: "Jerzees NuBlend® Fleece Sweatshirt", color: "Royal", sizes: { S: 8, YS: 9 }, image: "https://simaxdesigns.imgix.net/uploads/1753094331891_front-design.png" },
 ];
+// const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
 
 const randomDiscount = () => Math.floor(Math.random() * 21) + 15; // 15% to 35%
 
@@ -223,9 +227,49 @@ const Review = () => {
   const [discount, setDiscount] = useState(0);
   const navigate = useNavigate();
   const productState = useSelector((state) => state.productSelection.products);
-  console.log("productState.....", productState)
+  const design = useSelector((state) => state.TextFrontendDesignSlice.present);
+  // console.log("desing....", design)
+  // console.log("productState.....", productState)
+
+  async function uploadBlobData(blobDataArray) {
+    try {
+      const formData = new FormData();
+      blobDataArray = blobDataArray.slice(0, 2);
+      // Append each blob as a file to the FormData
+      blobDataArray.forEach((blob, index) => {
+        // Append each Blob as a file to the FormData
+        formData.append(`image_${index}`, blob, `image_${index}.png`);
+      });
+
+      // The URL of your backend API endpoint
+      const apiUrl = `${process.env.REACT_APP_BASE_URL}imageOperation/fileBlobDataUploadToCloudinary`;
+
+      // Send the data to the backend
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        body: formData,
+      });
+
+      // Handle the response
+      if (!response.ok) {
+        throw new Error('Failed to upload images');
+      }
+
+      // Assuming the response is in JSON format
+      const responseData = await response.json();
+      console.log('Response from backend:', responseData);
+
+      return responseData;
+    } catch (e) {
+      console.log('Error while uploading Blob data:', e);
+    }
+  }
+
+
+
 
   const reviewItems = Object.entries(productState).map(([id, product]) => {
+    // console.log("product udner entries", product)
     const sizes = Object.entries(product.selections).reduce((acc, [size, qty]) => {
       if (qty > 0) acc[size] = qty;
       return acc;
@@ -235,9 +279,15 @@ const Review = () => {
       name: product.name,
       color: product.color,
       sizes, // { S: 2, M: 3, ... }
-      image: product.imgurl
+      image: product.imgurl,
+      allImages: [product.allImages?.[0], product.allImages?.[2], product.allImages?.[3], product.allImages?.[3]],
+      allVariants: product.allVariants,
     };
   });
+
+
+
+  console.log("reviewItems", reviewItems);
 
   useEffect(() => {
     setDiscount(randomDiscount());
@@ -249,9 +299,7 @@ const Review = () => {
   const totalPrice = (totalItems * discountedPrice).toFixed(2);
   const printAreaCount = useSelector((state) => {
     const present = state.TextFrontendDesignSlice.present;
-
     const areas = ["front", "back", "leftSleeve", "rightSleeve"];
-
     return areas.reduce((count, area) => {
       const hasContent = present[area].texts.length + present[area].images.length;
       return hasContent + count;
@@ -261,6 +309,102 @@ const Review = () => {
   const goBack = () => {
     navigate("/quantity")
   }
+  const [url, setUrl] = useState("");
+  const [backgroundImage, setBackgroundImage] = useState("");
+  const [activeSide, setActiveSide] = useState("");
+  const [loading, setLoading] = useState(false); // Track loading state
+
+  function base64toBlob(base64String, contentType = 'image/png') {
+    // 1. Remove the data URI prefix (e.g., "data:image/png;base64,")
+    const base64WithoutPrefix = base64String.replace(/^data:image\/(png|jpeg|gif|webp|svg\+xml);base64,/, '');
+
+    // 2. Decode Base64 to binary string
+    // Use atob() for Base64 decoding
+    const binaryString = atob(base64WithoutPrefix);
+
+    // 3. Convert binary string to ArrayBuffer
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    // 4. Create a Blob from the ArrayBuffer
+    return new Blob([bytes], { type: contentType });
+  }
+
+  const cartHandler = async () => {
+    try {
+      // const allFrontImages = reviewItems.reduce((arr, item) => { arr.push(item.allImages[0]); return arr }, []);
+      // const allBackImages = reviewItems.reduce((arr, item) => { arr.push(item.allImages[1]); return arr }, []);
+
+      const allFrontImagesElement = design.front.images;
+      const allBackImagesElement = design.back.images;
+      const allLeftImagesElement = design.leftSleeve.images;
+      const allRightImagesElement = design.rightSleeve.images;
+
+      const allFrontTextElement = design.front.texts;
+      const allBackTextElement = design.back.texts;
+      const allLeftTextElement = design.leftSleeve.texts;
+      const allRightTextElement = design.rightSleeve.texts;
+
+
+      // Prepare an array of promises for each design generation task
+      const designPromises = reviewItems.map(async (item, index) => {
+        const frontBackground = item.allImages[0];
+        const backBackground = item.allImages[1];
+        const leftBackgroud = item.allImages[2];
+
+        // Generate front design
+        const frontDesignImages = await generateDesigns(
+          [frontBackground], // backgrounds expects an array
+          allFrontTextElement, // texts expects an array of arrays, so wrap current index
+          allFrontImagesElement // images expects an array of arrays, so wrap current index
+        );
+
+        // Generate back design
+        const backDesignImages = await generateDesigns(
+          [backBackground], // backgrounds expects an array
+          allBackTextElement, // texts expects an array of arrays, so wrap current index
+          allBackImagesElement // images expects an array of arrays, so wrap current index
+        );
+        // Generate left design
+        const leftDesignImages = await generateDesigns(
+          [leftBackgroud], // backgrounds expects an array
+          allLeftTextElement, // texts expects an array of arrays, so wrap current index
+          allLeftImagesElement // images expects an array of arrays, so wrap current index
+        );
+
+        return {
+          front: frontDesignImages[0], // generateDesigns returns an array, take the first element
+          back: backDesignImages[0],
+          left: leftDesignImages[0],
+        };
+      });
+
+      // Wait for all design generation promises to resolve
+      const results = await Promise.all(designPromises);
+      console.log('All Generated Designs:', results,);
+      console.log('All Generated Designs:', results);
+
+      const blobData = results.reduce((arr, item) => {
+        arr.push(base64toBlob(item.front, 'image/png'));
+        arr.push(base64toBlob(item.back, 'image/png'));
+        arr.push(base64toBlob(item.left, 'image/png'));
+        return arr;
+      }, [])
+      console.log("blobdata", blobData);
+      const CloudinaryImages = await uploadBlobData(blobData);
+      console.log('All Generated Designs:', CloudinaryImages);
+      // setGeneratedDesignImages(results);
+
+    } catch (error) {
+      console.error('Overall Error generating designs:', error);
+    } finally {
+      // setLoadingDesigns(false);
+    }
+
+  };
 
 
   return (
@@ -327,7 +471,7 @@ const Review = () => {
         <p>Collegiate License <span>$39.44</span></p>
       </div>
 
-      <button className={styles.addToCart}>ADD TO CART <LuArrowRight></LuArrowRight></button>
+      <button className={styles.addToCart} onClick={cartHandler}>ADD TO CART <LuArrowRight></LuArrowRight></button>
       {/* <p className={styles.payment}>or 4 interest free payments of ~${(totalPrice / 4).toFixed(2)} with</p>
       <div className={styles.paymentIcons}>
         <span>afterpay</span><span>Kl arna.</span><span>sezzle</span><span>affirm</span>
@@ -341,6 +485,11 @@ const Review = () => {
           </blockquote>
           <p><strong>Chelsea E.</strong> Ordered 35 pieces</p>
         </div>
+      </div>
+
+
+      <div class="canvas-wrapper" style={{ position: "relative", top: 5 }} >
+        <canvas id="canvas-export" />
       </div>
     </div>
   );
