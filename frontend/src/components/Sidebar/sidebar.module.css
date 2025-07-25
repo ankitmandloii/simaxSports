@@ -18,6 +18,12 @@
   cursor: pointer;
   display: none;
 }
+/* .hovered {
+  background-color: #e0f7ff;
+  color: #0077cc;
+  transition: background-color 0.2s ease;
+} */
+
 
 @media (max-width: 1024px) {
   .sidebarToggleBtn {
@@ -77,7 +83,7 @@
   background-color: #6c5ce710;
 } */
 
-.active {
+.active,.hovered{
   background-color: #fff;
   color: #000;
 }
@@ -124,6 +130,7 @@
   fill: #fff;
 }
 
-.active .sidebarIcon path {
+.active .sidebarIcon path,
+.hovered .sidebarIcon path {
   fill: var(--blue-color);
 }

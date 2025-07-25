@@ -25,7 +25,7 @@ const ProductToolbar = () => {
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
-  console.log("---activeProduct", activeProduct);
+  // console.log("---activeProduct", activeProduct);
   const [changeProductPopup, setChangeProductPopup] = useState(false);
   const [editingProductIndex, setEditingProductIndex] = useState(null);
   const [isAddingProduct, setIsAddingProduct] = useState(false);

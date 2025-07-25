@@ -185,27 +185,58 @@ const AddImageToolbar = () => {
     // console.log(filters, "&&&&&&&&&&&&")
   }, [activeEffects]);
 
-  const handleRangeInputSizeChange = (e) => {
-    const rawValue = e.target.value;
-    setRangeValuesSize(rawValue);
+  // const handleRangeInputSizeChange = (e) => {
+    
+  //   const rawValue = e.target.value;
+  //   // console.log("------value", rawValue)
+  //   setRangeValuesSize(rawValue);
 
-    const parsed = parseFloat(rawValue);
-    if (isNaN(parsed) || parsed < 0.2 || parsed > 10) return;
+  //   const parsed = parseFloat(rawValue);
+  //   if (isNaN(parsed) || parsed < 0.2 || parsed > 10) return;
 
-    const scaleX = img?.scaleX;
-    const scaleY = img?.scaleY;
+  //   const scaleX = img?.scaleX;
+  //   const scaleY = img?.scaleY;
 
-    // Use average of current X and Y scale as "prev size"
-    const currentAvg = (scaleX + scaleY) / 2;
+  //   // Use average of current X and Y scale as "prev size"
+  //   const currentAvg = (scaleX + scaleY) / 2;
 
-    const scaleRatio = parsed / currentAvg;
+  //   const scaleRatio = parsed / currentAvg;
 
-    globalDispatch("scaleX", scaleX * scaleRatio);
-    globalDispatch("scaleY", scaleY * scaleRatio);
-    globalDispatch("scaledValue", parsed);
-    setResetDefault(false);
-  };
+  //   globalDispatch("scaleX", scaleX * scaleRatio);
+  //   globalDispatch("scaleY", scaleY * scaleRatio);
+  //   globalDispatch("scaledValue", parsed);
+  //   setResetDefault(false);
+  // };
 
+const DPI = 300; // dots per inch
+
+const handleRangeInputSizeChange = (e) => {
+  const rawValue = e.target.value;
+  setRangeValuesSize(rawValue);
+
+  const inches = parseFloat(rawValue);
+  if (isNaN(inches) || inches < 0.2 || inches > 10) return;
+
+  const nativeWidthPx = img?.width; // original image width in px
+  if (!nativeWidthPx) return;
+
+  const newPixelWidth = inches * DPI;
+  const newScale = newPixelWidth / nativeWidthPx;
+
+  // If you're dispatching state (Redux), do this:
+  globalDispatch("scaleX", newScale);
+  globalDispatch("scaleY", newScale);
+  globalDispatch("scaledValue", inches);
+  setResetDefault(false);
+
+  // If img is a live Fabric.js object (NOT Redux clone), also update visually:
+  if (img?.scale) {
+    img.scale(newScale);
+    img.canvas?.requestRenderAll(); // re-render canvas
+  }
+};
+
+// ===
   const handleBlur = () => {
     const parsed = parseFloat(rangeValuesSize);
     if (isNaN(parsed) || parsed < 0.2 || parsed > 10) {

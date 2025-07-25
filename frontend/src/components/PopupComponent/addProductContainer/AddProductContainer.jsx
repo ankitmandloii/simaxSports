@@ -128,7 +128,8 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
           {products.map((product) => {
             const { productKey, name, colors = [], imgurl } = product;
             const state = productStates[productKey] || {};
-            const displayImage = state.hoverImage || imgurl;
+            // const displayImage = state.hoverImage || imgurl;
+            const displayImage = state.selectedColor?.img || state.hoverImage || imgurl;
             const imageLoaded = imageLoadStates[productKey];
             const isAlreadySelected = selectedProduct.some((p) => p.id === product.id);
 
@@ -187,8 +188,18 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                                   display: "inline-block",
                                   border: isSelected ? "2px solid black" : "1px solid gray",
                                 }}
-                                onMouseEnter={() => updateProductState(productKey, { hoverImage: color.img })}
-                                onMouseLeave={() => updateProductState(productKey, { hoverImage: null })}
+                                // onMouseEnter={() => updateProductState(productKey, { hoverImage: color.img })}
+                                // onMouseLeave={() => updateProductState(productKey, { hoverImage: null })}
+                                onMouseEnter={() => {
+                                  if (!state.selectedColor) {
+                                    updateProductState(productKey, { hoverImage: color.img });
+                                  }
+                                }}
+                                onMouseLeave={() => {
+                                  if (!state.selectedColor) {
+                                    updateProductState(productKey, { hoverImage: null });
+                                  }
+                                }}
                                 onClick={(e) => handleColorSelect(e, productKey, color)}
                               />
                             );

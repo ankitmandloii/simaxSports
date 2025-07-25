@@ -7,6 +7,7 @@ import selectedProductsReducer from './ProductSlice/SelectedProductSlice.js'
 import ContinueDesignReducer from './ContinueDesign/ContinueDesignSlice.js'
 import canvasExportReducer from './CanvasExportDesign/canvasExportSlice.js'
 import settingsReducer from './SettingsSlice/SettingsSlice.js'
+import hoverReducer from './ProductSlice/HoverSlice.js'
 import productSelectionReducer from './productSelectionSlice/productSelectionSlice.js';
 // import TextBackendDesignSlice from "./BackendDesign/TextBackendDesignSlice.js";
 
@@ -20,6 +21,7 @@ export const store = configureStore({
     ContinueDesign: ContinueDesignReducer,
     canvasExport: canvasExportReducer,
     settingsReducer: settingsReducer,
+    hoverReducer:hoverReducer,
     productSelection: productSelectionReducer
     // TextBackendDesignSlice: TextBackendDesignSlice
   },

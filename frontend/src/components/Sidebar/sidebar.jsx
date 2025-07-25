@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { FaBars } from "react-icons/fa";
 import { RiTShirt2Line } from "react-icons/ri";
 import {
@@ -15,6 +16,9 @@ const AdminSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  // const hoveredRoute = useSelector((state) => state.hover.hoveredRoute); // ✅
+  // const hoveredRoute=useSelector((state)=>state?.hover.hoveredRoute)
+  const hoveredRoute = useSelector((state) => state.hoverReducer.hoveredRoute);
 
   useEffect(() => {
     const handleResize = () => {
@@ -69,28 +73,28 @@ const AdminSidebar = () => {
       </button>
 
       <div
-        className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""} ${mobileOpen ? styles.show : ""
-          }`}
+        className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""} ${mobileOpen ? styles.show : ""}`}
       >
         <nav className={styles.sidebarMenu}>
           {menuItems.map((item) => {
             const isActive =
               (item.path.startsWith("/design/product") &&
-                (location.pathname === "/" ||
-                  location.pathname === "/design/product")) ||
+                (location.pathname === "/" || location.pathname === "/design/product")) ||
               location.pathname + location.search === item.path;
+
+            const isHovered = hoveredRoute === item.path; // ✅
 
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`${styles.sidebarLink} ${isActive ? styles.active : ""
-                  }`}
+                className={`${styles.sidebarLink} ${isActive ? styles.active : ""} ${isHovered ? styles.hovered : ""}`}
                 onClick={() => setMobileOpen(false)}
               >
                 <span
-                  className={`${styles.sidebarIcon} ${item.path === "/design/addArt" ? styles.sidebariconAddArt : ""
-                    }`}
+                  className={`${styles.sidebarIcon} ${
+                    item.path === "/design/addArt" ? styles.sidebariconAddArt : ""
+                  }`}
                 >
                   {item.icon}
                 </span>
@@ -110,4 +114,3 @@ const AdminSidebar = () => {
 };
 
 export default AdminSidebar;
-

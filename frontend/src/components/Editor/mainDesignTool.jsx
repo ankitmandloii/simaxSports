@@ -31,6 +31,8 @@ import LayerModal from "../CommonComponent/layerComponent/layerComponent";
 import CurvedText from "../fabric/fabric.TextCurved"; // Adjust path if needed
 import syncMirrorCanvas from "./core/syncMirrorCanvas";
 import { createControls } from "./utils/customControls";
+import { markDesignButtonClicked, setHoveredRoute } from "../../redux/ProductSlice/HoverSlice";
+import { AddArtIcon, AddProductIcon, NumberArtIcon, SelectArtIcon } from "../iconsSvg/CustomIcon";
 
 fabric.CurvedText = CurvedText;
 const MainDesignTool = ({
@@ -55,6 +57,7 @@ const MainDesignTool = ({
   const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
+
   const isRender = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].setRendering);
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
   const loadingState = useSelector(state => state.TextFrontendDesignSlice.present[activeSide].loadingState);
@@ -95,6 +98,15 @@ const MainDesignTool = ({
     // }
     return imgs;
   }, []);
+  // for route buttons
+  const handleHover = (path) => dispatch(setHoveredRoute(path));
+  const handleLeave = () => dispatch(setHoveredRoute(null));
+  const handleClick = (route) => {
+    dispatch(markDesignButtonClicked(activeSide)); // pass current side
+    setTimeout(() => navigate(route), 50); // slight delay to allow re-render
+  };
+   const hasClickedMap = useSelector((state) => state?.hoverReducer.hasClickedDesignButton);
+   const hasClicked = hasClickedMap?.[activeSide];
 
   // **********************************************************************************************************************************************************
   //                                                                                    HELPER FUNCTIONS AREA
@@ -960,10 +972,55 @@ const MainDesignTool = ({
 
 
 
-
   return (
     <div class="canvas-wrapper" style={{ position: "relative", top: 5 }} >
+  
+
       <canvas ref={canvasRef} id="canvas" />
+  {!hasClicked &&
+  imageContaintObject.length == 0 &&
+  textContaintObject.length == 0 && (
+    <div className={style.buttonsroute}>
+      <button
+        onMouseEnter={() => handleHover("/design/addText")}
+        onMouseLeave={handleLeave}
+        onClick={() => handleClick("/design/addText")}
+        className={style.canvaButton}
+      >
+        <span className={style.icon}><AddProductIcon /></span> Add Text
+      </button>
+
+      <button
+        onMouseEnter={() => handleHover("/design/uploadArt")}
+        onMouseLeave={handleLeave}
+        onClick={() => handleClick("/design/uploadArt")}
+        className={style.canvaButton}
+      >
+        <span className={style.icon}><AddArtIcon /></span> Upload Art
+      </button>
+
+      <button
+        onMouseEnter={() => handleHover("/design/addArt")}
+        onMouseLeave={handleLeave}
+        onClick={() => handleClick("/design/addArt")}
+        className={style.canvaButton}
+      >
+        <span className={style.icon}><SelectArtIcon /></span> Add Art
+      </button>
+
+      {activeSide === "back" && (
+        <button
+          onMouseEnter={() => handleHover("/design/addNames")}
+          onMouseLeave={handleLeave}
+          onClick={() => handleClick("/design/addNames")}
+          className={style.canvaButton}
+        >
+          <span className={style.icon}><NumberArtIcon /></span> Add Number
+        </button>
+      )}
+    </div>
+)}
+
       <LayerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
