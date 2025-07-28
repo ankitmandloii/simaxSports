@@ -17,7 +17,7 @@ const renderAllImageObjects = (
   handleScale,
   bringPopup
 ) => {
-  console.log("imageContaintObject", imageContaintObject);
+  // console.log("imageContaintObject", imageContaintObject);
   const canvas = fabricCanvasRef.current;
 
   if (!canvas) return;
@@ -32,6 +32,7 @@ const renderAllImageObjects = (
     // Check if toggle already exists
     let container = document.getElementById(buttonId);
     if (container) {
+      console.log("container already exist so updating them");
       const center = fabricImage.getCenterPoint();
       const imageBottom = center.y + (fabricImage.getScaledHeight() / 2);
       const imageLeft = center.x;
@@ -218,6 +219,8 @@ const renderAllImageObjects = (
 
     container.style.top = `${imageBottom + OFFSET}px`;
     container.style.left = `${imageLeft}px`;
+
+    console.warn("button created and done");
   }
 
   function removeAllHtmlControls(canvas) {
@@ -297,6 +300,82 @@ const renderAllImageObjects = (
 
     const existingObj = canvas.getObjects("image").find((obj) => obj.id === id);
 
+    function createLoaderOverlay(fabricImage, canvasId) {
+      const id = fabricImage.id;
+      const loaderId = `loader-${id}`;
+      const canvasElement = document.getElementById(canvasId);
+      if (!canvasElement) return;
+
+      let loader = document.getElementById(loaderId);
+
+      // Compute scaled size (adjust multiplier as needed)
+      const scaledWidth = fabricImage.getScaledWidth();
+      const scaledHeight = fabricImage.getScaledHeight();
+      const loaderSize = Math.min(scaledWidth, scaledHeight) * 0.3; // 30% of smaller dimension
+
+      if (!loader) {
+        loader = document.createElement("div");
+        loader.id = loaderId;
+
+        Object.assign(loader.style, {
+          position: "absolute",
+          zIndex: "1000",
+          border: "4px solid #e0e0e0",
+          borderTop: "4px solid #3b82f6",
+          borderRadius: "50%",
+          animation: "spin 1s linear infinite",
+          pointerEvents: "none",
+        });
+
+        if (!document.getElementById("loader-style")) {
+          const style = document.createElement("style");
+          style.id = "loader-style";
+          style.innerHTML = `
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `;
+          document.head.appendChild(style);
+        }
+
+        canvasElement.parentElement.appendChild(loader);
+      }
+
+      // Apply dynamic size
+      loader.style.width = `${loaderSize}px`;
+      loader.style.height = `${loaderSize}px`;
+      loader.style.borderWidth = `${Math.max(loaderSize * 0.1, 2)}px`;
+
+      // Center of image on screen
+      const center = fabricImage.getCenterPoint();
+      const zoom = fabricImage.canvas.getZoom();
+      const viewportTransform = fabricImage.canvas.viewportTransform;
+
+      const left = center.x * zoom + viewportTransform[4] - loaderSize / 2;
+      const top = center.y * zoom + viewportTransform[5] - loaderSize / 2;
+
+      loader.style.left = `${left}px`;
+      loader.style.top = `${top}px`;
+      loader.style.display = "block";
+    }
+
+
+    const loaderId = `loader-${id}`;
+    // if (loading) {
+    //   const canvasId = `canvas-${activeSide}`;
+    //   const existingObj = canvas.getObjects("image").find((obj) => obj.id === id);
+    //   if (existingObj) {
+    //     createLoaderOverlay(existingObj, canvasId);
+    //     return;
+    //   }
+    //   // create dynamically the loader circle and postion like the bgremove button postioned 
+    // }
+    // let loader = document.getElementById(loaderId);
+    // if (loader) {
+    //   loader.remove();
+    // }
+
     const normalizeUrl = (url) => decodeURIComponent(url.trim().toLowerCase());
     if (
       existingObj &&
@@ -369,8 +448,8 @@ const renderAllImageObjects = (
             button.style.left = `${imageLeft}px`;
           }
 
-          createRemoveBackgroundToggle(newImg, "canvas", (isChecked, image) => {
-            console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
+          createRemoveBackgroundToggle(newImg, `canvas-${activeSide}`, (isChecked, image) => {
+            // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
           }, removeBg);
 
           canvas.add(newImg);
@@ -411,6 +490,16 @@ const renderAllImageObjects = (
             const toggle = document.getElementById(`canvas-${newImg.id}`);
             if (toggle) toggle.style.display = "none";
           });
+          const image = newImg;
+          const DPI = 300; // assumed target print resolution
+
+          const widthPixels = image.getScaledWidth();  // actual size on canvas (in px)
+          const heightPixels = image.getScaledHeight();
+
+          const widthInches = (widthPixels / DPI).toFixed(2);
+          const heightInches = (heightPixels / DPI).toFixed(2);
+
+          console.log(`Print Size: ${widthInches} in × ${heightInches} in`);
 
           canvas.renderAll();
         },
@@ -458,10 +547,57 @@ const renderAllImageObjects = (
         br: false,
         mtr: false,
       });
+
+      function getPrintSizeFromCanvasBackground(fabricImage, canvas, shirtRealWidthInches) {
+        const shirtImage = canvas.backgroundImage;
+
+        if (!shirtImage) {
+          console.warn("No background image (shirt mockup) found on the canvas.");
+          return null;
+        }
+
+        const imageWidthPx = fabricImage.getScaledWidth();
+        const imageHeightPx = fabricImage.getScaledHeight();
+        const shirtWidthPx = shirtImage.getScaledWidth();
+
+        // Convert proportionally using real shirt width
+        const pixelsPerInch = shirtWidthPx / shirtRealWidthInches;
+
+        const widthInches = imageWidthPx / pixelsPerInch;
+        const heightInches = imageHeightPx / pixelsPerInch;
+
+        return {
+          width: widthInches.toFixed(2),
+          height: heightInches.toFixed(2),
+        };
+      }
+      const printSize = getPrintSizeFromCanvasBackground(existingObj, fabricCanvasRef.current, 19);
+
+      if (printSize) {
+        console.log(`Print Area: ${printSize.width} in × ${printSize.height} in`);
+      }
+
       existingObj.controls = createControls(bringPopup, dispatch);
       const center = existingObj.getCenterPoint();
       existingObj.setPositionByOrigin(center, "center", "center");
       existingObj.setCoords();
+      const image = existingObj;
+      const DPI = 300; // assumed target print resolution
+      // INPUTS
+      // const shirtRealWidthInches = 19;        // actual shirt width
+      // const shirtImagePixels = 400;           // shirt image width in pixels
+      // const pixelsPerInch = shirtImagePixels / shirtRealWidthInches; // ≈ 35.95
+
+      // const widthPixels = image.getScaledWidth();
+      // const heightPixels = image.getScaledHeight();
+
+      // const widthInches = (widthPixels / pixelsPerInch).toFixed(2);
+      // const heightInches = (heightPixels / pixelsPerInch).toFixed(2);
+
+      // console.log(`Actual Print Size: ${widthInches} in × ${heightInches} in`);
+
+
+
       canvas.renderAll();
     } else {
       fabric.Image.fromURL(
@@ -521,8 +657,8 @@ const renderAllImageObjects = (
             }
           }
 
-          createRemoveBackgroundToggle(img, "canvas", (isChecked, image) => {
-            console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
+          createRemoveBackgroundToggle(img, `canvas-${activeSide}`, (isChecked, image) => {
+            // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
           }, removeBg);
 
           canvas.add(img);

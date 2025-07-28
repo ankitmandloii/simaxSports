@@ -27,9 +27,9 @@ function ProductContainer() {
   const sleevedesign = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   const exportRequested = useSelector((state) => state.canvasExport.exportRequested);
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
-  console.log("===================activeProducttttt", activeProduct)
+  // console.log("===================activeProducttttt", activeProduct)
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  console.log("===================selectedProducttttt", selectedProducts)
+  // console.log("===================selectedProducttttt", selectedProducts)
 
 
   const isQuantityPage = location.pathname === "/quantity" || location.pathname === '/review';
@@ -228,7 +228,7 @@ function ProductContainer() {
         <div style={{ display: activeSide === "front" ? "block" : "none" }}>
           <MainDesignTool
             warningColor={invertedColor}
-            id="mirrorCanvasFront"
+            id="front"
             key="front"
             backgroundImage={frontBgImage}
             zoomLevel={zoomLevel}
@@ -242,7 +242,7 @@ function ProductContainer() {
         <div style={{ display: activeSide === "back" ? "block" : "none" }}>
           <MainDesignTool
             warningColor={invertedColor}
-            id="mirrorCanvasBack"
+            id="back"
             key="back"
             backgroundImage={backBgImage}
             zoomLevel={zoomLevel}
@@ -256,7 +256,7 @@ function ProductContainer() {
         <div style={{ display: activeSide === "rightSleeve" ? "block" : "none" }}>
           <MainDesignTool
             warningColor={invertedColor}
-            id="mirrorCanvasRightSleeve"
+            id="rightSleeve"
             key="rightSleeve"
             backgroundImage={rightSleeveBgImage}
             zoomLevel={zoomLevel}
@@ -270,7 +270,7 @@ function ProductContainer() {
         <div style={{ display: activeSide === "leftSleeve" ? "block" : "none" }}>
           <MainDesignTool
             warningColor={invertedColor}
-            id="mirrorCanvasLeftSleeve"
+            id="leftSleeve"
             key="leftSleeve"
             backgroundImage={leftSleeveBgImage}
             zoomLevel={zoomLevel}

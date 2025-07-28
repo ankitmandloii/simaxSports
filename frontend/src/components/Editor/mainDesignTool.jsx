@@ -106,11 +106,11 @@ const MainDesignTool = ({
   //   setTimeout(() => navigate(route), 50); // slight delay to allow re-render
   // };
   const handleClick = (path) => {
-  dispatch(setHoveredRoute(null)); 
-   dispatch(markDesignButtonClicked(activeSide));// Clear hovered state
-  // Your existing navigation logic, e.g., using useNavigate
-  navigate(path); // Assuming you're using react-router-dom's navigate
-};
+    dispatch(setHoveredRoute(null));
+    dispatch(markDesignButtonClicked(activeSide));// Clear hovered state
+    // Your existing navigation logic, e.g., using useNavigate
+    navigate(path); // Assuming you're using react-router-dom's navigate
+  };
   const hasClickedMap = useSelector((state) => state?.hoverReducer.hasClickedDesignButton);
   const hasClicked = hasClickedMap?.[activeSide];
 
@@ -321,9 +321,9 @@ const MainDesignTool = ({
   // **********************************************************************************************************************************************************
   useEffect(() => {
 
-    console.log("loading reduxt is ", loadingState)
+    // console.log("loading reduxt is ", loadingState)
     setLoading(loadingState?.loading);
-    console.log("loading state is ", loading)
+    // console.log("loading state is ", loading)
   }, [loadingState])
   // useEffect(() => {
   //   const canvas = fabricCanvasRef.current;
@@ -349,13 +349,13 @@ const MainDesignTool = ({
       const zoom = zoomLevel;  // Zoom level toggles between 1 and 1.4
 
       const backgroundImage = canvas.backgroundImage;
-      console.log("backgroundImage", backgroundImage);
+      // console.log("backgroundImage", backgroundImage);
 
       if (backgroundImage) {
         // Calculate the new scale based on the zoom level
         let newScale = backgroundImage.scaleX * zoom;
 
-        console.log("zoom", zoom)
+        // console.log("zoom", zoom)
 
         if (zoom == 1) {
           // Calculate scale factors based on canvas size and background image size
@@ -370,7 +370,7 @@ const MainDesignTool = ({
 
           // Choose the maximum of the two scale values to preserve aspect ratio
           newScale = Math.max(scaleX, scaleY);
-          console.log("new scale ", newScale);
+          // console.log("new scale ", newScale);
         }
 
         // Ensure the background image properties are updated correctly
@@ -384,7 +384,7 @@ const MainDesignTool = ({
           canvas.renderAll();  // Explicitly re-render the canvas
         });
 
-        console.log("Updated background image scale:", newScale);
+        // console.log("Updated background image scale:", newScale);
       }
     }
   }, [zoomLevel]);  // Trigger effect when zoomLevel changes
@@ -656,7 +656,7 @@ const MainDesignTool = ({
 
     // Consolidated handlers
     const handleObjectRemoved = (e) => {
-      console.warn("removedObject................", e.target)
+      // console.warn("removedObject................", e.target)
       const removedObject = e.target;
       removeAllHtmlControls();
       syncMirrorCanvasHelper(activeSide);
@@ -839,7 +839,7 @@ const MainDesignTool = ({
   useEffect(() => {
     const handleResize = () => {
       if (fabricCanvasRef.current) {
-        console.log("repostioning......................")
+        // console.log("repostioning......................")
         // fabricCanvasRef.current.requestRenderAll(); // this will reposition all controls
       }
     };
@@ -990,7 +990,7 @@ const MainDesignTool = ({
     <div class="canvas-wrapper" style={{ position: "relative", top: 5 }} >
 
 
-      <canvas ref={canvasRef} id="canvas" />
+      <canvas ref={canvasRef} id={`canvas-${id}`} />
       {!hasClicked &&
         imageContaintObject.length == 0 &&
         textContaintObject.length == 0 && (
