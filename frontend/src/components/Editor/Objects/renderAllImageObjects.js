@@ -17,18 +17,19 @@ const renderAllImageObjects = (
   handleScale,
   bringPopup
 ) => {
-  console.log("imageContaintObject", imageContaintObject)
+  console.log("imageContaintObject", imageContaintObject);
   const canvas = fabricCanvasRef.current;
 
   if (!canvas) return;
+
   function createRemoveBackgroundToggle(fabricImage, canvasId, callback, removeBg) {
-    console.log("button data ", fabricImage, canvasId, callback, removeBg)
+    console.log("button data ", fabricImage, canvasId, callback, removeBg);
     const id = fabricImage.id;
     const buttonId = `canvas-${id}`;
     const canvasElement = document.getElementById(canvasId);
     if (!canvasElement) return;
 
-    // === Check if toggle already exists ===
+    // Check if toggle already exists
     let container = document.getElementById(buttonId);
     if (container) {
       const center = fabricImage.getCenterPoint();
@@ -54,8 +55,7 @@ const renderAllImageObjects = (
       return;
     }
 
-
-    // === Otherwise, create the toggle ===
+    // Create the toggle
     container = document.createElement("div");
     container.id = buttonId;
     Object.assign(container.style, {
@@ -146,26 +146,61 @@ const renderAllImageObjects = (
     if (removeBg) {
       slider.style.backgroundColor = "#3b82f6";
       circle.style.transform = "translateX(16px)";
+      checkbox.checked = true;
     } else {
       slider.style.backgroundColor = "#ccc";
       circle.style.transform = "translateX(0)";
+      checkbox.checked = false;
     }
 
-
     checkbox.addEventListener("change", () => {
-      if (checkbox.checked) {
-        slider.style.backgroundColor = "#3b82f6";
-        circle.style.transform = "translateX(16px)";
-      } else {
-        slider.style.backgroundColor = "#ccc";
-        circle.style.transform = "translateX(0)";
+      const checked = checkbox.checked;
+      slider.style.backgroundColor = checked ? "#3b82f6" : "#ccc";
+      circle.style.transform = checked ? "translateX(16px)" : "translateX(0)";
+
+      // Get current image source and parameters
+      const currentSrc = fabricImage.getSrc();
+      const baseSrc = currentSrc.split('?')[0];
+      let params = currentSrc.split('?')[1] ? currentSrc.split('?')[1].split('&') : [];
+      const hasRemoveBg = params.includes('bg-remove=true');
+
+      // Update parameters based on checkbox state
+      if (checked && !hasRemoveBg) {
+        params.push('bg-remove=true');
+      } else if (!checked && hasRemoveBg) {
+        params = params.filter(param => param !== 'bg-remove=true');
       }
 
-      if (callback) callback(checkbox.checked, fabricImage);
+      // Construct new URL
+      const newTransform = params.length > 0 ? `?${params.join('&')}` : '';
+      const newSrc = `${baseSrc}${newTransform}`;
+
+      // Show loading state
+      globalDispatch("loading", true, id);
+      globalDispatch("loadingSrc", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s", id);
+
+      // Update image source
+      fabricImage.setSrc(newSrc, () => {
+        canvas.renderAll();
+        globalDispatch("loading", false, id);
+        globalDispatch("loadingSrc", null, id);
+        globalDispatch("src", newSrc, id);
+        globalDispatch("removeBg", checked, id);
+        globalDispatch("removeBgParamValue", checked ? "bg-remove=true" : "", id);
+        if (callback) callback(checked, fabricImage);
+      }, { crossOrigin: "anonymous" });
+
+      // Sync with toolbar checkbox
+      const toolbarCheckbox = document.querySelector(`.toolbarBox input[type="checkbox"]`);
+      if (toolbarCheckbox && toolbarCheckbox.checked !== checked) {
+        toolbarCheckbox.checked = checked;
+        const event = new Event('change');
+        toolbarCheckbox.dispatchEvent(event);
+      }
     });
+
     slider.classList.add("slider");
     circle.classList.add("circle");
-
 
     toggleWrapper.appendChild(checkbox);
     toggleWrapper.appendChild(slider);
@@ -175,7 +210,7 @@ const renderAllImageObjects = (
     container.appendChild(toggleWrapper);
     canvasElement.parentElement.appendChild(container);
 
-    // === Initial Position Below Image ===
+    // Initial position below image
     const center = fabricImage.getCenterPoint();
     const imageBottom = center.y + fabricImage.getScaledHeight() / 2;
     const imageLeft = center.x;
@@ -184,8 +219,6 @@ const renderAllImageObjects = (
     container.style.top = `${imageBottom + OFFSET}px`;
     container.style.left = `${imageLeft}px`;
   }
-
-
 
   function removeAllHtmlControls(canvas) {
     if (!canvas) {
@@ -201,11 +234,8 @@ const renderAllImageObjects = (
       }
     });
 
-    // Safety net: also remove floating orphan controls (edge case fallback)
     document.querySelectorAll('[data-fabric-control]').forEach(el => el.remove());
   }
-
-  // removeAllHtmlControls(canvas);
 
   const MAX_WIDTH = 180;
   const MAX_HEIGHT = 180;
@@ -224,7 +254,6 @@ const renderAllImageObjects = (
   canvas.getObjects("image").forEach((obj) => {
     if (!obj.id) return;
     if (seenIds.has(obj.id)) {
-      // console.warn("→ Removed duplicate image with id:", obj.id);
       canvas.remove(obj);
       duplicateRemoved = true;
     } else {
@@ -237,7 +266,6 @@ const renderAllImageObjects = (
 
   canvas.getObjects("image").forEach((obj) => {
     if (obj.id && !validIds.includes(obj.id)) {
-      // console.warn("→ Removed stale image not in imageContaintObject:", obj.id);
       canvas.remove(obj);
       staleRemoved = true;
     }
@@ -267,19 +295,13 @@ const renderAllImageObjects = (
       removeBg
     } = imageData;
 
-    // const spinnerId = `spinner-${id}`;
     const existingObj = canvas.getObjects("image").find((obj) => obj.id === id);
 
-
-
-    // Replace Image
     const normalizeUrl = (url) => decodeURIComponent(url.trim().toLowerCase());
     if (
       existingObj &&
       normalizeUrl(existingObj.getSrc()) !== normalizeUrl(src)
     ) {
-      // console.log("src....00", src, "prev src", existingObj.getSrc());
-      // console.log("→ Replacing image (src changed):", id);
       canvas.remove(existingObj);
       fabric.Image.fromURL(
         src,
@@ -348,14 +370,8 @@ const renderAllImageObjects = (
           }
 
           createRemoveBackgroundToggle(newImg, "canvas", (isChecked, image) => {
-            if (isChecked) {
-              console.log("Background removal ON for", image.id);
-              // Trigger your background removal logic
-            } else {
-              console.log("Background removal OFF for", image.id);
-            }
+            console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
           }, removeBg);
-
 
           canvas.add(newImg);
           newImg.on("scaling", () => toggleVisibility(false));
@@ -391,7 +407,6 @@ const renderAllImageObjects = (
             if (toggle) toggle.style.display = "flex";
           });
 
-          // HIDE toggle when the image is deselected
           newImg.on("deselected", () => {
             const toggle = document.getElementById(`canvas-${newImg.id}`);
             if (toggle) toggle.style.display = "none";
@@ -399,13 +414,9 @@ const renderAllImageObjects = (
 
           canvas.renderAll();
         },
-        {
-          crossOrigin: "anonymous",
-        }
+        { crossOrigin: "anonymous" }
       );
     } else if (existingObj) {
-      // console.log("src....00", src, "prev src", existingObj.getSrc());
-      // console.log("→ updaing existing image :", id);
       const { scaleX: finalX, scaleY: finalY } = getScaled(
         existingObj,
         scaleX,
@@ -434,7 +445,6 @@ const renderAllImageObjects = (
         const OFFSET = 40;
         button.style.top = `${imageBottom + OFFSET}px`;
         button.style.left = `${imageLeft}px`;
-
       }
 
       existingObj.setControlsVisibility({
@@ -448,15 +458,12 @@ const renderAllImageObjects = (
         br: false,
         mtr: false,
       });
-      // removeAllHtmlControls(canvas);
       existingObj.controls = createControls(bringPopup, dispatch);
       const center = existingObj.getCenterPoint();
       existingObj.setPositionByOrigin(center, "center", "center");
       existingObj.setCoords();
       canvas.renderAll();
     } else {
-      // console.log("src....00", src);
-      // console.log("→ creating nwe image ", id);
       fabric.Image.fromURL(
         src,
         (img) => {
@@ -514,49 +521,11 @@ const renderAllImageObjects = (
             }
           }
 
-          // const existingButton = document.getElementById(`canvas-${id}`);
-          // if (existingButton) existingButton.remove();
-
-          // const canvasElement = document.getElementById("canvas");
-          // const button = document.createElement("button");
-          // button.id = `canvas-${id}`;
-          // button.textContent = "Edit";
-          // button.style.position = "absolute";
-          // button.style.zIndex = "999";
-          // button.style.padding = "4px 8px";
-          // button.style.border = "1px solid #888";
-          // button.style.borderRadius = "4px";
-          // button.style.backgroundColor = "#fff";
-          // button.style.cursor = "pointer";
-
-          // // Dynamically compute image's bottom-center position
-          // const center = img.getCenterPoint();
-          // const imageBottom = center.y + (img.getScaledHeight() / 2);
-          // const imageLeft = center.x;
-          // const OFFSET = 10;
-
-          // button.style.top = `${imageBottom + OFFSET}px`;
-          // button.style.left = `${imageLeft}px`;
-          // button.style.transform = "translate(-50%, 0)";
-
-          // button.onclick = () => {
-          //   navigate("/design/addImage", { state: imageData });
-          // };
-
-          // const parentElement = canvasElement.parentElement;
-          // parentElement.appendChild(button);
-
           createRemoveBackgroundToggle(img, "canvas", (isChecked, image) => {
-            if (isChecked) {
-              console.log("Background removal ON for", image.id);
-              // Trigger your background removal logic
-            } else {
-              console.log("Background removal OFF for", image.id);
-            }
+            console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
           }, removeBg);
 
           canvas.add(img);
-
 
           img.on("scaling", () => toggleVisibility(false));
           img.on("rotating", () => toggleVisibility(false));
@@ -574,7 +543,7 @@ const renderAllImageObjects = (
           });
 
           img.on("moving", () => {
-            const center = img.getCenterPoint(); // current center
+            const center = img.getCenterPoint();
             const imageBottom = center.y + (img.getScaledHeight() / 2);
             const imageLeft = center.x;
             const OFFSET = 40;
@@ -598,23 +567,21 @@ const renderAllImageObjects = (
             handleScale(e);
             canvas.renderAll();
             syncMirrorCanvasHelper(activeSide);
-            toggleVisibility(true)
+            toggleVisibility(true);
           });
+
           img.on("selected", () => {
             const toggle = document.getElementById(`canvas-${img.id}`);
             if (toggle) toggle.style.display = "flex";
           });
 
-          // HIDE toggle when the image is deselected
           img.on("deselected", () => {
             const toggle = document.getElementById(`canvas-${img.id}`);
             if (toggle) toggle.style.display = "none";
           });
           canvas.renderAll();
         },
-        {
-          crossOrigin: "anonymous",
-        }
+        { crossOrigin: "anonymous" }
       );
     }
   });

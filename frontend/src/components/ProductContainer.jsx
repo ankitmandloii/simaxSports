@@ -29,14 +29,16 @@ function ProductContainer() {
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
   console.log("===================activeProducttttt", activeProduct)
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
+  console.log("===================selectedProducttttt", selectedProducts)
+
 
   const isQuantityPage = location.pathname === "/quantity" || location.pathname === '/review';
 
   // Extract color and images from activeProduct
   const activeProductColor = activeProduct?.selectedColor?.name || 'White';
   const frontImage = activeProduct?.selectedColor?.variant?.image?.originalSrc || activeProduct?.imgurl;
-  const backImage = activeProduct?.images?.find(img => img.includes('_b_fm')) || activeProduct?.images?.[1];
-  const sleeveImage = activeProduct?.images?.find(img => img.includes('_d_fm')) || activeProduct?.images?.[2];
+  const backImage = activeProduct?.images?.find(img => img.includes('_b_fm')) || activeProduct?.imgurl;
+  const sleeveImage = activeProduct?.images?.find(img => img.includes('_d_fm')) || activeProduct?.imgurl;
 
   const activeProductColorHex = getHexFromName(activeProductColor);
 
@@ -127,9 +129,18 @@ function ProductContainer() {
 
   // Extract images from metafields
   useEffect(() => {
-    if (!activeProduct?.selectedColor?.variant?.metafields?.edges) return;
+    if (!activeProduct?.selectedColor?.variant?.metafields?.edges) {
+      setFrontBgImage(activeProduct?.imgurl);
+        setBackBgImage(activeProduct?.imgurl);
+        setLeftSleeveBgImage(activeProduct?.imgurl);
+        setRightSleeveBgImage(activeProduct?.imgurl);
 
-    const variantMetafields = activeProduct.selectedColor.variant.metafields.edges.find(
+        setFrontPreviewImage(activeProduct?.imgurl);
+        setBackPreviewImage(activeProduct?.imgurl);
+        setLeftSleevePreviewImage(activeProduct?.imgurlft);
+        setRightSleevePreviewImage(activeProduct?.imgurl);
+    }else{
+        const variantMetafields = activeProduct.selectedColor.variant.metafields.edges.find(
       (edge) => edge?.node?.key === 'variant_images'
     )?.node?.value;
 
@@ -174,6 +185,10 @@ function ProductContainer() {
       setLeftSleevePreviewImage(sleeveImage);
       setRightSleevePreviewImage(sleeveImage);
     }
+      
+    }
+
+  
   }, [activeProduct, frontImage, backImage, sleeveImage]);
 
   useEffect(() => {

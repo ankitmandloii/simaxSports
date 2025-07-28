@@ -101,10 +101,16 @@ const MainDesignTool = ({
   // for route buttons
   const handleHover = (path) => dispatch(setHoveredRoute(path));
   const handleLeave = () => dispatch(setHoveredRoute(null));
-  const handleClick = (route) => {
-    dispatch(markDesignButtonClicked(activeSide)); // pass current side
-    setTimeout(() => navigate(route), 50); // slight delay to allow re-render
-  };
+  // const handleClick = (route) => {
+  //   dispatch(markDesignButtonClicked(activeSide)); // pass current side
+  //   setTimeout(() => navigate(route), 50); // slight delay to allow re-render
+  // };
+  const handleClick = (path) => {
+  dispatch(setHoveredRoute(null)); 
+   dispatch(markDesignButtonClicked(activeSide));// Clear hovered state
+  // Your existing navigation logic, e.g., using useNavigate
+  navigate(path); // Assuming you're using react-router-dom's navigate
+};
   const hasClickedMap = useSelector((state) => state?.hoverReducer.hasClickedDesignButton);
   const hasClicked = hasClickedMap?.[activeSide];
 

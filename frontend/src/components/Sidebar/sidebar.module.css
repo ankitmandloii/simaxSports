@@ -83,11 +83,14 @@
   background-color: #6c5ce710;
 } */
 
-.active,.hovered{
+.active{
   background-color: #fff;
   color: #000;
 }
-
+.hovered{
+  background-color: #fff;
+  color: #000;
+}
 .sidebarIcon svg {
   font-size: 18px;
   height: 23px;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FaBars } from "react-icons/fa";
 import { RiTShirt2Line } from "react-icons/ri";
 import {
@@ -11,10 +11,12 @@ import {
 } from "../iconsSvg/CustomIcon";
 
 import styles from "./sidebar.module.css";
+import { setHoveredRoute } from "../../redux/ProductSlice/HoverSlice";
 
 const AdminSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const dispatch=useDispatch();
   const location = useLocation();
   // const hoveredRoute = useSelector((state) => state.hover.hoveredRoute); // ✅
   // const hoveredRoute=useSelector((state)=>state?.hover.hoveredRoute)
@@ -29,7 +31,10 @@ const AdminSidebar = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
+// ---
+useEffect(() => {
+  dispatch(setHoveredRoute(null)); // Reset hoveredRoute on route change
+}, [location.pathname, dispatch]);
   const toggleSidebar = () => {
     if (window.innerWidth > 1024) {
       setCollapsed((prev) => !prev);
@@ -84,17 +89,26 @@ const AdminSidebar = () => {
 
             const isHovered = hoveredRoute === item.path; // ✅
 
+
             return (
+              // <Link
+              //   key={item.path}
+              //   to={item.path}
+              //   className={`${styles.sidebarLink} ${isActive ? styles.active : ""} ${isHovered ? styles.hovered : ""}`}
+              //   onClick={() => setMobileOpen(false)}
+              // >
               <Link
                 key={item.path}
                 to={item.path}
-                className={`${styles.sidebarLink} ${isActive ? styles.active : ""} ${isHovered ? styles.hovered : ""}`}
-                onClick={() => setMobileOpen(false)}
+                className={`${styles.sidebarLink} ${isActive ? styles.active : isHovered ? styles.hovered : ""}`}
+                onClick={() => {
+                  setMobileOpen(false);
+                  dispatch(setHoveredRoute(null)); // Clear hover on click
+                }}
               >
                 <span
-                  className={`${styles.sidebarIcon} ${
-                    item.path === "/design/addArt" ? styles.sidebariconAddArt : ""
-                  }`}
+                  className={`${styles.sidebarIcon} ${item.path === "/design/addArt" ? styles.sidebariconAddArt : ""
+                    }`}
                 >
                   {item.icon}
                 </span>

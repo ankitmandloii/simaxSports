@@ -61,8 +61,8 @@ const AddImageToolbar = () => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeTransform, setActiveTransform] = useState('');
-  const [cropAndTrim, setCropAndTrim] = useState(false);
   const [superResolution, setSuperResolution] = useState(false);
+  const [cropAndTrim, setCropAndTrim] = useState(false);
   const [bgColor, setBgColor] = useState("var(--black-color)");
   const [invertColor, setInvertColor] = useState(false);
   const [solidColor, setSolidColor] = useState(false);

@@ -252,19 +252,19 @@
 
 // neww
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import ColorWheel from '../../images/color-wheel1.png';
-import { getHexFromName } from '../../utils/colorUtils';
-import { CrossIcon } from '../../iconsSvg/CustomIcon';
+import { getHexFromName } from './../../utils/colorUtils';
 import { toast } from 'react-toastify';
 import style from './CollectionProductPopup.module.css';
 import { useSelector } from 'react-redux';
+import { CrossIcon } from '../../iconsSvg/CustomIcon';
+import ColorWheel from '../../images/color-wheel1.png';
 
 const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const popupRef = useRef(null);
   const selectedProducts = useSelector((state) => state?.selectedProducts?.selectedProducts);
   const [products, setProducts] = useState([]);
-  const [selectedVariantImage, setSelectedVariantImage] = useState({});
+  const [selectedVariantImages, setSelectedVariantImages] = useState({});
   const [selectedColorByProduct, setSelectedColorByProduct] = useState({});
   const [hoverImage, setHoverImage] = useState({});
   const [imageLoaded, setImageLoaded] = useState({});
@@ -297,7 +297,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
     setCursor('');
     setHasNextPage(false);
     setSelectedProductColors(null);
-    setSelectedVariantImage({});
+    setSelectedVariantImages({});
     setSelectedColorByProduct({});
     setHoverImage({});
     setImageLoaded({});
@@ -310,7 +310,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
       const res = await fetch(`${BASE_URL}products/collection/${numericId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ limit: 50, cursor: isLoadMore ? cursor : '' }),
+        body: JSON.stringify({ limit: 10, cursor: isLoadMore ? cursor : '' }),
       });
 
       const data = await res.json();
@@ -358,6 +358,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
           colors: Object.values(colorMap),
           allVariants: variants,
           id: productID,
+          productKey: productID,
         };
       });
 
@@ -389,11 +390,16 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
     return variant?.image?.originalSrc || '';
   };
 
+  const getColorObjectByName = (product, colorName) => {
+    return product.colors.find((color) => color.name === colorName);
+  };
+
   const handleColorClick = (e, product, color) => {
     e.stopPropagation();
-    const image = getVariantImageByColor(product, color);
-    setSelectedColorByProduct((prev) => ({ ...prev, [product.id]: color }));
-    setSelectedVariantImage((prev) => ({ ...prev, [product.id]: image }));
+    const colorObj = getColorObjectByName(product, color);
+    const image = colorObj?.img || getVariantImageByColor(product, color);
+    setSelectedColorByProduct((prev) => ({ ...prev, [product.id]: colorObj }));
+    setSelectedVariantImages((prev) => ({ ...prev, [product.id]: image }));
   };
 
   const handleImageLoad = (productId) => {
@@ -402,17 +408,34 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
 
   const renderColorSwatches = (product) =>
     getUniqueColors(product).map((color, idx) => {
-      const image = getVariantImageByColor(product, color);
-      const isSelected = selectedColorByProduct[product.id] === color;
+      const colorObj = getColorObjectByName(product, color);
+      const image = colorObj?.img || getVariantImageByColor(product, color);
+      const isSelected = selectedColorByProduct[product.id]?.name === color;
 
       return (
         <span
-          key={idx}
+          key={`${product.id}-${color}-${idx}`}
           className={`color-swatch ${isSelected ? 'selected' : ''}`}
-          style={{ backgroundColor: getHexFromName(color) }}
+          style={{
+            backgroundColor: getHexFromName(color),
+            cursor: 'pointer',
+            padding: 10,
+            margin: 5,
+            borderRadius: '20%',
+            display: 'inline-block',
+            border: isSelected ? '2px solid black' : '1px solid gray',
+          }}
           title={color}
-          onMouseEnter={() => setHoverImage((prev) => ({ ...prev, [product.id]: image }))}
-          onMouseLeave={() => setHoverImage((prev) => ({ ...prev, [product.id]: '' }))}
+          onMouseEnter={() => {
+            if (!selectedColorByProduct[product.id]?.name) {
+              setHoverImage((prev) => ({ ...prev, [product.id]: image }));
+            }
+          }}
+          onMouseLeave={() => {
+            if (!selectedColorByProduct[product.id]?.name) {
+              setHoverImage((prev) => ({ ...prev, [product.id]: '' }));
+            }
+          }}
           onClick={(e) => handleColorClick(e, product, color)}
         />
       );
@@ -420,10 +443,9 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
 
   const handleAddProduct = (e, product) => {
     e.stopPropagation();
-    const selectedColor = selectedColorByProduct[product.id];
-    const selectedImage = selectedVariantImage[product.id];
+    const selectedColorObj = selectedColorByProduct[product.id];
 
-    if (!selectedColor) {
+    if (!selectedColorObj) {
       toast.error('Please select a color before adding the product.');
       return;
     }
@@ -434,7 +456,11 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
       return;
     }
 
-    onProductSelect?.({ ...product, selectedColor, selectedImage });
+    onProductSelect?.({
+      ...product,
+      selectedColor: selectedColorObj, // Pass the full color object { name, img, variant }
+      productKey: product.id,
+    });
     onClose?.();
   };
 
@@ -451,6 +477,8 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
           <div className={style.productListCollection}>
             {products.map((product) => {
               const isAlreadySelected = selectedProducts.some((p) => p.id === product.id);
+              const displayImage =
+                selectedVariantImages[product.id] || hoverImage[product.id] || getFirstVariantImage(product);
 
               return (
                 <div
@@ -472,7 +500,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
                         <div className={style.imagePlaceholder}>Loading...</div>
                       )}
                       <img
-                        src={hoverImage[product.id] || getFirstVariantImage(product)}
+                        src={displayImage}
                         alt={product.name}
                         className={`${style.modalProductcolorImg} ${imageLoaded[product.id] ? style.visible : style.hidden}`}
                         onLoad={() => handleImageLoad(product.id)}
@@ -507,7 +535,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
                           <button
                             className={style.addProductBtnPopup}
                             onClick={(e) => handleAddProduct(e, product)}
-                            disabled={!selectedColorByProduct[product.id] || isAlreadySelected}
+                            disabled={!selectedColorByProduct[product.id]?.name || isAlreadySelected}
                           >
                             {isAlreadySelected ? 'Product Already Added' : 'Add Product'}
                           </button>

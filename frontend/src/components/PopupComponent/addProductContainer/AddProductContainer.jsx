@@ -94,6 +94,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
   };
 
   const handleAddProduct = (e, product, productKey) => {
+    console.log("-------------------prodAdd",product)
     e.stopPropagation();
     const state = productStates[productKey];
     if (!state.selectedColor) return;
