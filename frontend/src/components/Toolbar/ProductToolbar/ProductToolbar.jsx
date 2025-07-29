@@ -24,6 +24,8 @@ const ProductToolbar = () => {
   const dispatch = useDispatch();
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
+  console.log("---selectedsProduct", selectedProducts);
+
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
   // console.log("---activeProduct", activeProduct);
   const [changeProductPopup, setChangeProductPopup] = useState(false);
@@ -284,7 +286,7 @@ const ProductToolbar = () => {
                 <div className={style.productToolbarImageWithBtn}>
                   {[
                     {
-                      img: product?.imgurl || product?.selectedImage,
+                      img: product?.selectedColor?.img || product?.selectedImage,
                       name: product?.selectedColor?.name || product?.name,
                     },
                     ...(product?.addedColors || []),

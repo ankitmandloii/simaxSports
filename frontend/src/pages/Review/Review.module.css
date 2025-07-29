@@ -270,6 +270,7 @@
   height: 100vh;
   overflow-y: scroll !important;
   padding-bottom: 11vh;
+  background: var(--blue-light);
 }
 
 h3 {

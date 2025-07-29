@@ -120,7 +120,7 @@ const updateBoundaryVisibility = (fabricCanvasRef) => {
   const textObjects = objects.filter(
     (obj) => obj.type === "curved-text" || obj.type === "image"
   );
-
+  
   const canvasCenterX = canvas.getWidth() / 2;
   let anyObjectAtCenter = false;
 

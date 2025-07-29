@@ -169,6 +169,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 50vh;
   color: #b63b3b;
   font-weight: 500;
 }

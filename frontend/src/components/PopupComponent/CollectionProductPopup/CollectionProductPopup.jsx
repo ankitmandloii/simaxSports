@@ -263,6 +263,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const popupRef = useRef(null);
   const selectedProducts = useSelector((state) => state?.selectedProducts?.selectedProducts);
+  const collections = useSelector((state) => state.collections.collections) || [];
   const [products, setProducts] = useState([]);
   const [selectedVariantImages, setSelectedVariantImages] = useState({});
   const [selectedColorByProduct, setSelectedColorByProduct] = useState({});
@@ -273,9 +274,13 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   const [hasNextPage, setHasNextPage] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const defaultCollectionId = 'gid://shopify/Collection/289323319430';
+  // const collectionId = 'gid://shopify/Collection/289328496774';
+  console.log("-------------collections",collections)
+  const defaultCollectionId = collections.length > 0 ? collections[0].id : null;
+  console.log("-------------defaultCollectionId",defaultCollectionId)
+
   const effectiveCollectionId = collectionId || defaultCollectionId;
-  const numericId = effectiveCollectionId.split('/').pop();
+  const numericId = effectiveCollectionId?.split('/').pop();
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -290,7 +295,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   useEffect(() => {
     resetState();
     fetchProducts();
-  }, [collectionId]);
+  }, [collectionId,numericId]);
 
   const resetState = () => {
     setProducts([]);
@@ -314,6 +319,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
       });
 
       const data = await res.json();
+      console.log("-----CollectionData",data)
       const edges = data?.result?.node?.products?.edges || [];
       const pageInfo = data?.result?.node?.products?.pageInfo;
 
@@ -467,7 +473,8 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   return (
     <div className={style.productPanel}>
       {!effectiveCollectionId ? (
-        <p className={style.defaultCollectionPara}>Select a collection to view products.</p>
+        // <p className={style.defaultCollectionPara} >Select a collection to view products.</p>
+         <div className="loader" />
       ) : loading && products.length === 0 ? (
         <div className="loader" />
       ) : products.length === 0 ? (

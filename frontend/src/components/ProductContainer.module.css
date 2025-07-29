@@ -80,13 +80,14 @@
   display: flex;
   flex-direction: column;
   padding: 9px 4px;
-  background: white;
+  background: var(--blue-light);
   height: max-content;
   border-radius: 10px;
   gap: 10px;
   /* width: 104px; */
   align-items: center;
   justify-content: center;
+box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
 
 .ProuductMirrorContainer {
@@ -177,7 +178,7 @@
   /* width: 86px; */
   margin-bottom: 0px;
   border-radius: 10px;
-  background-color: white;
+  background-color: var(--blue-light);
   display: flex;
   flex-direction: column;
   align-items: center;

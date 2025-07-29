@@ -1,4 +1,5 @@
 .redoundoContainer {
+  width: 5rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -6,6 +7,9 @@
   margin-top: 0;
   /* margin-left: clamp(0.5rem, 3.5vw, 1rem);  */
   border-radius: 0.5rem;
+  background-color: var(--blue-light);
+box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  color:black;
   /* ~8px */
   z-index: 1000;
   /* padding: 16px; */
@@ -24,7 +28,8 @@
   border: 1px solid #fff;
   padding: clamp(0.2rem, 5vh, 1.2rem) clamp(0.2rem, 5vw, 0.8rem);
   border-radius: 0;
-  color: #7f7f7f;
+  /* color: #7f7f7f; */
+  color:black;
   font-size: clamp(0.2rem, 1.9vw, 0.75rem);
   /* 12px */
   font-weight: 600;
