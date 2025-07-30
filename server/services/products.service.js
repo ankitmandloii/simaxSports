@@ -310,6 +310,7 @@ export async function getProductsList(limit = 5, cursor = null) {
             edges {
               node {
                 originalSrc
+                altText
               }
             }
           }
@@ -423,6 +424,8 @@ export async function getProductsByCollectionId(limit, collectionId, cursor) {
                   edges {
                     node {
                       originalSrc
+                      altText
+                      id
                     }
                   }
                 }
