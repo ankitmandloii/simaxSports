@@ -467,7 +467,7 @@ const AddTextToolbar = () => {
                       className={`${style.toolbarBoxIconsContainer} center-btn ${centerActive ? 'active' : ''}`}
 
                       onClick={() => {
-                        globalDispatch("position", { x: 280, y: textContaintObject.position.y });
+                        globalDispatch("position", { x: 310, y: textContaintObject.position.y });
                         setCenterActive(!centerActive);
                       }}
                     >

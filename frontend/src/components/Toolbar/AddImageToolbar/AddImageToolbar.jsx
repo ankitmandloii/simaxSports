@@ -64,6 +64,8 @@ const AddImageToolbar = () => {
   const [superResolution, setSuperResolution] = useState(false);
   const [cropAndTrim, setCropAndTrim] = useState(false);
   const [bgColor, setBgColor] = useState("var(--black-color)");
+  const [Color, setColor] = useState("var(--black-color)");
+
   const [invertColor, setInvertColor] = useState(false);
   const [solidColor, setSolidColor] = useState(false);
 
@@ -85,6 +87,8 @@ const AddImageToolbar = () => {
 
   // const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   const [bgColorPopup, setBGColorPopup] = useState(false);
+  const [ColorPopup, setColorPopup] = useState(false);
+
   // console.log("-----------imggg", imageContaintObject);
   // Init from store
   useEffect(() => {
@@ -571,6 +575,21 @@ const AddImageToolbar = () => {
     globalDispatch("replaceBgParamValue", imgixParam);
   };
 
+    const ColorChangedFunctionCalled = (color) => {
+      console.log("-----chngcolor",color)
+    const hex = color.replace('#', '');
+    const value = isActive(`bg-remove=true&bg=${hex}`);
+    setColor(color);
+    // toggle(`bg-remove=true&bg=${hex}`, value);
+
+    // setColor(color);
+    // setResetDefault(false);
+
+    // const imgixParam = `bg-remove=true&bg=${hex}`;
+    // globalDispatch("replaceBackgroundColor", color);
+    // globalDispatch("replaceBgParamValue", imgixParam);
+  };
+
   // const bGReplaceColorChangedFunctionCalled = (color) => {
   //   // Get current toggle state (true/false)
   //    const hex = color.replace('#', '');
@@ -596,6 +615,10 @@ const AddImageToolbar = () => {
 
   const toggleBGReplaceColorPopup = () => {
     setBGColorPopup(!bgColorPopup);
+  };
+  
+   const toggleColorPopup = () => {
+    setColorPopup(!ColorPopup);
   };
 
   function cropAndTrimdHandler(e) {
@@ -771,8 +794,34 @@ const AddImageToolbar = () => {
 
               {selectedFilter === "Single Color" && (<hr />)}
 
+             {/* color */}
+             {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
+                  Color
+
+                </div>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleColorPopup}>
+                  <SpanColorBox color={Color} />
+                  {ColorPopup && (
+                    <ReplaceBackgroundColorPicker
+                      closePopupHandler={toggleColorPopup}
+                      defaultColor={Color}
+                      onApply={ColorChangedFunctionCalled}
+                    />
+                  )}
 
 
+                  {/* <span><AngleActionIcon /></span> */}
+
+
+
+                </div>
+              </div>
+
+              )}
+             
+<hr />
+           {/* ----invertcolor */}
               {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Inverts Colors
