@@ -61,7 +61,7 @@ const renderAllImageObjects = (
     container.id = buttonId;
     Object.assign(container.style, {
       position: "absolute",
-      zIndex: "999",
+      zIndex: "99",
       transform: "translate(-50%, 0)",
       display: "none",
       alignItems: "center",

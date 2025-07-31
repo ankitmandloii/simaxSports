@@ -26,7 +26,7 @@ const createNewText = ({ value, id }, totalElements) => ({
   width: 150,
   height: 50,
   fontSize: 20,
-  position: { x: 280, y: 200 },
+  position: { x: 310, y: 200 },
   locked: false,
   layerIndex: totalElements,
 });
@@ -89,6 +89,8 @@ const initialState = {
       texts: [],
       images: [],
       setRendering: false,
+      addNumber: false,
+      addName: false,
 
       // 🆕 Design settings for Name & Number (front)
       nameAndNumberDesignState: {
@@ -112,6 +114,8 @@ const initialState = {
       texts: [],
       images: [],
       setRendering: false,
+      addNumber: false,
+      addName: false,
       loadingState: {
         loading: false,
         position: { x: 290, y: 200 }
@@ -138,6 +142,8 @@ const initialState = {
       texts: [],
       images: [],
       setRendering: false,
+      // addNumber: false,
+      // addName: false,
       loadingState: {
         loading: false,
         position: { x: 290, y: 200 }
@@ -149,6 +155,8 @@ const initialState = {
       texts: [],
       images: [],
       setRendering: false,
+      // addNumber: false,
+      // addName: false,
       loadingState: {
         loading: false,
         position: { x: 290, y: 200 }
@@ -163,8 +171,7 @@ const initialState = {
   },
 
   // 🆕 Global state
-  addNumber: false,
-  addName: false,
+
   sleeveDesign: false,
 };
 
@@ -403,6 +410,8 @@ const TextFrontendDesignSlice = createSlice({
           selectedImageId: null,
           images: [],
           setRendering: false,
+          addName: false,
+          addNumber: false,
           // ===
           nameAndNumberDesignState: {
             id: "front",
@@ -422,6 +431,8 @@ const TextFrontendDesignSlice = createSlice({
           selectedImageId: null,
           images: [],
           setRendering: false,
+          addName: false,
+          addNumber: false,
           // ===
           nameAndNumberDesignState: {
             id: "front",
@@ -462,12 +473,14 @@ const TextFrontendDesignSlice = createSlice({
 
     setAddNumber: (state, action) => {
       const side = state.activeSide;
-      state.addNumber = action.payload;
+      // state.addNumber = action.payload;
+      state.present[side].addNumber = action.payload;
       state.present[side].setRendering = !state.present[side].setRendering;
     },
     setAddName: (state, action) => {
       const side = state.activeSide;
-      state.addName = action.payload;
+      state.present[side].addName = action.payload;
+      // state.addName = action.payload;
       state.present[side].setRendering = !state.present[side].setRendering;
     },
 

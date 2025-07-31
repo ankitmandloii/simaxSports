@@ -372,12 +372,27 @@ const AddTextToolbar = () => {
   const handleBringBackward = () => {
     // console.log("sending id ", selectedTextId)
     // dispatch(moveTextBackwardState(selectedTextId));
-    dispatch(moveElementBackwardState(selectedTextId));
+    // dispatch(moveElementBackwardState(selectedTextId));
+    if (selectedTextId) {
+    console.log('Button clicked: Send to Back', {
+      selectedTextId,
+      timestamp: Date.now()
+    });
+   dispatch(moveElementBackwardState(selectedTextId));
+  }
 
   };
   const handleBringForward = () => {
+    
     // dispatch(moveTextForwardState(selectedTextId));
+    // dispatch(moveElementForwardState(selectedTextId));
+    if (selectedTextId) {
+    console.log('Button clicked: Send to Top', {
+      selectedTextId,
+      timestamp: Date.now()
+    });
     dispatch(moveElementForwardState(selectedTextId));
+  }
 
   };
   function getRenderIconForSendToTop() {

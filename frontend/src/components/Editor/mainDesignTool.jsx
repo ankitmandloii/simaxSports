@@ -52,9 +52,12 @@ const MainDesignTool = ({
   //                                                                                    USE SELECTORS AREA
   // **********************************************************************************************************************************************************
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
-  const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
+  const addName  = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addName);
+  const  addNumber = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addNumber);
+
+  console.log("--------------------------namenumber",addName,addNumber)
   const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
-  // console.log("--------------namesssDesign",nameAndNumberDesignState)
+  console.log("--------------namesssDesign",nameAndNumberDesignState)
   const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
@@ -419,7 +422,7 @@ const MainDesignTool = ({
       width: canvasWidth,
       height: canvasHeight,
     });
-
+    canvas.preserveObjectStacking = true;
     fabricCanvasRef.current = canvas;
 
     const boxWidth = 250;
@@ -486,7 +489,7 @@ const MainDesignTool = ({
       fill: "white" || "#00F8E7FF",
       selectable: false,
       evented: false,
-      visible: true,
+      visible: false,
       originX: "center", // ⬅️ Centers text
       originY: "top",
       name: "warningText",
@@ -494,7 +497,7 @@ const MainDesignTool = ({
 
 
     // canvas.add(warningText);
-    canvas.bringToFront(warningText);
+    // canvas.bringToFront(warningText);
     // canvas.requestRenderAll();
 
 
@@ -661,7 +664,7 @@ const MainDesignTool = ({
       const removedObject = e.target;
       removeAllHtmlControls();
       syncMirrorCanvasHelper(activeSide);
-      updateBoundaryVisibility(fabricCanvasRef);
+      updateBoundaryVisibility(fabricCanvasRef, activeSide);
       dispatch(deleteTextState(removedObject.id));
       // dispatch(deleteImageState(removedObject.id));
 
@@ -673,7 +676,7 @@ const MainDesignTool = ({
     };
 
     const handleObjectModified = (e) => {
-      updateBoundaryVisibility(fabricCanvasRef);
+      updateBoundaryVisibility(fabricCanvasRef, activeSide);
       syncMirrorCanvasHelper(activeSide);
       // handleScale(e);
     };
@@ -684,15 +687,25 @@ const MainDesignTool = ({
       // if (!canvas) return;
 
       const objects = canvas.getObjects();
+      if (activeSide === 'front') {
+        boundaryBox.visible = true;
+        warningText.visible = true;
+        centerVerticalLine.visible = true;
+        boundaryBoxInner.visible = true;
+        boundaryBoxLeft.visible = true;
+        if (leftChestText) leftChestText.visible = true;
+        if (youthText) youthText.visible = true;
+        if (adultText) adultText.visible = true;
+      }
+      else {
+        boundaryBox.visible = true;
 
-      boundaryBox.visible = true;
-      warningText.visible = true;
-      centerVerticalLine.visible = true;
-      boundaryBoxInner.visible = true;
-      boundaryBoxLeft.visible = true;
-      if (leftChestText) leftChestText.visible = true;
-      if (youthText) youthText.visible = true;
-      if (adultText) adultText.visible = true;
+        centerVerticalLine.visible = true;
+
+      }
+
+
+
 
       // Detect center collision
       const textObjects = objects.filter(
@@ -741,6 +754,8 @@ const MainDesignTool = ({
     const showBoundaryOnAction = () => {
       boundaryBox.visible = true;
       warningText.visible = true;
+
+
       centerVerticalLine.visible = true;
       boundaryBoxInner.visible = true;
       boundaryBoxLeft.visible = true;
@@ -801,7 +816,7 @@ const MainDesignTool = ({
           // canvas.add(img);
           // canvas.bringToFront(img);
           syncMirrorCanvasHelper(activeSide);
-          updateBoundaryVisibility(fabricCanvasRef);
+          updateBoundaryVisibility(fabricCanvasRef, activeSide);
         },
         { crossOrigin: "anonymous" }
       );
@@ -830,7 +845,7 @@ const MainDesignTool = ({
 
 
   useEffect(() => {
-    updateBoundaryVisibility(fabricCanvasRef);
+    updateBoundaryVisibility(fabricCanvasRef, activeSide);
   }, [addName, addNumber, nameAndNumberDesignState, textContaintObject]);
 
   // **********************************************************************************************************************************************************
@@ -875,6 +890,7 @@ const MainDesignTool = ({
   const renderAllElements = () => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
+  
 
     // Clean up existing objects
     const existingObjects = canvas.getObjects();
@@ -937,6 +953,7 @@ const MainDesignTool = ({
 
     canvas.renderAll();
     updateBoundaryVisibility?.(fabricCanvasRef);
+   
   };
   // **********************************************************************************************************************************************************
   //                                                                                    NAME AND NUMBER OBJECTS AREA
@@ -992,9 +1009,9 @@ const MainDesignTool = ({
 
 
       <canvas ref={canvasRef} id={`canvas-${id}`} />
-      {!hasClicked &&
+    {!hasClicked && !addName && !addNumber &&
         imageContaintObject.length == 0 &&
-        textContaintObject.length == 0 && (
+        textContaintObject.length == 0  && (
           <div className={style.buttonsroute}>
             <button
               onMouseEnter={() => handleHover("/design/addText")}

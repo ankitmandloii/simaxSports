@@ -260,6 +260,7 @@ import { CrossIcon } from '../../iconsSvg/CustomIcon';
 import ColorWheel from '../../images/color-wheel1.png';
 
 const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
+  console.log("=----collectionId",collectionId)
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const popupRef = useRef(null);
   const selectedProducts = useSelector((state) => state?.selectedProducts?.selectedProducts);
@@ -309,6 +310,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   };
 
   const fetchProducts = useCallback(async (isLoadMore = false) => {
+    console.log("---numericId",numericId)
     if (!effectiveCollectionId) return;
     setLoading(true);
     try {

@@ -96,7 +96,8 @@
 // export default updateBoundaryVisibility;
 import { useCallback } from "react";
 
-const updateBoundaryVisibility = (fabricCanvasRef) => {
+const updateBoundaryVisibility = (fabricCanvasRef, activeSide) => {
+  console.log("-----activewee", activeSide)
   const canvas = fabricCanvasRef.current;
   // if (!canvas) return;
 
@@ -115,12 +116,14 @@ const updateBoundaryVisibility = (fabricCanvasRef) => {
   const rightBorder = objects.find((obj) => obj.name === "centerVerticalLineRightBorder");
 
 
+  console.log("------------------boundry", activeSide)
+
   // if (!boundaryBox || !warningText || !centerVerticalLine) return;
 
   const textObjects = objects.filter(
     (obj) => obj.type === "curved-text" || obj.type === "image"
   );
-  
+
   const canvasCenterX = canvas.getWidth() / 2;
   let anyObjectAtCenter = false;
 
@@ -166,15 +169,22 @@ const updateBoundaryVisibility = (fabricCanvasRef) => {
   });
 
   const showBoundary = !allInside;
+  if (activeSide == 'front') {
+    boundaryBox.visible = showBoundary;
+    if (boundaryBoxInner) boundaryBoxInner.visible = showBoundary;
+    if (boundaryBoxLeft) boundaryBoxLeft.visible = showBoundary;
+    if (leftChestText ) leftChestText.visible = showBoundary;
+    if (adultText) adultText.visible = showBoundary;
+    if (youthText) youthText.visible = showBoundary;
+    if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+    if (warningText) { warningText.visible = showBoundary; }
+  }
+  else {
+    boundaryBox.visible = showBoundary;
 
-  boundaryBox.visible = showBoundary;
-  if (boundaryBoxInner) boundaryBoxInner.visible = showBoundary;
-  if (boundaryBoxLeft) boundaryBoxLeft.visible = showBoundary;
-  if (leftChestText) leftChestText.visible = showBoundary;
-  if (adultText) adultText.visible = showBoundary;
-  if (youthText) youthText.visible = showBoundary;
-  if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
-  if (warningText) { warningText.visible = showBoundary; }
+    if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+   
+  }
   // Show / hide the left / right borders
   // leftBorder.set({ visible: anyObjectAtCenter && !showBoundary });
   // rightBorder.set({ visible: anyObjectAtCenter && !showBoundary });
@@ -189,14 +199,23 @@ const updateBoundaryVisibility = (fabricCanvasRef) => {
   // }
 
   // Bring important elements to front
+  // Bring important elements to front
+
   canvas.bringToFront(boundaryBox);
   canvas.bringToFront(boundaryBoxInner);
   canvas.bringToFront(boundaryBoxLeft);
   canvas.bringToFront(centerVerticalLine);
   canvas.bringToFront(warningText);
-  canvas.bringToFront(youthText);
-  canvas.bringToFront(adultText);
-  canvas.bringToFront(leftChestText)
+
+
+  canvas.requestRenderAll();
+
+  // canvas.bringToFront(boundaryBox);
+  // canvas.bringToFront(boundaryBoxInner);
+  // canvas.bringToFront(boundaryBoxLeft);
+  // canvas.bringToFront(centerVerticalLine);
+  // canvas.bringToFront(warningText);
+
 
   // You may skip bringing stitch lines to front unless needed visually
   // canvas.bringToFront(centerVerticalLineLeftBorder);
