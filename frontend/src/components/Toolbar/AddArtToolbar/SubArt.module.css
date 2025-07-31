@@ -22,6 +22,15 @@
   font-weight: bold;
   font-size: .7rem;
 }
+.uploadButton2 {
+  width: 100%;
+  padding: 6px;
+  background: #005bff;
+  color: white;
+  border-radius: 100px;
+  font-weight: bold;
+  font-size: .7rem;
+}
 
 
 .addArtToolbarSearchBox svg {

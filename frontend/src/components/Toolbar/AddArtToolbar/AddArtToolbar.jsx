@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { CrossIcon, SearchIcon } from '../../iconsSvg/CustomIcon';
 import { aiContent } from '../../json/aiicontent';
 import SubArtBox from './SubArtBox';
@@ -10,19 +10,23 @@ const AddArtToolbar = () => {
   const [subArt, setSubArt] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [triggeredSearchTerm, setTriggeredSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (searchTerm) {
+  const handleSearchClick = () => {
+    if (searchTerm.trim()) {
+      setTriggeredSearchTerm(searchTerm.trim());
       setSubArt(true);
+      setSelectedCategory(null);
     }
-  }, [searchTerm]);
+  };
 
   const handleSubClick = (title) => {
     const categoryObj = aiContent.find((item) => item.title === title);
     setSelectedCategory(categoryObj);
     setSubArt(true);
-    setSearchTerm(''); // optional: clear previous search
+    setSearchTerm('');
+    setTriggeredSearchTerm('');
   };
 
   return (
@@ -31,19 +35,19 @@ const AddArtToolbar = () => {
         <h5 className="Toolbar-badge">Art Powered By AI</h5>
         <h2>Add Art</h2>
         <p>Add your own artwork or choose from our library to personalize your design.</p>
-
       </div>
 
       {subArt ? (
         <SubArtBox
           category={selectedCategory?.title}
           queries={selectedCategory?.queries || []}
-          searchTerm={searchTerm}
+          searchTerm={triggeredSearchTerm}
           setSearchTerm={setSearchTerm}
           goBack={() => {
             setSubArt(false);
             setSelectedCategory(null);
             setSearchTerm('');
+            setTriggeredSearchTerm('');
           }}
         />
       ) : (
@@ -56,8 +60,9 @@ const AddArtToolbar = () => {
                 placeholder="Search for Clipart and AI Generated Art"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearchClick()}
               />
-              <span className={style.searchIcon}>
+              <span className={style.searchIcon} onClick={handleSearchClick}>
                 <SearchIcon />
               </span>
             </div>
@@ -76,9 +81,9 @@ const AddArtToolbar = () => {
             ))}
           </div>
 
-
-          <button className={style.uploadButton} onClick={() => navigate('/design/uploadArt')}>Upload Your Own Image</button>
-
+          <button className={style.uploadButton} onClick={() => navigate('/design/uploadArt')}>
+            Upload Your Own Image
+          </button>
         </div>
       )}
     </div>
