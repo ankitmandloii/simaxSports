@@ -19,9 +19,9 @@ import { toast } from 'react-toastify';
 
 const NamesToolbar = () => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
-  // const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
-  const addName=useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addName)
-  const addNumber=useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addNumber)
+  const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide]);
+  // const addName=useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addName)
+  // const addNumber=useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addNumber)
   const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
 

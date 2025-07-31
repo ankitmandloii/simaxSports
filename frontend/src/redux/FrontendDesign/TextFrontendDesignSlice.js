@@ -1031,7 +1031,12 @@ export const selectCanRedo = (state) => {
 };
 export const selectCanStartOver = (state) => {
   const side = state.TextFrontendDesignSlice.activeSide;
-  return state.TextFrontendDesignSlice.present[side]?.texts?.length > 0;
+  return (
+    state.TextFrontendDesignSlice.present[side]?.texts?.length > 0 ||
+    state.TextFrontendDesignSlice.present[side]?.images?.length > 0 ||
+    state.TextFrontendDesignSlice.present[side]?.addName ||
+    state.TextFrontendDesignSlice.present[side]?.addNumber
+  );
   // return state.TextFrontendDesignSlice.present[side]?.length > 0;
 };
 // export const toggleSleeveDesign = (state) => {

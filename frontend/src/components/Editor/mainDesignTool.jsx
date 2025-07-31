@@ -52,8 +52,9 @@ const MainDesignTool = ({
   //                                                                                    USE SELECTORS AREA
   // **********************************************************************************************************************************************************
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
-  const addName  = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addName);
-  const  addNumber = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addNumber);
+  // const addName  = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addName);
+  // const  addNumber = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addNumber);
+  const {addName,addNumber}=useSelector((state)=>state.TextFrontendDesignSlice.present[activeSide])
 
   console.log("--------------------------namenumber",addName,addNumber)
   const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)

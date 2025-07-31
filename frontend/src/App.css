@@ -21,13 +21,14 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* overflow: hidden; */
 }
 
 body {
   position: relative;
   /* width: 100%; */
   font-family: "Roboto-Regular", sans-serif;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 :root {
