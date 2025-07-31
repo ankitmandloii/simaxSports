@@ -256,7 +256,7 @@
 
 // export default SubArtBox;
 // --
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { SearchIcon } from '../../iconsSvg/CustomIcon';
 import { RxCross1 } from 'react-icons/rx';
@@ -267,7 +267,8 @@ import { addImageState } from '../../../redux/FrontendDesign/TextFrontendDesignS
 import { toast } from 'react-toastify';
 import UploadBox from '../../utils/UploadBox';
 
-const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }) => {
+const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTerm }) => {
+  const [inputValue, setInputValue] = useState(initialSearchTerm || '');
   const [dalleImages, setDalleImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -276,8 +277,8 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
   const [uploadStatus, setUploadStatus] = useState('');
   const [currentUploadFileInfo, setCurrentUploadFileInfo] = useState(null);
   const [uploadAbortController, setUploadAbortController] = useState(null);
-
   const [hasMore, setHasMore] = useState(true);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const apiKey = process.env.REACT_APP_DALLE_API_KEY;
@@ -286,7 +287,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
     if (!query) return;
     setLoading(true);
     try {
-      const imagesPerPage = 5;
+      const imagesPerPage = 3;
       const response = await axios.post(
         'https://api.openai.com/v1/images/generations',
         {
@@ -297,7 +298,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
         },
         {
           headers: {
-            'Authorization': `Bearer ${apiKey}`,
+            Authorization: `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
           },
         }
@@ -314,43 +315,36 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
       );
       setHasMore(newResults.length === imagesPerPage);
     } catch (err) {
-      console.error("DALL-E API error:", JSON.stringify({
-        message: err.message,
-        response: err.response?.data,
-        status: err.response?.status,
-      }, null, 2));
-      toast.error("Failed to fetch images from DALL-E.");
+      console.error('DALL-E API error:', err);
+      toast.error('Rate limit exceeded for images per minute in organization');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (searchTerm) {
-      setPage(1);
-      const debounce = setTimeout(() => {
-        fetchDalleImages(searchTerm, 1);
-      }, 500);
-      return () => clearTimeout(debounce);
-    } else {
-      setDalleImages([]);
-    }
-  }, [searchTerm]);
-
   const handleClear = () => {
-    setSearchTerm('');
+    setInputValue('');
     setDalleImages([]);
     goBack();
+  };
+
+  const handleSearchClick = () => {
+    console.log("CLICKKKKKKKKKKKKK ")
+    const query = inputValue.trim();
+    if (query !== '') {
+      setPage(1);
+      setDalleImages([]);
+      fetchDalleImages(query, 1);
+    }
   };
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
-    fetchDalleImages(searchTerm, nextPage);
+    fetchDalleImages(inputValue, nextPage);
   };
 
   const handleFiles = async (img) => {
-    console.log("Starting image upload for:", JSON.stringify({ id: img.id, url: img.urls.full, alt: img.alt_description }, null, 2));
     setShowUploadBox(true);
     setUploadProgress(0);
     setUploadStatus('fetching');
@@ -360,10 +354,9 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
       name: img.alt_description || `${img.id}.jpg`,
     });
 
-    const BASE_URL = process.env.REACT_APP_BASE_URL; // Remove trailing slashes
+    const BASE_URL = process.env.REACT_APP_BASE_URL;
     if (!img?.urls?.full) {
-      console.error("Missing image URL:", JSON.stringify(img, null, 2));
-      toast.error("Image URL from DALL-E not found.");
+      toast.error('Image URL from DALL-E not found.');
       setUploadStatus('error');
       setTimeout(() => {
         setShowUploadBox(false);
@@ -377,94 +370,54 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
 
     try {
       const fetchUrl = `${BASE_URL}imageOperation/fetch-image?url=${encodeURIComponent(img.urls.full)}`;
-      console.log("Fetching image via proxy from:", fetchUrl);
-      const response = await fetch(fetchUrl, {
-        signal: controller.signal,
-      });
-      console.log("Fetch response:", JSON.stringify({
-        status: response.status,
-        ok: response.ok,
-        contentType: response.headers.get('content-type')
-      }, null, 2));
+      const response = await fetch(fetchUrl, { signal: controller.signal });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Fetch failed:", JSON.stringify({ status: response.status, statusText: response.statusText, body: errorText }, null, 2));
-        throw new Error(`HTTP error! status: ${response.status}, statusText: ${response.statusText}`);
-      }
-
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.startsWith('image/')) {
-        const errorText = await response.text();
-        console.error("Invalid content type:", JSON.stringify({ contentType, body: errorText }, null, 2));
-        throw new Error(`Invalid content type: ${contentType}`);
-      }
+      if (!contentType?.startsWith('image/')) throw new Error(`Invalid content type: ${contentType}`);
 
       const blob = await response.blob();
-      console.log("Blob received:", JSON.stringify({ type: blob.type, size: blob.size }, null, 2));
-
-      if (!blob.size) {
-        throw new Error("Empty blob received from image fetch.");
-      }
+      if (!blob.size) throw new Error('Empty blob received from image fetch.');
 
       const file = new File([blob], `${img.id}.jpg`, { type: blob.type });
-      console.log("File created:", JSON.stringify({ name: file.name, type: file.type, size: file.size }, null, 2));
-
       setCurrentUploadFileInfo(prev => ({ ...prev, file }));
       setUploadStatus('uploading');
 
       const formData = new FormData();
-      formData.append("images", file);
-      console.log("Uploading to:", `${BASE_URL}imageOperation/upload`);
+      formData.append('images', file);
 
       const uploadResponse = await axios.post(
         `${BASE_URL}imageOperation/upload`,
         formData,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { 'Content-Type': 'multipart/form-data' },
           signal: controller.signal,
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            console.log("Upload progress:", percentCompleted);
             setUploadProgress(percentCompleted);
           },
         }
       );
 
-      console.log("Upload response:", JSON.stringify(uploadResponse.data, null, 2));
-      if (!uploadResponse.data.files || !Array.isArray(uploadResponse.data.files)) {
-        throw new Error("Invalid upload response structure: files array missing or not an array");
+      if (!Array.isArray(uploadResponse.data.files)) {
+        throw new Error('Invalid upload response structure');
       }
 
       setUploadStatus('complete');
       uploadResponse.data.files.forEach((fileObj) => {
-        if (!fileObj.url) {
-          console.error("Missing URL in file object:", JSON.stringify(fileObj, null, 2));
-          throw new Error("File object missing URL");
-        }
+        if (!fileObj.url) throw new Error('File object missing URL');
         dispatch(addImageState({ src: fileObj.url }));
       });
 
       setTimeout(() => {
         setShowUploadBox(false);
         setCurrentUploadFileInfo(null);
-        navigate("/design/addImage");
+        navigate('/design/addImage');
       }, 1500);
     } catch (err) {
-      if (err.name === 'AbortError') {
-        console.log("Upload aborted.");
-      } else {
-        console.error("Upload error details:", JSON.stringify({
-          message: err.message,
-          response: err.response?.data,
-          status: err.response?.status,
-          stack: err.stack
-        }, null, 2));
+      if (err.name !== 'AbortError') {
         toast.error(`Error uploading image: ${err.message}`);
       }
-
       setUploadStatus('error');
       setUploadProgress(0);
       setTimeout(() => {
@@ -479,7 +432,6 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
       uploadAbortController.abort();
       setUploadAbortController(null);
     }
-
     setShowUploadBox(false);
     setUploadProgress(0);
     setUploadStatus('');
@@ -507,19 +459,26 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
             <div className={style.searchWrapper}>
               <input
                 type="text"
-                value={searchTerm}
+                value={inputValue}
                 className={style.searchInputSubart}
                 placeholder="Search for Clipart and AI Generated Art"
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearchClick()}
               />
               <span className={style.searchIcon}>
                 <RxCross1 className={style.crossIcon} onClick={handleClear} />
-                <SearchIcon />
+                <SearchIcon onClick={handleSearchClick} style={{ cursor: 'pointer' }} />
               </span>
             </div>
           </div>
+          <div className={style.searchContainer}>
+            <div  className={style.searchWrapper}>
+              <button onClick={handleSearchClick} className={style.uploadButton2}>GENERATE AI IMAGES</button>
+            </div>
 
-          {queries.length > 0 && !searchTerm && (
+          </div>
+
+          {queries.length > 0 && !inputValue && (
             <>
               <h2>{category}</h2>
               <div className={style.textButtonGroup}>
@@ -527,7 +486,11 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
                   <button
                     key={query}
                     className={style.textButton}
-                    onClick={() => setSearchTerm(query)}
+                    onClick={() => {
+                      setInputValue(query);
+                      // fetchDalleImages(query, 1);
+                      setPage(1);
+                    }}
                   >
                     {query}
                   </button>
@@ -556,7 +519,9 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm, setSearchTerm }
                 />
               ))
             ) : (
-              searchTerm && !loading && <p>No results found for "{searchTerm}"</p>
+              <></>
+              // inputValue && !loading && <p>No results found for "{inputValue}"</p>
+              // inputValue && !loading && <p>Loading "{inputValue}"</p>
             )}
           </div>
 
