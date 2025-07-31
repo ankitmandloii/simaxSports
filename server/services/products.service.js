@@ -310,6 +310,7 @@ export async function getProductsList(limit = 5, cursor = null) {
             edges {
               node {
                 originalSrc
+                altText
               }
             }
           }
@@ -346,8 +347,8 @@ export async function getProductsByCollectionId(limit, collectionId, cursor) {
   const S_STORE = `${process.env.SHOPIFY_STORE_URL}`;
   const A_TOKEN = `${process.env.SHOPIFY_API_KEY}`;
 
-  // const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
-  const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`;
+  const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
+  // const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`;
   try {
     const isCursor = cursor ? `, after: "${cursor}"` : "";
 
@@ -423,6 +424,8 @@ export async function getProductsByCollectionId(limit, collectionId, cursor) {
                   edges {
                     node {
                       originalSrc
+                      altText
+                      id
                     }
                   }
                 }
