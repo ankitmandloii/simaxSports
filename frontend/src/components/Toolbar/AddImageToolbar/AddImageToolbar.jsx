@@ -31,7 +31,7 @@ import ReplaceBackgroundColorPicker from '../../CommonComponent/ChooseColorBox/R
 
 const BASE_FILTERS = [
   { name: 'Normal', transform: '' },
-  { name: 'Single Color', transform: '?monochrome=red' },
+  { name: 'Single Color', transform: '?monochrome=white' },
   { name: 'Black/White', transform: '?sat=-100' },
 ];
 
