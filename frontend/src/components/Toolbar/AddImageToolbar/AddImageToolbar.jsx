@@ -54,6 +54,7 @@ const AddImageToolbar = () => {
   const [duplicateActive, setDuplicateActive] = useState(false);
   const [centerActive, setCenterActive] = useState(false);
   const [removeBackground, setRemoveBackground] = useState(false);
+  const [base64Image, setBase64Image] = useState("");
   // const [isLocked, setIsLocked] = useState(false);
   const isLocked = img?.locked;
   // console.log("isLocked", isLocked);
@@ -64,7 +65,7 @@ const AddImageToolbar = () => {
   const [superResolution, setSuperResolution] = useState(false);
   const [cropAndTrim, setCropAndTrim] = useState(false);
   const [bgColor, setBgColor] = useState("var(--black-color)");
-  const [Color, setColor] = useState("var(--black-color)");
+  const [singleColor, setSingleColor] = useState("");
 
   const [invertColor, setInvertColor] = useState(false);
   const [solidColor, setSolidColor] = useState(false);
@@ -100,6 +101,7 @@ const AddImageToolbar = () => {
     setflipYValue(img.flipY || false);
     setSelectedFilter(img?.selectedFilter || "Normal")
     setLoading(img.loading)
+    setSingleColor(img.singleColor);
     // const tempImage = new Image();
     // globalDispatch("loading", true);
     // setLoading(true);
@@ -133,6 +135,8 @@ const AddImageToolbar = () => {
       setCropAndTrim(img.cropAndTrim);
       setInvertColor(img.invertColor);
       setSolidColor(img.solidColor);
+      console.log("----------seleeee", selectedFilter);
+
 
       // const baseFilter = BASE_FILTERS.find(f =>
       //   currentTransform.includes(f.transform.replace('?', ''))
@@ -140,6 +144,46 @@ const AddImageToolbar = () => {
       // setSelectedFilter(baseFilter.name);
     } catch { }
   }, [img, selectedImageId, resetDefault, img?.loading]);
+
+
+
+  async function handleImage(imageSrc, color = "#fffff", selectedFilter) {
+    try {
+
+      console.log("handle image function called with src", imageSrc);
+      globalDispatch("loading", true); // Corrected the typo here
+
+      // Await the base64 image after processing the image
+
+      let base64Image;
+      console.log("curent seleteced filter is ", selectedFilter, img.selectedFilter)
+      if (selectedFilter == "Single Color") {
+        base64Image = await applyFilterAndGetUrl(imageSrc, singleColor);
+      }
+      else {
+        base64Image = await getBase64CanvasImage(imageSrc, color);
+      }
+
+
+      // Set the base64 image and dispatch it to the global state
+      setBase64Image(base64Image);
+
+      // Dispatch the base64 string to your global state (no need to convert it to a string again)
+      globalDispatch("base64CanvasImage", base64Image);
+
+      // Set loading to false after the process is done
+      globalDispatch("loading", false); // Corrected the typo here
+
+      // Log the base64 image string to the console
+      // console.log("base64CanvasImage:", base64Image.slice(0,5)); // Now you should see the actual base64 string
+
+      // Now you can use the base64Image with fabric.js or any other logic you need
+    } catch (error) {
+      globalDispatch("loading", false); // Ensure loading is stopped even in case of error
+      console.error("Error:", error); // Log any errors that occur
+    }
+  }
+
 
   useEffect(() => {
     const tempImage = new Image();
@@ -149,6 +193,7 @@ const AddImageToolbar = () => {
       setLoading(false);
       // globalDispatch("loading", false)
       setPreviewUrl(img.src || '');
+      handleImage(previewUrl, singleColor, selectedFilter);
     }
     tempImage.onerror = () => {
       console.error("Failed to load image:", img?.src);
@@ -311,6 +356,8 @@ const AddImageToolbar = () => {
     async (transform, resetAll) => {
       if (!img?.src) return;
 
+      console.log("aply tranform call with tranform", transform);
+
       const newUrl = buildUrl(transform, resetAll);
       const loadingPlaceholder = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s'; // or any placeholder image
 
@@ -321,23 +368,25 @@ const AddImageToolbar = () => {
         loading: true,
         position: img.position
       }
-      dispatch(toggleLoading({ changes }));
-      globalDispatch("loadingSrc", loadingPlaceholder);
-      globalDispatch("src", img.src); // keep old src while loading
+      // dispatch(toggleLoading({ changes }));
+      // globalDispatch("loadingSrc", loadingPlaceholder);
+      // globalDispatch("src", img.src); // keep old src while loading
       globalDispatch("loading", true); // keep old src while loading
-      globalDispatch("transform", transform);
+      // globalDispatch("transform", transform);
 
       // Load transformed image
       const tempImage = new Image();
-      tempImage.onload = () => {
+      tempImage.onload = async () => {
         // Only update everything when loaded successfully
         setPreviewUrl(newUrl);
         setActiveTransform(transform);
 
         globalDispatch("src", newUrl);
+        await handleImage(newUrl, singleColor, selectedFilter);
         dispatch(toggleLoading({ changes: { loading: false } }));
         globalDispatch("loadingSrc", null);
-        globalDispatch("loading", false);
+        // globalDispatch("loading", false);
+
         globalDispatch("removeBg", transform.includes("bg-remove=true"));
         globalDispatch(
           "removeBgParamValue",
@@ -386,7 +435,7 @@ const AddImageToolbar = () => {
   // Toggle a URL query parameter (like 'bg-remove=true') on/off in the activeTransform
   const toggle = (param, condition, filterName) => {
     // console.log("active tranform .......", activeTransform)
-
+    console.log("toggle  functin call ", param, condition, filterName);
     // If condition is true, we want to **remove** the param from the activeTransform
     if (condition) {
       // Use a RegExp to find and remove the param and its trailing '&' if present
@@ -520,6 +569,7 @@ const AddImageToolbar = () => {
 
   function removeBackgroundHandler(e) {
     // update local state
+    console.log("clicked on backgournd remove button");
     const checked = !removeBackground;
     const canvasToggle = document.querySelector(`[id^="canvas-"] input[type="checkbox"]`);
     if (canvasToggle && canvasToggle.checked !== checked) {
@@ -537,17 +587,33 @@ const AddImageToolbar = () => {
     setRemoveBackground(!removeBackground);
     // update redux store
     globalDispatch("removeBg", !removeBackground);
+    // handleImage(previewUrl);
     setResetDefault(false);
   }
 
-  function invertColorHandler(e) {
+  async function invertColorHandler(base64Image) {
     // update local state
-    const value = isActive('invert=true');
-    toggle('invert=true', value)
+    // const value = isActive('invert=true');
+    // toggle('invert=true', value)
+    console.log("invert color funciton called");
     setInvertColor(!invertColor);
-    // update redux store
+    // // update redux store
     globalDispatch("invertColor", !invertColor);
     setResetDefault(false);
+    let Newbase64image;
+    if (invertColor) {
+      handleImage(previewUrl, singleColor, selectedFilter);
+    }
+    else {
+      globalDispatch("loading", true);
+      Newbase64image = await invertColorsAndGetUrl(base64Image || previewUrl);
+      console.log("inverted image in base64", Newbase64image);
+      globalDispatch("loading", false);
+      globalDispatch("base64CanvasImage", Newbase64image);
+    }
+
+
+
   }
 
   function solidColorHandler(e) {
@@ -575,18 +641,269 @@ const AddImageToolbar = () => {
     globalDispatch("replaceBgParamValue", imgixParam);
   };
 
-    const ColorChangedFunctionCalled = (color) => {
-      console.log("-----chngcolor",color)
+  function getBase64CanvasImage(imageSrc, color) {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      // If imageSrc is base64, directly set img.src
+      if (imageSrc.startsWith("data:image")) {
+        img.src = imageSrc;
+      } else {
+        img.crossOrigin = "anonymous"; // Allow cross-origin access
+        img.src = imageSrc;  // For external URLs
+      }
+
+      img.onload = function () {
+        // Set the canvas size to the image size
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        // Draw the original image onto the canvas
+        ctx.drawImage(img, 0, 0);
+
+
+        // Return the base64 representation of the canvas
+        resolve(canvas.toDataURL());
+        canvas.remove();
+      };
+
+      img.onerror = function () {
+        reject(new Error("Failed to load image"));
+      };
+    });
+  }
+
+
+  // function applyFilterAndGetUrl(imageSrc, color) {
+  //   return new Promise((resolve, reject) => {
+  //     const canvas = document.createElement('canvas');
+  //     const ctx = canvas.getContext('2d');
+  //     const img = new Image();
+
+  //     // If imageSrc is base64, directly set img.src
+  //     if (imageSrc.startsWith("data:image")) {
+  //       img.src = imageSrc;
+  //     } else {
+  //       img.crossOrigin = "anonymous"; // Allow cross-origin access
+  //       img.src = imageSrc;  // For external URLs
+  //     }
+
+  //     img.onload = function () {
+  //       // Set the canvas size to the image size
+  //       canvas.width = img.width;
+  //       canvas.height = img.height;
+
+  //       // Draw the original image onto the canvas
+  //       ctx.drawImage(img, 0, 0);
+
+
+  //       // Get the tint color in RGB
+  //       const tint = hexToRgb(color);
+
+  //       // Apply the effect: grayscale, sepia, and alpha tinting
+  //       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  //       const data = imageData.data;
+
+  //       for (let i = 0; i < data.length; i += 4) {
+  //         const r = data[i];
+  //         const g = data[i + 1];
+  //         const b = data[i + 2];
+
+  //         const brightness = (r + g + b) / 3;
+  //         const inverted = 255 - brightness;
+  //         const alpha = inverted / 255;
+
+  //         data[i] = tint.r;
+  //         data[i + 1] = tint.g;
+  //         data[i + 2] = tint.b;
+  //         data[i + 3] = alpha * 255;
+  //       }
+
+  //       // Put the altered image data back to the canvas
+  //       ctx.putImageData(imageData, 0, 0);
+  //       // Return the base64 representation of the canvas
+  //       resolve(canvas.toDataURL());
+  //       canvas.remove();
+  //     };
+
+  //     img.onerror = function () {
+  //       reject(new Error("Failed to load image"));
+  //     };
+  //   });
+  // }
+  function applyFilterAndGetUrl(imageSrc, color) {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      // If imageSrc is base64, directly set img.src
+      if (imageSrc.startsWith("data:image")) {
+        img.src = imageSrc;
+      } else {
+        img.crossOrigin = "anonymous"; // Allow cross-origin access
+        img.src = imageSrc;  // For external URLs
+      }
+
+      img.onload = function () {
+        // Set the canvas size to the image size
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        // Draw the original image onto the canvas
+        ctx.drawImage(img, 0, 0);
+
+        // Get the tint color in RGB
+        const tint = hexToRgb(color);
+
+        // Apply the effect: grayscale, sepia, and alpha tinting
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const a = data[i + 3]; // Alpha value
+
+          // Calculate brightness and invert it
+          const brightness = (r + g + b) / 3;
+          const inverted = 255 - brightness;
+          const alpha = inverted / 255;
+
+          // If the pixel is fully transparent, retain transparency; else apply tint
+          if (a === 0) {
+            data[i + 3] = 0; // Keep the pixel transparent
+          } else {
+            // Apply tint color and alpha (preserving original alpha if the background exists)
+            data[i] = tint.r; // Red
+            data[i + 1] = tint.g; // Green
+            data[i + 2] = tint.b; // Blue
+            data[i + 3] = a * alpha; // Keep the transparency effect consistent
+          }
+        }
+
+        // Put the altered image data back to the canvas
+        ctx.putImageData(imageData, 0, 0);
+
+        // Return the base64 representation of the canvas
+        resolve(canvas.toDataURL());
+        canvas.remove();
+      };
+
+      img.onerror = function () {
+        reject(new Error("Failed to load image"));
+      };
+    });
+  }
+
+  function invertColorsAndGetUrl(imageSrc) {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      // If imageSrc is base64, directly set img.src
+      if (imageSrc.startsWith("data:image")) {
+        img.src = imageSrc;
+      } else {
+        img.crossOrigin = "anonymous"; // Allow cross-origin access
+        img.src = imageSrc;  // For external URLs
+      }
+
+      img.onload = function () {
+        // Set the canvas size to the image size
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        // Draw the original image onto the canvas
+        ctx.drawImage(img, 0, 0);
+
+        // Get the image data from the canvas
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        // Loop through each pixel and invert the brightness
+        for (let i = 0; i < data.length; i += 4) {
+          data[i] = 255 - data[i];     // Red
+          data[i + 1] = 255 - data[i + 1]; // Green
+          data[i + 2] = 255 - data[i + 2]; // Blue
+          // Calculate the brightness of the pixel (luminance)
+          // const brightness = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+          // // Invert the brightness: subtract it from 255
+          // const invertedBrightness = 255 - brightness;
+
+          // // Apply the inverted brightness to all color channels
+          // data[i] = invertedBrightness;      // Red
+          // data[i + 1] = invertedBrightness;  // Green
+          // data[i + 2] = invertedBrightness;  // Blue
+        }
+
+        // Put the altered image data back to the canvas
+        ctx.putImageData(imageData, 0, 0);
+
+        // Return the base64 representation of the inverted image
+        resolve(canvas.toDataURL());
+        canvas.remove();
+      };
+
+      img.onerror = function () {
+        reject(new Error("Failed to load image"));
+      };
+    });
+  }
+
+
+
+  function hexToRgb(hex) {
+    const bigint = parseInt(hex.slice(1), 16);
+    return {
+      r: (bigint >> 16) & 255,
+      g: (bigint >> 8) & 255,
+      b: bigint & 255,
+    };
+  }
+
+  const createBlobUrl = (base64Image) => {
+    base64Image = String(base64Image)
+    // Ensure the base64 string contains the 'data:image' header
+    if (base64Image && base64Image.startsWith('data:image')) {
+      const byteString = atob(base64Image.split(',')[1]); // Decode base64 string to binary data
+      const ab = new ArrayBuffer(byteString.length);
+      const ua = new Uint8Array(ab);
+
+      // Fill the array with the decoded byte string
+      for (let i = 0; i < byteString.length; i++) {
+        ua[i] = byteString.charCodeAt(i);
+      }
+
+      // Create a Blob object from the binary data
+      const blob = new Blob([ab], { type: 'image/png' });
+
+      // Return a temporary URL representing the Blob object
+      return URL.createObjectURL(blob);
+    } else {
+      console.error("Invalid base64 image string");
+      return null;
+    }
+  };
+  const ColorChangedFunctionCalled = async (color) => {
+    // console.log("-----chngcolor", color)
     const hex = color.replace('#', '');
-    const value = isActive(`bg-remove=true&bg=${hex}`);
-    setColor(color);
-    // toggle(`bg-remove=true&bg=${hex}`, value);
-
+    // const value = isActive(`bg-remove=true&bg=${hex}`);
     // setColor(color);
-    // setResetDefault(false);
-
-    // const imgixParam = `bg-remove=true&bg=${hex}`;
-    // globalDispatch("replaceBackgroundColor", color);
+    globalDispatch("loading", true);
+    globalDispatch("singleColor", color);
+    setSingleColor(color);
+    // handleImage(previewUrl, color);
+    const newBase64Image = await applyFilterAndGetUrl(previewUrl, color);
+    // setPreviewUrl(String(newImgUrl));
+    setBase64Image(newBase64Image)
+    globalDispatch("base64CanvasImage", String(newBase64Image));
+    globalDispatch("loading", false);
     // globalDispatch("replaceBgParamValue", imgixParam);
   };
 
@@ -616,8 +933,8 @@ const AddImageToolbar = () => {
   const toggleBGReplaceColorPopup = () => {
     setBGColorPopup(!bgColorPopup);
   };
-  
-   const toggleColorPopup = () => {
+
+  const toggleColorPopup = () => {
     setColorPopup(!ColorPopup);
   };
 
@@ -630,6 +947,7 @@ const AddImageToolbar = () => {
     // update redux store
     globalDispatch("cropAndTrim", !cropAndTrim);
     setResetDefault(false);
+    // handleImage(previewUrl);
   }
 
   function superResolutiondHandler(e) {
@@ -640,6 +958,7 @@ const AddImageToolbar = () => {
     // update redux store
     globalDispatch("superResolution", !superResolution);
     setResetDefault(false);
+    // handleImage(previewUrl);
   }
 
 
@@ -731,6 +1050,7 @@ const AddImageToolbar = () => {
                         setSelectedFilter(f.name);
                         globalDispatch("src", buildUrl(f.transform, false, f.name));
                         globalDispatch("selectedFilter", f.name);
+                        handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name);
                         if (f.name != "Normal") setResetDefault(false);
                       }}
                     >
@@ -794,18 +1114,17 @@ const AddImageToolbar = () => {
 
               {selectedFilter === "Single Color" && (<hr />)}
 
-             {/* color */}
-             {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
+              {/* color */}
+              {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Color
-
                 </div>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleColorPopup}>
-                  <SpanColorBox color={Color} />
+                  <SpanColorBox color={singleColor} />
                   {ColorPopup && (
                     <ReplaceBackgroundColorPicker
                       closePopupHandler={toggleColorPopup}
-                      defaultColor={Color}
+                      defaultColor={singleColor}
                       onApply={ColorChangedFunctionCalled}
                     />
                   )}
@@ -819,9 +1138,9 @@ const AddImageToolbar = () => {
               </div>
 
               )}
-             
-<hr />
-           {/* ----invertcolor */}
+
+              <hr />
+              {/* ----invertcolor */}
               {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Inverts Colors
@@ -831,7 +1150,7 @@ const AddImageToolbar = () => {
                   <input
                     type="checkbox"
                     checked={invertColor}
-                    onChange={invertColorHandler}
+                    onChange={() => invertColorHandler(base64Image)}
                     disabled={loading}
                   />
                   <span className={styles.slider}></span>
@@ -839,10 +1158,13 @@ const AddImageToolbar = () => {
               </div>
 
               )}
-              <hr />
+              {
+                selectedFilter === "Single Color" &&
+                <hr />
+              }
 
 
-              {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
+              {/* {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Make Solid
 
@@ -859,7 +1181,7 @@ const AddImageToolbar = () => {
               </div>
 
               )}
-              {(selectedFilter === "Single Color" && <hr />)}
+              {(selectedFilter === "Single Color" && <hr />)} */}
 
               <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
@@ -870,6 +1192,7 @@ const AddImageToolbar = () => {
                   <input
                     type="checkbox"
                     checked={removeBackground}
+                    id='removeBackgroundInput'
                     // onChange={() => toggle('bg-remove=true', isActive('bg-remove=true'))}
                     onChange={removeBackgroundHandler}
                     disabled={loading}
@@ -1026,7 +1349,11 @@ const AddImageToolbar = () => {
                 <div
                   className={`${styles.toolbarBoxIconsContainer} ${centerActive ? styles.toolbarBoxIconsContainerActive : ''}`}
                   onClick={() => {
-                    globalDispatch("position", { x: 290, y: img.position.y });
+                    const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+                    const rect = canvasComponent.getBoundingClientRect();
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    globalDispatch("position", { x: centerX, y: img.position.y });
                     setCenterActive(!centerActive);
                     setResetDefault(false);
                   }}

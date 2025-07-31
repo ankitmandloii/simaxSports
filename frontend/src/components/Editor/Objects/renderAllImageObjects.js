@@ -23,7 +23,7 @@ const renderAllImageObjects = (
   if (!canvas) return;
 
   function createRemoveBackgroundToggle(fabricImage, canvasId, callback, removeBg) {
-    console.log("button data ", fabricImage, canvasId, callback, removeBg);
+    // console.log("button data ", fabricImage, canvasId, callback, removeBg);
     const id = fabricImage.id;
     const buttonId = `canvas-${id}`;
     const canvasElement = document.getElementById(canvasId);
@@ -32,7 +32,7 @@ const renderAllImageObjects = (
     // Check if toggle already exists
     let container = document.getElementById(buttonId);
     if (container) {
-      console.log("container already exist so updating them");
+      // console.log("container already exist so updating them");
       const center = fabricImage.getCenterPoint();
       const imageBottom = center.y + (fabricImage.getScaledHeight() / 2);
       const imageLeft = center.x;
@@ -186,6 +186,8 @@ const renderAllImageObjects = (
         globalDispatch("loading", false, id);
         globalDispatch("loadingSrc", null, id);
         globalDispatch("src", newSrc, id);
+        globalDispatch("base64CanvasImage", newSrc, id);
+        globalDispatch("selectedFilter", "Normal", id);
         globalDispatch("removeBg", checked, id);
         globalDispatch("removeBgParamValue", checked ? "bg-remove=true" : "", id);
         if (callback) callback(checked, fabricImage);
@@ -220,7 +222,7 @@ const renderAllImageObjects = (
     container.style.top = `${imageBottom + OFFSET}px`;
     container.style.left = `${imageLeft}px`;
 
-    console.warn("button created and done");
+    // console.warn("button created and done");
   }
 
   function removeAllHtmlControls(canvas) {
@@ -280,7 +282,7 @@ const renderAllImageObjects = (
 
   if (!imageContaintObject || imageContaintObject.length === 0) return;
 
-  imageContaintObject.forEach((imageData) => {
+  imageContaintObject.forEach(async (imageData) => {
     const {
       id,
       src,
@@ -295,9 +297,13 @@ const renderAllImageObjects = (
       customType = "main-image",
       loading,
       loadingSrc,
-      removeBg
+      removeBg,
+      base64CanvasImage,
+      singleColor,
+      invertColor
     } = imageData;
-
+    // console.log("base64 ", base64CanvasImage)
+    // if (!base64CanvasImage) return;
     const existingObj = canvas.getObjects("image").find((obj) => obj.id === id);
 
     function createLoaderOverlay(fabricImage, canvasId) {
@@ -362,15 +368,15 @@ const renderAllImageObjects = (
 
 
     const loaderId = `loader-${id}`;
-    // if (loading) {
-    //   const canvasId = `canvas-${activeSide}`;
-    //   const existingObj = canvas.getObjects("image").find((obj) => obj.id === id);
-    //   if (existingObj) {
-    //     createLoaderOverlay(existingObj, canvasId);
-    //     return;
-    //   }
-    //   // create dynamically the loader circle and postion like the bgremove button postioned 
-    // }
+    if (loading) {
+      // const canvasId = `canvas-${activeSide}`;
+      // const existingObj = canvas.getObjects("image").find((obj) => obj.id === id);
+      // if (existingObj) {
+      //   createLoaderOverlay(existingObj, canvasId);
+      return;
+      // }
+      // create dynamically the loader circle and postion like the bgremove button postioned 
+    }
     // let loader = document.getElementById(loaderId);
     // if (loader) {
     //   loader.remove();
@@ -379,11 +385,11 @@ const renderAllImageObjects = (
     const normalizeUrl = (url) => decodeURIComponent(url.trim().toLowerCase());
     if (
       existingObj &&
-      normalizeUrl(existingObj.getSrc()) !== normalizeUrl(src)
+      (normalizeUrl(existingObj.src) !== normalizeUrl(src) || singleColor != existingObj.singleColor || invertColor != existingObj.invertColor)
     ) {
       canvas.remove(existingObj);
       fabric.Image.fromURL(
-        src,
+        base64CanvasImage,
         (newImg) => {
           const { scaleX: finalX, scaleY: finalY } = getScaled(
             newImg,
@@ -393,6 +399,7 @@ const renderAllImageObjects = (
 
           newImg.set({
             id,
+            src,
             left: position.x,
             top: position.y,
             angle,
@@ -415,6 +422,8 @@ const renderAllImageObjects = (
             isSync: true,
             layerIndex,
             lockScalingFlip: true,
+            singleColor,
+            invertColor
           });
 
           newImg.setControlsVisibility({
@@ -463,7 +472,7 @@ const renderAllImageObjects = (
               canvas.setActiveObject(obj);
               dispatch(selectedImageIdState(obj.id));
               setActiveObjectType("Image");
-              navigate("/design/addImage", { state: imageData });
+              navigate("/design/addImage");
             }
           });
 
@@ -499,7 +508,7 @@ const renderAllImageObjects = (
           const widthInches = (widthPixels / DPI).toFixed(2);
           const heightInches = (heightPixels / DPI).toFixed(2);
 
-          console.log(`Print Size: ${widthInches} in × ${heightInches} in`);
+          // console.log(`Print Size: ${widthInches} in × ${heightInches} in`);
 
           canvas.renderAll();
         },
@@ -552,7 +561,7 @@ const renderAllImageObjects = (
         const shirtImage = canvas.backgroundImage;
 
         if (!shirtImage) {
-          console.warn("No background image (shirt mockup) found on the canvas.");
+          // console.warn("No background image (shirt mockup) found on the canvas.");
           return null;
         }
 
@@ -574,7 +583,7 @@ const renderAllImageObjects = (
       const printSize = getPrintSizeFromCanvasBackground(existingObj, fabricCanvasRef.current, 19);
 
       if (printSize) {
-        console.log(`Print Area: ${printSize.width} in × ${printSize.height} in`);
+        // console.log(`Print Area: ${printSize.width} in × ${printSize.height} in`);
       }
 
       existingObj.controls = createControls(bringPopup, dispatch);
@@ -601,7 +610,7 @@ const renderAllImageObjects = (
       canvas.renderAll();
     } else {
       fabric.Image.fromURL(
-        src,
+        base64CanvasImage,
         (img) => {
           const { scaleX: finalX, scaleY: finalY } = getScaled(
             img,
@@ -611,6 +620,7 @@ const renderAllImageObjects = (
 
           img.set({
             id,
+            src,
             left: position.x,
             top: position.y,
             angle,
@@ -633,6 +643,8 @@ const renderAllImageObjects = (
             isSync: true,
             layerIndex,
             lockScalingFlip: true,
+            singleColor,
+            invertColor
           });
 
           img.setControlsVisibility({
@@ -673,7 +685,7 @@ const renderAllImageObjects = (
               canvas.setActiveObject(obj);
               dispatch(selectedImageIdState(obj.id));
               setActiveObjectType("image");
-              navigate("/design/addImage", { state: imageData });
+              navigate("/design/addImage");
               canvas.renderAll();
             }
           });

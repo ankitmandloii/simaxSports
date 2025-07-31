@@ -9,10 +9,11 @@ const syncMirrorCanvas = async (
   setLeftSleevePreviewImage,
   setRightSleevePreviewImage
 ) => {
-  // return;
-
   const getImageFromCanvas = async (fabricCanvas) => {
-    if (!fabricCanvas) return null;
+    if (!fabricCanvas) {
+      console.error("Fabric canvas is null or undefined");
+      return null;
+    }
 
     // Create an off-screen Fabric canvas
     const tempCanvas = new fabric.StaticCanvas(null, {
@@ -28,11 +29,20 @@ const syncMirrorCanvas = async (
         .filter((obj) => obj.type !== "text" && obj.type !== "rect")
         .map(
           (obj) =>
-            new Promise((resolve) => obj.clone((clone) => resolve(clone)))
+            new Promise((resolve) => {
+              if (obj) {
+                obj.clone((clone) => resolve(clone));
+              } else {
+                resolve(null);
+              }
+            })
         )
     );
 
-    objectClones.forEach((obj) => tempCanvas.add(obj));
+    // Add valid clones to the temporary canvas
+    objectClones.forEach((obj) => {
+      if (obj) tempCanvas.add(obj);
+    });
 
     // Clone and apply background image (if any)
     if (fabricCanvas.backgroundImage) {
@@ -58,20 +68,26 @@ const syncMirrorCanvas = async (
     });
   };
 
-  // console.log("activeSide inside", activeSide);
-  if (activeSide === "front") {
-    // console.log("active side", activeSide, "changing front")
-    setFrontPreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
-  } else if (activeSide === "back") {
-    setBackPreviewImage(await getImageFromCanvas(fabricCanvasRef.current));
-  } else if (activeSide === "leftSleeve") {
-    setLeftSleevePreviewImage(
-      await getImageFromCanvas(fabricCanvasRef.current)
-    );
-  } else if (activeSide === "rightSleeve") {
-    setRightSleevePreviewImage(
-      await getImageFromCanvas(fabricCanvasRef.current)
-    );
+  // Ensure that fabricCanvasRef.current is valid
+  const fabricCanvas = fabricCanvasRef.current;
+  if (!fabricCanvas) {
+    console.error("fabricCanvasRef is null or undefined");
+    return;
+  }
+
+  // Handle image processing based on active side
+  try {
+    if (activeSide === "front") {
+      setFrontPreviewImage(await getImageFromCanvas(fabricCanvas));
+    } else if (activeSide === "back") {
+      setBackPreviewImage(await getImageFromCanvas(fabricCanvas));
+    } else if (activeSide === "leftSleeve") {
+      setLeftSleevePreviewImage(await getImageFromCanvas(fabricCanvas));
+    } else if (activeSide === "rightSleeve") {
+      setRightSleevePreviewImage(await getImageFromCanvas(fabricCanvas));
+    }
+  } catch (error) {
+    console.error("Error during image processing:", error);
   }
 };
 

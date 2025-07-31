@@ -370,8 +370,8 @@ const MainDesignTool = ({
           const canvasHeight = canvas.getHeight();
 
           // Calculate scale to fit the image inside the canvas while maintaining aspect ratio
-          const scaleX = canvasWidth / imgWidth;
-          const scaleY = canvasHeight / imgHeight;
+          const scaleX = (canvasWidth - 130) / imgWidth;
+          const scaleY = (canvasHeight - 130) / imgHeight;
 
           // Choose the maximum of the two scale values to preserve aspect ratio
           newScale = Math.max(scaleX, scaleY);

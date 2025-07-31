@@ -1,7 +1,7 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 import { act } from "react";
 
-const createNewText = ({ value, id }, totalElements) => ({
+const createNewText = ({ value, id, centerX, centerY }, totalElements) => ({
   id: id,
   content: value || "New Text",
   fontWeight: "normal",
@@ -26,7 +26,7 @@ const createNewText = ({ value, id }, totalElements) => ({
   width: 150,
   height: 50,
   fontSize: 20,
-  position: { x: 310, y: 200 },
+  position: { x: centerX, y: centerY },
   locked: false,
   layerIndex: totalElements,
 });
@@ -59,6 +59,8 @@ const createNewImage = (
   invertColor: false,
   solidColor: false,
   removeBg: false,
+  singleColor: "#ffffff",
+  base64CanvasImage: src,
   cropAndTrimParamValue:
     "fit=crop&crop=entropy&trim=color&w=400&h=400&dpr=2&quality=100&format=webp",
   superResolutionParamValue:
@@ -201,8 +203,12 @@ const TextFrontendDesignSlice = createSlice({
       const { value, id, side = state.activeSide } = action.payload;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
+      const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+      const rect = canvasComponent.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
       const newText = createNewText(
-        { value, id },
+        { value, id, centerX, centerY },
         totalElements
       );
       state.present[side].texts?.push(newText);

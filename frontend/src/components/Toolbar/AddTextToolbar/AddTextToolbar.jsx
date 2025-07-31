@@ -374,25 +374,25 @@ const AddTextToolbar = () => {
     // dispatch(moveTextBackwardState(selectedTextId));
     // dispatch(moveElementBackwardState(selectedTextId));
     if (selectedTextId) {
-    console.log('Button clicked: Send to Back', {
-      selectedTextId,
-      timestamp: Date.now()
-    });
-   dispatch(moveElementBackwardState(selectedTextId));
-  }
+      console.log('Button clicked: Send to Back', {
+        selectedTextId,
+        timestamp: Date.now()
+      });
+      dispatch(moveElementBackwardState(selectedTextId));
+    }
 
   };
   const handleBringForward = () => {
-    
+
     // dispatch(moveTextForwardState(selectedTextId));
     // dispatch(moveElementForwardState(selectedTextId));
     if (selectedTextId) {
-    console.log('Button clicked: Send to Top', {
-      selectedTextId,
-      timestamp: Date.now()
-    });
-    dispatch(moveElementForwardState(selectedTextId));
-  }
+      console.log('Button clicked: Send to Top', {
+        selectedTextId,
+        timestamp: Date.now()
+      });
+      dispatch(moveElementForwardState(selectedTextId));
+    }
 
   };
   function getRenderIconForSendToTop() {
@@ -482,7 +482,11 @@ const AddTextToolbar = () => {
                       className={`${style.toolbarBoxIconsContainer} center-btn ${centerActive ? 'active' : ''}`}
 
                       onClick={() => {
-                        globalDispatch("position", { x: 310, y: textContaintObject.position.y });
+                        const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+                        const rect = canvasComponent.getBoundingClientRect();
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        globalDispatch("position", { x: centerX, y: textContaintObject.position.y });
                         setCenterActive(!centerActive);
                       }}
                     >
