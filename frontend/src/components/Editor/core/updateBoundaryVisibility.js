@@ -116,7 +116,7 @@ const updateBoundaryVisibility = (fabricCanvasRef, activeSide) => {
   const rightBorder = objects.find((obj) => obj.name === "centerVerticalLineRightBorder");
 
 
-  console.log("------------------boundry", activeSide)
+  // console.log("------------------boundry", activeSide) 
 
   // if (!boundaryBox || !warningText || !centerVerticalLine) return;
 

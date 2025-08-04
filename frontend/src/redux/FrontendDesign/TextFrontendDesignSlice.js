@@ -59,8 +59,11 @@ const createNewImage = (
   invertColor: false,
   solidColor: false,
   removeBg: false,
-  singleColor: "#ffffff",
+  singleColor: "#000000",
   base64CanvasImage: src,
+  base64CanvasImageForNormalColor: null,
+  base64CanvasImageForSinglelColor: null,
+  base64CanvasImageForBlackAndWhitelColor: null,
   cropAndTrimParamValue:
     "fit=crop&crop=entropy&trim=color&w=400&h=400&dpr=2&quality=100&format=webp",
   superResolutionParamValue:
@@ -978,11 +981,25 @@ const TextFrontendDesignSlice = createSlice({
     toggleLoading: (state, action) => {
       const side = state.activeSide;
       const { changes } = action.payload;
-      console.log("changes which we want to add", changes);
-      if (changes) {
-        Object.assign(state.present[side].loadingState, changes); // ✅ merge changes into side object
+
+      console.log("changes we want to add:", changes);
+
+      // ✅ Safely guard against undefined paths
+      if (
+        changes &&
+        state.present &&
+        state.present[side] &&
+        state.present[side].loadingState
+      ) {
+        Object.assign(state.present[side].loadingState, changes);
+      } else {
+        console.warn("toggleLoading: Target path does not exist", {
+          side,
+          present: state.present,
+        });
       }
     }
+
 
   },
 });

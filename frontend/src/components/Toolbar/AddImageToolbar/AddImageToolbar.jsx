@@ -135,7 +135,7 @@ const AddImageToolbar = () => {
       setCropAndTrim(img.cropAndTrim);
       setInvertColor(img.invertColor);
       setSolidColor(img.solidColor);
-      console.log("----------seleeee", selectedFilter);
+      // console.log("----------seleeee", selectedFilter);
 
 
       // const baseFilter = BASE_FILTERS.find(f =>
@@ -147,7 +147,7 @@ const AddImageToolbar = () => {
 
 
 
-  async function handleImage(imageSrc, color = "#fffff", selectedFilter) {
+  async function handleImage(imageSrc, color = "#00000", selectedFilter, invertColor) {
     try {
 
       console.log("handle image function called with src", imageSrc);
@@ -155,21 +155,38 @@ const AddImageToolbar = () => {
 
       // Await the base64 image after processing the image
 
-      let base64Image;
+      let cuurentBase64Image;
       console.log("curent seleteced filter is ", selectedFilter, img.selectedFilter)
       if (selectedFilter == "Single Color") {
-        base64Image = await applyFilterAndGetUrl(imageSrc, singleColor);
+        if (invertColor) {
+          cuurentBase64Image = await invertColorsAndGetUrl(base64Image || previewUrl);
+        }
+        else {
+          cuurentBase64Image = await applyFilterAndGetUrl(imageSrc, color);
+        }
       }
       else {
-        base64Image = await getBase64CanvasImage(imageSrc, color);
+        cuurentBase64Image = await getBase64CanvasImage(imageSrc, color);
       }
 
 
       // Set the base64 image and dispatch it to the global state
-      setBase64Image(base64Image);
+      setBase64Image(cuurentBase64Image);
 
       // Dispatch the base64 string to your global state (no need to convert it to a string again)
-      globalDispatch("base64CanvasImage", base64Image);
+      globalDispatch("base64CanvasImage", cuurentBase64Image);
+
+      globalDispatch("base64CanvasImage", String(cuurentBase64Image));
+      if (selectedFilter == "Normal") {
+        globalDispatch("base64CanvasImageForNormalColor", String(imageSrc));
+      }
+      else if (selectedFilter == "Single Color") {
+        globalDispatch("base64CanvasImageForSinglelColor", String(cuurentBase64Image));
+      }
+      else {
+        globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(cuurentBase64Image));
+
+      }
 
       // Set loading to false after the process is done
       globalDispatch("loading", false); // Corrected the typo here
@@ -193,7 +210,7 @@ const AddImageToolbar = () => {
       setLoading(false);
       // globalDispatch("loading", false)
       setPreviewUrl(img.src || '');
-      handleImage(previewUrl, singleColor, selectedFilter);
+      handleImage(previewUrl, singleColor, selectedFilter, invertColor);
     }
     tempImage.onerror = () => {
       console.error("Failed to load image:", img?.src);
@@ -213,7 +230,8 @@ const AddImageToolbar = () => {
       if (filter.name === 'Normal') {
         return {
           ...filter,
-          transform: activeEffects.length ? `?${newActiveEffects.join('&')}` : ''
+          transform: activeEffects.length ? `?${newActiveEffects.join('&')}` : '',
+          image: img?.base64CanvasImageForNormalColor || buildUrl(activeEffects.length ? `?${newActiveEffects.join('&')}` : '', false, filter.name)
         };
       }
       if (filter.name === "Black/White") {
@@ -221,7 +239,8 @@ const AddImageToolbar = () => {
         const allParams = [...new Set([...baseParams, ...newActiveEffects])];
         return {
           ...filter,
-          transform: allParams.length ? `?${allParams.join('&')}` : ''
+          transform: allParams.length ? `?${allParams.join('&')}` : '',
+          image: img?.base64CanvasImageForBlackAndWhitelColor || buildUrl(allParams.length ? `?${allParams.join('&')}` : '', false, filter.name)
         };
       }
 
@@ -229,7 +248,8 @@ const AddImageToolbar = () => {
       const allParams = [...new Set([...baseParams, ...activeEffects])];
       return {
         ...filter,
-        transform: allParams.length ? `?${allParams.join('&')}` : ''
+        transform: allParams.length ? `?${allParams.join('&')}` : '',
+        image: img?.base64CanvasImageForSinglelColor || buildUrl(allParams.length ? `?${allParams.join('&')}` : '', false, filter.name)
       };
     }));
     // console.log(filters, "&&&&&&&&&&&&")
@@ -382,7 +402,7 @@ const AddImageToolbar = () => {
         setActiveTransform(transform);
 
         globalDispatch("src", newUrl);
-        await handleImage(newUrl, singleColor, selectedFilter);
+        await handleImage(newUrl, singleColor, selectedFilter, invertColor);
         dispatch(toggleLoading({ changes: { loading: false } }));
         globalDispatch("loadingSrc", null);
         // globalDispatch("loading", false);
@@ -602,7 +622,8 @@ const AddImageToolbar = () => {
     setResetDefault(false);
     let Newbase64image;
     if (invertColor) {
-      handleImage(previewUrl, singleColor, selectedFilter);
+      handleImage(previewUrl, singleColor, selectedFilter, !invertColor);
+      // globalDispatch("base64CanvasImageForSinglelColor", String(Newbase64image));
     }
     else {
       globalDispatch("loading", true);
@@ -610,6 +631,7 @@ const AddImageToolbar = () => {
       console.log("inverted image in base64", Newbase64image);
       globalDispatch("loading", false);
       globalDispatch("base64CanvasImage", Newbase64image);
+      globalDispatch("base64CanvasImageForSinglelColor", String(Newbase64image));
     }
 
 
@@ -743,7 +765,7 @@ const AddImageToolbar = () => {
       if (imageSrc.startsWith("data:image")) {
         img.src = imageSrc;
       } else {
-        img.crossOrigin = "anonymous"; // Allow cross-origin access
+        img.crossOrigin = "anonymous"; // Allow cross-  origin access
         img.src = imageSrc;  // For external URLs
       }
 
@@ -902,7 +924,18 @@ const AddImageToolbar = () => {
     const newBase64Image = await applyFilterAndGetUrl(previewUrl, color);
     // setPreviewUrl(String(newImgUrl));
     setBase64Image(newBase64Image)
+
     globalDispatch("base64CanvasImage", String(newBase64Image));
+    if (selectedFilter == "Normal") {
+      // globalDispatch("base64CanvasImageForNormalColor", String(newBase64Image));
+    }
+    else if (selectedFilter === "Single Color") {
+      globalDispatch("base64CanvasImageForSinglelColor", String(newBase64Image));
+    }
+    else {
+      globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(newBase64Image));
+
+    }
     globalDispatch("loading", false);
     // globalDispatch("replaceBgParamValue", imgixParam);
   };
@@ -1050,12 +1083,12 @@ const AddImageToolbar = () => {
                         setSelectedFilter(f.name);
                         globalDispatch("src", buildUrl(f.transform, false, f.name));
                         globalDispatch("selectedFilter", f.name);
-                        handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name);
+                        handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor);
                         if (f.name != "Normal") setResetDefault(false);
                       }}
                     >
                       {
-                        loading ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} /></> : <> {previewUrl && <img src={buildUrl(f.transform, false, f.name)} alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} />}</>
+                        loading ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} /></> : <> {previewUrl && <img src={f.image} alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} />}</>
                       }
 
 

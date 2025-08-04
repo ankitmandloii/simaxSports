@@ -54,11 +54,11 @@ const MainDesignTool = ({
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   // const addName  = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addName);
   // const  addNumber = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addNumber);
-  const {addName,addNumber}=useSelector((state)=>state.TextFrontendDesignSlice.present[activeSide])
+  const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide])
 
-  console.log("--------------------------namenumber",addName,addNumber)
+  // console.log("--------------------------namenumber",addName,addNumber)
   const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
-  console.log("--------------namesssDesign",nameAndNumberDesignState)
+  // console.log("--------------namesssDesign",nameAndNumberDesignState)
   const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
@@ -891,7 +891,7 @@ const MainDesignTool = ({
   const renderAllElements = () => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
-  
+
 
     // Clean up existing objects
     const existingObjects = canvas.getObjects();
@@ -954,7 +954,7 @@ const MainDesignTool = ({
 
     canvas.renderAll();
     updateBoundaryVisibility?.(fabricCanvasRef);
-   
+
   };
   // **********************************************************************************************************************************************************
   //                                                                                    NAME AND NUMBER OBJECTS AREA
@@ -1010,9 +1010,9 @@ const MainDesignTool = ({
 
 
       <canvas ref={canvasRef} id={`canvas-${id}`} />
-    {!hasClicked && !addName && !addNumber &&
+      {!hasClicked && !addName && !addNumber &&
         imageContaintObject.length == 0 &&
-        textContaintObject.length == 0  && (
+        textContaintObject.length == 0 && (
           <div className={style.buttonsroute}>
             <button
               onMouseEnter={() => handleHover("/design/addText")}
