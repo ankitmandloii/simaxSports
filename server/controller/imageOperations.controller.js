@@ -4,6 +4,9 @@ const { SuccessMessage, ErrorMessage } = require("../constant/messages.js");
 const { statusCode } = require("../constant/statusCodes.js");
 const ImageGallery = require("../model/imageGallery.model.js");
 const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
+const path = require('path');
 // const axios = require('axios');
 
 
@@ -66,12 +69,12 @@ const s3Client = new S3Client({
 });
 
 const sanitizeFilenameFunction = (name) => {
-  return name
-    .toLowerCase()
-    .replace(/\s+/g, '_')            // Replace spaces with underscores
-    .replace(/[^\w\-\.]+/g, '')      // Remove non-alphanumeric except dot, dash, underscore
-    .replace(/_+/g, '_')             // Replace multiple underscores with single
-    .trim();
+    return name
+        .toLowerCase()
+        .replace(/\s+/g, '_')            // Replace spaces with underscores
+        .replace(/[^\w\-\.]+/g, '')      // Remove non-alphanumeric except dot, dash, underscore
+        .replace(/_+/g, '_')             // Replace multiple underscores with single
+        .trim();
 };
 
 
@@ -225,29 +228,180 @@ const IMGIX_DOMAIN = process.env.IMGIX_DOMAIN; // e.g. simaxdesigns.imgix.net
 const SECURE_TOKEN = process.env.SECURE_TOKEN; // your imgix signing token
 
 exports.generateImage = async (req, res) => {
-  const { prompt } = req.body;
+    const { prompt } = req.body;
 
-  if (!prompt) {
-    return res.status(400).json({ success: false, error: "Prompt is required" });
+    if (!prompt) {
+        return res.status(400).json({ success: false, error: "Prompt is required" });
+    }
+
+    try {
+        const encodedPrompt = encodeURIComponent(prompt);
+        const pathAndQuery = `/ai?text2image=true&prompt=${encodedPrompt}`;
+
+        // Generate HMAC SHA1 signature
+        const signature = crypto
+            .createHmac("sha1", SECURE_TOKEN)
+            .update(pathAndQuery)
+            .digest("hex");
+
+        const signedUrl = `https://${IMGIX_DOMAIN}${pathAndQuery}&s=${signature}`;
+
+        // Optional: You could check the image status via Imgix if it supports polling (currently it doesn’t)
+        // For now, return the signed URL for the client to use
+        return res.json({ success: true, imageUrl: signedUrl });
+    } catch (error) {
+        console.error("Error generating Imgix image:", error);
+        return res.status(500).json({ success: false, error: "Something went wrong with image generation" });
+    }
+};
+
+
+
+
+// const uploadImageToCloudinary = (fileBuffer, fileName, folder) => {
+//     console.log("uploadImageToCloudinary")
+//   return new Promise((resolve, reject) => {
+//     const stream = cloudinary.uploader.upload_stream(
+//       {
+//         folder,
+//         resource_type: "image"
+//       },
+//       (error, result) => {
+//         if (error) return reject(error);
+//         resolve({
+//           name: fileName,
+//           secureUrl: result.secure_url,
+//           publicId: result.public_id
+//         });
+//       }
+//     );
+
+//     stream.end(fileBuffer);
+//   });
+// };
+
+
+// exports.fileUploadToCloudinary = async (req, res) => {
+//   try {
+//     const files = req.files || [];
+//     console.log("filesfiles",files.length)
+//     if (!files.length) {
+//       return res.status(400).json({ message: "No file(s) uploaded" });
+//     }
+
+//     const uploaded = [];
+
+//     for (const file of files) {
+//         console.log("filesComessssssss");
+//       const result = await uploadImageToCloudinary(file.buffer, file.originalname , process.env.FOLDER_NAME);
+//       uploaded.push(result);
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       uploaded: uploaded.length,
+//       files: uploaded
+//     });
+//   } catch (error) {
+//     console.error("Upload error:", error);
+//     return res.status(500).json({
+//       message: "File upload failed",
+//       error: error.message
+//     });
+//   }
+// };
+
+
+// Helper function to save Blob data as PNG
+async function uploadImageToCloudinary(buffer, originalFileName, folderName) {
+    return new Promise((resolve, reject) => {
+        // Create a unique public ID for Cloudinary
+        const publicId = `${folderName}/${path.parse(originalFileName).name}_${Date.now()}`;
+ 
+        // Use Cloudinary's uploader.upload_stream to upload a buffer
+        const uploadStream = cloudinary.uploader.upload_stream(
+            {
+                resource_type: 'image',
+                folder: folderName,
+                public_id: publicId, // Set a public ID
+                overwrite: true // Overwrite if public ID exists (good for re-uploads)
+            },
+            (error, result) => {
+                if (error) {
+                    console.error("Cloudinary upload error:", error);
+                    return reject(error);
+                }
+                resolve(result); // result will contain the Cloudinary URL and other info
+            }
+        );
+ 
+        // Pipe the buffer to the upload stream
+        uploadStream.end(buffer);
+    });
+}
+ 
+ 
+exports.fileBlobDataUploadToCloudinary = async (req, res) => {
+    try {
+        // Multer puts all files into req.files when using upload.any()
+        const uploadedFiles = req.files || []; // This will be an array of file objects from Multer
+ 
+        console.log("Received files count:", uploadedFiles.length);
+ 
+        if (!uploadedFiles.length) {
+            return res.status(400).json({ message: "No image files provided." });
+        }
+ 
+        const uploadedResults = [];
+ 
+        // Process each uploaded file
+        for (let i = 0; i < uploadedFiles.length; i++) {
+            const file = uploadedFiles[i]; // Each 'file' object is from Multer
+ 
+            // `file.buffer` contains the binary data of the uploaded image
+            // `file.originalname` is the filename provided by the frontend (e.g., 'image_0.png')
+            console.log(`Processing file: ${file.originalname}, Size: ${file.size} bytes`);
+ 
+            // Upload the buffer directly to Cloudinary
+            const result = await uploadImageToCloudinary(file.buffer, file.originalname, process.env.FOLDER_NAME || 'your_default_folder');
+ 
+            // Push the Cloudinary result (including the URL) to the uploaded array
+            uploadedResults.push(result.secure_url);
+        }
+ 
+        return res.status(200).json({
+            success: true,
+            uploadedCount: uploadedResults.length,
+            files: uploadedResults // This array will contain Cloudinary response objects
+        });
+    } catch (error) {
+        console.error("Upload error:", error);
+        return res.status(500).json({
+            message: "File upload failed",
+            error: error.message
+        });
+    }
+};
+
+//delete
+
+exports.deleteImageFromCloudinary = async (req, res) => {
+  const { publicId } = req.body;
+
+  if (!publicId) {
+    return res.status(400).json({ message: "publicId is required to delete the image" });
   }
 
   try {
-    const encodedPrompt = encodeURIComponent(prompt);
-    const pathAndQuery = `/ai?text2image=true&prompt=${encodedPrompt}`;
+    const result = await cloudinary.uploader.destroy(publicId);
 
-    // Generate HMAC SHA1 signature
-    const signature = crypto
-      .createHmac("sha1", SECURE_TOKEN)
-      .update(pathAndQuery)
-      .digest("hex");
+    if (result.result !== "ok") {
+      return res.status(404).json({ message: "Image not found or already deleted" });
+    }
 
-    const signedUrl = `https://${IMGIX_DOMAIN}${pathAndQuery}&s=${signature}`;
-
-    // Optional: You could check the image status via Imgix if it supports polling (currently it doesn’t)
-    // For now, return the signed URL for the client to use
-    return res.json({ success: true, imageUrl: signedUrl });
+    res.status(200).json({ success: true, message: "Image deleted", result });
   } catch (error) {
-    console.error("Error generating Imgix image:", error);
-    return res.status(500).json({ success: false, error: "Something went wrong with image generation" });
+    console.error("Cloudinary delete error:", error);
+    res.status(500).json({ message: "Failed to delete image", error: error.message });
   }
 };

@@ -247,10 +247,11 @@
 
 // remove customer favorite product in list
 exports.getOrderList = async () => {
-  const S_STORE = process.env.STORE;
-  const A_TOKEN = process.env.TOKEN;
+  const S_STORE = process.env.SHOPIFY_STORE_URL;
+  const A_TOKEN = process.env.SHOPIFY_API_KEY;
 
   const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
+  // const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`;
 
   const query = `
     {

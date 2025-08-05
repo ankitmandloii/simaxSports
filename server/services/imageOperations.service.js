@@ -1,16 +1,23 @@
-// import sharp from 'sharp';
+// const sharp = require('sharp');
 
 
 
 
 
-// export const convertToPng = async (inputPath) => {
-//   const outputPath = `${inputPath}.png`;
+// exports.convertToPng = async (inputPath) => {
+//     try {
+//         console.log("inputPath",inputPath);
+//         const outputPath = `${inputPath}.png`;
 
-//   await sharp(inputPath)
-//     .png()
-//     .toFile(outputPath);
-//     // const metadata = await sharp(outputPath).metadata();
-//     // console.log(metadata.format)
-//   return outputPath;
+//         await sharp(inputPath)
+//             .png()
+//             .toFile(outputPath);
+//         // const metadata = await sharp(outputPath).metadata();
+//         // console.log(metadata.format)
+//         return outputPath;
+//     } catch (error) {
+//         throw new Error(error);
+        
+//     }
+
 // };
