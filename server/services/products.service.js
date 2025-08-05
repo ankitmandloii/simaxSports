@@ -257,7 +257,7 @@ export async function getProductsList(limit = 5, cursor = null) {
         node {
           id
           title
-          variants(first: 25) {
+          variants(first: 100) {
             edges {
               node {
                 id
@@ -306,7 +306,7 @@ export async function getProductsList(limit = 5, cursor = null) {
               hasNextPage
             }
           }
-          images(first: 250) {
+          images(first: 50) {
             edges {
               node {
                 originalSrc
