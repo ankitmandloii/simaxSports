@@ -474,7 +474,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
               </span>
             </div>
           </div>
-          <div className={style.searchContainer}>
+          <div className={style.generrateBtn}>
             <div className={style.searchWrapper}>
               <button
                 onClick={handleSearchClick}

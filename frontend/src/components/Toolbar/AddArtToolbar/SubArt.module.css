@@ -88,6 +88,15 @@ background: linear-gradient(90deg, var(--blue-color) 0%, #C183FF 100%);
   background-color: #f6f6f6;
 
 }
+.generrateBtn{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10px;
+  /* Adjust padding as needed */
+  background-color: #f6f6f6;
+
+}
 
 .searchWrapper {
   position: relative;
