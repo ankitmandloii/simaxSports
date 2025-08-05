@@ -265,6 +265,7 @@ import style from './SubArt.module.css';
 import { useDispatch } from 'react-redux';
 import { addImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 import { toast } from 'react-toastify';
+import starImage from '../../images/ai-magic.png'
 import UploadBox from '../../utils/UploadBox';
 
 const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTerm }) => {
@@ -370,6 +371,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
 
     try {
       const fetchUrl = `${BASE_URL}imageOperation/fetch-image?url=${encodeURIComponent(img.urls.full)}`;
+      console.log("fetchhhhh",fetchUrl)
       const response = await fetch(fetchUrl, { signal: controller.signal });
 
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -451,9 +453,9 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
         />
       ) : (
         <div className="toolbar-box">
-          <Link to="/design/uploadArt">
+          {/* <Link to="/design/uploadArt">
             <button className={style.uploadButton}>Upload Your Own Image</button>
-          </Link>
+          </Link> */}
 
           <div className={style.searchContainer}>
             <div className={style.searchWrapper}>
@@ -464,22 +466,33 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
                 placeholder="Search for Clipart and AI Generated Art"
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearchClick()}
+                autoFocus
               />
               <span className={style.searchIcon}>
                 <RxCross1 className={style.crossIcon} onClick={handleClear} />
-                <SearchIcon onClick={handleSearchClick} style={{ cursor: 'pointer' }} />
+                {/* <SearchIcon onClick={handleSearchClick} style={{ cursor: 'pointer' }} /> */}
               </span>
             </div>
           </div>
           <div className={style.searchContainer}>
-            <div  className={style.searchWrapper}>
-              <button onClick={handleSearchClick} className={style.uploadButton2}>GENERATE AI IMAGES</button>
+            <div className={style.searchWrapper}>
+              <button
+                onClick={handleSearchClick}
+                className={`${style.uploadButton2} ${(loading || !inputValue.trim()) ? style.disabledButton : ''}`}
+                disabled={loading}
+              >
+                <img className={style.starImage} src={starImage} />
+                <span>{loading ? 'Generating...' : 'GENERATE AI IMAGES'}</span>
+              </button>
+
+              {/* <button onClick={handleSearchClick} className={style.uploadButton2}> <img className={style.starImage} src={starImage}/> <span>GENERATE AI IMAGES</span></button> */}
             </div>
 
           </div>
 
           {queries.length > 0 && !inputValue && (
             <>
+            <div className={style.queryContainer}>
               <h2>{category}</h2>
               <div className={style.textButtonGroup}>
                 {queries.map((query) => (
@@ -496,10 +509,11 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
                   </button>
                 ))}
               </div>
+              </div>
             </>
           )}
 
-          {dalleImages.length > 0 && <h4 className="margin-bottom">Generated Results</h4>}
+          {dalleImages.length > 0 && <h4 className={style.marginBottom}>Generated Results</h4>}
           {loading && (
             <div className={style.loaderWrapper}>
               <div className={style.loader}></div>

@@ -54,17 +54,35 @@ const AddArtToolbar = () => {
         <div className="toolbar-box">
           <div className={style.searchContainer}>
             <div className={style.searchWrapper}>
-              <input
+              {/* <input
                 type="text"
                 className={style.searchInput}
                 placeholder="Search for Clipart and AI Generated Art"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearchClick()}
-              />
-              <span className={style.searchIcon} onClick={handleSearchClick}>
+              /> */}
+              {/* <span className={style.searchIcon} onClick={handleSearchClick}>
                 <SearchIcon />
-              </span>
+              </span> */}
+              <input
+                type="text"
+                className={style.searchInput}
+                placeholder="Search for Clipart and AI Generated Art"
+                value={searchTerm}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSearchTerm(value);
+                  if (value.trim()) {
+                    setTriggeredSearchTerm(value.trim());
+                    setSubArt(true);
+                    setSelectedCategory(null);
+                  } else {
+                    setSubArt(false);
+                  }
+                }}
+              />
+
             </div>
           </div>
 

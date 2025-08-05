@@ -4,6 +4,10 @@
   gap: 20px;
 }
 
+.starImage{
+  height: 15px;
+  /* margin-right: 10px; */
+}
 .clipartGrid img {
   width: 6rem;
   height: 4rem;
@@ -24,12 +28,31 @@
 }
 .uploadButton2 {
   width: 100%;
-  padding: 6px;
-  background: #005bff;
+  padding: 10px;
+background: linear-gradient(90deg, var(--blue-color) 0%, #C183FF 100%);
+   cursor: pointer;
+   
+       /* background: linear-gradient(90deg, #35d8f8 0, #ae7cf3 50%, #ae7cf3 50%, #35d8f8 100%); */
   color: white;
   border-radius: 100px;
   font-weight: bold;
   font-size: .7rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border: none;
+}
+.queryContainer{
+  background-color: #f6f6f6;
+  padding: 10px;
+}
+
+/* disable */
+.disabledButton {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 
@@ -60,7 +83,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px 0;
+  padding: 20px 10px;
   /* Adjust padding as needed */
   background-color: #f6f6f6;
 
@@ -129,10 +152,11 @@
   gap: 10px;
   margin: 1rem 0; */
    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Exactly 3 equal columns */
+    grid-template-columns: repeat(2, 1fr); /* Exactly 3 equal columns */
     gap: 10px;
     margin: 1rem 0;
-    justify-items: flex-start;
+    justify-items: left;
+    /* justify-items: flex-start; */
 }
 
 .textButton {

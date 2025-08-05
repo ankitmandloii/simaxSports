@@ -293,10 +293,16 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // useEffect(() => {
+  //   resetState();
+  //   fetchProducts();
+  // }, [collectionId,numericId]);
   useEffect(() => {
-    resetState();
-    fetchProducts();
-  }, [collectionId,numericId]);
+  resetState(); // Clear immediately
+  setLoading(true); // Trigger loader immediately
+  fetchProducts(false);
+}, [collectionId, numericId]);
+
 
   const resetState = () => {
     setProducts([]);
@@ -312,7 +318,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   const fetchProducts = useCallback(async (isLoadMore = false) => {
     console.log("---numericId",numericId)
     if (!effectiveCollectionId) return;
-    setLoading(true);
+    // setLoading(true);
     try {
       const res = await fetch(`${BASE_URL}products/collection/${numericId}`, {
         method: 'POST',
@@ -474,14 +480,13 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
 
   return (
     <div className={style.productPanel}>
-      {!effectiveCollectionId ? (
-        // <p className={style.defaultCollectionPara} >Select a collection to view products.</p>
-         <div className="loader" />
-      ) : loading && products.length === 0 ? (
-        <div className="loader" />
-      ) : products.length === 0 ? (
-        <p>No products found.</p>
-      ) : (
+       {!effectiveCollectionId ? (
+      <div className="loader" />
+    ) : loading && products.length === 0 ? (
+      <div className="loader" />
+    ) : products.length === 0 ? (
+      <p>No products found.</p>
+    ) : (
         <>
           <div className={style.productListCollection}>
             {products.map((product) => {

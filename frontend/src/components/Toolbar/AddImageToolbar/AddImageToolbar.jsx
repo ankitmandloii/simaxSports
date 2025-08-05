@@ -16,6 +16,7 @@ import {
   LayeringSecondIconWithBlackBg,
   CrossIcon,
 } from '../../iconsSvg/CustomIcon.js';
+import { FaChevronRight } from "react-icons/fa6";
 // import FontCollectionList from './FontCollectionList';
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox.jsx';
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox.jsx';
@@ -90,6 +91,7 @@ const AddImageToolbar = () => {
   // const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   const [bgColorPopup, setBGColorPopup] = useState(false);
   const [ColorPopup, setColorPopup] = useState(false);
+  const[replacebgwithAi,setreplaceBgwithAi]=useState(true);
 
   // console.log("-----------imggg", imageContaintObject);
   // Init from store
@@ -1163,8 +1165,9 @@ const AddImageToolbar = () => {
   return (
 
     <div className="toolbar-main-container ">
-
-      <div className='toolbar-main-heading'>
+{replacebgwithAi ? ( 
+  <>
+    <div className='toolbar-main-heading'>
         <h5 className='Toolbar-badge'>Upload Art</h5>
         <span className={styles.crossIcon} onClick={handleBack}><CrossIcon /></span>
         <h3>Edit Your Artwork</h3>
@@ -1396,11 +1399,11 @@ const AddImageToolbar = () => {
               <hr />
 
 
-              <div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Replace Background With AI<span className={styles.aiBadge}>AI</span></div>
+              <div className={styles.toolbarBoxFontValueSetInnerContainer} onClick={() => setreplaceBgwithAi(false)}>
+                <div className={styles.toolbarBoxFontValueSetInnerActionheading} >Replace Background With AI<span className={styles.aiBadge}>AI</span></div>
+                <span className={styles.rightarrow}><FaChevronRight/></span> 
 
-
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleBGReplaceColorPopup}>
+                {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleBGReplaceColorPopup}>
                   <SpanColorBox color={bgColor} />
                   {bgColorPopup && (
                     <ReplaceBackgroundColorPicker
@@ -1415,7 +1418,7 @@ const AddImageToolbar = () => {
 
 
 
-                </div>
+                {/* </div> */} 
               </div>
 
               <hr />
@@ -1574,7 +1577,22 @@ const AddImageToolbar = () => {
         </>
 
       </div>
-    </div >
+      </>): <div>
+           <div className='toolbar-main-heading'>
+        <h5 className='Toolbar-badge'>Upload Art</h5>
+        <span className={styles.crossIcon} onClick={() => setreplaceBgwithAi(true)}><CrossIcon /></span>
+        <h3>Replace BackGround</h3>
+        <p>Type in a Prompt to try our AI Powered Background Replacement Tool. Keep in mind that this cannot work at the same time as the Remove Background feature.</p>
+      </div>
+      <hr/>
+    <textarea className={styles.replacebginput} type='text' placeholder='Begin Typing....'></textarea>
+  
+      {/* <input className={styles.replacebginput} type='text' placeholder='Begin Typing....'/> */}
+    
+      <button className={styles.generateBgbtn} >Generate Background</button>
+        </div>}
+    </div>
+   
   );
 };
 
