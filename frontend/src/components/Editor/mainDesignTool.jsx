@@ -330,6 +330,27 @@ const MainDesignTool = ({
     setLoading(loadingState?.loading);
     // console.log("loading state is ", loading)
   }, [loadingState])
+
+  useEffect(() => {
+   const canvas = fabricCanvasRef.current;
+   if(!canvas) return;
+   canvas.discardActiveObject();
+  }, [window.location.pathname])
+  console.log("---------------",window.location.pathname=='/quantity'|| '/review')
+//   useEffect(() => {
+//   const canvas = fabricCanvasRef.current;
+//   if (!canvas) return;
+
+//   const validPaths = ['/quantity', '/review'];
+//   const currentPath = window.location.pathname;
+
+//   if (validPaths.includes(currentPath)) {
+//     canvas.discardActiveObject();
+//     canvas.requestRenderAll(); // optional, to ensure visual update
+//   }
+// }, [window.location.pathname]);
+
+  
   // useEffect(() => {
   //   const canvas = fabricCanvasRef.current;
   //   if (canvas && canvas.setZoom) {

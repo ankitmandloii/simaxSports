@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 // import './NamesToolbar.css';
 import style from './NamesToolbar.module.css'
-import FrontBtn from '../../images/Frontbutton.png';
-import BackBtn from '../../images/Backbuton.png';
-import SmallBtn from '../../images/sm-btn.png';
+import FrontBtn from '../../images/Front.png';
+import BackBtn from '../../images/Back.png';
+// import SmallBtn from '../../images/sm-btn.png';
+import SmallBtn from '../../images/small.png';
 
-import LargeBtn from '../../images/Largebutton.png';
-import InterStatebutton from '../../images/InterStatebutton.png';
-import Collegiatebutton from '../../images/Collegiatebutton.png';
+import LargeBtn from '../../images/large.png';
+import InterStatebutton from '../../images/font1.png';
+import Collegiatebutton from '../../images/font2.png';
 import AddNamesPopup from '../../PopupComponent/AddNamesPopup/AddNamesPopup';
 import { AngleActionIcon } from '../../iconsSvg/CustomIcon';
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox.jsx'

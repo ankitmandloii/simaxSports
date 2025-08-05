@@ -27,19 +27,11 @@ function ProductContainer() {
   const sleevedesign = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   const exportRequested = useSelector((state) => state.canvasExport.exportRequested);
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
-  // console.log("===================activeProducttttt", activeProduct)
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  // console.log("===================selectedProducttttt", selectedProducts)
-
 
   const isQuantityPage = location.pathname === "/quantity" || location.pathname === '/review';
 
-  // Extract color and images from activeProduct
   const activeProductColor = activeProduct?.selectedColor?.name || 'White';
-  const frontImage = activeProduct?.selectedColor?.variant?.image?.originalSrc || activeProduct?.imgurl;
-  const backImage = activeProduct?.images?.find(img => img.includes('_b_fm')) || activeProduct?.imgurl;
-  const sleeveImage = activeProduct?.images?.find(img => img.includes('_d_fm')) || activeProduct?.imgurl;
-
   const activeProductColorHex = getHexFromName(activeProductColor);
 
   function invertHexColor(hex) {
@@ -57,15 +49,15 @@ function ProductContainer() {
 
   const invertedColor = invertHexColor(activeProductColorHex);
 
-  const [frontBgImage, setFrontBgImage] = useState(frontImage);
-  const [backBgImage, setBackBgImage] = useState(backImage);
-  const [rightSleeveBgImage, setRightSleeveBgImage] = useState(sleeveImage);
-  const [leftSleeveBgImage, setLeftSleeveBgImage] = useState(sleeveImage);
+  const [frontBgImage, setFrontBgImage] = useState('');
+  const [backBgImage, setBackBgImage] = useState('');
+  const [rightSleeveBgImage, setRightSleeveBgImage] = useState('');
+  const [leftSleeveBgImage, setLeftSleeveBgImage] = useState('');
 
-  const [frontPreviewImage, setFrontPreviewImage] = useState(frontImage);
-  const [backPreviewImage, setBackPreviewImage] = useState(backImage);
-  const [rightSleevePreviewImage, setRightSleevePreviewImage] = useState(sleeveImage);
-  const [leftSleevePreviewImage, setLeftSleevePreviewImage] = useState(sleeveImage);
+  const [frontPreviewImage, setFrontPreviewImage] = useState('');
+  const [backPreviewImage, setBackPreviewImage] = useState('');
+  const [rightSleevePreviewImage, setRightSleevePreviewImage] = useState('');
+  const [leftSleevePreviewImage, setLeftSleevePreviewImage] = useState('');
 
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isZoomedIn, setIsZoomedIn] = useState(false);
@@ -121,11 +113,11 @@ function ProductContainer() {
     if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
 
     if (rawProducts && rawProducts.length > 0) {
-      const firstProduct = rawProducts[1]; // Select the first product
-      const firstColor = firstProduct.colors[1]; // Select the first color variant
+      const firstProduct = rawProducts[1];
+      const firstColor = firstProduct.colors[1];
       const initialProductWithColor = {
         ...firstProduct,
-        selectedColor: firstColor, // Add selectedColor to the product
+        selectedColor: firstColor,
       };
       dispatch(setSelectedProducts([initialProductWithColor]));
       dispatch(setActiveProduct(initialProductWithColor));
@@ -133,21 +125,58 @@ function ProductContainer() {
   }, [rawProducts, dispatch, selectedProducts]);
 
   // Extract images from metafields
+  // useEffect(() => {
+  //   // Initialize with fallback image
+  //   const defaultImage = activeProduct?.imgurl || '';
+
+  //   // Set defaults in case metafields are not available
+  //   let front = defaultImage;
+  //   let back = defaultImage;
+  //   let sleeve = defaultImage;
+
+  //   if (activeProduct?.selectedColor?.variant?.metafields?.edges?.length) {
+  //     const variantMetafields = activeProduct.selectedColor.variant.metafields.edges.find(
+  //       (edge) => edge?.node?.key === 'variant_images'
+  //     )?.node?.value;
+
+  //     if (variantMetafields) {
+  //       try {
+  //         const parsedImages = JSON.parse(variantMetafields);
+
+  //         // Find specific images by their suffixes in the src property
+  //         front = parsedImages.find(img => img.src.includes('_f_fm'))?.src || defaultImage;
+  //         back = parsedImages.find(img => img.src.includes('_b_fm'))?.src || defaultImage;
+  //         sleeve = parsedImages.find(img => img.src.includes('_d_fm'))?.src || defaultImage;
+  //       } catch (err) {
+  //         console.error('Failed to parse metafields variant_images:', err);
+  //       }
+  //     }
+  //   }
+
+  //   // Set background images
+  //   setFrontBgImage(front);
+  //   setBackBgImage(back);
+  //   setLeftSleeveBgImage(sleeve);
+  //   setRightSleeveBgImage(sleeve);
+
+  //   // Set preview images
+  //   setFrontPreviewImage(front);
+  //   setBackPreviewImage(back);
+  //   setLeftSleevePreviewImage(sleeve);
+  //   setRightSleevePreviewImage(sleeve);
+  // }, [activeProduct]);
+
+  // --
   useEffect(() => {
-    if (!activeProduct?.selectedColor?.variant?.metafields?.edges?.length) {
-      // Fallback to default images if no metafields
-      setFrontBgImage(activeProduct?.imgurl || '');
-      setBackBgImage(activeProduct?.imgurl || '');
-      setLeftSleeveBgImage(activeProduct?.imgurl || '');
-      setRightSleeveBgImage(activeProduct?.imgurl || '');
+  // Initialize with fallback image
+  const defaultImage = activeProduct?.imgurl || '';
 
-      setFrontPreviewImage(activeProduct?.imgurl || '');
-      setBackPreviewImage(activeProduct?.imgurl || '');
-      setLeftSleevePreviewImage(activeProduct?.imgurl || '');
-      setRightSleevePreviewImage(activeProduct?.imgurl || '');
-      return;
-    }
+  // Set defaults in case metafields are not available
+  let front = defaultImage;
+  let back = defaultImage;
+  let sleeve = defaultImage;
 
+  if (activeProduct?.selectedColor?.variant?.metafields?.edges?.length) {
     const variantMetafields = activeProduct.selectedColor.variant.metafields.edges.find(
       (edge) => edge?.node?.key === 'variant_images'
     )?.node?.value;
@@ -156,45 +185,28 @@ function ProductContainer() {
       try {
         const parsedImages = JSON.parse(variantMetafields);
 
-        const front = parsedImages.find(img => img.src.includes('_f_fm'))?.src || activeProduct?.imgurl;
-        const back = parsedImages.find(img => img.src.includes('_b_fm'))?.src || activeProduct?.images?.find(img => img.includes('_b_fm')) || activeProduct?.imgurl;
-        const sleeve = parsedImages.find(img => img.src.includes('_d_fm'))?.src || activeProduct?.images?.find(img => img.includes('_d_fm')) || activeProduct?.imgurl;
-
-        setFrontBgImage(front);
-        setBackBgImage(back);
-        setLeftSleeveBgImage(sleeve);
-        setRightSleeveBgImage(sleeve);
-
-        setFrontPreviewImage(front);
-        setBackPreviewImage(back);
-        setLeftSleevePreviewImage(sleeve);
-        setRightSleevePreviewImage(sleeve);
+        // Find specific images by their suffixes in the URL string
+        front = parsedImages.find(img => img.includes('_f_fm')) || defaultImage;
+        back = parsedImages.find(img => img.includes('_b_fm')) || defaultImage;
+        sleeve = parsedImages.find(img => img.includes('_d_fm')) || defaultImage;
       } catch (err) {
         console.error('Failed to parse metafields variant_images:', err);
-        // Fallback to default images
-        setFrontBgImage(activeProduct?.imgurl || '');
-        setBackBgImage(activeProduct?.images?.find(img => img.includes('_b_fm')) || activeProduct?.imgurl || '');
-        setLeftSleeveBgImage(activeProduct?.images?.find(img => img.includes('_d_fm')) || activeProduct?.imgurl || '');
-        setRightSleeveBgImage(activeProduct?.images?.find(img => img.includes('_d_fm')) || activeProduct?.imgurl || '');
-
-        setFrontPreviewImage(activeProduct?.imgurl || '');
-        setBackPreviewImage(activeProduct?.images?.find(img => img.includes('_b_fm')) || activeProduct?.imgurl || '');
-        setLeftSleevePreviewImage(activeProduct?.images?.find(img => img.includes('_d_fm')) || activeProduct?.imgurl || '');
-        setRightSleevePreviewImage(activeProduct?.images?.find(img => img.includes('_d_fm')) || activeProduct?.imgurl || '');
       }
-    } else {
-      // Fallback if no metafields
-      setFrontBgImage(activeProduct?.imgurl || '');
-      setBackBgImage(activeProduct?.images?.find(img => img.includes('_b_fm')) || activeProduct?.imgurl || '');
-      setLeftSleeveBgImage(activeProduct?.images?.find(img => img.includes('_d_fm')) || activeProduct?.imgurl || '');
-      setRightSleeveBgImage(activeProduct?.images?.find(img => img.includes('_d_fm')) || activeProduct?.imgurl || '');
-
-      setFrontPreviewImage(activeProduct?.imgurl || '');
-      setBackPreviewImage(activeProduct?.images?.find(img => img.includes('_b_fm')) || activeProduct?.imgurl || '');
-      setLeftSleevePreviewImage(activeProduct?.images?.find(img => img.includes('_d_fm')) || activeProduct?.imgurl || '');
-      setRightSleevePreviewImage(activeProduct?.images?.find(img => img.includes('_d_fm')) || activeProduct?.imgurl || '');
     }
-  }, [activeProduct]);
+  }
+
+  // Set background images
+  setFrontBgImage(front);
+  setBackBgImage(back);
+  setLeftSleeveBgImage(sleeve);
+  setRightSleeveBgImage(sleeve);
+
+  // Set preview images
+  setFrontPreviewImage(front);
+  setBackPreviewImage(back);
+  setLeftSleevePreviewImage(sleeve);
+  setRightSleevePreviewImage(sleeve);
+}, [activeProduct]);
 
   useEffect(() => {
     if (exportRequested) {

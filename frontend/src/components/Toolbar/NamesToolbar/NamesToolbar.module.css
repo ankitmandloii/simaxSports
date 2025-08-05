@@ -45,7 +45,7 @@
 .namesToolbarButton {
   background: transparent;
   border: 1px solid var(--borderColor);
-  padding: 2px 4px;
+  padding: 9px 10px;
 }
 
 .namesToolbarButtonActive {
@@ -53,7 +53,7 @@
 }
 
 .namesToolbarButton img {
-  height: 25px;
+  height: 15px;
 }
 
 .namesButtonMainContainer {
