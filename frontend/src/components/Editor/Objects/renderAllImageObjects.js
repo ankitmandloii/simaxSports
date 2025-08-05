@@ -300,7 +300,9 @@ const renderAllImageObjects = (
       removeBg,
       base64CanvasImage,
       singleColor,
-      invertColor
+      invertColor,
+      thresholdValue,
+      solidColor
     } = imageData;
     // console.log("base64 ", base64CanvasImage)
     // if (!base64CanvasImage) return;
@@ -385,7 +387,7 @@ const renderAllImageObjects = (
     const normalizeUrl = (url) => decodeURIComponent(url.trim().toLowerCase());
     if (
       existingObj &&
-      (normalizeUrl(existingObj.src) !== normalizeUrl(src) || singleColor != existingObj.singleColor || invertColor != existingObj.invertColor)
+      (normalizeUrl(existingObj.src) !== normalizeUrl(src) || singleColor != existingObj.singleColor || invertColor != existingObj.invertColor || thresholdValue != existingObj.thresholdValue || solidColor != existingObj.solidColor)
     ) {
       canvas.remove(existingObj);
       fabric.Image.fromURL(
@@ -423,7 +425,9 @@ const renderAllImageObjects = (
             layerIndex,
             lockScalingFlip: true,
             singleColor,
-            invertColor
+            invertColor,
+            thresholdValue,
+            solidColor
           });
 
           newImg.setControlsVisibility({
@@ -644,7 +648,9 @@ const renderAllImageObjects = (
             layerIndex,
             lockScalingFlip: true,
             singleColor,
-            invertColor
+            invertColor,
+            thresholdValue,
+            solidColor
           });
 
           img.setControlsVisibility({

@@ -6,6 +6,13 @@
 
 }
 
+#thresholdValue {
+  padding: 2px;
+  font-size: 12px;
+  border: 1px solid #cccfd6;
+  border-radius: 4px;
+  text-align: center;
+}
 
 textarea {
   font-family: "Montserrat", sans-serif;

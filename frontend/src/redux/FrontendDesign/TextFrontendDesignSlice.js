@@ -51,6 +51,7 @@ const createNewImage = (
   angle: 0,
   locked: false,
   layerIndex: totalElements,
+  thresholdValue:144,
   // Ai Operation
   replaceBackgroundColor: "#000000", // stored with hash
   replaceBgParamValue: "bg-remove=true&bg=AABB22",

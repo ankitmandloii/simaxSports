@@ -31,7 +31,7 @@ import ReplaceBackgroundColorPicker from '../../CommonComponent/ChooseColorBox/R
 
 const BASE_FILTERS = [
   { name: 'Normal', transform: '' },
-  { name: 'Single Color', transform: '?monochrome=white' },
+  { name: 'Single Color', transform: '?monochrome=black' },
   { name: 'Black/White', transform: '?sat=-100' },
 ];
 
@@ -56,6 +56,7 @@ const AddImageToolbar = () => {
   const [removeBackground, setRemoveBackground] = useState(false);
   const [base64Image, setBase64Image] = useState("");
   // const [isLocked, setIsLocked] = useState(false);
+  const [threshold, setThreshold] = useState(144);
   const isLocked = img?.locked;
   // console.log("isLocked", isLocked);
   const [selectedFilter, setSelectedFilter] = useState('Normal');
@@ -102,6 +103,8 @@ const AddImageToolbar = () => {
     setSelectedFilter(img?.selectedFilter || "Normal")
     setLoading(img.loading)
     setSingleColor(img.singleColor);
+    setThreshold(img.thresholdValue);
+    setSolidColor(img.solidColor)
     // const tempImage = new Image();
     // globalDispatch("loading", true);
     // setLoading(true);
@@ -638,13 +641,38 @@ const AddImageToolbar = () => {
 
   }
 
-  function solidColorHandler(e) {
+  async function solidColorHandler(e) {
     // update local state
     const value = isActive('solid=true');
-    toggle('solid=true', value)
-    setRemoveBackground(!solidColor);
-    // update redux store
+    // toggle('solid=true', value)
+    // setSolidColor(!solidColor);
     globalDispatch("solidColor", !solidColor);
+    globalDispatch("loading", true);
+    console.log("solid color funciton called")
+
+    // handleImage(previewUrl, color);
+    const newBase64Image = await makeSolid(base64Image, threshold);
+    // setPreviewUrl(String(newImgUrl));
+    setBase64Image(newBase64Image)
+
+    globalDispatch("base64CanvasImage", String(newBase64Image));
+    if (selectedFilter == "Normal") {
+      // globalDispatch("base64CanvasImageForNormalColor", String(newBase64Image));
+    }
+    else if (selectedFilter === "Single Color") {
+      globalDispatch("base64CanvasImageForSinglelColor", String(newBase64Image));
+    }
+    else {
+      globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(newBase64Image));
+
+    }
+    globalDispatch("loading", false);
+    // const base64 =
+
+    // update redux store
+
+
+
     setResetDefault(false);
   }
 
@@ -696,6 +724,58 @@ const AddImageToolbar = () => {
       };
     });
   }
+  async function makeSolid(imageSrc, threshold) {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      if (imageSrc.startsWith("data:image")) {
+        img.src = imageSrc;
+      } else {
+        img.crossOrigin = "anonymous";
+        img.src = imageSrc;
+      }
+
+      img.onload = function () {
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const a = data[i + 3];
+
+          const grayscale = (r + g + b) / 3;
+
+          if (grayscale > threshold) {
+            // Make transparent if light
+            // data[i + 3] = 0;
+          } else {
+            // Keep original color and alpha
+            data[i] = r;
+            data[i + 1] = g;
+            data[i + 2] = b;
+            data[i + 3] = a;
+          }
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+        resolve(canvas.toDataURL());
+        canvas.remove();
+      };
+
+      img.onerror = function () {
+        reject(new Error("Failed to load image"));
+      };
+    });
+  }
+
 
 
   // function applyFilterAndGetUrl(imageSrc, color) {
@@ -1051,6 +1131,33 @@ const AddImageToolbar = () => {
       // applyTransform("?auto=enhance");
     }
   }, [])
+
+  async function thresholdHandler(e) {
+    const threshold = e.target.value;
+    setThreshold(threshold);
+
+    globalDispatch("loading", true);
+    globalDispatch("thresholdValue", threshold);
+    console.log("solid color funciton called")
+
+    // handleImage(previewUrl, color);
+    const newBase64Image = await makeSolid(base64Image, threshold);
+    // setPreviewUrl(String(newImgUrl));
+    setBase64Image(newBase64Image)
+
+    globalDispatch("base64CanvasImage", String(newBase64Image));
+    if (selectedFilter == "Normal") {
+      // globalDispatch("base64CanvasImageForNormalColor", String(newBase64Image));
+    }
+    else if (selectedFilter === "Single Color") {
+      globalDispatch("base64CanvasImageForSinglelColor", String(newBase64Image));
+    }
+    else {
+      globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(newBase64Image));
+
+    }
+    globalDispatch("loading", false);
+  }
   // console.log("previewUrl", previewUrl, "image src", img?.src);
   //  if(loading) return <div className={styles.loadingOverlay}><div className={styles.loadingSpinner} /><p>Applying changes...</p></div>;
   return (
@@ -1197,7 +1304,7 @@ const AddImageToolbar = () => {
               }
 
 
-              {/* {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
+              {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                   Make Solid
 
@@ -1211,10 +1318,25 @@ const AddImageToolbar = () => {
                   />
                   <span className={styles.slider}></span>
                 </label>
-              </div>
 
+              </div>
               )}
-              {(selectedFilter === "Single Color" && <hr />)} */}
+              {
+                selectedFilter == "Single Color" && solidColor &&
+                <hr></hr>
+              }
+              {
+                selectedFilter == "Single Color" && solidColor &&
+                <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                  <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
+                    Threshold:
+                  </div>
+
+                  <input type="range" id="threshold" class="slider" min="0" max="255" value={threshold} onChange={thresholdHandler} />
+                  <span id={styles.thresholdValue}>{threshold}</span>
+                </div>
+              }
+              {(selectedFilter === "Single Color" && <hr />)}
 
               <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
