@@ -10,9 +10,11 @@ const { dbConnection } = require('./config/db');
 // const { initSocket } = require('./socket'); // adjust path
 const helmet = require('helmet');
 const multer = require('multer');
-const { startScheduler } = require("./scheduler/cronJob.js");
+// const { startScheduler } = require("./scheduler/cronJob.js");
+const { ConnectCloadinary } = require('./config/cloudinary.js');
 
 
+ConnectCloadinary();
 
 
 // Setup middlewares
@@ -35,7 +37,7 @@ if (process.env.NODE_ENV !== 'production') {
 // Routes
 app.use("/api", routes);
 
-//startScheduler(); // start scheduled sync for product S&S to Shopify
+// startScheduler(); // start scheduled sync for product S&S to Shopify
 
 app.use((err, req, res, next) => {
   if (err.code === "LIMIT_FILE_SIZE") {
