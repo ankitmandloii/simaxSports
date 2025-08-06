@@ -1,6 +1,13 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 import { act } from "react";
-
+ function getStaringCenterPostion(){
+     const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+     if(!canvasComponent) return { x: 290, y: 200 } ;
+      const rect = canvasComponent.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      return {x:centerX,y:centerY}
+ }
 const createNewText = ({ value, id, centerX, centerY }, totalElements) => ({
   id: id,
   content: value || "New Text",
@@ -26,14 +33,15 @@ const createNewText = ({ value, id, centerX, centerY }, totalElements) => ({
   width: 150,
   height: 50,
   fontSize: 20,
-  position: { x: centerX, y: centerY },
+  position:getStaringCenterPostion(),
   locked: false,
   layerIndex: totalElements,
 });
 
 const createNewImage = (
   { src },
-  totalElements
+  totalElements,
+  centerX
 ) => ({
   id: nanoid(),
   src: src,
@@ -46,12 +54,12 @@ const createNewImage = (
   height: 150,
   left: 280,
   top: 200,
-  position: { x: 280, y: 150 },
+  position: getStaringCenterPostion(),
   scaledValue: 1,
   angle: 0,
   locked: false,
   layerIndex: totalElements,
-  thresholdValue:144,
+  thresholdValue: 144,
   // Ai Operation
   replaceBackgroundColor: "#000000", // stored with hash
   replaceBgParamValue: "bg-remove=true&bg=AABB22",
@@ -90,7 +98,7 @@ const initialState = {
       selectedImageId: null,
       loadingState: {
         loading: false,
-        position: { x: 290, y: 200 }
+        position: getStaringCenterPostion()
       },
       texts: [],
       images: [],
@@ -106,7 +114,7 @@ const initialState = {
         fontColor: "#000000",
         fontFamily: "Oswald",
         fontSize: "small",
-        position: { x: 280, y: 200 },
+        position:getStaringCenterPostion(),
       },
 
       // 🆕 Product list for Name & Number (front)
@@ -124,7 +132,7 @@ const initialState = {
       addName: false,
       loadingState: {
         loading: false,
-        position: { x: 290, y: 200 }
+        position:getStaringCenterPostion()
       },
 
       // 🆕 Design settings for Name & Number (back)
@@ -135,7 +143,7 @@ const initialState = {
         fontColor: "#000000",
         fontFamily: "Oswald",
         fontSize: "small",
-        position: { x: 280, y: 200 },
+        position: getStaringCenterPostion(),
       },
       // 🆕 Product list for Name & Number (back)
       nameAndNumberProductList: [
@@ -152,7 +160,7 @@ const initialState = {
       // addName: false,
       loadingState: {
         loading: false,
-        position: { x: 290, y: 200 }
+        position:getStaringCenterPostion()
       },
     },
     rightSleeve: {
@@ -165,7 +173,7 @@ const initialState = {
       // addName: false,
       loadingState: {
         loading: false,
-        position: { x: 290, y: 200 }
+        position: getStaringCenterPostion()
       },
     },
   },
@@ -591,9 +599,14 @@ const TextFrontendDesignSlice = createSlice({
       const { src, id = nanoid(), side = state.activeSide, isRenderOrNot } = action.payload;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
+      const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+      const rect = canvasComponent.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
       const newImage = createNewImage(
         { src },
-        totalElements
+        totalElements,
+        centerX
       );
       // const newImage = createNewImage(
       //   { src },

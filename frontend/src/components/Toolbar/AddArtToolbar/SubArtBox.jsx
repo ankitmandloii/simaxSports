@@ -283,8 +283,28 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const apiKey = process.env.REACT_APP_DALLE_API_KEY;
+//   const systemPrompt = `
+// You are an AI specialized in creating detailed, high-resolution, transparent-background images optimized explicitly for shirt and apparel designs. Every image you generate should meet these requirements:
+ 
+// 1. No Background:
+//    - Always generate transparent (alpha-channel) backgrounds.
+//    - Avoid shadows, gradients, or any backdrop elements.
+ 
+// 2. Resolution and Quality:
+//    - Produce high-resolution images (minimum 300 dpi).
+//    - Ensure smooth edges suitable for direct printing or embroidery.
+ 
+// 3. Color and Contrast:
+//    - Prioritize bold, distinct colors and clear contrast suitable for apparel printing methods like screen printing and direct-to-garment (DTG).
+ 
+
+ 
+// Always generate images that are ready to be printed or embroidered directly onto clothing, requiring no further editing or background removal.
+// `;
 
   const fetchDalleImages = async (query, pageNumber = 1) => {
+    const prompt = `A high-quality illustration of ${query}, centered, no background, bold colors, sharp outlines,it must be spelled correctly, suitable for printing on T-shirts.`;
+    // const fullPrompt = `${systemPrompt}\n\nPrompt: ${query}`;
     if (!query) return;
     setLoading(true);
     try {
@@ -293,7 +313,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
         'https://api.openai.com/v1/images/generations',
         {
           model: 'dall-e-2',
-          prompt: query,
+          prompt,
           n: imagesPerPage,
           size: '512x512',
         },
