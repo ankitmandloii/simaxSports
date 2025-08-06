@@ -99,7 +99,7 @@ import { useCallback } from "react";
 const updateBoundaryVisibility = (fabricCanvasRef, activeSide) => {
   console.log("-----activewee", activeSide)
   const canvas = fabricCanvasRef.current;
-  // if (!canvas) return;
+  if (!canvas) return;
 
   const objects = canvas.getObjects();
   const boundaryBox = objects.find((obj) => obj.name === "boundaryBox");

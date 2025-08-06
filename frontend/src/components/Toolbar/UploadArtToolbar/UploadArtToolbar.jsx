@@ -11,6 +11,8 @@ import style from './UploadArtToolbar.module.css';
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useGoogleLogin } from "@react-oauth/google";
+import ExifReader from 'exifreader';
+
 
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
 const DEVELOPER_KEY = process.env.REACT_APP_DEVELOPER_KEY;
@@ -38,13 +40,153 @@ const UploadArtToolbar = () => {
     return blob;
   };
 
+  // function for dpi
+  const validateImageDPI = async (file) => {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const tags = ExifReader.load(arrayBuffer);
+      console.log(`Tags for ${file.name}:`, tags); // ← DEBUG log
+
+      const xDpi = tags.XResolution?.value;
+      const yDpi = tags.YResolution?.value;
+      const resUnit = tags["Resolution Unit"]?.value; // 1 = inch (JFIF), 2 = inch, 3 = cm
+
+      let isDpiValid = false;
+      let isLowDpiWarning = false;
+
+      // if (xDpi && yDpi && (resUnit === 1 || resUnit === 2)) {
+      if (xDpi && yDpi) {
+        const dpi = Math.max(xDpi, yDpi);
+        console.log(`${file.name} - DPI: ${dpi}`);
+
+        if (dpi >= 300) {
+          isDpiValid = true;
+        } else if (dpi >= 100) {
+          isDpiValid = true;
+          isLowDpiWarning = true;
+        }
+      }
+
+      const imageBitmap = await createImageBitmap(file);
+      const { width, height } = imageBitmap;
+      console.log(`${file.name} - resolution: ${width}x${height}`);
+
+      const isHighRes = width >= 1000 || height >= 1000;
+      const isPrintReady = width >= 1200 && height >= 1200;
+
+      // 🛑 Block only if DPI < 100 AND low resolution
+      if (!isDpiValid && !isHighRes) {
+        return {
+          valid: false,
+          message: `${file.name} is too low in quality for upload (DPI < 100 and small size).`,
+        };
+      }
+
+      // ⚠️ Warn if resolution or DPI is low
+      if (isLowDpiWarning || !isPrintReady) {
+        return {
+          valid: true,
+          warning: `${file.name} may not be print-ready (DPI < 300 or small dimensions).`,
+        };
+      }
+
+      // ✅ Good quality
+      return { valid: true };
+    } catch (error) {
+      console.warn(`Failed to read DPI or resolution for ${file.name}:`, error);
+      return { valid: true }; // Allow if unsure
+    }
+  };
+
+
+
+  // ---
+  // const handleFiles = async (files) => {
+  //   const BASE_URL = process.env.REACT_APP_BASE_URL;
+  //   if (files.length === 0) return;
+
+  //   const formData = new FormData();
+  //   for (let i = 0; i < files.length; i++) {
+  //     formData.append("images", files[i]);
+  //   }
+
+  //   try {
+  //     setIsLoading(true);
+  //     const response = await axios.post(
+  //       `${BASE_URL}imageOperation/upload`,
+  //       formData,
+  //       { headers: { "Content-Type": "multipart/form-data" } }
+  //     );
+
+  //     response.data.files.forEach((fileObj) => {
+  //       const image = new Image();
+  //       image.onload = function () {
+  //         const height = this.height;
+  //         const width = this.width;
+  //         console.log(height, width, "vaishali.....");
+  //         dispatch(addImageState({ src: fileObj.url }));
+  //       };
+
+  //       image.src = fileObj.url
+  //       dispatch(addImageState({ src: fileObj.url }));
+  //     });
+  //     navigate("/design/addImage");
+  //   } catch (err) {
+  //     toast.error( err.message);
+  //     console.error("Upload error:", err.response?.data || err.message);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+  // ---
   const handleFiles = async (files) => {
     const BASE_URL = process.env.REACT_APP_BASE_URL;
-    if (files.length === 0) return;
+    if (!files.length) return;
 
     const formData = new FormData();
+    const invalidFiles = [];
+    const warnings = [];
+
     for (let i = 0; i < files.length; i++) {
-      formData.append("images", files[i]);
+      const file = files[i];
+
+      if (file.type.startsWith("image/")) {
+        const result = await validateImageDPI(file);
+
+        if (!result.valid) {
+          invalidFiles.push(result.message || file.name);
+          continue;
+        }
+
+        if (result.warning) {
+          warnings.push(result.warning);
+        }
+      }
+
+      formData.append("images", file);
+    }
+
+    if (invalidFiles.length > 0) {
+      // toast.error(`Blocked files:\n${invalidFiles.join("\n")}`);\
+      toast.error(`Blocked files:\n${invalidFiles.join("\n")}`, {
+        style: {
+          width: "600px",
+          whiteSpace: "pre-wrap",
+        },
+      });
+    }
+
+    if (warnings.length > 0) {
+      warnings.forEach(msg => toast.warn(msg), {
+        style: {
+          width: "600px",
+          whiteSpace: "pre-wrap",
+        },
+      });
+    }
+
+    if (!formData.has("images")) {
+      return;
     }
 
     try {
@@ -56,16 +198,32 @@ const UploadArtToolbar = () => {
       );
 
       response.data.files.forEach((fileObj) => {
+        // const image = new Image();
+        // image.onload = function () {
+        //   dispatch(addImageState({ src: fileObj.url }));
+        // };
+
+        // image.src = fileObj.url;
         dispatch(addImageState({ src: fileObj.url }));
       });
+
       navigate("/design/addImage");
     } catch (err) {
-      toast.error("Error uploading files");
+      toast.error(err.message, {
+        style: {
+          width: "600px",
+          whiteSpace: "pre-wrap",
+        },
+      });
       console.error("Upload error:", err.response?.data || err.message);
     } finally {
       setIsLoading(false);
     }
   };
+
+
+
+  // --
 
   const handleDrop = async (e) => {
     e.preventDefault();
@@ -108,7 +266,12 @@ const UploadArtToolbar = () => {
                 const blob = await response.blob();
                 return new File([blob], doc.name, { type: doc.mimeType });
               } catch (err) {
-                toast.error(`Error fetching ${doc.name}`);
+                toast.error(`Error fetching ${doc.name}`, {
+                  style: {
+                    width: "600px",
+                    whiteSpace: "pre-wrap",
+                  },
+                });
                 return null;
               }
             })
@@ -263,7 +426,12 @@ const UploadArtToolbar = () => {
                         const blob = await response.blob();
                         return new File([blob], fileMeta.name, { type: blob.type });
                       } catch (err) {
-                        toast.error(`Error downloading ${fileMeta.name}`);
+                        toast.error(`Error downloading ${fileMeta.name}`, {
+                          style: {
+                            width: "600px",
+                            whiteSpace: "pre-wrap",
+                          },
+                        });
                         return null;
                       }
                     })
@@ -285,7 +453,7 @@ const UploadArtToolbar = () => {
 
           <p className={style.uploadPara}>
             Upload ANY file type, but we prefer vector, high-res, or large files such as:
-            .AI, .EPS, .PDF, .TIFF, .PSD, .JPG, .PNG
+            .JPG, .PNG , .JPEG
           </p>
 
           <input

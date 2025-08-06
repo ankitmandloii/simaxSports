@@ -39,8 +39,13 @@
   border-radius: 100px;
   cursor: pointer;
   gap: 2px;
+  transition: all 0.5s ease;
+
 }
 
+.artButton:hover{
+  background: #eadede;
+}
 .artButton svg {
   /* font-size: 4px; */
   height: 15px;

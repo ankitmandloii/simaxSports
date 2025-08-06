@@ -14,7 +14,7 @@
 }
 
 .marginBottom {
-  margin-bottom: 8px;
+  margin :10px 0;
 }
 
 .uploadButton {
@@ -176,6 +176,8 @@ background: linear-gradient(90deg, var(--blue-color) 0%, #C183FF 100%);
   cursor: pointer;
   padding: 4px 8px;
   text-decoration: underline;
+    text-align: left;
+
 }
 
 .textButton:hover {

@@ -332,25 +332,32 @@ const MainDesignTool = ({
   }, [loadingState])
 
   useEffect(() => {
-   const canvas = fabricCanvasRef.current;
-   if(!canvas) return;
-   canvas.discardActiveObject();
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    const path = window.location.pathname;
+    if (path !== '/design/addImage' && path !== '/design/addText') {
+      canvas.discardActiveObject();
+      canvas.requestRenderAll();
+
+    }
   }, [window.location.pathname])
-  console.log("---------------",window.location.pathname=='/quantity'|| '/review')
-//   useEffect(() => {
-//   const canvas = fabricCanvasRef.current;
-//   if (!canvas) return;
+  // console.log("---------------",window.location.pathname=='/quantity'|| '/review')
+  console.log("---------------", window.location.pathname)
 
-//   const validPaths = ['/quantity', '/review'];
-//   const currentPath = window.location.pathname;
+  //   useEffect(() => {
+  //   const canvas = fabricCanvasRef.current;
+  //   if (!canvas) return;
 
-//   if (validPaths.includes(currentPath)) {
-//     canvas.discardActiveObject();
-//     canvas.requestRenderAll(); // optional, to ensure visual update
-//   }
-// }, [window.location.pathname]);
+  //   const validPaths = ['/quantity', '/review'];
+  //   const currentPath = window.location.pathname;
 
-  
+  //   if (validPaths.includes(currentPath)) {
+  //     canvas.discardActiveObject();
+  //     canvas.requestRenderAll(); // optional, to ensure visual update
+  //   }
+  // }, [window.location.pathname]);
+
+
   // useEffect(() => {
   //   const canvas = fabricCanvasRef.current;
   //   if (canvas && canvas.setZoom) {
@@ -868,7 +875,7 @@ const MainDesignTool = ({
 
   useEffect(() => {
     updateBoundaryVisibility(fabricCanvasRef, activeSide);
-  }, [addName, addNumber, nameAndNumberDesignState, textContaintObject]);
+  }, [addName, addNumber, nameAndNumberDesignState, textContaintObject, imageContaintObject]);
 
   // **********************************************************************************************************************************************************
   //                                                                                    TEXT OBJECTS AREA
