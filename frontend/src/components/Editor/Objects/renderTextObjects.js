@@ -122,6 +122,30 @@ const renderCurveTextObjects = (
           isSync: true,
         });
 
+        function removeAllHtmlControls(canvas) {
+          if (!canvas) {
+            canvas = fabricCanvasRef.current;
+          }
+          canvas.getObjects().forEach((obj) => {
+            if (obj._htmlControls) {
+              for (const key in obj._htmlControls) {
+                const el = obj._htmlControls[key];
+                if (el?.parentNode) el.parentNode.removeChild(el);
+              }
+              obj._htmlControls = null;
+            }
+          });
+
+          // Safety net: also remove floating orphan controls (edge case fallback)
+          document.querySelectorAll('[data-fabric-control]').forEach(el => el.remove());
+        }
+
+        curved.on("deselected", () => {
+          removeAllHtmlControls(canvas);
+          dispatch(setSelectedTextState(null));
+          // navigate("/design/product");
+        });
+
         curved.on("mousedown", () => {
           dispatch(setSelectedTextState(textInput.id));
           setActiveObjectType("curved-text");

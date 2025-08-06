@@ -234,7 +234,7 @@ const Review = () => {
   async function uploadBlobData(blobDataArray) {
     try {
       const formData = new FormData();
-      blobDataArray = blobDataArray.slice(0, 2);
+      blobDataArray = blobDataArray.slice(0, 4);
       // Append each blob as a file to the FormData
       blobDataArray.forEach((blob, index) => {
         // Append each Blob as a file to the FormData
@@ -274,14 +274,19 @@ const Review = () => {
       if (qty > 0) acc[size] = qty;
       return acc;
     }, {});
+    console.log("productstate ", product)
 
     return {
       name: product.name,
       color: product.color,
       sizes, // { S: 2, M: 3, ... }
       image: product.imgurl,
-      allImages: [product.allImages?.[0], product.allImages?.[2], product.allImages?.[3], product.allImages?.[3]],
+      variantId: product?.variantId,
+      allImages: [product.allImages?.[0], product.allImages?.[1], product.allImages?.[2], product.allImages?.[2]],
       allVariants: product.allVariants,
+      price: product.price,
+      sku: product.sku,
+      inventory_quantity: product.inventory_quantity
     };
   });
 
@@ -316,6 +321,7 @@ const Review = () => {
 
   function base64toBlob(base64String, contentType = 'image/png') {
     // 1. Remove the data URI prefix (e.g., "data:image/png;base64,")
+    if (!base64String) return;
     const base64WithoutPrefix = base64String.replace(/^data:image\/(png|jpeg|gif|webp|svg\+xml);base64,/, '');
 
     // 2. Decode Base64 to binary string
@@ -331,6 +337,39 @@ const Review = () => {
 
     // 4. Create a Blob from the ArrayBuffer
     return new Blob([bytes], { type: contentType });
+  }
+
+  function makeVariantDataForShopify(reviewItems, CloudinaryImages) {
+    const data = reviewItems.map((product) => {
+      if (product.variantId) {
+        //it is a variant 
+        const obj = {
+          "product_id": product.variantId,
+          "option1": "S",
+          "option2": product.color,
+          "price": product.price,
+          "sku": "B665D8502",
+          "inventory_quantity": product.inventory_quantity,
+          "image_urls": ["https://simaxdesigns.imgix.net/uploads/1753094129600_front-design.png"]
+        }
+        const sizeskey = Object.keys(product.sizes);
+        const color = product.color;
+        const variantTitles = sizeskey.map((size) => {
+          return `${color} / ${size}`;
+        })
+        console.log(variantTitles);
+      }
+      else {
+        // is it a product
+        const sizeskey = Object.keys(product.sizes);
+        const color = product.color;
+        const variantTitles = sizeskey.map((size) => {
+          return `${color} / ${size}`;
+        })
+        console.log(variantTitles);
+
+      }
+    })
   }
 
   const cartHandler = async () => {
@@ -369,16 +408,16 @@ const Review = () => {
           allBackImagesElement // images expects an array of arrays, so wrap current index
         );
         // Generate left design
-        const leftDesignImages = await generateDesigns(
-          [leftBackgroud], // backgrounds expects an array
-          allLeftTextElement, // texts expects an array of arrays, so wrap current index
-          allLeftImagesElement // images expects an array of arrays, so wrap current index
-        );
+        // const leftDesignImages = await generateDesigns(
+        //   [leftBackgroud], // backgrounds expects an array
+        //   allLeftTextElement, // texts expects an array of arrays, so wrap current index
+        //   allLeftImagesElement // images expects an array of arrays, so wrap current index
+        // );
 
         return {
           front: frontDesignImages[0], // generateDesigns returns an array, take the first element
           back: backDesignImages[0],
-          left: leftDesignImages[0],
+          // left: leftDesignImages[0],
         };
       });
 
@@ -390,12 +429,13 @@ const Review = () => {
       const blobData = results.reduce((arr, item) => {
         arr.push(base64toBlob(item.front, 'image/png'));
         arr.push(base64toBlob(item.back, 'image/png'));
-        arr.push(base64toBlob(item.left, 'image/png'));
+        // arr.push(base64toBlob(item.left, 'image/png'));
         return arr;
       }, [])
       console.log("blobdata", blobData);
-      const CloudinaryImages = await uploadBlobData(blobData);
-      console.log('All Generated Designs:', CloudinaryImages);
+      // const CloudinaryImages = await uploadBlobData(blobData);
+      // console.log('All Generated Designs:', CloudinaryImages);
+      makeVariantDataForShopify(reviewItems);
       // setGeneratedDesignImages(results);
 
     } catch (error) {
@@ -489,7 +529,7 @@ const Review = () => {
 
 
       <div class="canvas-wrapper" style={{ position: "relative", top: 5 }} >
-        <canvas id="canvas-export" />
+        <canvas id="canvas-export" style={{ display: "none" }} />
       </div>
     </div>
   );

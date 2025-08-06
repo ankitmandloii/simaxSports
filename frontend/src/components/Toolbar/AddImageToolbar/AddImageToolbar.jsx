@@ -91,7 +91,7 @@ const AddImageToolbar = () => {
   // const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   const [bgColorPopup, setBGColorPopup] = useState(false);
   const [ColorPopup, setColorPopup] = useState(false);
-  const[replacebgwithAi,setreplaceBgwithAi]=useState(true);
+  const [replacebgwithAi, setreplaceBgwithAi] = useState(true);
 
   // console.log("-----------imggg", imageContaintObject);
   // Init from store
@@ -152,7 +152,7 @@ const AddImageToolbar = () => {
 
 
 
-  async function handleImage(imageSrc, color = "#00000", selectedFilter, invertColor) {
+  async function handleImage(imageSrc, color = "#000000", selectedFilter, invertColor) {
     try {
 
       console.log("handle image function called with src", imageSrc);
@@ -164,7 +164,8 @@ const AddImageToolbar = () => {
       console.log("curent seleteced filter is ", selectedFilter, img.selectedFilter)
       if (selectedFilter == "Single Color") {
         if (invertColor) {
-          cuurentBase64Image = await invertColorsAndGetUrl(base64Image || previewUrl);
+          const applyFilterURL = await applyFilterAndGetUrl(imageSrc, color);
+          cuurentBase64Image = await invertColorsAndGetUrl(applyFilterURL || previewUrl);
         }
         else {
           cuurentBase64Image = await applyFilterAndGetUrl(imageSrc, color);
@@ -189,7 +190,7 @@ const AddImageToolbar = () => {
         globalDispatch("base64CanvasImageForSinglelColor", String(cuurentBase64Image));
       }
       else {
-        globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(cuurentBase64Image));
+        globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(imageSrc));
 
       }
 
@@ -838,6 +839,10 @@ const AddImageToolbar = () => {
   //   });
   // }
   function applyFilterAndGetUrl(imageSrc, color) {
+    imageSrc = String(imageSrc);
+    if (imageSrc.includes("monochrome=black")) {
+      imageSrc = imageSrc.replace("monochrome=black", "");
+    }
     return new Promise((resolve, reject) => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -999,26 +1004,27 @@ const AddImageToolbar = () => {
     const hex = color.replace('#', '');
     // const value = isActive(`bg-remove=true&bg=${hex}`);
     // setColor(color);
-    globalDispatch("loading", true);
+    // globalDispatch("loading", true);
     globalDispatch("singleColor", color);
     setSingleColor(color);
     // handleImage(previewUrl, color);
-    const newBase64Image = await applyFilterAndGetUrl(previewUrl, color);
+    console.log("color cahnges funcitonc called", color, previewUrl);
+    const newBase64Image = await handleImage(previewUrl, color, selectedFilter, invertColor);
     // setPreviewUrl(String(newImgUrl));
-    setBase64Image(newBase64Image)
+    // setBase64Image(newBase64Image)
 
-    globalDispatch("base64CanvasImage", String(newBase64Image));
-    if (selectedFilter == "Normal") {
-      // globalDispatch("base64CanvasImageForNormalColor", String(newBase64Image));
-    }
-    else if (selectedFilter === "Single Color") {
-      globalDispatch("base64CanvasImageForSinglelColor", String(newBase64Image));
-    }
-    else {
-      globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(newBase64Image));
+    // globalDispatch("base64CanvasImage", String(newBase64Image));
+    // if (selectedFilter == "Normal") {
+    //   globalDispatch("base64CanvasImageForNormalColor", String(previewUrl));
+    // }
+    // else if (selectedFilter == "Single Color") {
+    //   globalDispatch("base64CanvasImageForSinglelColor", String(newBase64Image));
+    // }
+    // else {
+    //   globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(previewUrl));
 
-    }
-    globalDispatch("loading", false);
+    // }
+    // globalDispatch("loading", false);
     // globalDispatch("replaceBgParamValue", imgixParam);
   };
 
@@ -1094,7 +1100,9 @@ const AddImageToolbar = () => {
       removeBg: false,
       cropAndTrim: false,
       superResolution: false,
-      replaceBackgroundColor: "var(--black-color)"
+      replaceBackgroundColor: "var(--black-color)",
+      invertColor: false,
+      singleColor: "#000000"
     };
 
     dispatch(updateImageState({ id: selectedImageId, changes }));
@@ -1106,6 +1114,7 @@ const AddImageToolbar = () => {
     setActiveTransform('');
     setBGColorPopup(false);
     setBgColor("var(--black-color)");
+    setInvertColor(false);
     // 3. Remove active transformations via `toggle`
     // const removeBgKey = 'bg-remove=true';
     // const cropKey = 'trim=color';
@@ -1165,55 +1174,55 @@ const AddImageToolbar = () => {
   return (
 
     <div className="toolbar-main-container ">
-{replacebgwithAi ? ( 
-  <>
-    <div className='toolbar-main-heading'>
-        <h5 className='Toolbar-badge'>Upload Art</h5>
-        <span className={styles.crossIcon} onClick={handleBack}><CrossIcon /></span>
-        <h3>Edit Your Artwork</h3>
-        <p>Our design professionals will select ink colors for you or tellus your preferred colors at checkout.</p>
-      </div>
-
-      <div className={styles.toolbarBox}>
-
+      {replacebgwithAi ? (
         <>
-          <>
-            <hr />
-            <div className={`${styles.addTextInnerMainContainerr} ${isLocked ? styles.lockedToolbar : ''}`}>
-              <div className={styles.filterSection}>
-                <h4>Filters</h4>
-                <span className={styles.filterSpannAi}>AI GENERATED</span>
-                <div className={styles.filterOptions}>
-                  {filters.map(f => (
-                    <div
-                      key={f.name}
-                      className={`${styles.filterOption}${selectedFilter === f.name ? ' ' + styles.filterOptionActive : ''}`}
-                      onClick={() => {
-                        // applyTransform(f.transform);
-                        setSelectedFilter(f.name);
-                        globalDispatch("src", buildUrl(f.transform, false, f.name));
-                        globalDispatch("selectedFilter", f.name);
-                        handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor);
-                        if (f.name != "Normal") setResetDefault(false);
-                      }}
-                    >
-                      {
-                        loading ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} /></> : <> {previewUrl && <img src={f.image} alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} />}</>
-                      }
+          <div className='toolbar-main-heading'>
+            <h5 className='Toolbar-badge'>Upload Art</h5>
+            <span className={styles.crossIcon} onClick={handleBack}><CrossIcon /></span>
+            <h3>Edit Your Artwork</h3>
+            <p>Our design professionals will select ink colors for you or tellus your preferred colors at checkout.</p>
+          </div>
+
+          <div className={styles.toolbarBox}>
+
+            <>
+              <>
+                <hr />
+                <div className={`${styles.addTextInnerMainContainerr} ${isLocked ? styles.lockedToolbar : ''}`}>
+                  <div className={styles.filterSection}>
+                    <h4>Filters</h4>
+                    <span className={styles.filterSpannAi}>AI GENERATED</span>
+                    <div className={styles.filterOptions}>
+                      {filters.map(f => (
+                        <div
+                          key={f.name}
+                          className={`${styles.filterOption}${selectedFilter === f.name ? ' ' + styles.filterOptionActive : ''}`}
+                          onClick={() => {
+                            // applyTransform(f.transform);
+                            setSelectedFilter(f.name);
+                            globalDispatch("src", buildUrl(f.transform, false, f.name));
+                            globalDispatch("selectedFilter", f.name);
+                            handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor);
+                            if (f.name != "Normal") setResetDefault(false);
+                          }}
+                        >
+                          {
+                            loading ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} /></> : <> {previewUrl && <img src={f.image} alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} />}</>
+                          }
 
 
-                      <div className={styles.filterLabel}>{f.name}</div>
-                      {/* <img
+                          <div className={styles.filterLabel}>{f.name}</div>
+                          {/* <img
                         src={previewUrl} alt={filter.name} className={styles.filterImage} onError={() => alert("Image not publicly accessible")} />
                       <div className={styles.filterLabel}>{filter.name}</div> */}
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
 
-              {/* {selectedFilter === "Normal" || selectedFilter === "Single Color" && (<hr />)} */}
+                  {/* {selectedFilter === "Normal" || selectedFilter === "Single Color" && (<hr />)} */}
 
-              {/* {selectedFilter === "Normal" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                  {/* {selectedFilter === "Normal" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Edit Colors</div>
                 <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleTextColorPopup}>
                   <SpanColorBox color={textColor} />
@@ -1235,9 +1244,9 @@ const AddImageToolbar = () => {
 
 
 
-              {/* {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}> */}
-              {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Colors</div> */}
-              {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleTextColorPopup}>
+                  {/* {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}> */}
+                  {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Colors</div> */}
+                  {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleTextColorPopup}>
                   <SpanColorBox color={textColor} />
                   <span><AngleActionIcon /></span>
                   {textColorPopup && (
@@ -1251,159 +1260,159 @@ const AddImageToolbar = () => {
 
                   )}
                 </div> */}
-              {/* </div>)} */}
-              {selectedFilter === "Black/Whte" && null}
+                  {/* </div>)} */}
+                  {selectedFilter === "Black/Whte" && null}
 
 
-              {selectedFilter === "Single Color" && (<hr />)}
+                  {selectedFilter === "Single Color" && (<hr />)}
 
-              {/* color */}
-              {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
-                  Color
-                </div>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleColorPopup}>
-                  <SpanColorBox color={singleColor} />
-                  {ColorPopup && (
-                    <ReplaceBackgroundColorPicker
-                      closePopupHandler={toggleColorPopup}
-                      defaultColor={singleColor}
-                      onApply={ColorChangedFunctionCalled}
-                    />
-                  )}
-
-
-                  {/* <span><AngleActionIcon /></span> */}
+                  {/* color */}
+                  {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
+                      Color
+                    </div>
+                    <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleColorPopup}>
+                      <SpanColorBox color={singleColor} />
+                      {ColorPopup && (
+                        <ReplaceBackgroundColorPicker
+                          closePopupHandler={toggleColorPopup}
+                          defaultColor={singleColor}
+                          onApply={ColorChangedFunctionCalled}
+                        />
+                      )}
 
 
-
-                </div>
-              </div>
-
-              )}
-
-              <hr />
-              {/* ----invertcolor */}
-              {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
-                  Inverts Colors
-
-                </div>
-                <label className={styles.switch}>
-                  <input
-                    type="checkbox"
-                    checked={invertColor}
-                    onChange={() => invertColorHandler(base64Image)}
-                    disabled={loading}
-                  />
-                  <span className={styles.slider}></span>
-                </label>
-              </div>
-
-              )}
-              {
-                selectedFilter === "Single Color" &&
-                <hr />
-              }
+                      {/* <span><AngleActionIcon /></span> */}
 
 
-              {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
-                  Make Solid
 
-                </div>
-                <label className={styles.switch}>
-                  <input
-                    type="checkbox"
-                    checked={solidColor}
-                    onChange={solidColorHandler}
-                    disabled={loading}
-                  />
-                  <span className={styles.slider}></span>
-                </label>
-
-              </div>
-              )}
-              {
-                selectedFilter == "Single Color" && solidColor &&
-                <hr></hr>
-              }
-              {
-                selectedFilter == "Single Color" && solidColor &&
-                <div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                  <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
-                    Threshold:
+                    </div>
                   </div>
 
-                  <input type="range" id="threshold" class="slider" min="0" max="255" value={threshold} onChange={thresholdHandler} />
-                  <span id={styles.thresholdValue}>{threshold}</span>
-                </div>
-              }
-              {(selectedFilter === "Single Color" && <hr />)}
+                  )}
 
-              <div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
-                  Remove Background
-                  <span className={styles.aiBadge}>AI</span>
-                </div>
-                <label className={styles.switch}>
-                  <input
-                    type="checkbox"
-                    checked={removeBackground}
-                    id='removeBackgroundInput'
-                    // onChange={() => toggle('bg-remove=true', isActive('bg-remove=true'))}
-                    onChange={removeBackgroundHandler}
-                    disabled={loading}
-                  />
-                  <span className={styles.slider}></span>
-                </label>
-              </div>
+                  <hr />
+                  {/* ----invertcolor */}
+                  {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
+                      Inverts Colors
 
+                    </div>
+                    <label className={styles.switch}>
+                      <input
+                        type="checkbox"
+                        checked={invertColor}
+                        onChange={() => invertColorHandler(base64Image)}
+                        disabled={loading}
+                      />
+                      <span className={styles.slider}></span>
+                    </label>
+                  </div>
 
-
-              <hr />
-              <div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
-                  Crop & Trim
-                </div>
-                <label className={styles.switch}>
-                  <input
-                    type="checkbox"
-                    checked={cropAndTrim}
-                    onChange={cropAndTrimdHandler}
-                    disabled={loading}
-                  />
-                  <span className={styles.slider}></span>
-                </label>
-              </div>
+                  )}
+                  {/* {
+                    selectedFilter === "Single Color" &&
+                    <hr />
+                  }
 
 
+                  {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
+                      Make Solid
+
+                    </div>
+                    <label className={styles.switch}>
+                      <input
+                        type="checkbox"
+                        checked={solidColor}
+                        onChange={solidColorHandler}
+                        disabled={loading}
+                      />
+                      <span className={styles.slider}></span>
+                    </label>
+
+                  </div>
+                  )}
+                  {
+                    selectedFilter == "Single Color" && solidColor &&
+                    <hr></hr>
+                  } */}
+                  {/* {
+                    selectedFilter == "Single Color" && solidColor &&
+                    <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                      <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
+                        Threshold:
+                      </div>
+
+                      <input type="range" id="threshold" class="slider" min="0" max="255" value={threshold} onChange={thresholdHandler} />
+                      <span id={styles.thresholdValue}>{threshold}</span>
+                    </div>
+                  } */}
+                  {(selectedFilter === "Single Color" && <hr />)}
+
+                  <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
+                      Remove Background
+                      <span className={styles.aiBadge}>AI</span>
+                    </div>
+                    <label className={styles.switch}>
+                      <input
+                        type="checkbox"
+                        checked={removeBackground}
+                        id='removeBackgroundInput'
+                        // onChange={() => toggle('bg-remove=true', isActive('bg-remove=true'))}
+                        onChange={removeBackgroundHandler}
+                        disabled={loading}
+                      />
+                      <span className={styles.slider}></span>
+                    </label>
+                  </div>
 
 
-              <hr />
-              <div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
-                  Super Resolution
-                  <span className={styles.aiBadge}>AI</span>
-                </div>
-                <label className={styles.switch}>
-                  <input
-                    type="checkbox"
-                    checked={superResolution}
-                    onChange={superResolutiondHandler}
-                    disabled={loading}
-                  />
-                  <span className={styles.slider}></span>
-                </label>
-              </div>
-              <hr />
+
+                  <hr />
+                  <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
+                      Crop & Trim
+                    </div>
+                    <label className={styles.switch}>
+                      <input
+                        type="checkbox"
+                        checked={cropAndTrim}
+                        onChange={cropAndTrimdHandler}
+                        disabled={loading}
+                      />
+                      <span className={styles.slider}></span>
+                    </label>
+                  </div>
 
 
-              <div className={styles.toolbarBoxFontValueSetInnerContainer} onClick={() => setreplaceBgwithAi(false)}>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading} >Replace Background With AI<span className={styles.aiBadge}>AI</span></div>
-                <span className={styles.rightarrow}><FaChevronRight/></span> 
 
-                {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleBGReplaceColorPopup}>
+
+                  <hr />
+                  <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
+                      Super Resolution
+                      <span className={styles.aiBadge}>AI</span>
+                    </div>
+                    <label className={styles.switch}>
+                      <input
+                        type="checkbox"
+                        checked={superResolution}
+                        onChange={superResolutiondHandler}
+                        disabled={loading}
+                      />
+                      <span className={styles.slider}></span>
+                    </label>
+                  </div>
+                  <hr />
+
+
+                  <div className={styles.toolbarBoxFontValueSetInnerContainer} onClick={() => setreplaceBgwithAi(false)}>
+                    <div className={styles.toolbarBoxFontValueSetInnerActionheading} >Replace Background With AI<span className={styles.aiBadge}>AI</span></div>
+                    <span className={styles.rightarrow}><FaChevronRight /></span>
+
+                    {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleBGReplaceColorPopup}>
                   <SpanColorBox color={bgColor} />
                   {bgColorPopup && (
                     <ReplaceBackgroundColorPicker
@@ -1418,181 +1427,181 @@ const AddImageToolbar = () => {
 
 
 
-                {/* </div> */} 
-              </div>
+                    {/* </div> */}
+                  </div>
 
-              <hr />
+                  <hr />
 
-              <div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
-                  Size
+                  <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
+                      Size
+                    </div>
+                    <div className={styles.toolbarBoxFontValueSetInnerActionlogo}>
+                      <input
+                        type="range"
+                        name="size"
+                        min="0.1"
+                        max="10"
+                        step="0.1"
+                        value={rangeValuesSize}
+                        onChange={handleRangeInputSizeChange}
+                      />
+
+                      <input
+                        type="number"
+                        min="0.2"
+                        max="10"
+                        step="0.1"
+                        value={rangeValuesSize}
+                        onChange={handleRangeInputSizeChange}
+                        onBlur={handleBlur}
+                        className={styles.spanValueBoxInput}
+                      />
+                      {/* Size end here */}
+
+
+
+                    </div>
+                  </div>
+
+
+                  <hr></hr>
+
+
+
+
+
+
+                  <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                    <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
+                      Rotate
+                    </div>
+                    <div className={styles.toolbarBoxFontValueSetInnerActionlogo}>
+                      <input
+                        type="range"
+                        id="min"
+                        name="min"
+                        min="0"
+                        max="360"
+                        step="0.1"
+                        value={rangeValuesRotate}
+                        onChange={handleRangeInputRotateChange}
+                      />
+
+                      <input
+                        type="number"
+                        min="0"
+                        max="360"
+                        step="0.1"
+                        value={rangeValuesRotate}
+                        onChange={handleRangeInputRotateChange}
+                        onBlur={handleRotateBlur}
+                        className={styles.spanValueBoxInput}
+                      />
+
+
+                    </div>
+                  </div>
+
+                  <hr></hr>
+
+                  <p className={styles.resetButton} onClick={handleReset}>Reset To Defaults</p>
+
                 </div>
-                <div className={styles.toolbarBoxFontValueSetInnerActionlogo}>
-                  <input
-                    type="range"
-                    name="size"
-                    min="0.1"
-                    max="10"
-                    step="0.1"
-                    value={rangeValuesSize}
-                    onChange={handleRangeInputSizeChange}
-                  />
 
-                  <input
-                    type="number"
-                    min="0.2"
-                    max="10"
-                    step="0.1"
-                    value={rangeValuesSize}
-                    onChange={handleRangeInputSizeChange}
-                    onBlur={handleBlur}
-                    className={styles.spanValueBoxInput}
-                  />
-                  {/* Size end here */}
+                {/* this is toolbar of image for upload art exm- layring, flip, color, size, arc, rotate, spacing */}
+                <div className={styles.addTextFirstToolbarBoxContainer}>
 
-
-
-                </div>
-              </div>
-
-
-              <hr></hr>
-
-
-
-
-
-
-              <div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
-                  Rotate
-                </div>
-                <div className={styles.toolbarBoxFontValueSetInnerActionlogo}>
-                  <input
-                    type="range"
-                    id="min"
-                    name="min"
-                    min="0"
-                    max="360"
-                    step="0.1"
-                    value={rangeValuesRotate}
-                    onChange={handleRangeInputRotateChange}
-                  />
-
-                  <input
-                    type="number"
-                    min="0"
-                    max="360"
-                    step="0.1"
-                    value={rangeValuesRotate}
-                    onChange={handleRangeInputRotateChange}
-                    onBlur={handleRotateBlur}
-                    className={styles.spanValueBoxInput}
-                  />
-
-
-                </div>
-              </div>
-
-              <hr></hr>
-
-              <p className={styles.resetButton} onClick={handleReset}>Reset To Defaults</p>
-
-            </div>
-
-            {/* this is toolbar of image for upload art exm- layring, flip, color, size, arc, rotate, spacing */}
-            <div className={styles.addTextFirstToolbarBoxContainer}>
-
-              <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`}>
-                <div
-                  className={`${styles.toolbarBoxIconsContainer} ${centerActive ? styles.toolbarBoxIconsContainerActive : ''}`}
-                  onClick={() => {
-                    const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
-                    const rect = canvasComponent.getBoundingClientRect();
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    globalDispatch("position", { x: centerX, y: img.position.y });
-                    setCenterActive(!centerActive);
-                    setResetDefault(false);
-                  }}
-                >
-                  <span><AlignCenterIcon /></span>
-                </div>
-                <div className='toolbar-box-heading-container'>Center</div>
-              </div>
-
-              <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`}>
-                <div className={styles.toolbarBoxIconsContainerForTogether}>
-
-                  {
-                    getRenderIconForSendToTop() ? <div className={styles.toolbarBoxIconsContainerLayering1}> <span><LayeringFirstIcon /></span> </div> : <div className={styles.toolbarBoxIconsContainerLayering1}
-                      onClick={() => handleBringForward()}
+                  <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`}>
+                    <div
+                      className={`${styles.toolbarBoxIconsContainer} ${centerActive ? styles.toolbarBoxIconsContainerActive : ''}`}
+                      onClick={() => {
+                        const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+                        const rect = canvasComponent.getBoundingClientRect();
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        globalDispatch("position", { x: centerX, y: img.position.y });
+                        setCenterActive(!centerActive);
+                        setResetDefault(false);
+                      }}
                     >
-                      <span><LayeringFirstIconWithBlackBg /></span></div>
-                  }
+                      <span><AlignCenterIcon /></span>
+                    </div>
+                    <div className='toolbar-box-heading-container'>Center</div>
+                  </div>
 
-                  {
-                    getRenderIconForSendToBack() ? <div className={styles.toolbarBoxIconsContainerLayering2} > <span><LayeringSecondIcon /></span> </div> : <div className={styles.toolbarBoxIconsContainerLayering2}
-                      onClick={() => handleBringBackward()}
-                    >  <span><LayeringSecondIconWithBlackBg /></span></div>
-                  }
+                  <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`}>
+                    <div className={styles.toolbarBoxIconsContainerForTogether}>
+
+                      {
+                        getRenderIconForSendToTop() ? <div className={styles.toolbarBoxIconsContainerLayering1}> <span><LayeringFirstIcon /></span> </div> : <div className={styles.toolbarBoxIconsContainerLayering1}
+                          onClick={() => handleBringForward()}
+                        >
+                          <span><LayeringFirstIconWithBlackBg /></span></div>
+                      }
+
+                      {
+                        getRenderIconForSendToBack() ? <div className={styles.toolbarBoxIconsContainerLayering2} > <span><LayeringSecondIcon /></span> </div> : <div className={styles.toolbarBoxIconsContainerLayering2}
+                          onClick={() => handleBringBackward()}
+                        >  <span><LayeringSecondIconWithBlackBg /></span></div>
+                      }
+                    </div>
+                    Layering
+                  </div>
+
+                  <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`}>
+                    <div className={styles.toolbarBoxIconsContainerForTogether}>
+                      <div className={colorClassName}
+                        onClick={() => callForXFlip()}
+                      ><span>{icon}</span></div>
+                      <div className={colorClassNameForY}
+                        onClick={() => callForYFlip()}
+                      ><span>{iconY}</span></div>
+                    </div>
+                    Flip
+                  </div>
+
+                  <div
+                    className={styles.toolbarBoxIconsAndHeadingContainer}
+                    onClick={() => dispatch(toggleImageLockState(selectedImageId))}
+                  >
+                    <div className={`${styles.toolbarBoxIconsContainer} ${isLocked ? styles.toolbarBoxIconsContainerActive : ''}`}>
+                      <span><LockIcon /></span>
+                    </div>
+                    <div className="toolbar-box-heading-container">Lock</div>
+                  </div>
+
+                  <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`} onClick={handleDuplicateImage}>
+                    <div className={`${styles.toolbarBoxIconsContainer} ${duplicateActive ? styles.toolbarBoxIconsContainerActive : ''}`}>
+                      <span><DuplicateIcon /></span>
+                    </div>
+                    <div className='toolbar-box-heading-container' >Duplicate</div>
+                  </div>
                 </div>
-                Layering
-              </div>
-
-              <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`}>
-                <div className={styles.toolbarBoxIconsContainerForTogether}>
-                  <div className={colorClassName}
-                    onClick={() => callForXFlip()}
-                  ><span>{icon}</span></div>
-                  <div className={colorClassNameForY}
-                    onClick={() => callForYFlip()}
-                  ><span>{iconY}</span></div>
-                </div>
-                Flip
-              </div>
-
-              <div
-                className={styles.toolbarBoxIconsAndHeadingContainer}
-                onClick={() => dispatch(toggleImageLockState(selectedImageId))}
-              >
-                <div className={`${styles.toolbarBoxIconsContainer} ${isLocked ? styles.toolbarBoxIconsContainerActive : ''}`}>
-                  <span><LockIcon /></span>
-                </div>
-                <div className="toolbar-box-heading-container">Lock</div>
-              </div>
-
-              <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`} onClick={handleDuplicateImage}>
-                <div className={`${styles.toolbarBoxIconsContainer} ${duplicateActive ? styles.toolbarBoxIconsContainerActive : ''}`}>
-                  <span><DuplicateIcon /></span>
-                </div>
-                <div className='toolbar-box-heading-container' >Duplicate</div>
-              </div>
-            </div>
 
 
-            {/* toolbar ends here */}
-          </>
+                {/* toolbar ends here */}
+              </>
 
-        </>
+            </>
 
-      </div>
-      </>): <div>
-           <div className='toolbar-main-heading'>
-        <h5 className='Toolbar-badge'>Upload Art</h5>
-        <span className={styles.crossIcon} onClick={() => setreplaceBgwithAi(true)}><CrossIcon /></span>
-        <h3>Replace BackGround</h3>
-        <p>Type in a Prompt to try our AI Powered Background Replacement Tool. Keep in mind that this cannot work at the same time as the Remove Background feature.</p>
-      </div>
-      <hr/>
-    <textarea className={styles.replacebginput} type='text' placeholder='Begin Typing....'></textarea>
-  
-      {/* <input className={styles.replacebginput} type='text' placeholder='Begin Typing....'/> */}
-    
-      <button className={styles.generateBgbtn} >Generate Background</button>
-        </div>}
+          </div>
+        </>) : <div>
+        <div className='toolbar-main-heading'>
+          <h5 className='Toolbar-badge'>Upload Art</h5>
+          <span className={styles.crossIcon} onClick={() => setreplaceBgwithAi(true)}><CrossIcon /></span>
+          <h3>Replace BackGround</h3>
+          <p>Type in a Prompt to try our AI Powered Background Replacement Tool. Keep in mind that this cannot work at the same time as the Remove Background feature.</p>
+        </div>
+        <hr />
+        <textarea className={styles.replacebginput} type='text' placeholder='Begin Typing....'></textarea>
+
+        {/* <input className={styles.replacebginput} type='text' placeholder='Begin Typing....'/> */}
+
+        <button className={styles.generateBgbtn} >Generate Background</button>
+      </div>}
     </div>
-   
+
   );
 };
 

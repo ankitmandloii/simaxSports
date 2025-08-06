@@ -262,10 +262,38 @@ const QuantityToolbar = () => {
     if (!selectedProducts || selectedProducts.length === 0) return;
 
     const newAllProducts = [];
+    function getVariantImagesFromMetafields(metafieldss) {
+      // const defaultImage = activeProduct?.imgurl || '';
+
+      let front = null;
+      let back = null;
+      let sleeve = null;
+
+      try {
+        const metafields = metafieldss?.edges || [];
+        const variantImagesField = metafields.find(
+          (edge) => edge?.node?.key === 'variant_images'
+        )?.node?.value;
+
+        if (variantImagesField) {
+          const parsedImages = JSON.parse(variantImagesField);
+          console.log(parsedImages, "parsedImages");
+
+          front = parsedImages.find((img) => img.includes('_f_fm')) || null;
+          back = parsedImages.find((img) => img.includes('_b_fm')) || null;
+          sleeve = parsedImages.find((img) => img.includes('_d_fm')) || null;
+        }
+      } catch (error) {
+        console.error('Error parsing variant_images metafield:', error);
+      }
+
+      return [front, back, sleeve];
+    }
 
     selectedProducts.forEach((product) => {
       console.log("product.............", product)
       const addedColors = product.addedColors || [];
+
       const consistentTitle = product?.title || product?.name || product?.handle || 'Product';
 
       const extraProducts = addedColors.map((variantProduct) => {
@@ -278,8 +306,14 @@ const QuantityToolbar = () => {
           sizes: variantProduct?.sizes,
           name: product?.name,
           title: consistentTitle,
+          sku: variantProduct.variant.sku,
+          variantId: variantProduct.variant.id,
+          allImages: getVariantImagesFromMetafields(variantProduct.variant.metafields),
           selections: [],
+          price: variantProduct.variant.price,
+          inventory_quantity: variantProduct.variant?.inventoryItem?.inventoryLevels?.edges?.[0]?.node?.quantities?.[0]?.quantity
         };
+        console.log("prod", prod)
         dispatch(addProduct(prod));
         return prod;
       });
@@ -293,7 +327,7 @@ const QuantityToolbar = () => {
         sizes: getSizeOptions(product),
         title: consistentTitle,
         selections: [],
-        allImages: product.images,
+        allImages: getVariantImagesFromMetafields(product.selectedColor.variant.metafields),
         allVariants: product.allVariants,
       };
 
