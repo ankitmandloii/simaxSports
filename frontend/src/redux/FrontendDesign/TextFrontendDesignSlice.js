@@ -81,7 +81,9 @@ const createNewImage = (
   loading: false,
   loadingSrc: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s",
   replaceSrc: false,
-  selectedFilter: "Normal"
+  selectedFilter: "Normal",
+  editColor: false,
+  extractedColors: []
 });
 
 const initialState = {

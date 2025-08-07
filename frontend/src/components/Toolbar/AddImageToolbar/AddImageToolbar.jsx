@@ -71,7 +71,7 @@ const AddImageToolbar = () => {
 
   const [invertColor, setInvertColor] = useState(false);
   const [solidColor, setSolidColor] = useState(false);
-
+  const [editColor, setEditColor] = useState(false);
   const [resetDefault, setResetDefault] = useState(false);
   const imgRef = useRef(null);
 
@@ -106,7 +106,8 @@ const AddImageToolbar = () => {
     setLoading(img.loading)
     setSingleColor(img.singleColor);
     setThreshold(img.thresholdValue);
-    setSolidColor(img.solidColor)
+    setSolidColor(img.solidColor);
+    setEditColor(img.editColor);
     // const tempImage = new Image();
     // globalDispatch("loading", true);
     // setLoading(true);
@@ -154,40 +155,59 @@ const AddImageToolbar = () => {
 
   async function handleImage(imageSrc, color = "#000000", selectedFilter, invertColor) {
     try {
-
+      setEditColor(false);
+      globalDispatch("editColor", false);
       console.log("handle image function called with src", imageSrc);
       globalDispatch("loading", true); // Corrected the typo here
 
       // Await the base64 image after processing the image
 
-      let cuurentBase64Image;
+      let currentBase64Image;
       console.log("curent seleteced filter is ", selectedFilter, img.selectedFilter)
       if (selectedFilter == "Single Color") {
         if (invertColor) {
           const applyFilterURL = await applyFilterAndGetUrl(imageSrc, color);
-          cuurentBase64Image = await invertColorsAndGetUrl(applyFilterURL || previewUrl);
+          currentBase64Image = await invertColorsAndGetUrl(applyFilterURL || previewUrl);
         }
         else {
-          cuurentBase64Image = await applyFilterAndGetUrl(imageSrc, color);
+          currentBase64Image = await applyFilterAndGetUrl(imageSrc, color);
         }
       }
       else {
-        cuurentBase64Image = await getBase64CanvasImage(imageSrc, color);
+        currentBase64Image = await getBase64CanvasImage(imageSrc, color);
+        // if (!editColor) {
+        //   const paletteUrl = img?.src?.split("?")[0] + "?palette=json";
+        //   const res = await fetch(paletteUrl);
+        //   const json = await res.json();
+        //   const colors = json?.colors?.map(c => `${c.hex}`) || [];
+        //   const updateColors = [...extractedColors]; // deep clone
+        //   console.log(updateColors, "updatedColors");
+        //   console.log(colors, "colors")
+
+        //   const minLength = Math.min(colors.length, updateColors.length);
+
+        //   for (let i = 0; i < minLength; i++) {
+        //     currentBase64Image = await replaceColorAndGetBase64(currentBase64Image || previewUrl, colors[i], updateColors[i]);
+        //   }
+        // }
+
+
+
       }
 
 
       // Set the base64 image and dispatch it to the global state
-      setBase64Image(cuurentBase64Image);
+      setBase64Image(currentBase64Image);
 
       // Dispatch the base64 string to your global state (no need to convert it to a string again)
-      globalDispatch("base64CanvasImage", cuurentBase64Image);
+      globalDispatch("base64CanvasImage", currentBase64Image);
 
-      globalDispatch("base64CanvasImage", String(cuurentBase64Image));
+      globalDispatch("base64CanvasImage", String(currentBase64Image));
       if (selectedFilter == "Normal") {
         globalDispatch("base64CanvasImageForNormalColor", String(imageSrc));
       }
       else if (selectedFilter == "Single Color") {
-        globalDispatch("base64CanvasImageForSinglelColor", String(cuurentBase64Image));
+        globalDispatch("base64CanvasImageForSinglelColor", String(currentBase64Image));
       }
       else {
         globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(imageSrc));
@@ -216,7 +236,7 @@ const AddImageToolbar = () => {
       setLoading(false);
       // globalDispatch("loading", false)
       setPreviewUrl(img.src || '');
-      handleImage(previewUrl, singleColor, selectedFilter, invertColor);
+      // handleImage(previewUrl, singleColor, selectedFilter, invertColor);
     }
     tempImage.onerror = () => {
       console.error("Failed to load image:", img?.src);
@@ -615,6 +635,7 @@ const AddImageToolbar = () => {
     globalDispatch("removeBg", !removeBackground);
     // handleImage(previewUrl);
     setResetDefault(false);
+    fetchPalette();
   }
 
   async function invertColorHandler(base64Image) {
@@ -660,7 +681,7 @@ const AddImageToolbar = () => {
 
     globalDispatch("base64CanvasImage", String(newBase64Image));
     if (selectedFilter == "Normal") {
-      // globalDispatch("base64CanvasImageForNormalColor", String(newBase64Image));
+      globalDispatch("base64CanvasImageForNormalColor", String(newBase64Image));
     }
     else if (selectedFilter === "Single Color") {
       globalDispatch("base64CanvasImageForSinglelColor", String(newBase64Image));
@@ -701,12 +722,8 @@ const AddImageToolbar = () => {
       const img = new Image();
 
       // If imageSrc is base64, directly set img.src
-      if (imageSrc.startsWith("data:image")) {
-        img.src = imageSrc;
-      } else {
-        img.crossOrigin = "anonymous"; // Allow cross-origin access
-        img.src = imageSrc;  // For external URLs
-      }
+      img.crossOrigin = "anonymous"; // Allow cross-origin access
+      img.src = imageSrc;  // For external URLs
 
       img.onload = function () {
         // Set the canvas size to the image size
@@ -733,13 +750,8 @@ const AddImageToolbar = () => {
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
-      if (imageSrc.startsWith("data:image")) {
-        img.src = imageSrc;
-      } else {
-        img.crossOrigin = "anonymous";
-        img.src = imageSrc;
-      }
-
+      img.crossOrigin = "anonymous";
+      img.src = imageSrc;
       img.onload = function () {
         canvas.width = img.width;
         canvas.height = img.height;
@@ -774,12 +786,35 @@ const AddImageToolbar = () => {
       };
 
       img.onerror = function () {
-        reject(new Error("Failed to load image"));
+        resolve(imageSrc);
       };
     });
   }
 
-
+  const [extractedColors, setExtractedColors] = useState([]);
+  const [selectedColorToReplace, setSelectedColorToReplace] = useState(null);
+  const [colorReplacePickerVisible, setColorReplacePickerVisible] = useState(false);
+  const fetchPalette = async () => {
+    if (!img?.src || selectedFilter !== "Normal") return;
+    try {
+      const paletteUrl = img.src.split("?")[0] + "?palette=json";
+      const res = await fetch(paletteUrl);
+      const json = await res.json();
+      const colors = json?.colors?.map(c => `${c.hex}`) || [];
+      setExtractedColors(colors);
+      globalDispatch("extractedColors", colors);
+    } catch (err) {
+      console.error("Failed to fetch palette from Imgix:", err);
+    }
+  };
+  useEffect(() => {
+    if (img?.editColor) {
+      setExtractedColors(img?.extractedColors);
+    }
+    else {
+      fetchPalette();
+    }
+  }, []);
 
   // function applyFilterAndGetUrl(imageSrc, color) {
   //   return new Promise((resolve, reject) => {
@@ -903,7 +938,7 @@ const AddImageToolbar = () => {
       };
 
       img.onerror = function () {
-        reject(new Error("Failed to load image"));
+        resolve(imageSrc);
       };
     });
   }
@@ -960,7 +995,7 @@ const AddImageToolbar = () => {
       };
 
       img.onerror = function () {
-        reject(new Error("Failed to load image"));
+        resolve(imageSrc);
       };
     });
   }
@@ -1068,6 +1103,7 @@ const AddImageToolbar = () => {
     // update redux store
     globalDispatch("cropAndTrim", !cropAndTrim);
     setResetDefault(false);
+    fetchPalette();
     // handleImage(previewUrl);
   }
 
@@ -1079,6 +1115,7 @@ const AddImageToolbar = () => {
     // update redux store
     globalDispatch("superResolution", !superResolution);
     setResetDefault(false);
+    fetchPalette();
     // handleImage(previewUrl);
   }
 
@@ -1157,10 +1194,10 @@ const AddImageToolbar = () => {
     setBase64Image(newBase64Image)
 
     globalDispatch("base64CanvasImage", String(newBase64Image));
-    if (selectedFilter == "Normal") {
-      // globalDispatch("base64CanvasImageForNormalColor", String(newBase64Image));
+    if (img.selectedFilter == "Normal") {
+      globalDispatch("base64CanvasImageForNormalColor", String(newBase64Image));
     }
-    else if (selectedFilter === "Single Color") {
+    else if (img.selectedFilter === "Single Color") {
       globalDispatch("base64CanvasImageForSinglelColor", String(newBase64Image));
     }
     else {
@@ -1169,6 +1206,93 @@ const AddImageToolbar = () => {
     }
     globalDispatch("loading", false);
   }
+
+  function replaceColorAndGetBase64(imageSrc, targetHex, newHex, tolerance = 50) {
+    console.log(targetHex, newHex, "replaceColorAndGetBase64 functiion")
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      // Support CORS if external URL
+      if (!imageSrc.startsWith("data:image")) {
+        img.crossOrigin = "anonymous";
+      }
+
+      img.src = imageSrc;
+
+      img.onload = function () {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        const targetColor = hexToRgbForReplaceColor(targetHex);
+        const newColor = hexToRgbForReplaceColor(newHex);
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i], g = data[i + 1], b = data[i + 2];
+
+          if (colorsMatch([r, g, b], targetColor, tolerance)) {
+            data[i] = newColor[0];
+            data[i + 1] = newColor[1];
+            data[i + 2] = newColor[2];
+          }
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+        const base64 = canvas.toDataURL('image/png');
+        resolve(base64);
+        canvas.remove();
+      };
+
+      img.onerror = function () {
+        reject(new Error("Failed to load image"));
+      };
+    });
+  }
+
+  function hexToRgbForReplaceColor(hex) {
+    hex = hex.replace('#', '');
+    const bigint = parseInt(hex, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return [r, g, b];
+  }
+
+  function colorsMatch(c1, c2, tolerance = 50) {
+    return (
+      Math.abs(c1[0] - c2[0]) < tolerance &&
+      Math.abs(c1[1] - c2[1]) < tolerance &&
+      Math.abs(c1[2] - c2[2]) < tolerance
+    );
+  }
+
+
+
+  const applyColorBlend = async (originalColor, newColor, index) => {
+    console.log("apply color blend fucntion called", originalColor, newColor);
+    globalDispatch("loading", true);
+    const cuurentBase64Image = await replaceColorAndGetBase64(base64Image || previewUrl, originalColor, newColor);
+    globalDispatch("base64CanvasImage", cuurentBase64Image);
+    setBase64Image(cuurentBase64Image);
+    globalDispatch("base64CanvasImageForNormalColor", String(cuurentBase64Image));
+    console.log("new base 64 image ", cuurentBase64Image);
+    // fetchPalette();
+    const newColors = [...extractedColors];
+
+    newColors[index] = newColor;
+    setExtractedColors(newColors);
+    globalDispatch("extractedColors", newColors);
+    globalDispatch("loading", false);
+    setEditColor(true);
+    globalDispatch("editColor", true);
+
+
+  };
   // console.log("previewUrl", previewUrl, "image src", img?.src);
   //  if(loading) return <div className={styles.loadingOverlay}><div className={styles.loadingSpinner} /><p>Applying changes...</p></div>;
   return (
@@ -1202,7 +1326,8 @@ const AddImageToolbar = () => {
                             setSelectedFilter(f.name);
                             globalDispatch("src", buildUrl(f.transform, false, f.name));
                             globalDispatch("selectedFilter", f.name);
-                            handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor);
+                            globalDispatch("base64CanvasImage", f.image);
+                            // handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor);
                             if (f.name != "Normal") setResetDefault(false);
                           }}
                         >
@@ -1261,6 +1386,49 @@ const AddImageToolbar = () => {
                   )}
                 </div> */}
                   {/* </div>)} */}
+
+
+
+                  {selectedFilter === "Normal" && (<hr />)}
+                  {selectedFilter === "Normal" && (
+                    <>
+                      <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                        <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
+                          Edit Colors
+                        </div>
+
+                        <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
+                          {extractedColors.length > 0 ? (
+                            extractedColors.map((color, index) => (
+                              // <span>{color}</span>
+                              <SpanColorBox
+                                key={index}
+                                color={color}
+                                onClick={() => {
+                                  setSelectedColorToReplace({ color, index });
+                                  setColorReplacePickerVisible(true);
+                                }}
+                              />
+                            ))
+                          ) : (
+                            <p style={{ fontSize: "12px" }}>Loading palette...</p>
+                          )}
+
+                          {colorReplacePickerVisible && (
+                            <ReplaceBackgroundColorPicker
+                              closePopupHandler={() => setColorReplacePickerVisible(false)}
+                              defaultColor={selectedColorToReplace.color}
+                              onApply={(newColor) => {
+                                applyColorBlend(selectedColorToReplace.color, newColor, selectedColorToReplace.index);
+                                setColorReplacePickerVisible(false);
+                              }}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
                   {selectedFilter === "Black/Whte" && null}
 
 
