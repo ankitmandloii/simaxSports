@@ -327,7 +327,7 @@ const QuantityToolbar = () => {
         sizes: getSizeOptions(product),
         title: consistentTitle,
         selections: [],
-        allImages: getVariantImagesFromMetafields(product.selectedColor.variant.metafields),
+        allImages: getVariantImagesFromMetafields(product?.selectedColor?.variant?.metafields),
         allVariants: product.allVariants,
       };
 

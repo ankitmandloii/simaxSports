@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setActiveSide, setRendering, toggleSleeveDesign } from '../redux/FrontendDesign/TextFrontendDesignSlice';
 import MainDesignTool from './Editor/mainDesignTool';
 import { GrZoomOut } from "react-icons/gr";
-import { BsZoomIn } from "react-icons/bs";
+import { BsFillFastForwardBtnFill, BsZoomIn } from "react-icons/bs";
 import { setExportedImages } from '../redux/CanvasExportDesign/canvasExportSlice';
 import SleeveDesignPopup from './PopupComponent/addSleeveDesign/addSleeveDesingPopup';
 import { getHexFromName } from './utils/colorUtils';
@@ -107,22 +107,91 @@ function ProductContainer() {
 
   const { list: rawProducts } = useSelector((state) => state.products);
   const [searchParams] = useSearchParams();
+  // initail with color swatch
+useEffect(() => {
+  if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
+
+  if (!rawProducts || rawProducts.length === 0) return;
+
+  const firstProduct = rawProducts[0];
+  const firstColor = firstProduct?.colors?.[0];
+
+  if (!firstProduct || !firstColor) return;
+
+  const variant = firstColor?.variant;
+
+  // Step 1: Extract metafield value
+  const variantImagesMetafield = variant?.metafields?.edges?.find(
+    edge => edge.node.key === 'variant_images' && edge.node.namespace === 'custom'
+  );
+
+  let swatchImg = '';
+  let variantImg = '';
+  let selectedImage = '';
+
+  if (variantImagesMetafield?.node?.value) {
+    try {
+      const parsedImages = JSON.parse(variantImagesMetafield.node.value);
+
+      if (Array.isArray(parsedImages)) {
+        // Try to match swatch image with color name (cleaned)
+        const colorKey = firstColor.name?.toLowerCase().replace(/\s+/g, '') || '';
+        swatchImg =
+          parsedImages.find(img => img.toLowerCase().includes(colorKey)) ||
+          parsedImages[2] ||
+          parsedImages[0] ||
+          '';
+
+        variantImg = parsedImages[0] || firstColor.img || '';
+        selectedImage = variantImg;
+      }
+    } catch (error) {
+      console.warn('Failed to parse variant_images metafield:', error);
+    }
+  }
+
+  // Step 2: Apply fallbacks if missing
+  const fallbackImage =
+    firstColor.img || variant?.image?.originalSrc || firstProduct.images?.[0] || '';
+
+  swatchImg = swatchImg || fallbackImage;
+  variantImg = variantImg || fallbackImage;
+  selectedImage = selectedImage || fallbackImage;
+
+  // Step 3: Create product object with selected color
+  const initialProductWithColor = {
+    ...firstProduct,
+    selectedColor: {
+      ...firstColor,
+      swatchImg,
+      variantImg,
+    },
+    selectedImage,
+    imgurl: selectedImage,
+  };
+
+  dispatch(setSelectedProducts([initialProductWithColor]));
+  dispatch(setActiveProduct(initialProductWithColor));
+}, [rawProducts, dispatch, selectedProducts]);
+
+
+
 
   // Initialize the first product and its first color variant
-  useEffect(() => {
-    if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
+  // useEffect(() => {
+  //   if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
 
-    if (rawProducts && rawProducts.length > 0) {
-      const firstProduct = rawProducts[1];
-      const firstColor = firstProduct.colors[1];
-      const initialProductWithColor = {
-        ...firstProduct,
-        selectedColor: firstColor,
-      };
-      dispatch(setSelectedProducts([initialProductWithColor]));
-      dispatch(setActiveProduct(initialProductWithColor));
-    }
-  }, [rawProducts, dispatch, selectedProducts]);
+  //   if (rawProducts && rawProducts.length > 0) {
+  //     const firstProduct = rawProducts[1];
+  //     const firstColor = firstProduct.colors[1];
+  //     const initialProductWithColor = {
+  //       ...firstProduct,
+  //       selectedColor: firstColor,
+  //     };
+  //     dispatch(setSelectedProducts([initialProductWithColor]));
+  //     dispatch(setActiveProduct(initialProductWithColor));
+  //   }
+  // }, [rawProducts, dispatch, selectedProducts]);
 
   // Extract images from metafields
   // useEffect(() => {

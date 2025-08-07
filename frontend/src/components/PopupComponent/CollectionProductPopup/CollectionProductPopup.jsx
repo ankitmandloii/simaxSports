@@ -252,7 +252,6 @@
 
 // neww
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { getHexFromName } from './../../utils/colorUtils';
 import { toast } from 'react-toastify';
 import style from './CollectionProductPopup.module.css';
 import { useSelector } from 'react-redux';
@@ -260,7 +259,6 @@ import { CrossIcon } from '../../iconsSvg/CustomIcon';
 import ColorWheel from '../../images/color-wheel1.png';
 
 const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
-  console.log("=----collectionId",collectionId)
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const popupRef = useRef(null);
   const selectedProducts = useSelector((state) => state?.selectedProducts?.selectedProducts);
@@ -275,11 +273,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   const [hasNextPage, setHasNextPage] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // const collectionId = 'gid://shopify/Collection/289328496774';
-  console.log("-------------collections",collections)
   const defaultCollectionId = collections.length > 0 ? collections[0].id : null;
-  console.log("-------------defaultCollectionId",defaultCollectionId)
-
   const effectiveCollectionId = collectionId || defaultCollectionId;
   const numericId = effectiveCollectionId?.split('/').pop();
 
@@ -293,16 +287,11 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // useEffect(() => {
-  //   resetState();
-  //   fetchProducts();
-  // }, [collectionId,numericId]);
   useEffect(() => {
-  resetState(); // Clear immediately
-  setLoading(true); // Trigger loader immediately
-  fetchProducts(false);
-}, [collectionId, numericId]);
-
+    resetState();
+    setLoading(true);
+    fetchProducts(false);
+  }, [collectionId, numericId]);
 
   const resetState = () => {
     setProducts([]);
@@ -316,9 +305,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   };
 
   const fetchProducts = useCallback(async (isLoadMore = false) => {
-    console.log("---numericId",numericId)
     if (!effectiveCollectionId) return;
-    // setLoading(true);
     try {
       const res = await fetch(`${BASE_URL}products/collection/${numericId}`, {
         method: 'POST',
@@ -327,7 +314,6 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
       });
 
       const data = await res.json();
-      console.log("-----CollectionData",data)
       const edges = data?.result?.node?.products?.edges || [];
       const pageInfo = data?.result?.node?.products?.pageInfo;
 
@@ -344,12 +330,16 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
             (edge) => edge.node.key === 'variant_images' && edge.node.namespace === 'custom'
           );
 
-          let customImage = '';
+          let swatchImage = '';
           if (metafield) {
             try {
               const parsed = JSON.parse(metafield.node.value);
-              if (Array.isArray(parsed) && parsed[0]?.src) {
-                customImage = parsed[0].src;
+              if (Array.isArray(parsed)) {
+                const colorNameLower = color?.toLowerCase().replace(/\s+/g, '');
+                swatchImage = parsed.find(img => 
+                  img.includes('38307_fm') || 
+                  img.toLowerCase().includes(colorNameLower)
+                ) || parsed[3] || parsed[0] || '';
               }
             } catch (e) {
               console.warn('Failed to parse variant_images metafield:', e);
@@ -359,7 +349,8 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
           if (color && !colorMap[color]) {
             colorMap[color] = {
               name: color,
-              img: customImage || variant.image?.originalSrc || '',
+              swatchImg: swatchImage || variant.image?.originalSrc || '',
+              variantImg: variant.image?.originalSrc || productImages[0] || '',
               variant,
             };
           }
@@ -401,7 +392,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
     const variant = product.allVariants.find((variant) =>
       variant.selectedOptions.some((opt) => opt.name === 'Color' && opt.value === color)
     );
-    return variant?.image?.originalSrc || '';
+    return variant?.image?.originalSrc || product.images?.[0] || '';
   };
 
   const getColorObjectByName = (product, colorName) => {
@@ -411,7 +402,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   const handleColorClick = (e, product, color) => {
     e.stopPropagation();
     const colorObj = getColorObjectByName(product, color);
-    const image = colorObj?.img || getVariantImageByColor(product, color);
+    const image = colorObj?.variantImg || getVariantImageByColor(product, color);
     setSelectedColorByProduct((prev) => ({ ...prev, [product.id]: colorObj }));
     setSelectedVariantImages((prev) => ({ ...prev, [product.id]: image }));
   };
@@ -420,29 +411,59 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
     setImageLoaded((prev) => ({ ...prev, [productId]: true }));
   };
 
+  const getSwatchImage = (product, color) => {
+    const variant = product.allVariants.find((variant) =>
+      variant.selectedOptions.some((opt) => opt.name === 'Color' && opt.value === color)
+    );
+    const metafield = variant?.metafields?.edges?.find(
+      (edge) => edge.node.key === 'variant_images' && edge.node.namespace === 'custom'
+    );
+    let swatchImage = getVariantImageByColor(product, color);
+    if (metafield) {
+      try {
+        const parsed = JSON.parse(metafield.node.value);
+        console.log("---------parseddffffffffffff", parsed);
+        if (Array.isArray(parsed)) {
+          const colorNameLower = color.toLowerCase().replace(/\s+/g, '');
+          swatchImage = parsed.find(img => 
+            img.includes('38307_fm') || 
+            img.toLowerCase().includes(colorNameLower)
+          ) || parsed[3] || parsed[0] || swatchImage;
+        }
+      } catch (e) {
+        console.warn('Failed to parse variant_images metafield:', e);
+      }
+    }
+    return swatchImage;
+  };
+
   const renderColorSwatches = (product) =>
     getUniqueColors(product).map((color, idx) => {
       const colorObj = getColorObjectByName(product, color);
-      const image = colorObj?.img || getVariantImageByColor(product, color);
+      const variantImage = colorObj?.variantImg || getVariantImageByColor(product, color);
       const isSelected = selectedColorByProduct[product.id]?.name === color;
+      const swatchImage = colorObj?.swatchImg || getSwatchImage(product, color);
 
       return (
-        <span
+        <img
           key={`${product.id}-${color}-${idx}`}
+          src={swatchImage}
+          alt={color}
+          title={color}
           className={`color-swatch ${isSelected ? 'selected' : ''}`}
           style={{
-            backgroundColor: getHexFromName(color),
-            cursor: 'pointer',
-            padding: 10,
-            margin: 5,
+            width: 30,
+            height: 30,
             borderRadius: '20%',
+            cursor: 'pointer',
+            margin: 5,
             display: 'inline-block',
             border: isSelected ? '2px solid black' : '1px solid gray',
+            objectFit: 'cover'
           }}
-          title={color}
           onMouseEnter={() => {
             if (!selectedColorByProduct[product.id]?.name) {
-              setHoverImage((prev) => ({ ...prev, [product.id]: image }));
+              setHoverImage((prev) => ({ ...prev, [product.id]: variantImage }));
             }
           }}
           onMouseLeave={() => {
@@ -472,7 +493,8 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
 
     onProductSelect?.({
       ...product,
-      selectedColor: selectedColorObj, // Pass the full color object { name, img, variant }
+      selectedColor: selectedColorObj,
+      selectedImage: selectedVariantImages[product.id] || getFirstVariantImage(product),
       productKey: product.id,
     });
     onClose?.();
@@ -480,13 +502,13 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
 
   return (
     <div className={style.productPanel}>
-       {!effectiveCollectionId ? (
-      <div className="loader" />
-    ) : loading && products.length === 0 ? (
-      <div className="loader" />
-    ) : products.length === 0 ? (
-      <p>No products found.</p>
-    ) : (
+      {!effectiveCollectionId ? (
+        <div className="loader" />
+      ) : loading && products.length === 0 ? (
+        <div className="loader" />
+      ) : products.length === 0 ? (
+        <p>No products found.</p>
+      ) : (
         <>
           <div className={style.productListCollection}>
             {products.map((product) => {

@@ -13,7 +13,6 @@ import { toast } from "react-toastify";
 import { useGoogleLogin } from "@react-oauth/google";
 import ExifReader from 'exifreader';
 
-
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
 const DEVELOPER_KEY = process.env.REACT_APP_DEVELOPER_KEY;
 
@@ -27,7 +26,7 @@ const UploadArtToolbar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [googleAccessToken, setGoogleAccessToken] = useState(null);
-  const [shouldOpenPicker, setShouldOpenPicker] = useState(false); // 🔁 new state
+  const [shouldOpenPicker, setShouldOpenPicker] = useState(false);
 
   const fetchGoogleDriveFileAsBlob = async (fileId, accessToken) => {
     const response = await fetch(
@@ -40,21 +39,19 @@ const UploadArtToolbar = () => {
     return blob;
   };
 
-  // function for dpi
   const validateImageDPI = async (file) => {
     try {
       const arrayBuffer = await file.arrayBuffer();
       const tags = ExifReader.load(arrayBuffer);
-      console.log(`Tags for ${file.name}:`, tags); // ← DEBUG log
+      console.log(`Tags for ${file.name}:`, tags);
 
       const xDpi = tags.XResolution?.value;
       const yDpi = tags.YResolution?.value;
-      const resUnit = tags["Resolution Unit"]?.value; // 1 = inch (JFIF), 2 = inch, 3 = cm
+      const resUnit = tags["Resolution Unit"]?.value;
 
       let isDpiValid = false;
       let isLowDpiWarning = false;
 
-      // if (xDpi && yDpi && (resUnit === 1 || resUnit === 2)) {
       if (xDpi && yDpi) {
         const dpi = Math.max(xDpi, yDpi);
         console.log(`${file.name} - DPI: ${dpi}`);
@@ -74,77 +71,32 @@ const UploadArtToolbar = () => {
       const isHighRes = width >= 1000 || height >= 1000;
       const isPrintReady = width >= 1200 && height >= 1200;
 
-      // 🛑 Block only if DPI < 100 AND low resolution
       if (!isDpiValid && !isHighRes) {
         return {
-          valid: false,
-          message: `${file.name} is too low in quality for upload (DPI < 100 and small size).`,
+          valid: true,
+          warning: `${file.name} is low quality (DPI < 100 and small size). Consider using super resolution to enhance quality.`,
         };
       }
 
-      // ⚠️ Warn if resolution or DPI is low
       if (isLowDpiWarning || !isPrintReady) {
         return {
           valid: true,
-          warning: `${file.name} may not be print-ready (DPI < 300 or small dimensions).`,
+          warning: `${file.name} may not be print-ready (DPI < 300 or small dimensions). Consider using super resolution to enhance quality.`,
         };
       }
 
-      // ✅ Good quality
       return { valid: true };
     } catch (error) {
       console.warn(`Failed to read DPI or resolution for ${file.name}:`, error);
-      return { valid: true }; // Allow if unsure
+      return { valid: true };
     }
   };
 
-
-
-  // ---
-  // const handleFiles = async (files) => {
-  //   const BASE_URL = process.env.REACT_APP_BASE_URL;
-  //   if (files.length === 0) return;
-
-  //   const formData = new FormData();
-  //   for (let i = 0; i < files.length; i++) {
-  //     formData.append("images", files[i]);
-  //   }
-
-  //   try {
-  //     setIsLoading(true);
-  //     const response = await axios.post(
-  //       `${BASE_URL}imageOperation/upload`,
-  //       formData,
-  //       { headers: { "Content-Type": "multipart/form-data" } }
-  //     );
-
-  //     response.data.files.forEach((fileObj) => {
-  //       const image = new Image();
-  //       image.onload = function () {
-  //         const height = this.height;
-  //         const width = this.width;
-  //         console.log(height, width, "vaishali.....");
-  //         dispatch(addImageState({ src: fileObj.url }));
-  //       };
-
-  //       image.src = fileObj.url
-  //       dispatch(addImageState({ src: fileObj.url }));
-  //     });
-  //     navigate("/design/addImage");
-  //   } catch (err) {
-  //     toast.error( err.message);
-  //     console.error("Upload error:", err.response?.data || err.message);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-  // ---
   const handleFiles = async (files) => {
     const BASE_URL = process.env.REACT_APP_BASE_URL;
     if (!files.length) return;
 
     const formData = new FormData();
-    const invalidFiles = [];
     const warnings = [];
 
     for (let i = 0; i < files.length; i++) {
@@ -152,11 +104,6 @@ const UploadArtToolbar = () => {
 
       if (file.type.startsWith("image/")) {
         const result = await validateImageDPI(file);
-
-        if (!result.valid) {
-          invalidFiles.push(result.message || file.name);
-          continue;
-        }
 
         if (result.warning) {
           warnings.push(result.warning);
@@ -166,23 +113,13 @@ const UploadArtToolbar = () => {
       formData.append("images", file);
     }
 
-    if (invalidFiles.length > 0) {
-      // toast.error(`Blocked files:\n${invalidFiles.join("\n")}`);\
-      toast.error(`Blocked files:\n${invalidFiles.join("\n")}`, {
-        style: {
-          width: "600px",
-          whiteSpace: "pre-wrap",
-        },
-      });
-    }
-
     if (warnings.length > 0) {
-      warnings.forEach(msg => toast.warn(msg), {
+      warnings.forEach(msg => toast.warn(msg, {
         style: {
           width: "600px",
           whiteSpace: "pre-wrap",
         },
-      });
+      }));
     }
 
     if (!formData.has("images")) {
@@ -198,12 +135,6 @@ const UploadArtToolbar = () => {
       );
 
       response.data.files.forEach((fileObj) => {
-        // const image = new Image();
-        // image.onload = function () {
-        //   dispatch(addImageState({ src: fileObj.url }));
-        // };
-
-        // image.src = fileObj.url;
         dispatch(addImageState({ src: fileObj.url }));
       });
 
@@ -220,10 +151,6 @@ const UploadArtToolbar = () => {
       setIsLoading(false);
     }
   };
-
-
-
-  // --
 
   const handleDrop = async (e) => {
     e.preventDefault();
@@ -294,11 +221,10 @@ const UploadArtToolbar = () => {
     scope: "https://www.googleapis.com/auth/drive.readonly",
   });
 
-  // 🔁 Trigger picker after login
   useEffect(() => {
     if (googleAccessToken && shouldOpenPicker) {
       handleOpenGoogleDrivePicker();
-      setShouldOpenPicker(false); // reset
+      setShouldOpenPicker(false);
     }
   }, [googleAccessToken, shouldOpenPicker]);
 
@@ -307,7 +233,7 @@ const UploadArtToolbar = () => {
       <div className="toolbar-main-heading">
         <h5 className="Toolbar-badge">Upload Art</h5>
         <h3>Choose Files To Upload</h3>
-        <p>You can select multiple products and colors</p>
+        <p>Upload your files and personalize them with your favorite font and color!</p>
       </div>
 
       {!isLoading ? (
@@ -317,11 +243,11 @@ const UploadArtToolbar = () => {
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
           >
-            <p>Drag & drop files here</p>
+            <p>Drag & Drop Artwork Files </p>
             <p className={style.marginTop}>or</p>
             <button className={style.uploadFileBtn} onClick={handleClick}>
               <ChooseFileIcon />
-              SHARE
+              CHOOSE FILE(S)
             </button>
           </div>
 
@@ -403,15 +329,15 @@ const UploadArtToolbar = () => {
               className={style.uploadOptionBtn}
               onClick={() => {
                 if (!googleAccessToken) {
-                  setShouldOpenPicker(true); // 🔁 set flag
-                  loginToGoogle();           // login first
+                  setShouldOpenPicker(true);
+                  loginToGoogle();
                 } else {
-                  handleOpenGoogleDrivePicker(); // already logged in
+                  handleOpenGoogleDrivePicker();
                 }
               }}
             >
               <img src={googleDrive} alt="Google Drive" />
-              <p>Use Google Drive</p>
+              <p>USE GOOGLE DRIVE</p>
             </div>
 
             <DropboxPicker
@@ -443,10 +369,9 @@ const UploadArtToolbar = () => {
                 }
               }}
             >
-
               <div className={style.uploadOptionBtn}>
                 <img src={dropBox} alt="Dropbox" />
-                <p>Use Dropbox</p>
+                <p>USE DROPBOX</p>
               </div>
             </DropboxPicker>
           </div>

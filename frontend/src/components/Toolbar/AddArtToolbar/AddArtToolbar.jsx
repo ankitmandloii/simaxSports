@@ -5,12 +5,17 @@ import SubArtBox from './SubArtBox';
 import { useNavigate } from 'react-router-dom';
 import style from './AddArtToolbar.module.css';
 import '../../../App.css';
+import PromptGuide from '../../PopupComponent/PromptGuide/PromptGuide';
+import screenshot from '../../images/Screenshot .png'
 
 const AddArtToolbar = () => {
   const [subArt, setSubArt] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [triggeredSearchTerm, setTriggeredSearchTerm] = useState('');
+  const [promptGuide, setPromptGuide] = useState(false);
+
+
   const navigate = useNavigate();
 
   const handleSearchClick = () => {
@@ -82,7 +87,7 @@ const AddArtToolbar = () => {
                   }
                 }}
               />
-
+        <p onClick={()=>setPromptGuide(true)} className={style.promptGuidePara}> AI Prompt Guide</p>
             </div>
           </div>
 
@@ -100,10 +105,12 @@ const AddArtToolbar = () => {
           </div>
 
           <button className={style.uploadButton} onClick={() => navigate('/design/uploadArt')}>
-            Upload Your Own Image
+            UPLOAD YOUR OWN IMAGE
           </button>
         </div>
       )}
+  {promptGuide && <PromptGuide onClose={() => setPromptGuide(false)} />}
+
     </div>
   );
 };

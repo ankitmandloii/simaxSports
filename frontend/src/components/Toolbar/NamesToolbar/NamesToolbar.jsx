@@ -121,8 +121,8 @@ const NamesToolbar = () => {
 
       <div className='toolbar-main-heading'>
         <h5 className='Toolbar-badge'>Names And Numbers</h5>
-        <h2>Add Names And Numbers</h2>
-        <p>Use personalized Names & Numbers for projects like team jerseys where you need a unique name and/or number for each item.</p>
+        <h2>Names & Numbers Tools</h2>
+        {/* <p>Use personalized Names & Numbers for projects like team jerseys where you need a unique name and/or number for each item.</p> */}
       </div>
 
       <div className="toolbar-box

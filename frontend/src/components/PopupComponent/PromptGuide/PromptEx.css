@@ -1,0 +1,178 @@
+.prompt-wrapper {
+
+  font-family: Arial, sans-serif;
+
+  padding: 20px;
+
+  max-width: 590px;
+
+  margin: auto;
+
+}
+.bearImg{
+    height: 12rem;
+}
+ .overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* background-color: rgba(0, 0, 0, 0.5); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+}
+
+.popup {
+  position: relative;
+  background: white;
+  padding: 4px;
+  border-radius: 12px;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: auto;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
+}
+
+.prompt-header,
+
+.output-title {
+
+  font-size: 18px;
+
+  font-weight: bold;
+
+  margin-bottom: 10px;
+
+  border-bottom: 1px solid #ccc;
+
+  padding-bottom: 4px;
+
+}
+ 
+.prompt-box {
+
+  border: 2px solid rgba(0, 128, 255, 0.2);
+
+  border-radius: 8px;
+
+  padding: 12px;
+
+  line-height: 1.6;
+
+  font-size: 15px;
+
+  position: relative;
+
+  margin-bottom: 12px;
+
+}
+ 
+.prompt-style {
+
+  color: #ff5e3a;
+
+  font-weight: bold;
+
+  background-color: rgba(255, 94, 58, 0.1);
+
+  padding: 2px 4px;
+
+  border-radius: 4px;
+
+}
+ 
+.prompt-subject {
+
+  color: #3b9eff;
+
+  background-color: rgba(59, 158, 255, 0.1);
+
+  padding: 2px 4px;
+
+  border-radius: 4px;
+
+}
+ 
+.prompt-background {
+
+  color: #00a300;
+
+  background-color: rgba(0, 163, 0, 0.1);
+
+  padding: 2px 4px;
+
+  border-radius: 4px;
+
+}
+ 
+.prompt-text {
+
+  color: #a259ff;
+
+  background-color: rgba(162, 89, 255, 0.1);
+
+  padding: 2px 4px;
+
+  border-radius: 4px;
+
+}
+ 
+.prompt-labels {
+
+  display: flex;
+
+  justify-content: space-around;
+
+  font-size: 13px;
+
+  margin-bottom: 24px;
+
+}
+ 
+.output-section {
+
+  margin-top: 20px;
+
+}
+ 
+.output-images {
+
+  display: flex;
+
+  gap: 12px;
+
+  margin-top: 10px;
+
+}
+ 
+.output-images img {
+
+  width: 100px;
+
+  height: 100px;
+
+  object-fit: contain;
+
+  border: 1px solid #ccc;
+
+  border-radius: 8px;
+
+  background: white;
+
+}
+
+ 

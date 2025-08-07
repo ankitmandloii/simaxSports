@@ -13,8 +13,10 @@ const ProductAvailableColor = ({
   actionType
 }) => {
   const colorsToShow = availableColors || product.colors || [];
+
   const popupRef = useRef(null);
-  console.log("actionType", actionType)
+  console.log("-=-=-=-=-=-=-=actionType", colorsToShow);
+
   // Close popup on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -31,14 +33,13 @@ const ProductAvailableColor = ({
   }, [onClose]);
 
   return (
-    <div className="color-popup-overlay"> {/* Add a dimmed background if needed */}
+    <div className="color-popup-overlay">
       <div className={style.colorPopupContainerSpanBox} ref={popupRef} style={{
         ...(actionType === 'change' ? { left: '-30%' } : { right: '0' })
       }}>
         <span onClick={onClose} className={style.crossProdIConn}>
           <CrossIcon />
         </span>
-        {/* <p>Select a Color for {product.name || product.title}</p> */}
         <p>Select a Color</p>
         {colorsToShow.length > 0 ? (
           <div className={style.colorOptionsGrid}>
@@ -50,16 +51,20 @@ const ProductAvailableColor = ({
                 onMouseEnter={() => onHoverColor && onHoverColor(color)}
                 onMouseLeave={() => onLeaveColor && onLeaveColor()}
               >
-                <span
+                <img
+                  src={color.swatchImg || color.img}
+                  alt={color.name}
+                  title={color.name}
                   className="color-swatch"
                   style={{
-                    backgroundColor: getHexFromName(color.name),
-                    width: '26px',
-                    height: '26px',
+                    width: '30px',
+                    height: '30px',
                     borderRadius: '20%',
                     display: 'inline-block',
                     border: '1px solid #888',
                     marginBottom: '8px',
+                    objectFit: 'cover',
+                    cursor: 'pointer'
                   }}
                 />
                 {/* color title */}
@@ -79,7 +84,7 @@ const ProductAvailableColor = ({
           </p>
         )}
       </div>
-    </div >
+    </div>
   );
 };
 

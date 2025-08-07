@@ -18,6 +18,15 @@
   border: none;
   outline: none;
 }
+.promptGuidePara{
+  color: var(--blue-color);
+  margin: 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.promptGuidePara:hover{
+  text-decoration: underline;
+}
 
 
 .addArtToolbarBoxContent {
