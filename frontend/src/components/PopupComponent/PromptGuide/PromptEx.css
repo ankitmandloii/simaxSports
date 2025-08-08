@@ -82,6 +82,36 @@
 }
  
 .prompt-style {
+  color: #ff8c42; /* Sunset orange */
+  font-weight: bold;
+  background-color: rgba(255, 140, 66, 0.15); /* Warm sandy tint */
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.prompt-subject {
+  color: #5d3a00; /* Dark chocolate brown */
+  background-color: rgba(93, 58, 0, 0.12); /* Light mocha tint */
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.prompt-background {
+  color: var(--blue-color); /* Deep cyan */
+  background-color: rgba(112, 127, 127, 0.12); /* Pale aqua tint */
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.prompt-text {
+  color: #556b2f; /* Olive green */
+  background-color: rgba(85, 107, 47, 0.12); /* Sage tint */
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+
+/* .prompt-style {
 
   color: #ff5e3a;
 
@@ -129,7 +159,7 @@
 
   border-radius: 4px;
 
-}
+} */
  
 .prompt-labels {
 

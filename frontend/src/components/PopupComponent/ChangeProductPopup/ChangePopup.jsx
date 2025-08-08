@@ -1,34 +1,61 @@
-
 import React, { useState } from 'react';
-import styles from './ChangePopup.module.css'
+import styles from './ChangePopup.module.css';
 import CollectionPopupList from '../CollectionPopupList/CollectionPopupList';
 import CollectionProductPopup from '../CollectionProductPopup/CollectionProductPopup';
 
 const ChangePopup = ({ onClose, onProductSelect }) => {
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
 
+  // loading states for both children
+  const [collectionLoading, setCollectionLoading] = useState(false);
+  const [productLoading, setProductLoading] = useState(false);
+
+  // if either child is loading, this will be true
+  const isAnyLoading = collectionLoading || productLoading;
+
   return (
     <div className={styles.popupOverlay}>
       <div className={styles.popupContainer}>
         <div className={styles.popupHeader}>
           <h2>Select a Collection</h2>
-          <button className={styles.closeBtn} onClick={onClose}>×</button>
+          <button
+            className={styles.closeBtn}
+            onClick={onClose}
+            // disabled={isAnyLoading} // disable close while loading if needed
+          >
+            ×
+          </button>
         </div>
 
-        <div className={styles.popupBodyLayout}>
+        <div className={`${styles.popupBodyLayout} ${isAnyLoading ? styles.disabled : ''}`}>
           {/* Sidebar - Collection list */}
           <div className={styles.popupSidebar}>
-            <CollectionPopupList onCollectionSelect={setSelectedCollectionId} />
+            <CollectionPopupList
+              onCollectionSelect={setSelectedCollectionId}
+              mainloading={collectionLoading}
+              setmainloading={setCollectionLoading}
+            />
           </div>
 
           {/* Right panel - Products from collection */}
           <div className={styles.popupProducts}>
-            <CollectionProductPopup collectionId={selectedCollectionId} onProductSelect={onProductSelect} onClose={onClose} />
+            <CollectionProductPopup
+              collectionId={selectedCollectionId}
+              onProductSelect={onProductSelect}
+              onClose={onClose}
+              setLoading={setProductLoading}
+              setCollectionLoading={setCollectionLoading}
+            />
           </div>
         </div>
+
+        {isAnyLoading && (
+          <div className={styles.loadingOverlay}>
+            <div className={styles.spinner}></div>
+          </div>
+        )}
       </div>
     </div>
-
   );
 };
 

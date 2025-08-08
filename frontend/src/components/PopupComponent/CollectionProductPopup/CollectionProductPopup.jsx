@@ -259,7 +259,7 @@ import { useSelector } from 'react-redux';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
 import ColorWheel from '../../images/color-wheel1.png';
 
-const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
+const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoading: setParentLoading, setCollectionLoading }) => {
   console.log("=----collectionId",collectionId)
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const popupRef = useRef(null);
@@ -274,6 +274,8 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   const [cursor, setCursor] = useState('');
   const [hasNextPage, setHasNextPage] = useState(false);
   const [loading, setLoading] = useState(false);
+  console.log("------------loadingggg",loading)
+
 
   // const collectionId = 'gid://shopify/Collection/289328496774';
   console.log("-------------collections",collections)
@@ -299,9 +301,16 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   // }, [collectionId,numericId]);
   useEffect(() => {
   resetState(); // Clear immediately
-  setLoading(true); // Trigger loader immediately
+  setLoading(true);
+  setCollectionLoading(true)
+   // Trigger loader immediately
   fetchProducts(false);
 }, [collectionId, numericId]);
+useEffect(() => {
+  if (setParentLoading) {
+    setParentLoading(loading);
+  }
+}, [loading, setParentLoading]);
 
 
   const resetState = () => {
@@ -316,6 +325,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
   };
 
   const fetchProducts = useCallback(async (isLoadMore = false) => {
+    setLoading(true)
     console.log("---numericId",numericId)
     if (!effectiveCollectionId) return;
     // setLoading(true);
@@ -327,6 +337,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
       });
 
       const data = await res.json();
+      setLoading(false);
       console.log("-----CollectionData",data)
       const edges = data?.result?.node?.products?.edges || [];
       const pageInfo = data?.result?.node?.products?.pageInfo;
@@ -383,6 +394,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
       console.error('Error fetching products:', err);
     } finally {
       setLoading(false);
+      setCollectionLoading(false)
     }
   }, [BASE_URL, cursor, effectiveCollectionId, numericId]);
 
@@ -429,12 +441,12 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose }) => {
       return (
         <span
           key={`${product.id}-${color}-${idx}`}
-          className={`color-swatch ${isSelected ? 'selected' : ''}`}
+           className={`${style.colorSwatch} ${isSelected ? style.selected : ''}`}
           style={{
             backgroundColor: getHexFromName(color),
             cursor: 'pointer',
             padding: 10,
-            margin: 5,
+            margin: 3,
             borderRadius: '20%',
             display: 'inline-block',
             border: isSelected ? '2px solid black' : '1px solid gray',

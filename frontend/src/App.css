@@ -375,8 +375,8 @@ hr {
 
 /* global color-swatch */
 .color-swatch {
-  width: 20px;
-  height: 20px;
+  width: 35px;
+  height: 31px;
   border-radius: 20%;
   display: inline-block;
   border: 1px solid #ccc;
@@ -408,23 +408,22 @@ hr {
 }
 
 .close-popup-btn {
-  font-size: 5px;
-  border: none;
-  position: absolute;
-  right: 0;
-  top: 0;
-  background: transparent;
-  cursor: pointer;
-  background-color: #f6f6f6;
-  padding: 2px;
-  border-radius: 100%;
-  border: 1px solid #888;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 1rem;
-
-  width: 1rem;
+    font-size: 5px;
+    border: none;
+    position: absolute;
+    right: -9px;
+    top: -8px;
+    background: white;
+    cursor: pointer;
+    background-color: #f6f6f6;
+    padding: 2px;
+    border-radius: 100%;
+    border: 1px solid #888;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 1rem;
+    width: 1rem;
 }
 
 .close-popup-btn svg {
@@ -434,7 +433,7 @@ hr {
 .color-swatch-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 3px;
+  /* gap: 3px; */
 }
 
 .main-top-container {

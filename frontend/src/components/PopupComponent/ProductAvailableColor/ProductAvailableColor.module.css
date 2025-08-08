@@ -28,7 +28,7 @@
 .colorOptionsGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 7px;
   margin-top: 15px;
 }
 
@@ -57,14 +57,14 @@
 
 .crossProdIConn {
   position: absolute;
-  right: 6px;
+  right: -3px;
   height: 1rem;
   display: flex;
   justify-content: center;
   width: 1rem;
   align-items: center;
   /* width: 16px; */
-  top: 3px;
+  top: -4px;
   cursor: pointer;
   background-color: #ffffff;
   border-radius: 100%;

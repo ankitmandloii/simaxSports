@@ -8,6 +8,20 @@
   margin-top: 1rem; */
 }
 
+/* CollectionProductPopup.module.css */
+/* .colorSwatch {
+  width: 31px;
+  height: 31px;
+  border-radius: 20%;
+  display: inline-block;
+  border: 1px solid #ccc;
+  cursor: pointer;
+} */
+
+.selected {
+  border: 2px solid black;
+}
+
 .colorPopupHeader {
   display: flex;
   justify-content: flex-end;
@@ -105,7 +119,7 @@
 /* ----- */
 .colorPopup {
   position: absolute;
-  top: 2 0px;
+  top: -143%;
   /* adjust as needed, positive value for below */
   left: 0;
   z-index: 1000;
@@ -119,8 +133,8 @@
 }
 
 .colorSwatch {
-  width: 20px;
-  height: 20px;
+  width: 31px;
+  height: 30px;
   border-radius: 50%;
   display: inline-block;
   border: 1px solid #ccc;

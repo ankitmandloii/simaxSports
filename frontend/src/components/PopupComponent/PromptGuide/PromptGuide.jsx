@@ -86,51 +86,55 @@
 
 // --
 import React from "react";
-// import "./PromptExample.css";
-import "./PromptEx.css"
-// import screenshot from '../../images/Screenshot .png';
-import Bear from '../../images/good-news-bears.png'
+import "./PromptEx.css";
+import Bear from "../../images/good-news-bears.png";
 
 const PromptGuide = ({ onClose }) => {
   return (
     <div className="overlay">
-        <div className="popup">
-            <div className="prompt-wrapper">
-      <div className="prompt-header">Example Prompt</div>
-       <button className="close" onClick={onClose}>
-          ×
-        </button>
+      <div className="popup">
+        <div className="prompt-wrapper">
+          <div className="prompt-header">Example Prompt</div>
+          <button className="close" onClick={onClose}>
+            ×
+          </button>
 
-      <div className="prompt-box">
-        <span className="prompt-style">A logo</span> of a <span className="prompt-subject">bear playing basketball wearing a royal blue and white jersey dunking</span> with <span className="prompt-text">text that says Good News Bears</span> on a <span className="prompt-background">white background</span>
-      </div>
+          <div className="prompt-box">
+            <span className="prompt-style">A logo</span> of a{" "}
+            <span className="prompt-subject">
+              bear playing basketball wearing a royal blue and white jersey
+              dunking
+            </span>{" "}
+            with{" "}
+            <span className="prompt-text">
+              text that says Good News Bears
+            </span>{" "}
+            on a <span className="prompt-background">white background</span>
+          </div>
 
-      <div className="prompt-labels">
-        <div><span className="prompt-style">Style</span></div>
-        <div><span className="prompt-subject">Subject</span></div>
-        <div><span className="prompt-background">Background</span></div>
-        <div><span className="prompt-text">Text</span></div>
-      </div>
+          <div className="prompt-labels">
+            <div>
+              <span className="prompt-style">Style</span>
+            </div>
+            <div>
+              <span className="prompt-subject">Subject</span>
+            </div>
+            <div>
+              <span className="prompt-background">Background</span>
+            </div>
+            <div>
+              <span className="prompt-text">Text</span>
+            </div>
+          </div>
 
-      <div className="output-section">
-        <div className="output-title">Example Output</div>
-         <img src={Bear} className="bearImg"/>
-        {/* <div className="output-images"> */}
-           
-          {/* <img src="/path/to/image1.png" alt="output 1" />
-          <img src="/path/to/image2.png" alt="output 2" />
-          <img src="/path/to/image3.png" alt="output 3" /> */}
-        {/* </div> */}
-      </div>
-    </div>
-
+          <div className="output-section">
+            <div className="output-title">Example Output</div>
+            <img src={Bear} className="bearImg" alt="Good News Bears logo" />
+          </div>
         </div>
+      </div>
     </div>
-    
-    
   );
 };
 
 export default PromptGuide;
-
- 

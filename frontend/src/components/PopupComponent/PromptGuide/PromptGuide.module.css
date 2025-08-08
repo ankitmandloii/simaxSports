@@ -1,10 +1,10 @@
+/* Existing CSS */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* background-color: rgba(0, 0, 0, 0.5); */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -33,8 +33,115 @@
   color: #333;
 }
 
-.image {
+.bearImg {
   max-width: 100%;
-  height: 25rem;
+  height: auto; /* Changed for better responsiveness */
   display: block;
+}
+
+/* New CSS to enhance the design */
+/* Add a background color to the overlay for a darker, more prominent popup effect */
+.overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.popup {
+  background: #f8f9fa; /* Lighter background for the popup */
+  border: 1px solid #dee2e6; /* subtle border */
+  padding: 20px; /* More padding inside the popup */
+}
+
+/* Styles for the prompt wrapper and sections */
+.prompt-wrapper {
+  font-family: Arial, sans-serif; /* A more modern font */
+}
+
+.prompt-header {
+  font-size: 2rem; /* Larger header */
+  font-weight: 700;
+  color: #343a40; /* Darker text color */
+  margin-bottom: 20px;
+  border-bottom: 2px solid #007bff; /* A blue line to highlight the header */
+  padding-bottom: 10px;
+}
+
+.prompt-box {
+  background: #e9ecef; /* Light gray background for the prompt box */
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+/* Color-coded spans for clarity */
+.prompt-style {
+  /* color: #dc3545; Red */
+  color: #d35400;
+  font-weight: bold;
+}
+.prompt-subject {
+  color: #2874a6; /* Cyan/blue */
+  font-weight: bold;
+}
+.prompt-background {
+  color:  #1e8449; /* Green */
+  font-weight: bold;
+}
+.prompt-text {
+  color:#6c3483; /* Purple */
+  font-weight: bold;
+}
+
+.prompt-labels {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+.prompt-labels > div {
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: 600;
+}
+.prompt-labels .prompt-style {
+  background-color:   #fdebd0;; /* Light red background */
+}
+.prompt-labels .prompt-subject {
+  background-color:  #d6eaf8; /* Light cyan background */
+}
+.prompt-labels .prompt-background {
+  background-color: #d5f5e3; /* Light green background */
+}
+.prompt-labels .prompt-text {
+  background-color: #e8daef; /* Light purple background */
+}
+
+.output-section {
+  text-align: center;
+}
+
+.output-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #343a40;
+}
+
+.bearImg {
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out; /* Smooth transition for hover effect */
+}
+
+.bearImg:hover {
+  transform: scale(1.05); /* Enlarge the image on hover */
+}
+
+.close {
+  top: 15px;
+  right: 20px;
+  color: #6c757d; /* Darker gray color for the close button */
+  transition: color 0.2s;
+}
+.close:hover {
+  color: #dc3545; /* Red on hover */
 }

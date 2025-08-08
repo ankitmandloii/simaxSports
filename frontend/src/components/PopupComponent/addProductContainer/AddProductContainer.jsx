@@ -184,7 +184,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                                   backgroundColor: getHexFromName(color.name),
                                   cursor: "pointer",
                                   padding: 10,
-                                  margin: 5,
+                                  margin: 3,
                                   borderRadius: "20%",
                                   display: "inline-block",
                                   border: isSelected ? "2px solid black" : "1px solid gray",

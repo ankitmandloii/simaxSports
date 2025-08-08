@@ -127,7 +127,7 @@ const ProductAvailableColor = ({
   return (
     <div className="color-popup-overlay"> {/* Add a dimmed background if needed */}
       <div className={style.colorPopupContainerSpanBox} ref={popupRef} style={{
-        ...(actionType === 'change' ? { left: '-30%' } : { right: '0' })
+        ...(actionType === 'change' ? { left: '-23%' } : { right: '0' })
       }}>
         <span onClick={onClose} className={style.crossProdIConn}>
           <CrossIcon />
@@ -148,8 +148,8 @@ const ProductAvailableColor = ({
                   className="color-swatch"
                   style={{
                     backgroundColor: getHexFromName(color.name),
-                    width: '26px',
-                    height: '26px',
+                    width: '31px',
+                    height: '31px',
                     borderRadius: '20%',
                     display: 'inline-block',
                     border: '1px solid #888',

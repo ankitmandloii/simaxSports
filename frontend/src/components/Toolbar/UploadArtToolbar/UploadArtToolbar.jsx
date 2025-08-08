@@ -11,7 +11,6 @@ import style from './UploadArtToolbar.module.css';
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useGoogleLogin } from "@react-oauth/google";
-import ExifReader from 'exifreader';
 
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
 const DEVELOPER_KEY = process.env.REACT_APP_DEVELOPER_KEY;
@@ -26,7 +25,7 @@ const UploadArtToolbar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [googleAccessToken, setGoogleAccessToken] = useState(null);
-  const [shouldOpenPicker, setShouldOpenPicker] = useState(false);
+  const [shouldOpenPicker, setShouldOpenPicker] = useState(false); // 🔁 new state
 
   const fetchGoogleDriveFileAsBlob = async (fileId, accessToken) => {
     const response = await fetch(
@@ -39,91 +38,13 @@ const UploadArtToolbar = () => {
     return blob;
   };
 
-  const validateImageDPI = async (file) => {
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const tags = ExifReader.load(arrayBuffer);
-      console.log(`Tags for ${file.name}:`, tags);
-
-      const xDpi = tags.XResolution?.value;
-      const yDpi = tags.YResolution?.value;
-      const resUnit = tags["Resolution Unit"]?.value;
-
-      let isDpiValid = false;
-      let isLowDpiWarning = false;
-
-      if (xDpi && yDpi) {
-        const dpi = Math.max(xDpi, yDpi);
-        console.log(`${file.name} - DPI: ${dpi}`);
-
-        if (dpi >= 300) {
-          isDpiValid = true;
-        } else if (dpi >= 100) {
-          isDpiValid = true;
-          isLowDpiWarning = true;
-        }
-      }
-
-      const imageBitmap = await createImageBitmap(file);
-      const { width, height } = imageBitmap;
-      console.log(`${file.name} - resolution: ${width}x${height}`);
-
-      const isHighRes = width >= 1000 || height >= 1000;
-      const isPrintReady = width >= 1200 && height >= 1200;
-
-      if (!isDpiValid && !isHighRes) {
-        return {
-          valid: true,
-          warning: `${file.name} is low quality (DPI < 100 and small size). Consider using super resolution to enhance quality.`,
-        };
-      }
-
-      if (isLowDpiWarning || !isPrintReady) {
-        return {
-          valid: true,
-          warning: `${file.name} may not be print-ready (DPI < 300 or small dimensions). Consider using super resolution to enhance quality.`,
-        };
-      }
-
-      return { valid: true };
-    } catch (error) {
-      console.warn(`Failed to read DPI or resolution for ${file.name}:`, error);
-      return { valid: true };
-    }
-  };
-
   const handleFiles = async (files) => {
     const BASE_URL = process.env.REACT_APP_BASE_URL;
-    if (!files.length) return;
+    if (files.length === 0) return;
 
     const formData = new FormData();
-    const warnings = [];
-
     for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-
-      if (file.type.startsWith("image/")) {
-        const result = await validateImageDPI(file);
-
-        if (result.warning) {
-          warnings.push(result.warning);
-        }
-      }
-
-      formData.append("images", file);
-    }
-
-    if (warnings.length > 0) {
-      warnings.forEach(msg => toast.warn(msg, {
-        style: {
-          width: "600px",
-          whiteSpace: "pre-wrap",
-        },
-      }));
-    }
-
-    if (!formData.has("images")) {
-      return;
+      formData.append("images", files[i]);
     }
 
     try {
@@ -137,15 +58,9 @@ const UploadArtToolbar = () => {
       response.data.files.forEach((fileObj) => {
         dispatch(addImageState({ src: fileObj.url }));
       });
-
       navigate("/design/addImage");
     } catch (err) {
-      toast.error(err.message, {
-        style: {
-          width: "600px",
-          whiteSpace: "pre-wrap",
-        },
-      });
+      toast.error("Error uploading files");
       console.error("Upload error:", err.response?.data || err.message);
     } finally {
       setIsLoading(false);
@@ -193,12 +108,7 @@ const UploadArtToolbar = () => {
                 const blob = await response.blob();
                 return new File([blob], doc.name, { type: doc.mimeType });
               } catch (err) {
-                toast.error(`Error fetching ${doc.name}`, {
-                  style: {
-                    width: "600px",
-                    whiteSpace: "pre-wrap",
-                  },
-                });
+                toast.error(`Error fetching ${doc.name}`);
                 return null;
               }
             })
@@ -221,10 +131,11 @@ const UploadArtToolbar = () => {
     scope: "https://www.googleapis.com/auth/drive.readonly",
   });
 
+  // 🔁 Trigger picker after login
   useEffect(() => {
     if (googleAccessToken && shouldOpenPicker) {
       handleOpenGoogleDrivePicker();
-      setShouldOpenPicker(false);
+      setShouldOpenPicker(false); // reset
     }
   }, [googleAccessToken, shouldOpenPicker]);
 
@@ -329,10 +240,10 @@ const UploadArtToolbar = () => {
               className={style.uploadOptionBtn}
               onClick={() => {
                 if (!googleAccessToken) {
-                  setShouldOpenPicker(true);
-                  loginToGoogle();
+                  setShouldOpenPicker(true); // 🔁 set flag
+                  loginToGoogle();           // login first
                 } else {
-                  handleOpenGoogleDrivePicker();
+                  handleOpenGoogleDrivePicker(); // already logged in
                 }
               }}
             >
@@ -352,12 +263,7 @@ const UploadArtToolbar = () => {
                         const blob = await response.blob();
                         return new File([blob], fileMeta.name, { type: blob.type });
                       } catch (err) {
-                        toast.error(`Error downloading ${fileMeta.name}`, {
-                          style: {
-                            width: "600px",
-                            whiteSpace: "pre-wrap",
-                          },
-                        });
+                        toast.error(`Error downloading ${fileMeta.name}`);
                         return null;
                       }
                     })

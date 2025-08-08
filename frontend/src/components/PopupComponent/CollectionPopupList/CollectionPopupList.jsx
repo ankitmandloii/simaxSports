@@ -92,7 +92,8 @@ import {
 import { AngleActionIconBlack } from '../../iconsSvg/CustomIcon';
 import styles from './CollectionPopupList.module.css';
 
-const CollectionPopupList = ({ onCollectionSelect }) => {
+const CollectionPopupList = ({ onCollectionSelect, mainloading,setLoading}) => {
+  console.log("----------collectionLoading", mainloading)
   const dispatch = useDispatch();
   const {
     collections = [],
@@ -108,6 +109,13 @@ const CollectionPopupList = ({ onCollectionSelect }) => {
     dispatch(fetchCollections({ cursor: '' }));
     return () => dispatch(resetCollections());
   }, [dispatch]);
+
+  // Tell parent about loading state
+  useEffect(() => {
+    if (setLoading) {
+      setLoading(loading);
+    }
+  }, [loading, setLoading]);
 
   // Set the first collection as active by default
   useEffect(() => {
@@ -141,7 +149,7 @@ const CollectionPopupList = ({ onCollectionSelect }) => {
 
   return (
     <div
-      className={`${styles.collectionSidebar} ${dropdownOpen ? styles.open : ''}`}
+    className={`${styles.collectionSidebar} ${dropdownOpen ? styles.open : ''} ${mainloading ? styles.disabled : ''}`}
       onScroll={handleScroll}
     >
       {/* Dropdown header for mobile */}
@@ -170,9 +178,6 @@ const CollectionPopupList = ({ onCollectionSelect }) => {
           </li>
         ))}
       </ul>
-      {/* {loading && <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt="loading" className={styles.filterImage} />} */}
-
-      {/* {loading && <div className={styles.loader}>Loading...</div>} */}
     </div>
   );
 };
