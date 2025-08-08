@@ -68,7 +68,7 @@ const createNewImage = (
   invertColor: false,
   solidColor: false,
   removeBg: false,
-  singleColor: "#000000",
+  singleColor: "#ffffff",
   base64CanvasImage: src,
   base64CanvasImageForNormalColor: null,
   base64CanvasImageForSinglelColor: null,

@@ -212,7 +212,7 @@ const AddImageToolbar = () => {
   }
 
 
-  async function handleImage(imageSrc, color = "#000000", selectedFilter, invertColor) {
+  async function handleImage(imageSrc, color = "#ffffff", selectedFilter, invertColor) {
     try {
 
       // globalDispatch("editColor", false);
@@ -600,9 +600,9 @@ const AddImageToolbar = () => {
     globalDispatch("removeBg", !removeBackground);
     // handleImage(previewUrl);
     setResetDefault(false);
-    fetchPalette();
-    setEditColor(false);
-    globalDispatch("editColor", false);
+    // fetchPalette();
+    // setEditColor(false);
+    // globalDispatch("editColor", false); 
 
   }
 
@@ -1004,9 +1004,9 @@ const AddImageToolbar = () => {
     // update redux store
     globalDispatch("cropAndTrim", !cropAndTrim);
     setResetDefault(false);
-    fetchPalette();
-    setEditColor(false);
-    globalDispatch("editColor", false);
+    // fetchPalette();
+    // setEditColor(false);
+    // globalDispatch("editColor", false);
 
     // handleImage(previewUrl);
   }
@@ -1019,9 +1019,9 @@ const AddImageToolbar = () => {
     // update redux store
     globalDispatch("superResolution", !superResolution);
     setResetDefault(false);
-    fetchPalette();
-    setEditColor(false);
-    globalDispatch("editColor", false);
+    // fetchPalette();
+    // setEditColor(false);
+    // globalDispatch("editColor", false);
     // handleImage(previewUrl);
   }
 
@@ -1045,7 +1045,7 @@ const AddImageToolbar = () => {
       superResolution: false,
       replaceBackgroundColor: "var(--black-color)",
       invertColor: false,
-      singleColor: "#000000"
+      singleColor: "#ffffff"
     };
 
     dispatch(updateImageState({ id: selectedImageId, changes }));
