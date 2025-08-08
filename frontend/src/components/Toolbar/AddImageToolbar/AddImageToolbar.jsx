@@ -152,11 +152,78 @@ const AddImageToolbar = () => {
   }, [img, selectedImageId, resetDefault, img?.loading]);
 
 
+  async function processAndReplaceColors(imageSrc, color, editColor = false, extractedColors = []) {
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      // Support CORS if external URL
+      if (!imageSrc.startsWith("data:image")) {
+        img.crossOrigin = "anonymous";
+      }
+
+      img.src = imageSrc;
+
+      // Wait for the image to load
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = () => reject(new Error("Failed to load image"));
+      });
+
+      // Set the canvas size and draw the image on the canvas
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      let data = imageData.data;
+
+      // Only replace colors if `editColor` is true
+      if (editColor) {
+        const paletteUrl = imageSrc.split("?")[0] + "?palette=json";
+        const res = await fetch(paletteUrl);
+        const json = await res.json();
+        const colors = json?.colors?.map(c => `${c.hex}`) || [];
+        const updateColors = [...extractedColors]; // deep clone
+
+        const minLength = Math.min(colors.length, updateColors.length);
+        for (let i = 0; i < minLength; i++) {
+          const targetColor = hexToRgbForReplaceColor(colors[i]);
+          const newColor = hexToRgbForReplaceColor(updateColors[i]);
+
+          // Replace colors in image data
+          for (let j = 0; j < data.length; j += 4) {
+            const r = data[j], g = data[j + 1], b = data[j + 2];
+
+            if (colorsMatch([r, g, b], targetColor, 50)) {
+              data[j] = newColor[0];
+              data[j + 1] = newColor[1];
+              data[j + 2] = newColor[2];
+            }
+          }
+        }
+      }
+
+      // Put the updated image data back into the canvas
+      ctx.putImageData(imageData, 0, 0);
+
+      // Convert the updated canvas to a base64 PNG image and return it
+      const base64 = canvas.toDataURL('image/png');
+      canvas.remove();
+      return base64;
+
+    } catch (error) {
+      console.error('Error in processing the image:', error);
+      throw error;
+    }
+  }
+
 
   async function handleImage(imageSrc, color = "#000000", selectedFilter, invertColor) {
     try {
-      setEditColor(false);
-      globalDispatch("editColor", false);
+
+      // globalDispatch("editColor", false);
       console.log("handle image function called with src", imageSrc);
       globalDispatch("loading", true); // Corrected the typo here
 
@@ -173,8 +240,9 @@ const AddImageToolbar = () => {
           currentBase64Image = await applyFilterAndGetUrl(imageSrc, color);
         }
       }
-      else {
-        currentBase64Image = await getBase64CanvasImage(imageSrc, color);
+      else if (selectedFilter == "Normal") {
+        console.log("edit color state is: ", editColor)
+        currentBase64Image = await processAndReplaceColors(imageSrc, color, editColor, extractedColors);
         // if (!editColor) {
         //   const paletteUrl = img?.src?.split("?")[0] + "?palette=json";
         //   const res = await fetch(paletteUrl);
@@ -194,6 +262,9 @@ const AddImageToolbar = () => {
 
 
       }
+      else {
+        currentBase64Image = await getBase64CanvasImage(imageSrc, color)
+      }
 
 
       // Set the base64 image and dispatch it to the global state
@@ -204,7 +275,7 @@ const AddImageToolbar = () => {
 
       globalDispatch("base64CanvasImage", String(currentBase64Image));
       if (selectedFilter == "Normal") {
-        globalDispatch("base64CanvasImageForNormalColor", String(imageSrc));
+        globalDispatch("base64CanvasImageForNormalColor", String(currentBase64Image));
       }
       else if (selectedFilter == "Single Color") {
         globalDispatch("base64CanvasImageForSinglelColor", String(currentBase64Image));
@@ -636,6 +707,9 @@ const AddImageToolbar = () => {
     // handleImage(previewUrl);
     setResetDefault(false);
     fetchPalette();
+    setEditColor(false);
+    globalDispatch("editColor", false);
+
   }
 
   async function invertColorHandler(base64Image) {
@@ -1104,6 +1178,9 @@ const AddImageToolbar = () => {
     globalDispatch("cropAndTrim", !cropAndTrim);
     setResetDefault(false);
     fetchPalette();
+    setEditColor(false);
+    globalDispatch("editColor", false);
+
     // handleImage(previewUrl);
   }
 
@@ -1116,6 +1193,8 @@ const AddImageToolbar = () => {
     globalDispatch("superResolution", !superResolution);
     setResetDefault(false);
     fetchPalette();
+    setEditColor(false);
+    globalDispatch("editColor", false);
     // handleImage(previewUrl);
   }
 
@@ -1276,14 +1355,15 @@ const AddImageToolbar = () => {
   const applyColorBlend = async (originalColor, newColor, index) => {
     console.log("apply color blend fucntion called", originalColor, newColor);
     globalDispatch("loading", true);
+    setLoading(true);
     const cuurentBase64Image = await replaceColorAndGetBase64(base64Image || previewUrl, originalColor, newColor);
     globalDispatch("base64CanvasImage", cuurentBase64Image);
     setBase64Image(cuurentBase64Image);
+    setLoading(true);
     globalDispatch("base64CanvasImageForNormalColor", String(cuurentBase64Image));
     console.log("new base 64 image ", cuurentBase64Image);
     // fetchPalette();
     const newColors = [...extractedColors];
-
     newColors[index] = newColor;
     setExtractedColors(newColors);
     globalDispatch("extractedColors", newColors);
@@ -1322,17 +1402,18 @@ const AddImageToolbar = () => {
                           key={f.name}
                           className={`${styles.filterOption}${selectedFilter === f.name ? ' ' + styles.filterOptionActive : ''}`}
                           onClick={() => {
+                            if (loading) return;
                             // applyTransform(f.transform);
                             setSelectedFilter(f.name);
                             globalDispatch("src", buildUrl(f.transform, false, f.name));
                             globalDispatch("selectedFilter", f.name);
                             globalDispatch("base64CanvasImage", f.image);
-                            // handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor);
+                            handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor);
                             if (f.name != "Normal") setResetDefault(false);
                           }}
                         >
                           {
-                            loading ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} /></> : <> {previewUrl && <img src={f.image} alt={f.name} className={styles.filterImage} onError={e => e.target.src = '/placeholder.png'} />}</>
+                            loading ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} /></> : <> {f.image && <img src={f.image} alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} />}</>
                           }
 
 

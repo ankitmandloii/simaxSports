@@ -1,13 +1,13 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 import { act } from "react";
- function getStaringCenterPostion(){
-     const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
-     if(!canvasComponent) return { x: 290, y: 200 } ;
-      const rect = canvasComponent.getBoundingClientRect();
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      return {x:centerX,y:centerY}
- }
+function getStaringCenterPostion() {
+  const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+  if (!canvasComponent) return { x: 290, y: 200 };
+  const rect = canvasComponent.getBoundingClientRect();
+  const centerX = rect.width / 2;
+  const centerY = rect.height / 2;
+  return { x: centerX, y: centerY }
+}
 const createNewText = ({ value, id, centerX, centerY }, totalElements) => ({
   id: id,
   content: value || "New Text",
@@ -33,7 +33,7 @@ const createNewText = ({ value, id, centerX, centerY }, totalElements) => ({
   width: 150,
   height: 50,
   fontSize: 20,
-  position:getStaringCenterPostion(),
+  position: getStaringCenterPostion(),
   locked: false,
   layerIndex: totalElements,
 });
@@ -64,7 +64,7 @@ const createNewImage = (
   replaceBackgroundColor: "#000000", // stored with hash
   replaceBgParamValue: "bg-remove=true&bg=AABB22",
   cropAndTrim: false,
-  superResolution: false,
+  superResolution: true,
   invertColor: false,
   solidColor: false,
   removeBg: false,
@@ -116,7 +116,7 @@ const initialState = {
         fontColor: "#000000",
         fontFamily: "Oswald",
         fontSize: "small",
-        position:getStaringCenterPostion(),
+        position: getStaringCenterPostion(),
       },
 
       // 🆕 Product list for Name & Number (front)
@@ -134,7 +134,7 @@ const initialState = {
       addName: false,
       loadingState: {
         loading: false,
-        position:getStaringCenterPostion()
+        position: getStaringCenterPostion()
       },
 
       // 🆕 Design settings for Name & Number (back)
@@ -162,7 +162,7 @@ const initialState = {
       // addName: false,
       loadingState: {
         loading: false,
-        position:getStaringCenterPostion()
+        position: getStaringCenterPostion()
       },
     },
     rightSleeve: {
@@ -606,7 +606,7 @@ const TextFrontendDesignSlice = createSlice({
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
       const newImage = createNewImage(
-        { src },
+        { src: src + "?auto=enhance&sharp=80&upscale=true" },
         totalElements,
         centerX
       );

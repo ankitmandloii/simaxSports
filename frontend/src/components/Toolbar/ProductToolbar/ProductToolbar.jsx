@@ -24,7 +24,7 @@ const ProductToolbar = () => {
   const dispatch = useDispatch();
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  console.log("---selectedsProduct", selectedProducts);
+  // console.log("---selectedsProduct", selectedProducts);
 
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
   // console.log("---activeProduct", activeProduct);
@@ -39,9 +39,43 @@ const ProductToolbar = () => {
   // Clone color safely with fallback for image
   const safeCloneColor = (color, fallbackImg = '') => {
     if (!color || typeof color !== 'object' || Array.isArray(color)) {
-      return { name: String(color), img: fallbackImg };
+      return {
+        name: String(color),
+        swatchImg: fallbackImg,
+        variantImg: fallbackImg
+      };
     }
-    return { ...color };
+    return {
+      name: color.name,
+      swatchImg: color.swatchImg || color.img || fallbackImg,
+      variantImg: color.variantImg || color.img || fallbackImg
+    };
+  };
+
+  // Get swatch image from variant_images metafield
+  const getSwatchImage = (product, colorName) => {
+    const variant = product.allVariants?.find((variant) =>
+      variant.selectedOptions.some((opt) => opt.name === 'Color' && opt.value === colorName)
+    );
+    const metafield = variant?.metafields?.edges?.find(
+      (edge) => edge.node.key === 'variant_images' && edge.node.namespace === 'custom'
+    );
+    let swatchImage = variant?.image?.originalSrc || product.imgurl || '';
+    if (metafield) {
+      try {
+        const parsed = JSON.parse(metafield.node.value);
+        if (Array.isArray(parsed)) {
+          const colorNameLower = colorName.toLowerCase().replace(/\s+/g, '');
+          swatchImage = parsed.find(img =>
+            img.includes('38307_fm') ||
+            img.toLowerCase().includes(colorNameLower)
+          ) || parsed[3] || parsed[0] || swatchImage;
+        }
+      } catch (e) {
+        console.warn('Failed to parse variant_images metafield:', e);
+      }
+    }
+    return swatchImage;
   };
 
   // Open popup for changing/adding product
@@ -255,7 +289,7 @@ const ProductToolbar = () => {
 
   // Debug effect to track active product changes
   useEffect(() => {
-    console.log("Active Product Updated:", activeProduct);
+    // console.log("Active Product Updated:", activeProduct);
   }, [activeProduct]);
 
   return (
