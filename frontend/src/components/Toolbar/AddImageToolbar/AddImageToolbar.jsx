@@ -214,6 +214,7 @@ const AddImageToolbar = () => {
 
   async function handleImage(imageSrc, color = "#ffffff", selectedFilter, invertColor) {
     try {
+      setResetDefault(false);
 
       // globalDispatch("editColor", false);
       console.log("handle image function called with src", imageSrc);
@@ -943,6 +944,7 @@ const AddImageToolbar = () => {
     // globalDispatch("loading", true);
     globalDispatch("singleColor", color);
     setSingleColor(color);
+
     // handleImage(previewUrl, color);
     console.log("color cahnges funcitonc called", color, previewUrl);
     const newBase64Image = await handleImage(previewUrl, color, selectedFilter, invertColor);
@@ -1045,8 +1047,11 @@ const AddImageToolbar = () => {
       superResolution: false,
       replaceBackgroundColor: "var(--black-color)",
       invertColor: false,
-      singleColor: "#ffffff"
+      singleColor: "#ffffff",
+      editColor: false
     };
+    fetchPalette();
+    handleImage(img.src.split("?")[0], "#ffffff");
 
     dispatch(updateImageState({ id: selectedImageId, changes }));
 
@@ -1058,6 +1063,9 @@ const AddImageToolbar = () => {
     setBGColorPopup(false);
     setBgColor("var(--black-color)");
     setInvertColor(false);
+    setEditColor(false);
+
+
     // 3. Remove active transformations via `toggle`
     // const removeBgKey = 'bg-remove=true';
     // const cropKey = 'trim=color';
@@ -1197,6 +1205,7 @@ const AddImageToolbar = () => {
     globalDispatch("loading", false);
     setEditColor(true);
     globalDispatch("editColor", true);
+    setResetDefault(false);
 
 
   };
@@ -1242,7 +1251,6 @@ const AddImageToolbar = () => {
                           {
                             loading ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} /></> : <> {f.image && <img src={f.image} alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} />}</>
                           }
-
 
                           <div className={styles.filterLabel}>{f.name}</div>
                           {/* <img
@@ -1581,7 +1589,7 @@ const AddImageToolbar = () => {
 
                   <hr></hr>
 
-                  <p className={styles.resetButton} onClick={handleReset}>Reset To Defaults</p>
+                  <p className={styles.resetButton} onClick={handleReset}>Reset To Default</p>
 
                 </div>
 
