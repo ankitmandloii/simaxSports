@@ -306,12 +306,12 @@ const QuantityToolbar = () => {
           sizes: variantProduct?.sizes,
           name: product?.name,
           title: consistentTitle,
-          sku: variantProduct.variant.sku,
-          variantId: variantProduct.variant.id,
-          allImages: getVariantImagesFromMetafields(variantProduct.variant.metafields),
+          sku: variantProduct?.variant?.sku,
+          variantId: variantProduct?.variant?.id,
+          allImages: getVariantImagesFromMetafields(variantProduct?.variant?.metafields),
           selections: [],
-          price: variantProduct.variant.price,
-          inventory_quantity: variantProduct.variant?.inventoryItem?.inventoryLevels?.edges?.[0]?.node?.quantities?.[0]?.quantity
+          price: variantProduct?.variant?.price,
+          inventory_quantity: variantProduct?.variant?.inventoryItem?.inventoryLevels?.edges?.[0]?.node?.quantities?.[0]?.quantity
         };
         console.log("prod", prod)
         dispatch(addProduct(prod));
@@ -328,7 +328,7 @@ const QuantityToolbar = () => {
         title: consistentTitle,
         selections: [],
         allImages: getVariantImagesFromMetafields(product?.selectedColor?.variant?.metafields),
-        allVariants: product.allVariants,
+        allVariants: product?.allVariants,
       };
 
       dispatch(addProduct(mainProduct));
@@ -340,16 +340,16 @@ const QuantityToolbar = () => {
 
   const getSizeOptions = (product) => {
     if (product?.allVariants?.length) {
-      const sizeVariantPairs = product.allVariants.flatMap((variant) => {
-        const sizeOption = variant.selectedOptions.find((opt) => opt.name === 'Size');
+      const sizeVariantPairs = product?.allVariants.flatMap((variant) => {
+        const sizeOption = variant?.selectedOptions.find((opt) => opt.name === 'Size');
         return sizeOption ? [{ size: sizeOption.value, variantId: variant.id }] : [];
       });
       return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
     }
 
     if (product?.variants?.edges?.length) {
-      const sizeVariantPairs = product.variants.edges.flatMap(({ node }) => {
-        const sizeOption = node.selectedOptions.find((opt) => opt.name === 'Size');
+      const sizeVariantPairs = product?.variants.edges.flatMap(({ node }) => {
+        const sizeOption = node?.selectedOptions.find((opt) => opt.name === 'Size');
         return sizeOption ? [{ size: sizeOption.value, variantId: node.id }] : [];
       });
       return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());

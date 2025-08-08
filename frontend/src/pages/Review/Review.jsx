@@ -277,16 +277,16 @@ const Review = () => {
     console.log("productstate ", product)
 
     return {
-      name: product.name,
-      color: product.color,
+      name: product?.name,
+      color: product?.color,
       sizes, // { S: 2, M: 3, ... }
-      image: product.imgurl,
+      image: product?.imgurl,
       variantId: product?.variantId,
-      allImages: [product.allImages?.[0], product.allImages?.[1], product.allImages?.[2], product.allImages?.[2]],
-      allVariants: product.allVariants,
-      price: product.price,
-      sku: product.sku,
-      inventory_quantity: product.inventory_quantity
+      allImages: [product?.allImages?.[0], product.allImages?.[1], product.allImages?.[2], product.allImages?.[2]],
+      allVariants: product?.allVariants,
+      price: product?.price,
+      sku: product?.sku,
+      inventory_quantity: product?.inventory_quantity
     };
   });
 
@@ -344,16 +344,16 @@ const Review = () => {
       if (product.variantId) {
         //it is a variant 
         const obj = {
-          "product_id": product.variantId,
+          "product_id": product?.variantId,
           "option1": "S",
-          "option2": product.color,
-          "price": product.price,
+          "option2": product?.color,
+          "price": product?.price,
           "sku": "B665D8502",
-          "inventory_quantity": product.inventory_quantity,
+          "inventory_quantity": product?.inventory_quantity,
           "image_urls": ["https://simaxdesigns.imgix.net/uploads/1753094129600_front-design.png"]
         }
-        const sizeskey = Object.keys(product.sizes);
-        const color = product.color;
+        const sizeskey = Object.keys(product?.sizes);
+        const color = product?.color;
         const variantTitles = sizeskey.map((size) => {
           return `${color} / ${size}`;
         })
@@ -361,8 +361,8 @@ const Review = () => {
       }
       else {
         // is it a product
-        const sizeskey = Object.keys(product.sizes);
-        const color = product.color;
+        const sizeskey = Object.keys(product?.sizes);
+        const color = product?.color;
         const variantTitles = sizeskey.map((size) => {
           return `${color} / ${size}`;
         })

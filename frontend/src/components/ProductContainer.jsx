@@ -110,69 +110,71 @@ function ProductContainer() {
   // initail with color swatch
 useEffect(() => {
   if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
-
   if (!rawProducts || rawProducts.length === 0) return;
 
   const firstProduct = rawProducts[0];
-  const firstColor = firstProduct?.colors?.[0];
+  if (!firstProduct || !Array.isArray(firstProduct.colors) || firstProduct.colors.length === 0) return;
 
-  if (!firstProduct || !firstColor) return;
+  // Map colors with swatchImg and variantImg
+  const updatedColors = firstProduct.colors.map(color => {
+    let swatchImg = '';
+    let variantImg = '';
+    let selectedImage = '';
 
-  const variant = firstColor?.variant;
+    const variant = color?.variant;
 
-  // Step 1: Extract metafield value
-  const variantImagesMetafield = variant?.metafields?.edges?.find(
-    edge => edge.node.key === 'variant_images' && edge.node.namespace === 'custom'
-  );
+    const variantImagesMetafield = variant?.metafields?.edges?.find(
+      edge => edge.node.key === 'variant_images' && edge.node.namespace === 'custom'
+    );
 
-  let swatchImg = '';
-  let variantImg = '';
-  let selectedImage = '';
-
-  if (variantImagesMetafield?.node?.value) {
-    try {
-      const parsedImages = JSON.parse(variantImagesMetafield.node.value);
-
-      if (Array.isArray(parsedImages)) {
-        // Try to match swatch image with color name (cleaned)
-        const colorKey = firstColor.name?.toLowerCase().replace(/\s+/g, '') || '';
-        swatchImg =
-          parsedImages.find(img => img.toLowerCase().includes(colorKey)) ||
-          parsedImages[2] ||
-          parsedImages[0] ||
-          '';
-
-        variantImg = parsedImages[0] || firstColor.img || '';
-        selectedImage = variantImg;
+    if (variantImagesMetafield?.node?.value) {
+      try {
+        const parsedImages = JSON.parse(variantImagesMetafield.node.value);
+         console.log("-----------parseimgaes33",parsedImages)
+        if (Array.isArray(parsedImages)) {
+          console.log("-----------parseimgaes",parsedImages)
+          const colorKey = color.name?.toLowerCase().replace(/\s+/g, '') || '';
+          swatchImg =
+            parsedImages.find(img => img.toLowerCase().includes(colorKey)) ||
+            parsedImages[3] ||
+            parsedImages[0] ||
+            '';
+          variantImg = parsedImages[0] || color.img || '';
+          selectedImage = variantImg;
+        }
+      } catch (error) {
+        console.warn('Failed to parse variant_images metafield:', error);
       }
-    } catch (error) {
-      console.warn('Failed to parse variant_images metafield:', error);
     }
-  }
 
-  // Step 2: Apply fallbacks if missing
-  const fallbackImage =
-    firstColor.img || variant?.image?.originalSrc || firstProduct.images?.[0] || '';
+    // Fallback
+    const fallbackImage =
+      color.img || variant?.image?.originalSrc || firstProduct.images?.[0] || '';
+    swatchImg = swatchImg || fallbackImage;
+    variantImg = variantImg || fallbackImage;
+    selectedImage = selectedImage || fallbackImage;
 
-  swatchImg = swatchImg || fallbackImage;
-  variantImg = variantImg || fallbackImage;
-  selectedImage = selectedImage || fallbackImage;
-
-  // Step 3: Create product object with selected color
-  const initialProductWithColor = {
-    ...firstProduct,
-    selectedColor: {
-      ...firstColor,
+    return {
+      ...color,
       swatchImg,
       variantImg,
-    },
-    selectedImage,
-    imgurl: selectedImage,
+    };
+  });
+
+  // Pick first color as selected
+  const firstColor = updatedColors[0];
+  const initialProductWithColor = {
+    ...firstProduct,
+    colors: updatedColors,
+    selectedColor: firstColor,
+    selectedImage: firstColor.variantImg,
+    imgurl: firstColor.variantImg,
   };
 
   dispatch(setSelectedProducts([initialProductWithColor]));
   dispatch(setActiveProduct(initialProductWithColor));
 }, [rawProducts, dispatch, selectedProducts]);
+
 
 
 
@@ -244,6 +246,7 @@ useEffect(() => {
   let front = defaultImage;
   let back = defaultImage;
   let sleeve = defaultImage;
+  console.log("-----activeProduct",activeProduct)
 
   if (activeProduct?.selectedColor?.variant?.metafields?.edges?.length) {
     const variantMetafields = activeProduct.selectedColor.variant.metafields.edges.find(
