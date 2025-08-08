@@ -342,7 +342,7 @@ const MainDesignTool = ({
     }
   }, [window.location.pathname])
   // console.log("---------------",window.location.pathname=='/quantity'|| '/review')
-  console.log("---------------", window.location.pathname)
+  // console.log("---------------", window.location.pathname)
 
   //   useEffect(() => {
   //   const canvas = fabricCanvasRef.current;

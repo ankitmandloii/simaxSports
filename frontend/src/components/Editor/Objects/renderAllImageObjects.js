@@ -384,10 +384,11 @@ const renderAllImageObjects = (
     //   loader.remove();
     // }
 
-    const normalizeUrl = (url) => decodeURIComponent(url.trim().toLowerCase());
+    // const normalizeUrl = (url) => decodeURIComponent(url.trim().toLowerCase());
     if (
       existingObj &&
-      (normalizeUrl(existingObj.src) !== normalizeUrl(src) || singleColor != existingObj.singleColor || invertColor != existingObj.invertColor || thresholdValue != existingObj.thresholdValue || solidColor != existingObj.solidColor)
+
+      (base64CanvasImage != existingObj?.base64CanvasImage || singleColor != existingObj?.singleColor || invertColor != existingObj?.invertColor || thresholdValue != existingObj?.thresholdValue || solidColor != existingObj?.solidColor)
     ) {
       canvas.remove(existingObj);
       fabric.Image.fromURL(
@@ -402,6 +403,7 @@ const renderAllImageObjects = (
           newImg.set({
             id,
             src,
+            base64CanvasImage,
             left: position.x,
             top: position.y,
             angle,
