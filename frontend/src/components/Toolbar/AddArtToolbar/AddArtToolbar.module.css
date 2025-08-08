@@ -27,6 +27,10 @@
 .promptGuidePara:hover{
   text-decoration: underline;
 }
+.promptGuidePara span{
+  margin-top: 20px;
+  font-size: 1.1rem;
+}
 
 
 .addArtToolbarBoxContent {

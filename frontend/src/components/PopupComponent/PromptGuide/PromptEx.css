@@ -1,6 +1,6 @@
 .prompt-wrapper {
 
-  font-family: Arial, sans-serif;
+  /* font-family: Arial, sans-serif; */
 
   padding: 20px;
 
@@ -65,7 +65,7 @@
  
 .prompt-box {
 
-  border: 2px solid rgba(0, 128, 255, 0.2);
+  border: 2px solid var(--blue-color);
 
   border-radius: 8px;
 
@@ -90,8 +90,8 @@
 }
 
 .prompt-subject {
-  color: #5d3a00; /* Dark chocolate brown */
-  background-color: rgba(93, 58, 0, 0.12); /* Light mocha tint */
+  color:#ffffff; /* Dark chocolate brown */
+  background-color: var(--blue-color) ;/* Light mocha tint */
   padding: 2px 4px;
   border-radius: 4px;
 }
@@ -186,18 +186,20 @@
   gap: 12px;
 
   margin-top: 10px;
+  justify-content: center;
 
 }
  
 .output-images img {
 
-  width: 100px;
+  width: 150px;
 
-  height: 100px;
+  height: 150px;
 
   object-fit: contain;
 
-  border: 1px solid #ccc;
+  border: 1px solid var(--blue-color);
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 
   border-radius: 8px;
 

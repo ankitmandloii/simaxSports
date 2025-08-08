@@ -356,11 +356,19 @@ useEffect(() => {
           );
 
           let customImage = '';
+           let swatchImage = '';
           if (metafield) {
             try {
               const parsed = JSON.parse(metafield.node.value);
               if (Array.isArray(parsed) && parsed[0]?.src) {
                 customImage = parsed[0].src;
+              }
+               if (Array.isArray(parsed)) {
+                const colorNameLower = color?.toLowerCase().replace(/\s+/g, '');
+                swatchImage = parsed.find(img => 
+                  img.includes('38307_fm') || 
+                  img.toLowerCase().includes(colorNameLower)
+                ) || parsed[3] || parsed[0] || '';
               }
             } catch (e) {
               console.warn('Failed to parse variant_images metafield:', e);
@@ -370,6 +378,7 @@ useEffect(() => {
           if (color && !colorMap[color]) {
             colorMap[color] = {
               name: color,
+                            swatchImg: swatchImage || variant.image?.originalSrc || '',
               img: customImage || variant.image?.originalSrc || '',
               variant,
             };
@@ -413,7 +422,7 @@ useEffect(() => {
     const variant = product.allVariants.find((variant) =>
       variant.selectedOptions.some((opt) => opt.name === 'Color' && opt.value === color)
     );
-    return variant?.image?.originalSrc || '';
+    return variant?.image?.originalSrc || product.images?.[0] || '';
   };
 
   const getColorObjectByName = (product, colorName) => {
@@ -431,39 +440,69 @@ useEffect(() => {
   const handleImageLoad = (productId) => {
     setImageLoaded((prev) => ({ ...prev, [productId]: true }));
   };
-
+// ---
+ const getSwatchImage = (product, color) => {
+    const variant = product.allVariants.find((variant) =>
+      variant.selectedOptions.some((opt) => opt.name === 'Color' && opt.value === color)
+    );
+    const metafield = variant?.metafields?.edges?.find(
+      (edge) => edge.node.key === 'variant_images' && edge.node.namespace === 'custom'
+    );
+    let swatchImage = getVariantImageByColor(product, color);
+    if (metafield) {
+      try {
+        const parsed = JSON.parse(metafield.node.value);
+        console.log("---------parseddffffffffffff", parsed);
+        if (Array.isArray(parsed)) {
+          const colorNameLower = color.toLowerCase().replace(/\s+/g, '');
+          swatchImage = parsed.find(img => 
+            img.includes('38307_fm') || 
+            img.toLowerCase().includes(colorNameLower)
+          ) || parsed[3] || parsed[0] || swatchImage;
+        }
+      } catch (e) {
+        console.warn('Failed to parse variant_images metafield:', e);
+      }
+    }
+    return swatchImage;
+  };
+  // --
   const renderColorSwatches = (product) =>
     getUniqueColors(product).map((color, idx) => {
       const colorObj = getColorObjectByName(product, color);
+      //  const variantImage = colorObj?.variantImg || getVariantImageByColor(product, color);
       const image = colorObj?.img || getVariantImageByColor(product, color);
       const isSelected = selectedColorByProduct[product.id]?.name === color;
-
+       const swatchImage = colorObj?.swatchImg || getSwatchImage(product, color);
       return (
-        <span
-          key={`${product.id}-${color}-${idx}`}
-           className={`${style.colorSwatch} ${isSelected ? style.selected : ''}`}
-          style={{
-            backgroundColor: getHexFromName(color),
-            cursor: 'pointer',
-            padding: 10,
-            margin: 3,
-            borderRadius: '20%',
-            display: 'inline-block',
-            border: isSelected ? '2px solid black' : '1px solid gray',
-          }}
-          title={color}
-          onMouseEnter={() => {
-            if (!selectedColorByProduct[product.id]?.name) {
-              setHoverImage((prev) => ({ ...prev, [product.id]: image }));
-            }
-          }}
-          onMouseLeave={() => {
-            if (!selectedColorByProduct[product.id]?.name) {
-              setHoverImage((prev) => ({ ...prev, [product.id]: '' }));
-            }
-          }}
-          onClick={(e) => handleColorClick(e, product, color)}
-        />
+         <img
+                  key={`${product.id}-${color}-${idx}`}
+                  src={swatchImage}
+                  alt={color}
+                  title={color}
+                  className={`color-swatch ${isSelected ? 'selected' : ''}`}
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: '20%',
+                    cursor: 'pointer',
+                    margin: 5,
+                    display: 'inline-block',
+                    border: isSelected ? '2px solid black' : '1px solid gray',
+                    objectFit: 'cover'
+                  }}
+                  onMouseEnter={() => {
+                    if (!selectedColorByProduct[product.id]?.name) {
+                      setHoverImage((prev) => ({ ...prev, [product.id]: image }));
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (!selectedColorByProduct[product.id]?.name) {
+                      setHoverImage((prev) => ({ ...prev, [product.id]: '' }));
+                    }
+                  }}
+                  onClick={(e) => handleColorClick(e, product, color)}
+                />
       );
     });
 

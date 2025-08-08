@@ -108,7 +108,7 @@
 }
 
 .loadMore:hover {
-  background-color: #1565c0;
+  background-color: var(--blue-color);
 }
 
 .loadMore:disabled {

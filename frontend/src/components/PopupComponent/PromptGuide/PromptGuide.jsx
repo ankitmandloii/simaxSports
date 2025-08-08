@@ -88,6 +88,9 @@
 import React from "react";
 import "./PromptEx.css";
 import Bear from "../../images/good-news-bears.png";
+import rabbit1 from '../../images/rabbit1.png'
+import rabbit2 from '../../images/rabbit2.png'
+
 
 const PromptGuide = ({ onClose }) => {
   return (
@@ -102,12 +105,12 @@ const PromptGuide = ({ onClose }) => {
           <div className="prompt-box">
             <span className="prompt-style">A logo</span> of a{" "}
             <span className="prompt-subject">
-              bear playing basketball wearing a royal blue and white jersey
+              rabbit playing basketball wearing a royal blue and white jersey
               dunking
             </span>{" "}
             with{" "}
             <span className="prompt-text">
-              text that says Good News Bears
+              text that says Good News Rabbits
             </span>{" "}
             on a <span className="prompt-background">white background</span>
           </div>
@@ -129,7 +132,12 @@ const PromptGuide = ({ onClose }) => {
 
           <div className="output-section">
             <div className="output-title">Example Output</div>
-            <img src={Bear} className="bearImg" alt="Good News Bears logo" />
+            {/* <img src={Bear} className="bearImg" alt="Good News Bears logo" /> */}
+             <div className="output-images">
+          <img src={rabbit2} alt="output 1" />
+           <img src={rabbit1} alt="output 1" />
+          <img src={rabbit2} alt="output 1" />
+        </div>
           </div>
         </div>
       </div>

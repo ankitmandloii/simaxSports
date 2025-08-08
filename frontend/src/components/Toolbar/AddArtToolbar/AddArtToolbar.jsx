@@ -7,6 +7,7 @@ import style from './AddArtToolbar.module.css';
 import '../../../App.css';
 import PromptGuide from '../../PopupComponent/PromptGuide/PromptGuide';
 import screenshot from '../../images/Screenshot .png'
+import { RiInformation2Fill } from "react-icons/ri";
 
 const AddArtToolbar = () => {
   const [subArt, setSubArt] = useState(false);
