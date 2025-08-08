@@ -17,18 +17,12 @@ import {
   CrossIcon,
 } from '../../iconsSvg/CustomIcon.js';
 import { FaChevronRight } from "react-icons/fa6";
-// import FontCollectionList from './FontCollectionList';
 import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox.jsx';
 import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { duplicateImageState, moveElementBackwardState, moveElementForwardState, toggleImageLockState, toggleLoading, toggleLockState, updateImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 import { useNavigate } from 'react-router-dom';
 import ReplaceBackgroundColorPicker from '../../CommonComponent/ChooseColorBox/ReplaceBackgroundColorPicker.jsx';
-
-// import { setCenterState, setFlipXState, setFlipYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState, setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
-// import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
-// import { duplicateTextState, addTextState, updateTextState, toggleLockState, moveTextForwardState, moveTextBackwardState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
-// import { setSelectedBackTextState } from '../../../redux/BackendDesign/TextBackendDesignSlice.js';
 
 const BASE_FILTERS = [
   { name: 'Normal', transform: '' },
@@ -44,10 +38,12 @@ const AddImageToolbar = () => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
-
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   const allImageData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
+
   const img = allImageData?.find((img) => img.id == selectedImageId);
+  const isLocked = img?.locked;
+
   const [rangeValuesSize, setRangeValuesSize] = useState(0);
   const [rangeValuesRotate, setRangeValuesRotate] = useState(0);
   const [flipXValue, setflipXValue] = useState(false);
@@ -56,10 +52,7 @@ const AddImageToolbar = () => {
   const [centerActive, setCenterActive] = useState(false);
   const [removeBackground, setRemoveBackground] = useState(false);
   const [base64Image, setBase64Image] = useState("");
-  // const [isLocked, setIsLocked] = useState(false);
   const [threshold, setThreshold] = useState(144);
-  const isLocked = img?.locked;
-  // console.log("isLocked", isLocked);
   const [selectedFilter, setSelectedFilter] = useState('Normal');
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -68,18 +61,19 @@ const AddImageToolbar = () => {
   const [cropAndTrim, setCropAndTrim] = useState(false);
   const [bgColor, setBgColor] = useState("var(--black-color)");
   const [singleColor, setSingleColor] = useState("");
-
   const [invertColor, setInvertColor] = useState(false);
   const [solidColor, setSolidColor] = useState(false);
   const [editColor, setEditColor] = useState(false);
   const [resetDefault, setResetDefault] = useState(false);
-  const imgRef = useRef(null);
-
   const [filters, setFilters] = useState(BASE_FILTERS);
   const [activeEffects, setActiveEffects] = useState([]);
+  const [bgColorPopup, setBGColorPopup] = useState(false);
+  const [ColorPopup, setColorPopup] = useState(false);
+  const [replacebgwithAi, setreplaceBgwithAi] = useState(true);
   //  const [activeFilter, setActiveFilter] = useState(filters[0]);
 
 
+  const imgRef = useRef(null);
   const textareaRef = useRef(null)
 
   const colorClassName = flipXValue !== true ? styles.toolbarBoxIconsContainerFlip1 : styles.toolbarBoxIconsContainerClickStyleFlip1;
@@ -89,9 +83,7 @@ const AddImageToolbar = () => {
   const iconY = flipYValue !== true ? <FlipSecondIcon /> : <FlipSecondWhiteColorIcon />;
 
   // const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
-  const [bgColorPopup, setBGColorPopup] = useState(false);
-  const [ColorPopup, setColorPopup] = useState(false);
-  const [replacebgwithAi, setreplaceBgwithAi] = useState(true);
+
 
   // console.log("-----------imggg", imageContaintObject);
   // Init from store
@@ -243,24 +235,6 @@ const AddImageToolbar = () => {
       else if (selectedFilter == "Normal") {
         console.log("edit color state is: ", editColor)
         currentBase64Image = await processAndReplaceColors(imageSrc, color, editColor, extractedColors);
-        // if (!editColor) {
-        //   const paletteUrl = img?.src?.split("?")[0] + "?palette=json";
-        //   const res = await fetch(paletteUrl);
-        //   const json = await res.json();
-        //   const colors = json?.colors?.map(c => `${c.hex}`) || [];
-        //   const updateColors = [...extractedColors]; // deep clone
-        //   console.log(updateColors, "updatedColors");
-        //   console.log(colors, "colors")
-
-        //   const minLength = Math.min(colors.length, updateColors.length);
-
-        //   for (let i = 0; i < minLength; i++) {
-        //     currentBase64Image = await replaceColorAndGetBase64(currentBase64Image || previewUrl, colors[i], updateColors[i]);
-        //   }
-        // }
-
-
-
       }
       else {
         currentBase64Image = await getBase64CanvasImage(imageSrc, color)
@@ -377,33 +351,6 @@ const AddImageToolbar = () => {
 
   const DPI = 300; // dots per inch
 
-  // const handleRangeInputSizeChange = (e) => {
-  //   const rawValue = e.target.value;
-  //   setRangeValuesSize(rawValue);
-
-  //   const inches = parseFloat(rawValue);
-  //   if (isNaN(inches) || inches < 0.2 || inches > 10) return;
-
-  //   const nativeWidthPx = img?.width; // original image width in px
-  //   if (!nativeWidthPx) return;
-
-  //   const newPixelWidth = inches * DPI;
-  //   const newScale = newPixelWidth / nativeWidthPx;
-
-  //   // If you're dispatching state (Redux), do this:
-  //   globalDispatch("scaleX", newScale);
-  //   globalDispatch("scaleY", newScale);
-  //   globalDispatch("scaledValue", inches);
-  //   setResetDefault(false);
-
-  //   // If img is a live Fabric.js object (NOT Redux clone), also update visually:
-  //   if (img?.scale) {
-  //     img.scale(newScale);
-  //     img.canvas?.requestRenderAll(); // re-render canvas
-  //   }
-  // };
-
-  // ===
   const handleBlur = () => {
     const parsed = parseFloat(rangeValuesSize);
     if (isNaN(parsed) || parsed < 0.2 || parsed > 10) {
@@ -586,28 +533,12 @@ const AddImageToolbar = () => {
   }
 
 
-
-
-  //for FLipY
-
-
   const callForYFlip = () => {
     const value = !(img.flipY);
     setflipYValue(value);
     //console.log("y value ", value);
     globalDispatch("flipY", value);
     setResetDefault(false);
-  }
-
-  // useEffect(() => {
-  //   //console.log(currentTextToolbarId, "id =>");
-  // }, [flipXValue, flipYValue])
-
-  const handleDuplcateTextInput = () => {
-    // const islocked = imageContaintObject.locked;
-    // if (islocked) return;
-    // setDuplicateActive(prev => !prev);
-    // dispatch(duplicateTextState(currentTextToolbarId));
   }
 
   const handleBringBackward = () => {
@@ -646,43 +577,6 @@ const AddImageToolbar = () => {
 
     return false;
   }
-  // function getRenderIconForSendToTop() {
-  //   if (!img || (!allTextInputData && !allImageData)) return true;
-
-  //   // Combine all elements
-  //   const allElements = [
-  //     ...(allTextInputData || []),
-  //     ...(allImageData || [])
-  //   ];
-
-  //   // If no elements or only one element exists
-  //   if (allElements.length <= 1) return true;
-
-  //   // Get max layer index in all elements
-  //   const maxLayerIndex = Math.max(...allElements.map(el => el.layerIndex));
-
-  //   // Return true (disable button) ONLY if this element is already at top
-  //   return img.layerIndex === maxLayerIndex;
-  // }
-
-  // function getRenderIconForSendToBack() {
-  //   if (!img || (!allTextInputData && !allImageData)) return true;
-
-  //   // Combine all elements
-  //   const allElements = [
-  //     ...(allTextInputData || []),
-  //     ...(allImageData || [])
-  //   ];
-
-  //   // If no elements or only one element exists
-  //   if (allElements.length <= 1) return true;
-
-  //   // Get min layer index in all elements
-  //   const minLayerIndex = Math.min(...allElements.map(el => el.layerIndex));
-
-  //   // Return true (disable button) ONLY if this element is already at bottom
-  //   return img.layerIndex === minLayerIndex;
-  // }
 
   function removeBackgroundHandler(e) {
     // update local state
@@ -890,63 +784,6 @@ const AddImageToolbar = () => {
     }
   }, []);
 
-  // function applyFilterAndGetUrl(imageSrc, color) {
-  //   return new Promise((resolve, reject) => {
-  //     const canvas = document.createElement('canvas');
-  //     const ctx = canvas.getContext('2d');
-  //     const img = new Image();
-
-  //     // If imageSrc is base64, directly set img.src
-  //     if (imageSrc.startsWith("data:image")) {
-  //       img.src = imageSrc;
-  //     } else {
-  //       img.crossOrigin = "anonymous"; // Allow cross-origin access
-  //       img.src = imageSrc;  // For external URLs
-  //     }
-
-  //     img.onload = function () {
-  //       // Set the canvas size to the image size
-  //       canvas.width = img.width;
-  //       canvas.height = img.height;
-
-  //       // Draw the original image onto the canvas
-  //       ctx.drawImage(img, 0, 0);
-
-
-  //       // Get the tint color in RGB
-  //       const tint = hexToRgb(color);
-
-  //       // Apply the effect: grayscale, sepia, and alpha tinting
-  //       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  //       const data = imageData.data;
-
-  //       for (let i = 0; i < data.length; i += 4) {
-  //         const r = data[i];
-  //         const g = data[i + 1];
-  //         const b = data[i + 2];
-
-  //         const brightness = (r + g + b) / 3;
-  //         const inverted = 255 - brightness;
-  //         const alpha = inverted / 255;
-
-  //         data[i] = tint.r;
-  //         data[i + 1] = tint.g;
-  //         data[i + 2] = tint.b;
-  //         data[i + 3] = alpha * 255;
-  //       }
-
-  //       // Put the altered image data back to the canvas
-  //       ctx.putImageData(imageData, 0, 0);
-  //       // Return the base64 representation of the canvas
-  //       resolve(canvas.toDataURL());
-  //       canvas.remove();
-  //     };
-
-  //     img.onerror = function () {
-  //       reject(new Error("Failed to load image"));
-  //     };
-  //   });
-  // }
   function applyFilterAndGetUrl(imageSrc, color) {
     imageSrc = String(imageSrc);
     if (imageSrc.includes("monochrome=black")) {
@@ -1048,16 +885,6 @@ const AddImageToolbar = () => {
           data[i] = 255 - data[i];     // Red
           data[i + 1] = 255 - data[i + 1]; // Green
           data[i + 2] = 255 - data[i + 2]; // Blue
-          // Calculate the brightness of the pixel (luminance)
-          // const brightness = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-
-          // // Invert the brightness: subtract it from 255
-          // const invertedBrightness = 255 - brightness;
-
-          // // Apply the inverted brightness to all color channels
-          // data[i] = invertedBrightness;      // Red
-          // data[i + 1] = invertedBrightness;  // Green
-          // data[i + 2] = invertedBrightness;  // Blue
         }
 
         // Put the altered image data back to the canvas

@@ -64,7 +64,7 @@ const createNewImage = (
   replaceBackgroundColor: "#000000", // stored with hash
   replaceBgParamValue: "bg-remove=true&bg=AABB22",
   cropAndTrim: false,
-  superResolution: true,
+  superResolution: false,
   invertColor: false,
   solidColor: false,
   removeBg: false,
@@ -606,7 +606,8 @@ const TextFrontendDesignSlice = createSlice({
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
       const newImage = createNewImage(
-        { src: src + "?auto=enhance&sharp=80&upscale=true" },
+        { src: src },
+        // { src: src + "?auto=enhance&sharp=80&upscale=true" },
         totalElements,
         centerX
       );
