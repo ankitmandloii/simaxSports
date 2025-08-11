@@ -86,6 +86,10 @@ const AddImageToolbar = () => {
 
 
   // console.log("-----------imggg", imageContaintObject);
+
+  useEffect(() => {
+
+  }, [editColor, invertColor, selectedFilter])
   // Init from store
   useEffect(() => {
     // console.log("--img", img)
@@ -150,7 +154,7 @@ const AddImageToolbar = () => {
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
-      // Support CORS if external URL
+      // Handle cross-origin
       if (!imageSrc.startsWith("data:image")) {
         img.crossOrigin = "anonymous";
       }
@@ -163,7 +167,7 @@ const AddImageToolbar = () => {
         img.onerror = () => reject(new Error("Failed to load image"));
       });
 
-      // Set the canvas size and draw the image on the canvas
+      // Draw image on canvas
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0);
@@ -171,23 +175,20 @@ const AddImageToolbar = () => {
       let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       let data = imageData.data;
 
-      // Only replace colors if `editColor` is true
       if (editColor) {
         const paletteUrl = imageSrc.split("?")[0] + "?palette=json";
         const res = await fetch(paletteUrl);
         const json = await res.json();
         const colors = json?.colors?.map(c => `${c.hex}`) || [];
-        const updateColors = [...extractedColors]; // deep clone
+        const updateColors = [...extractedColors];
 
         const minLength = Math.min(colors.length, updateColors.length);
         for (let i = 0; i < minLength; i++) {
           const targetColor = hexToRgbForReplaceColor(colors[i]);
           const newColor = hexToRgbForReplaceColor(updateColors[i]);
 
-          // Replace colors in image data
           for (let j = 0; j < data.length; j += 4) {
             const r = data[j], g = data[j + 1], b = data[j + 2];
-
             if (colorsMatch([r, g, b], targetColor, 50)) {
               data[j] = newColor[0];
               data[j + 1] = newColor[1];
@@ -195,15 +196,27 @@ const AddImageToolbar = () => {
             }
           }
         }
+
+        ctx.putImageData(imageData, 0, 0);
       }
 
-      // Put the updated image data back into the canvas
-      ctx.putImageData(imageData, 0, 0);
+      // Convert canvas to blob and return object URL
+      const objectURL = await new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(URL.createObjectURL(blob));
+          } else {
+            reject(new Error("Failed to convert canvas to blob"));
+          }
+        }, "image/png", 0.92);
+      });
 
-      // Convert the updated canvas to a base64 PNG image and return it
-      const base64 = canvas.toDataURL('image/png');
+      // Cleanup
+      canvas.width = 0;
+      canvas.height = 0;
       canvas.remove();
-      return base64;
+
+      return objectURL;
 
     } catch (error) {
       console.error('Error in processing the image:', error);
@@ -212,7 +225,8 @@ const AddImageToolbar = () => {
   }
 
 
-  async function handleImage(imageSrc, color = "#ffffff", selectedFilter, invertColor) {
+
+  async function handleImage(imageSrc, color = "#ffffff", selectedFilter, invertColor, editColor) {
     try {
       setResetDefault(false);
 
@@ -235,7 +249,13 @@ const AddImageToolbar = () => {
       }
       else if (selectedFilter == "Normal") {
         console.log("edit color state is: ", editColor)
-        currentBase64Image = await processAndReplaceColors(imageSrc, color, editColor, extractedColors);
+        if (editColor) {
+          currentBase64Image = await processAndReplaceColors(imageSrc, color, editColor, extractedColors);
+        }
+        else {
+          currentBase64Image = await getBase64CanvasImage(imageSrc, color)
+
+        }
       }
       else {
         currentBase64Image = await getBase64CanvasImage(imageSrc, color)
@@ -418,7 +438,7 @@ const AddImageToolbar = () => {
   }, [img]);
 
   const applyTransform = useCallback(
-    async (transform, resetAll) => {
+    async (transform, resetAll, editColor) => {
       if (!img?.src) return;
 
       console.log("aply tranform call with tranform", transform);
@@ -447,7 +467,7 @@ const AddImageToolbar = () => {
         setActiveTransform(transform);
 
         globalDispatch("src", newUrl);
-        await handleImage(newUrl, singleColor, selectedFilter, invertColor);
+        await handleImage(newUrl, singleColor, selectedFilter, invertColor, editColor);
         dispatch(toggleLoading({ changes: { loading: false } }));
         globalDispatch("loadingSrc", null);
         // globalDispatch("loading", false);
@@ -492,7 +512,7 @@ const AddImageToolbar = () => {
       const allParams = [...new Set([...baseParams, ...newEffects])];
       const newTransform = allParams.length ? `?${allParams.join('&')}` : '';
 
-      applyTransform(newTransform);
+      applyTransform(newTransform, false, editColor);
       return newEffects;
     });
   };
@@ -508,7 +528,7 @@ const AddImageToolbar = () => {
       const cleaned = activeTransform.replace(new RegExp(`${param}(&|$)`), '');
 
       // Call applyTransform with the new transform string (with param removed)
-      return applyTransform(cleaned);
+      return applyTransform(cleaned, false, editColor);
     }
 
     // If condition is false, we want to **add** the param to the activeTransform
@@ -519,7 +539,7 @@ const AddImageToolbar = () => {
     const updated = `${activeTransform}${separator}${param}`;
 
     // Call applyTransform with the new transform string (with param added)
-    return applyTransform(updated);
+    return applyTransform(updated, false, editColor);
   };
 
   const isActive = useCallback((param) => activeTransform.includes(param), [activeTransform]);
@@ -618,7 +638,7 @@ const AddImageToolbar = () => {
     setResetDefault(false);
     let Newbase64image;
     if (invertColor) {
-      handleImage(previewUrl, singleColor, selectedFilter, !invertColor);
+      handleImage(previewUrl, singleColor, selectedFilter, !invertColor, editColor);
       // globalDispatch("base64CanvasImageForSinglelColor", String(Newbase64image));
     }
     else {
@@ -689,23 +709,33 @@ const AddImageToolbar = () => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
-
-      // If imageSrc is base64, directly set img.src
-      img.crossOrigin = "anonymous"; // Allow cross-origin access
-      img.src = imageSrc;  // For external URLs
+      img.crossOrigin = "anonymous";
+      img.src = imageSrc;
 
       img.onload = function () {
-        // Set the canvas size to the image size
         canvas.width = img.width;
         canvas.height = img.height;
 
-        // Draw the original image onto the canvas
+        // Optional: Fill background if needed (e.g., white)
+        ctx.fillStyle = "transparent";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
         ctx.drawImage(img, 0, 0);
 
+        // Export as Blob and convert to Object URL
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const objectURL = URL.createObjectURL(blob);
+            resolve(objectURL); // You can directly use this in img.src
+          } else {
+            reject(new Error("Failed to convert canvas to blob"));
+          }
 
-        // Return the base64 representation of the canvas
-        resolve(canvas.toDataURL());
-        canvas.remove();
+          // Clean up canvas
+          canvas.width = 0;
+          canvas.height = 0;
+          canvas.remove();
+        }, "image/png", 0.92);
       };
 
       img.onerror = function () {
@@ -750,7 +780,19 @@ const AddImageToolbar = () => {
         }
 
         ctx.putImageData(imageData, 0, 0);
-        resolve(canvas.toDataURL());
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const objectURL = URL.createObjectURL(blob);
+            resolve(objectURL); // You can directly use this in img.src
+          } else {
+            reject(new Error("Failed to convert canvas to blob"));
+          }
+
+          // Clean up canvas
+          canvas.width = 0;
+          canvas.height = 0;
+          canvas.remove();
+        }, "image/png", 0.92);
         canvas.remove();
       };
 
@@ -845,7 +887,19 @@ const AddImageToolbar = () => {
         ctx.putImageData(imageData, 0, 0);
 
         // Return the base64 representation of the canvas
-        resolve(canvas.toDataURL());
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const objectURL = URL.createObjectURL(blob);
+            resolve(objectURL); // You can directly use this in img.src
+          } else {
+            reject(new Error("Failed to convert canvas to blob"));
+          }
+
+          // Clean up canvas
+          canvas.width = 0;
+          canvas.height = 0;
+          canvas.remove();
+        }, "image/png", 0.92);
         canvas.remove();
       };
 
@@ -892,7 +946,19 @@ const AddImageToolbar = () => {
         ctx.putImageData(imageData, 0, 0);
 
         // Return the base64 representation of the inverted image
-        resolve(canvas.toDataURL());
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const objectURL = URL.createObjectURL(blob);
+            resolve(objectURL); // You can directly use this in img.src
+          } else {
+            reject(new Error("Failed to convert canvas to blob"));
+          }
+
+          // Clean up canvas
+          canvas.width = 0;
+          canvas.height = 0;
+          canvas.remove();
+        }, "image/png", 0.92);
         canvas.remove();
       };
 
@@ -947,7 +1013,7 @@ const AddImageToolbar = () => {
 
     // handleImage(previewUrl, color);
     console.log("color cahnges funcitonc called", color, previewUrl);
-    const newBase64Image = await handleImage(previewUrl, color, selectedFilter, invertColor);
+    const newBase64Image = await handleImage(previewUrl, color, selectedFilter, invertColor.editColor);
     // setPreviewUrl(String(newImgUrl));
     // setBase64Image(newBase64Image)
 
@@ -1031,13 +1097,17 @@ const AddImageToolbar = () => {
   const handleReset = () => {
     if (resetDefault) return;
     // 1. Dispatch global image state reset
+    const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+    const rect = canvasComponent.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
     const changes = {
       scaleX: 1,
       scaleY: 1,
       rotate: 0,
       flipX: false,
       flipY: false,
-      position: { x: 280, y: 200 },
+      position: { x: centerX, y: centerY },
       scaledValue: 1,
       angle: 0,
       locked: false,
@@ -1051,7 +1121,7 @@ const AddImageToolbar = () => {
       editColor: false
     };
     fetchPalette();
-    handleImage(img.src.split("?")[0], "#ffffff");
+
 
     dispatch(updateImageState({ id: selectedImageId, changes }));
 
@@ -1071,9 +1141,10 @@ const AddImageToolbar = () => {
     // const cropKey = 'trim=color';
     // const enhanceKey = 'auto=enhance&sharp=80&upscale=true';
     if (previewUrl?.split("?")?.length > 1) {
-      applyTransform('', true);
+      applyTransform('', true, false);
     }
     setResetDefault(true);
+    // handleImage(img.src.split("?")[0], "#ffffff");
     // setSelectedFilter("Normal")
 
 
@@ -1243,8 +1314,8 @@ const AddImageToolbar = () => {
                             setSelectedFilter(f.name);
                             globalDispatch("src", buildUrl(f.transform, false, f.name));
                             globalDispatch("selectedFilter", f.name);
-                            globalDispatch("base64CanvasImage", f.image);
-                            handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor);
+                            // globalDispatch("base64CanvasImage", f.image);
+                            handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor, editColor);
                             if (f.name != "Normal") setResetDefault(false);
                           }}
                         >

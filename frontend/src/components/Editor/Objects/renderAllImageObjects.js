@@ -370,32 +370,33 @@ const renderAllImageObjects = (
 
 
     const loaderId = `loader-${id}`;
-    if (loading) {
-      const canvasId = `canvas-${activeSide}`;
-      const existingObj = canvas.getObjects("image").find((obj) => obj.id === id);
-      if (existingObj) {
-        existingObj.set({
-          selectable: false,
-          evented: false,
-        })
-        canvas.renderAll();
-        createLoaderOverlay(existingObj, canvasId);
-        return;
-      }
-      // create dynamically the loader circle and postion like the bgremove button postioned 
-    }
-    let loader = document.getElementById(loaderId);
-    if (loader) {
-      if (existingObj) {
-        if (existingObj) {
-          existingObj.set({
-            selectable: true,
-            evented: true,
-          })
-        }
-        loader.remove();
-      }
-    }
+    // if (loading) {
+    //   const canvasId = `canvas-${activeSide}`;
+    //   const existingObj = canvas.getObjects("image").find((obj) => obj.id === id);
+    //   if (existingObj) {
+    //     existingObj.set({
+    //       // selectable: false,
+    //       // evented: ,
+
+    //     })
+    //     canvas.renderAll();
+    //     createLoaderOverlay(existingObj, canvasId);
+    //     return;
+    //   }
+    //   // create dynamically the loader circle and postion like the bgremove button postioned 
+    // }
+    // let loader = document.getElementById(loaderId);
+    // if (loader) {
+    //   if (existingObj) {
+    //     if (existingObj) {
+    //       existingObj.set({
+    //         selectable: true,
+    //         evented: true,
+    //       })
+    //     }
+    //     loader.remove();
+    //   }
+    // }
 
     // const normalizeUrl = (url) => decodeURIComponent(url.trim().toLowerCase());
     if (
