@@ -1098,7 +1098,7 @@ const AddImageToolbar = () => {
   const handleReset = () => {
     if (resetDefault) return;
     // 1. Dispatch global image state reset
-    const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+    const canvasComponent = document.querySelector(`#canvas-${activeSide}`); // Simple way, but ideally use refs or context
     const rect = canvasComponent.getBoundingClientRect();
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
@@ -1672,7 +1672,7 @@ const AddImageToolbar = () => {
                     <div
                       className={`${styles.toolbarBoxIconsContainer} ${centerActive ? styles.toolbarBoxIconsContainerActive : ''}`}
                       onClick={() => {
-                        const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+                        const canvasComponent = document.querySelector(`#canvas-${activeSide}`); // Simple way, but ideally use refs or context
                         const rect = canvasComponent.getBoundingClientRect();
                         const centerX = rect.width / 2;
                         const centerY = rect.height / 2;
