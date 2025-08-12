@@ -151,7 +151,7 @@ export default function ActiveUsers() {
               headings={[
                 { title: 'Anon ID' },
                 { title: 'City' },
-                { title: 'Country' },
+                // { title: 'Country' },
                 { title: 'Region' },
                 { title: 'IP' },
                 { title: 'Last Active' },
@@ -171,11 +171,11 @@ export default function ActiveUsers() {
                     </Text>
                   </IndexTable.Cell>
                   <IndexTable.Cell>{user.location?.city || '-'}</IndexTable.Cell>
-                  <IndexTable.Cell>
+                  {/* <IndexTable.Cell>
                     {user.location?.country
                       ? <Badge tone="success">{user.location.country}</Badge>
                       : '-'}
-                  </IndexTable.Cell>
+                  </IndexTable.Cell> */}
                   <IndexTable.Cell>{user.location?.region || '-'}</IndexTable.Cell>
                   <IndexTable.Cell>
                     <Text as="span" fontFamily="monospace">{user.location?.ip || '-'}</Text>
