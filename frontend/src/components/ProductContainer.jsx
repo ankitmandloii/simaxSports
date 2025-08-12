@@ -258,9 +258,9 @@ useEffect(() => {
         const parsedImages = JSON.parse(variantMetafields);
 
         // Find specific images by their suffixes in the URL string
-        front = parsedImages.find(img => img.includes('_f_fm')) || defaultImage;
-        back = parsedImages.find(img => img.includes('_b_fm')) || defaultImage;
-        sleeve = parsedImages.find(img => img.includes('_d_fm')) || defaultImage;
+        front = parsedImages.find(img => img.includes('_f_fl')) || defaultImage;
+        back = parsedImages.find(img => img.includes('_b_fl')) || defaultImage;
+        sleeve = parsedImages.find(img => img.includes('_d_fl')) || defaultImage;
       } catch (err) {
         console.error('Failed to parse metafields variant_images:', err);
       }
