@@ -257,7 +257,8 @@ export async function getProductsList(limit = 5, cursor = null) {
         node {
           id
           title
-          variants(first: 100) {
+          tags
+          variants(first: 200) {
             edges {
               node {
                 id
@@ -371,7 +372,7 @@ export async function getProductsByCollectionId(limit, collectionId, cursor) {
                 title
                 handle
                 tags
-                variants(first: 99) {
+                variants(first: 200) {
             edges {
               node {
                 id
@@ -420,7 +421,7 @@ export async function getProductsByCollectionId(limit, collectionId, cursor) {
               hasNextPage
             }
           }
-                images(first: 250) {
+                images(first: 50) {
                   edges {
                     node {
                       originalSrc
