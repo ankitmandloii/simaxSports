@@ -468,7 +468,7 @@ const AddImageToolbar = () => {
         setActiveTransform(transform);
 
         globalDispatch("src", newUrl);
-        await handleImage(newUrl, singleColor, selectedFilter, invertColor, editColor);
+        await handleImage(newUrl, singleColor, selectedFilter, invertColor, false);
         dispatch(toggleLoading({ changes: { loading: false } }));
         globalDispatch("loadingSrc", null);
         // globalDispatch("loading", false);
@@ -622,7 +622,7 @@ const AddImageToolbar = () => {
     globalDispatch("removeBg", !value);
     // handleImage(previewUrl);
     setResetDefault(false);
-    // fetchPalette();
+    fetchPalette();
     // setEditColor(false);
     // globalDispatch("editColor", false); 
 
@@ -1073,7 +1073,7 @@ const AddImageToolbar = () => {
     // update redux store
     globalDispatch("cropAndTrim", !value);
     setResetDefault(false);
-    // fetchPalette();
+    fetchPalette();
     // setEditColor(false);
     // globalDispatch("editColor", false);
 
@@ -1088,7 +1088,7 @@ const AddImageToolbar = () => {
     // update redux store
     globalDispatch("superResolution", !value);
     setResetDefault(false);
-    // fetchPalette();
+    fetchPalette();
     // setEditColor(false);
     // globalDispatch("editColor", false);
     // handleImage(previewUrl);
