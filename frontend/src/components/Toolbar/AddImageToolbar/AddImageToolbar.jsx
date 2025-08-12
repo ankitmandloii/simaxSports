@@ -24,15 +24,15 @@ import { duplicateImageState, moveElementBackwardState, moveElementForwardState,
 import { useNavigate } from 'react-router-dom';
 import ReplaceBackgroundColorPicker from '../../CommonComponent/ChooseColorBox/ReplaceBackgroundColorPicker.jsx';
 
-const BASE_FILTERS = [
-  { name: 'Normal', transform: '' },
-  { name: 'Single Color', transform: '?monochrome=white' },
-  { name: 'Black/White', transform: '?sat=-100' },
-];
+
 
 
 const AddImageToolbar = () => {
-
+  const BASE_FILTERS = [
+    { name: 'Normal', transform: '' },
+    { name: 'Single Color', transform: '?monochrome=white' },
+    { name: 'Black/White', transform: '?sat=-100' },
+  ];
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
@@ -104,13 +104,15 @@ const AddImageToolbar = () => {
     setThreshold(img.thresholdValue);
     setSolidColor(img.solidColor);
     setEditColor(img.editColor);
+
     // const tempImage = new Image();
     // globalDispatch("loading", true);
     // setLoading(true);
     // tempImage.onload = () => {
     //   setLoading(false);
     //   globalDispatch("loading", false)
-    //   setPreviewUrl(img.src || '');
+    setPreviewUrl(img.src || '');
+    console.log(previewUrl);
     // }
     // tempImage.onerror = () => {
     //   console.error("Failed to load image:", img?.src);
@@ -124,7 +126,6 @@ const AddImageToolbar = () => {
       const params = img.src?.split('?')[1] || '';
       const currentTransform = params ? `?${params}` : '';
       setActiveTransform(currentTransform);
-
       const currentEffects = params
         ? params.split('&').filter(param =>
           !BASE_FILTERS.some(f => f.transform.includes(param))
@@ -150,7 +151,7 @@ const AddImageToolbar = () => {
 
   async function processAndReplaceColors(imageSrc, color, editColor = false, extractedColors = []) {
     try {
-      const canvas = document.getElementById('HelperCanvas');
+      const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
@@ -176,7 +177,7 @@ const AddImageToolbar = () => {
       let data = imageData.data;
 
       if (editColor) {
-        const paletteUrl = imageSrc.split("?")[0] + "?palette=json";
+        const paletteUrl = imageSrc.split("?  ")[0] + "?palette=json";
         const res = await fetch(paletteUrl);
         const json = await res.json();
         const colors = json?.colors?.map(c => `${c.hex}`) || [];
@@ -313,7 +314,7 @@ const AddImageToolbar = () => {
     };
 
     tempImage.src = img?.src
-  }, [])
+  }, [selectedImageId])
 
 
   useEffect(() => {
@@ -346,7 +347,7 @@ const AddImageToolbar = () => {
       };
     }));
     // console.log(filters, "&&&&&&&&&&&&")
-  }, [activeEffects]);
+  }, [activeEffects, selectedImageId]);
 
   const handleRangeInputSizeChange = (e) => {
 
@@ -416,10 +417,9 @@ const AddImageToolbar = () => {
     navigate('/design/product');
   }
 
-  const globalDispatch = useCallback((label, value) => {
-
+  const globalDispatch = (label, value) => {
     dispatch(updateImageState({ id: selectedImageId, changes: { [label]: value }, isRenderOrNot: true }));
-  }, [dispatch, selectedImageId]);
+  };
 
 
   // const [filters, setFilters] = useState([
@@ -639,12 +639,12 @@ const AddImageToolbar = () => {
     setResetDefault(false);
     let Newbase64image;
     if (invertColor) {
-      handleImage(previewUrl, singleColor, selectedFilter, !invertColor, editColor);
+      handleImage(img.src || previewUrl, singleColor, selectedFilter, !invertColor, editColor);
       // globalDispatch("base64CanvasImageForSinglelColor", String(Newbase64image));
     }
     else {
       globalDispatch("loading", true);
-      Newbase64image = await invertColorsAndGetUrl(base64Image || previewUrl);
+      Newbase64image = await invertColorsAndGetUrl(img.getBase64CanvasImage || base64Image || previewUrl);
       console.log("inverted image in base64", Newbase64image);
       globalDispatch("loading", false);
       globalDispatch("base64CanvasImage", Newbase64image);
@@ -820,13 +820,13 @@ const AddImageToolbar = () => {
     }
   };
   useEffect(() => {
-    if (img?.editColor) {
-      setExtractedColors(img?.extractedColors);
-    }
-    else {
-      fetchPalette();
-    }
-  }, []);
+    // if (img?.editColor) {
+    //   setExtractedColors(img?.extractedColors);
+    // }
+    // else {
+    // }
+    fetchPalette();
+  }, [img?.src]);
 
   function applyFilterAndGetUrl(imageSrc, color) {
     imageSrc = String(imageSrc);
@@ -1014,7 +1014,7 @@ const AddImageToolbar = () => {
 
     // handleImage(previewUrl, color);
     console.log("color cahnges funcitonc called", color, previewUrl);
-    const newBase64Image = await handleImage(previewUrl, color, selectedFilter, invertColor.editColor);
+    const newBase64Image = await handleImage(img.src || previewUrl, color, selectedFilter, invertColor.editColor);
     // setPreviewUrl(String(newImgUrl));
     // setBase64Image(newBase64Image)
 
@@ -1260,15 +1260,15 @@ const AddImageToolbar = () => {
 
 
   const applyColorBlend = async (originalColor, newColor, index) => {
-    console.log("apply color blend fucntion called", originalColor, newColor);
+    console.log("apply color blend fucntion called", originalColor, newColor, previewUrl);
     globalDispatch("loading", true);
     setLoading(true);
-    const cuurentBase64Image = await replaceColorAndGetBase64(base64Image || previewUrl, originalColor, newColor);
+    const cuurentBase64Image = await replaceColorAndGetBase64(img.getBase64CanvasImage || base64Image || previewUrl, originalColor, newColor);
     globalDispatch("base64CanvasImage", cuurentBase64Image);
     setBase64Image(cuurentBase64Image);
     setLoading(true);
     globalDispatch("base64CanvasImageForNormalColor", String(cuurentBase64Image));
-    console.log("new base 64 image ", cuurentBase64Image);
+    // console.log("new base 64 image ", cuurentBase64Image);
     // fetchPalette();
     const newColors = [...extractedColors];
     newColors[index] = newColor;
@@ -1458,7 +1458,7 @@ const AddImageToolbar = () => {
                       <input
                         type="checkbox"
                         checked={invertColor}
-                        onChange={() => invertColorHandler(base64Image)}
+                        onChange={() => invertColorHandler(img.getBase64CanvasImage || base64Image)}
                         disabled={loading}
                       />
                       <span className={styles.slider}></span>
@@ -1554,7 +1554,7 @@ const AddImageToolbar = () => {
                     <label className={styles.switch}>
                       <input
                         type="checkbox"
-                        checked={superResolution}
+                        checked={isActive('auto=enhance&sharp=80&upscale=true')}
                         onChange={superResolutiondHandler}
                         disabled={loading}
                       />
