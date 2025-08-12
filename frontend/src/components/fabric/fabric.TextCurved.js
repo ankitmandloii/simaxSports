@@ -38,7 +38,7 @@
 //     this.originX = "center";
 //     this.originY = "center";
 
-    
+
 //     this.objectCaching = false;
 
 //     this.maxWidth = options.maxWidth || null; // maxWidth option
@@ -318,7 +318,8 @@ const CurvedText = fabric.util.createClass(fabric.Object, {
 
     this.lineHeight = options.lineHeight || 1.2;
     this.objectCaching = false;
-
+    this.lockMovementX = options.lockMovementX || false;
+    this.lockMovementY = options.lockMovementY || false;
     this.maxWidth = options.maxWidth || null;
 
     // Do NOT preset width/height here; let _render handle it
@@ -537,6 +538,9 @@ const CurvedText = fabric.util.createClass(fabric.Object, {
       maxWidth: this.maxWidth,
       fontWeight: this.fontWeight,
       fontStyle: this.fontStyle,
+      lockMovementX: this.lockMovementX,
+      lockMovementY: this.lockMovementY,
+
     });
   },
 });

@@ -97,6 +97,8 @@ function positionHtmlControl(el, canvas, left, top) {
 }
 function renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, dispatch) {
   // const dispatch = useDispatch();
+
+
   const canvas = fabricObject.canvas;
   if (!canvas || !canvas.upperCanvasEl) return;
 
@@ -138,7 +140,8 @@ function renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, d
 
     // Click event for removing the object
     img.onclick = () => {
-      if (!isLocked(null, { target: fabricObject })) {
+      // console.log("fabric obejct locked state", fabricObject, fabricObject.locked);
+      if (!fabricObject.locked) {
         const canvas = fabricObject.canvas;
         if (!canvas) return;  // Safety check
 
@@ -281,6 +284,7 @@ function renderHtmlResizeControl(ctx, left, top, _styleOverride, fabricObject) {
 function renderHtmlRotateControl(ctx, left, top, _styleOverride, fabricObject) {
   const canvas = fabricObject.canvas;
   if (!canvas || !canvas.upperCanvasEl) return;
+  // if (fabricObject.locked) return;
 
   if (!fabricObject._htmlControls) fabricObject._htmlControls = {};
 
@@ -368,11 +372,14 @@ function renderHtmlRotateControl(ctx, left, top, _styleOverride, fabricObject) {
 
     // Handle rotation and change style during rotation
     canvas.on("object:rotating", (e) => {
-      const obj = e.target;
-      if (obj !== fabricObject) return;
+      if (!fabricObject.locked) {
+        const obj = e.target;
+        if (obj !== fabricObject) return;
 
-      el.style.backgroundColor = "#005bff"; // Blue background on rotate
-      img.style.filter = "invert(1)"; // Invert icon color during rotation
+        el.style.backgroundColor = "#005bff"; // Blue background on rotate
+        img.style.filter = "invert(1)"; // Invert icon color during rotation
+
+      }
     });
   }
 
@@ -472,7 +479,7 @@ function renderHtmlHeightControl(ctx, left, top, _styleOverride, fabricObject) {
     // Handle scaling of the object (specifically height scaling)
     canvas.on("object:scaling", (e) => {
       const obj = e.target;
-      if (obj !== fabricObject) return;
+      if (obj !== fabricObject || fabricObject.locked) return;
 
       if (!["scaleY"].includes(e.transform.action)) return; // Only handle height scaling
 

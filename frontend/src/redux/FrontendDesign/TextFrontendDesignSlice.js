@@ -1,8 +1,11 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 import { act } from "react";
 function getStaringCenterPostion() {
-  const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
-  if (!canvasComponent) return { x: 290, y: 200 };
+  const canvasComponent = document.querySelector("#canvas-front"); // Simple way, but ideally use refs or context
+  if (!canvasComponent) {
+    console.warn("canvasComponent is not found ");
+    return { x: 290, y: 200 };
+  }
   const rect = canvasComponent.getBoundingClientRect();
   const centerX = rect.width / 2;
   const centerY = rect.height / 2;
@@ -33,7 +36,7 @@ const createNewText = ({ value, id, centerX, centerY }, totalElements) => ({
   width: 150,
   height: 50,
   fontSize: 20,
-  position: getStaringCenterPostion(),
+  position: { x: centerX, y: centerY },
   locked: false,
   layerIndex: totalElements,
 });
@@ -41,7 +44,8 @@ const createNewText = ({ value, id, centerX, centerY }, totalElements) => ({
 const createNewImage = (
   { src },
   totalElements,
-  centerX
+  centerX,
+  centerY
 ) => ({
   id: nanoid(),
   src: src,
@@ -54,7 +58,7 @@ const createNewImage = (
   height: 150,
   left: 280,
   top: 200,
-  position: getStaringCenterPostion(),
+  position: { x: centerX, y: centerY },
   scaledValue: 1,
   angle: 0,
   locked: false,
@@ -217,7 +221,7 @@ const TextFrontendDesignSlice = createSlice({
       const { value, id, side = state.activeSide } = action.payload;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
-      const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+      const canvasComponent = document.querySelector(`#canvas-${side}`); // Simple way, but ideally use refs or context
       const rect = canvasComponent.getBoundingClientRect();
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
@@ -493,13 +497,44 @@ const TextFrontendDesignSlice = createSlice({
 
     setAddNumber: (state, action) => {
       const side = state.activeSide;
+
+      const canvasComponent = document.querySelector(`#canvas-${side}`); // Simple way, but ideally use refs or context
+      const rect = canvasComponent.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const changes = {
+        position: {
+          x: centerX,
+          y: centerY,
+        }
+      }
       // state.addNumber = action.payload;
+      if (state.present[side]?.nameAndNumberDesignState) {
+        Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
+      }
       state.present[side].addNumber = action.payload;
       state.present[side].setRendering = !state.present[side].setRendering;
+
+
     },
     setAddName: (state, action) => {
       const side = state.activeSide;
       state.present[side].addName = action.payload;
+      const canvasComponent = document.querySelector(`#canvas-${side}`); // Simple way, but ideally use refs or context
+      const rect = canvasComponent.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      const changes = {
+        position: {
+          x: centerX,
+          y: centerY,
+        }
+      }
+      // state.addNumber = action.payload;
+      if (state.present[side]?.nameAndNumberDesignState) {
+        Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
+      }
       // state.addName = action.payload;
       state.present[side].setRendering = !state.present[side].setRendering;
     },
@@ -508,6 +543,7 @@ const TextFrontendDesignSlice = createSlice({
     updateNameAndNumberDesignState: (state, action) => {
       const { side = state.activeSide, changes } = action.payload;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
       if (state.present[side]?.nameAndNumberDesignState) {
         Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
       }
@@ -601,7 +637,7 @@ const TextFrontendDesignSlice = createSlice({
       const { src, id = nanoid(), side = state.activeSide, isRenderOrNot } = action.payload;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
-      const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+      const canvasComponent = document.querySelector(`#canvas-${side}`); // Simple way, but ideally use refs or context
       const rect = canvasComponent.getBoundingClientRect();
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
@@ -609,7 +645,8 @@ const TextFrontendDesignSlice = createSlice({
         { src: src },
         // { src: src + "?auto=enhance&sharp=80&upscale=true" },
         totalElements,
-        centerX
+        centerX,
+        centerY
       );
       // const newImage = createNewImage(
       //   { src },

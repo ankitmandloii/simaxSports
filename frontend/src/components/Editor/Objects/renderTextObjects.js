@@ -48,6 +48,10 @@ const renderCurveTextObjects = (
         canvas.remove(existingObj);
         return;
       }
+      if (textInput.locked) {
+        canvas.discardActiveObject();
+        canvas.renderAll();
+      }
 
       // console.log("existing object", existingObj);
       if (existingObj) {
@@ -75,6 +79,16 @@ const renderCurveTextObjects = (
           originY: "center",
           lockMovementX: textInput.locked,
           lockMovementY: textInput.locked,
+          locked: textInput.locked,
+          selectable: true,
+          lockMovement: textInput.locked,
+          evented: true,
+          hasControls: !textInput.locked,
+          lockMovementX: textInput.locked,
+          lockMovementY: textInput.locked,
+          lockScalingX: textInput.locked,
+          lockScalingY: textInput.locked,
+          lockRotation: textInput.locked,
           width: Math.min(measuredWidth + 20, 200),
         });
 
@@ -120,6 +134,7 @@ const renderCurveTextObjects = (
           hasControls: true,
           width: Math.min(measuredWidth + 20, 200),
           isSync: true,
+          locked: textInput.locked,
         });
 
         function removeAllHtmlControls(canvas) {
@@ -145,6 +160,8 @@ const renderCurveTextObjects = (
           dispatch(setSelectedTextState(null));
           // navigate("/design/product");
         });
+
+
 
         curved.on("mousedown", () => {
           dispatch(setSelectedTextState(textInput.id));
@@ -214,7 +231,7 @@ const renderCurveTextObjects = (
         curved.on("modified", (e) => {
           setActiveObjectType("curved-text");
           const obj = e.target;
-          if (!obj) return;
+          if (!obj || textInput.locked) return;
 
           const center = obj.getCenterPoint();
 
@@ -258,7 +275,7 @@ const renderCurveTextObjects = (
     });
 
     canvas.renderAll();
-    updateBoundaryVisibility(fabricCanvasRef);
+    updateBoundaryVisibility(fabricCanvasRef, activeSide);
   }
 };
 

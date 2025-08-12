@@ -482,7 +482,7 @@ const AddTextToolbar = () => {
                       className={`${style.toolbarBoxIconsContainer} center-btn ${centerActive ? 'active' : ''}`}
 
                       onClick={() => {
-                        const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+                        const canvasComponent = document.querySelector(`#canvas-${activeSide}`); // Simple way, but ideally use refs or context
                         const rect = canvasComponent.getBoundingClientRect();
                         const centerX = rect.width / 2;
                         const centerY = rect.height / 2;

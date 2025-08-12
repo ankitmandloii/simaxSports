@@ -981,7 +981,7 @@ const MainDesignTool = ({
     });
 
     canvas.renderAll();
-    updateBoundaryVisibility?.(fabricCanvasRef);
+    updateBoundaryVisibility?.(fabricCanvasRef, activeSide);
 
   };
   // **********************************************************************************************************************************************************

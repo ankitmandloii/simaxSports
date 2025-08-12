@@ -97,7 +97,7 @@
 import { useCallback } from "react";
 
 const updateBoundaryVisibility = (fabricCanvasRef, activeSide) => {
-  // console.log("-----activewee", activeSide)
+  // console.log("-----activewee", activeSide)  
   const canvas = fabricCanvasRef.current;
   if (!canvas) return;
 
@@ -173,7 +173,7 @@ const updateBoundaryVisibility = (fabricCanvasRef, activeSide) => {
     boundaryBox.visible = showBoundary;
     if (boundaryBoxInner) boundaryBoxInner.visible = showBoundary;
     if (boundaryBoxLeft) boundaryBoxLeft.visible = showBoundary;
-    if (leftChestText ) leftChestText.visible = showBoundary;
+    if (leftChestText) leftChestText.visible = showBoundary;
     if (adultText) adultText.visible = showBoundary;
     if (youthText) youthText.visible = showBoundary;
     if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
@@ -181,9 +181,14 @@ const updateBoundaryVisibility = (fabricCanvasRef, activeSide) => {
   }
   else {
     boundaryBox.visible = showBoundary;
-
+    if (boundaryBoxInner) boundaryBoxInner.visible = false;
+    if (boundaryBoxLeft) boundaryBoxLeft.visible = false;
+    if (leftChestText) leftChestText.visible = false;
+    if (adultText) adultText.visible = false;
+    if (youthText) youthText.visible = false;
+    if (warningText) { warningText.visible = showBoundary; }
     if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
-   
+
   }
   // Show / hide the left / right borders
   // leftBorder.set({ visible: anyObjectAtCenter && !showBoundary });

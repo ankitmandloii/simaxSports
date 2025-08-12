@@ -130,10 +130,17 @@ const AddImageToolbar = () => {
           !BASE_FILTERS.some(f => f.transform.includes(param))
         )
         : [];
+      console.log("cureent effects", currentEffects);
       setActiveEffects(currentEffects);
 
       setRemoveBackground(img.removeBg);
-      setSuperResolution(img.superResolution);
+      if (currentEffects.includes("upscale=true")) {
+        setSuperResolution(true);
+        globalDispatch("superResolution", true);
+      }
+      else {
+        setSuperResolution(img.superResolution);
+      }
       setCropAndTrim(img.cropAndTrim);
       setInvertColor(img.invertColor);
       setSolidColor(img.solidColor);
@@ -150,7 +157,7 @@ const AddImageToolbar = () => {
 
   async function processAndReplaceColors(imageSrc, color, editColor = false, extractedColors = []) {
     try {
-      const canvas = document.createElement('canvas');
+      const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
@@ -214,7 +221,7 @@ const AddImageToolbar = () => {
       // Cleanup
       canvas.width = 0;
       canvas.height = 0;
-      canvas.remove();
+      // canvas.remove();
 
       return objectURL;
 
@@ -238,6 +245,7 @@ const AddImageToolbar = () => {
 
       let currentBase64Image;
       console.log("curent seleteced filter is ", selectedFilter, img.selectedFilter)
+
       if (selectedFilter == "Single Color") {
         if (invertColor) {
           const applyFilterURL = await applyFilterAndGetUrl(imageSrc, color);
@@ -295,23 +303,23 @@ const AddImageToolbar = () => {
 
 
   useEffect(() => {
-    const tempImage = new Image();
-    // globalDispatch("loading", true);
-    setLoading(true);
-    tempImage.onload = () => {
-      setLoading(false);
-      // globalDispatch("loading", false)
-      setPreviewUrl(img.src || '');
-      // handleImage(previewUrl, singleColor, selectedFilter, invertColor);
-    }
-    tempImage.onerror = () => {
-      console.error("Failed to load image:", img?.src);
-      setPreviewUrl("https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif");
-      setLoading(false);
-      globalDispatch("loading", false);
-    };
+    // const tempImage = new Image();
+    // // globalDispatch("loading", true);
+    // setLoading(true);
+    // tempImage.onload = () => {
+    //   setLoading(false);
+    //   // globalDispatch("loading", false)
+    //   setPreviewUrl(img.src || '');
+    //   // handleImage(previewUrl, singleColor, selectedFilter, invertColor);
+    // }
+    // tempImage.onerror = () => {
+    //   console.error("Failed to load image:", img?.src);
+    //   setPreviewUrl("https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif");
+    //   setLoading(false);
+    //   globalDispatch("loading", false);
+    // };
 
-    tempImage.src = img?.src
+    // tempImage.src = img?.src
   }, [])
 
 
@@ -616,9 +624,9 @@ const AddImageToolbar = () => {
 
     const value = isActive('bg-remove=true');
     toggle('bg-remove=true', value)
-    setRemoveBackground(!removeBackground);
+    setRemoveBackground(!value);
     // update redux store
-    globalDispatch("removeBg", !removeBackground);
+    globalDispatch("removeBg", !value);
     // handleImage(previewUrl);
     setResetDefault(false);
     // fetchPalette();
@@ -706,7 +714,7 @@ const AddImageToolbar = () => {
 
   function getBase64CanvasImage(imageSrc, color) {
     return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
+      const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
       img.crossOrigin = "anonymous";
@@ -734,7 +742,7 @@ const AddImageToolbar = () => {
           // Clean up canvas
           canvas.width = 0;
           canvas.height = 0;
-          canvas.remove();
+          // canvas.remove();
         }, "image/png", 0.92);
       };
 
@@ -745,7 +753,7 @@ const AddImageToolbar = () => {
   }
   async function makeSolid(imageSrc, threshold) {
     return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
+      const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
@@ -791,9 +799,9 @@ const AddImageToolbar = () => {
           // Clean up canvas
           canvas.width = 0;
           canvas.height = 0;
-          canvas.remove();
+          // canvas.remove();
         }, "image/png", 0.92);
-        canvas.remove();
+        // canvas.remove();
       };
 
       img.onerror = function () {
@@ -833,7 +841,7 @@ const AddImageToolbar = () => {
       imageSrc = imageSrc.replace("monochrome=black", "");
     }
     return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
+      const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
@@ -898,9 +906,9 @@ const AddImageToolbar = () => {
           // Clean up canvas
           canvas.width = 0;
           canvas.height = 0;
-          canvas.remove();
+          // canvas.remove();
         }, "image/png", 0.92);
-        canvas.remove();
+        // canvas.remove();
       };
 
       img.onerror = function () {
@@ -911,7 +919,7 @@ const AddImageToolbar = () => {
 
   function invertColorsAndGetUrl(imageSrc) {
     return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
+      const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
@@ -957,9 +965,9 @@ const AddImageToolbar = () => {
           // Clean up canvas
           canvas.width = 0;
           canvas.height = 0;
-          canvas.remove();
+          // canvas.remove();
         }, "image/png", 0.92);
-        canvas.remove();
+        // canvas.remove();
       };
 
       img.onerror = function () {
@@ -1068,9 +1076,9 @@ const AddImageToolbar = () => {
 
     const value = isActive('trim=color');
     toggle('trim=color', value)
-    setCropAndTrim(!cropAndTrim);
+    setCropAndTrim(!value);
     // update redux store
-    globalDispatch("cropAndTrim", !cropAndTrim);
+    globalDispatch("cropAndTrim", !value);
     setResetDefault(false);
     // fetchPalette();
     // setEditColor(false);
@@ -1083,9 +1091,9 @@ const AddImageToolbar = () => {
     // update local state
     const value = isActive('auto=enhance&sharp=80&upscale=true');
     toggle('auto=enhance&sharp=80&upscale=true', value)
-    setSuperResolution(!superResolution);
+    setSuperResolution(!value);
     // update redux store
-    globalDispatch("superResolution", !superResolution);
+    globalDispatch("superResolution", !value);
     setResetDefault(false);
     // fetchPalette();
     // setEditColor(false);
@@ -1195,7 +1203,7 @@ const AddImageToolbar = () => {
   function replaceColorAndGetBase64(imageSrc, targetHex, newHex, tolerance = 50) {
     console.log(targetHex, newHex, "replaceColorAndGetBase64 functiion")
     return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
+      const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
@@ -1230,7 +1238,7 @@ const AddImageToolbar = () => {
         ctx.putImageData(imageData, 0, 0);
         const base64 = canvas.toDataURL('image/png');
         resolve(base64);
-        canvas.remove();
+        // canvas.remove();
       };
 
       img.onerror = function () {
@@ -1320,7 +1328,7 @@ const AddImageToolbar = () => {
                           }}
                         >
                           {
-                            loading ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} /></> : <> {f.image && <img src={f.image} alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} />}</>
+                            loading || !f.image ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} /></> : <> {f.image && <img src={f.image} alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} />}</>
                           }
 
                           <div className={styles.filterLabel}>{f.name}</div>
@@ -1553,7 +1561,7 @@ const AddImageToolbar = () => {
                     <label className={styles.switch}>
                       <input
                         type="checkbox"
-                        checked={superResolution}
+                        checked={isActive('auto=enhance&sharp=80&upscale=true')}
                         onChange={superResolutiondHandler}
                         disabled={loading}
                       />

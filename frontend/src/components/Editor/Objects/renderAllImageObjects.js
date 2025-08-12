@@ -20,6 +20,7 @@ const renderAllImageObjects = (
   // console.log("imageContaintObject", imageContaintObject);
   const canvas = fabricCanvasRef.current;
 
+
   if (!canvas) return;
 
   function createRemoveBackgroundToggle(fabricImage, canvasId, callback, removeBg) {
@@ -306,6 +307,10 @@ const renderAllImageObjects = (
     } = imageData;
     // console.log("base64 ", base64CanvasImage)
     // if (!base64CanvasImage) return;
+    if (locked) {
+      canvas.discardActiveObject();
+      canvas.renderAll();
+    }
     const existingObj = canvas.getObjects("image").find((obj) => obj.id === id);
 
     function createLoaderOverlay(fabricImage, canvasId) {
@@ -401,7 +406,6 @@ const renderAllImageObjects = (
     // const normalizeUrl = (url) => decodeURIComponent(url.trim().toLowerCase());
     if (
       existingObj &&
-
       (base64CanvasImage != existingObj?.base64CanvasImage || singleColor != existingObj?.singleColor || invertColor != existingObj?.invertColor || thresholdValue != existingObj?.thresholdValue || solidColor != existingObj?.solidColor)
     ) {
       canvas.remove(existingObj);
@@ -433,8 +437,9 @@ const renderAllImageObjects = (
             borderColor: "skyblue",
             borderDashArray: [4, 4],
             hasBorders: true,
-            hasControls: true,
+            hasControls: !locked,
             selectable: true,
+            locked: locked,
             evented: true,
             customType,
             isSync: true,
@@ -458,8 +463,13 @@ const renderAllImageObjects = (
             mtr: false,
           });
           removeAllHtmlControls(canvas);
-          function toggleVisibility(visible) {
+          function toggleVisibility(visible, locked) {
+            // console.log("locked stated", locked)
             const toggle = document.getElementById(`canvas-${newImg.id}`);
+            if (locked) {
+              toggle.style.display = "none";
+              return;
+            }
             if (toggle) {
               toggle.style.display = visible ? "flex" : "none";
             }
@@ -482,9 +492,9 @@ const renderAllImageObjects = (
           }, removeBg);
 
           canvas.add(newImg);
-          newImg.on("scaling", () => toggleVisibility(false));
-          newImg.on("rotating", () => toggleVisibility(false));
-          newImg.on("moving", () => toggleVisibility(false));
+          newImg.on("scaling", () => toggleVisibility(false, locked));
+          newImg.on("rotating", () => toggleVisibility(false, locked));
+          newImg.on("moving", () => toggleVisibility(false, locked));
 
           newImg.on("mousedown", (e) => {
             const obj = e.target;
@@ -510,9 +520,18 @@ const renderAllImageObjects = (
             toggleVisibility(true);
           });
 
-          newImg.on("selected", () => {
+          newImg.on("selected", (e) => {
+            // console.log(e)
             const toggle = document.getElementById(`canvas-${newImg.id}`);
-            if (toggle) toggle.style.display = "flex";
+            // console.log("locked stated", locked)
+            if (toggle) {
+              if (locked) {
+                toggle.style.display = "none";
+              }
+              else {
+                toggle.style.display = "flex";
+              }
+            }
           });
 
           newImg.on("deselected", () => {
@@ -554,6 +573,26 @@ const renderAllImageObjects = (
         layerIndex,
         customType,
         isSync: true,
+        hasControls: !locked,
+      });
+
+      existingObj.on("selected", (e) => {
+        // console.log(e)
+        const toggle = document.getElementById(`canvas-${existingObj.id}`);
+        // console.log("locked stated", locked)
+        if (toggle) {
+          if (locked) {
+            toggle.style.display = "none";
+          }
+          else {
+            toggle.style.display = "flex";
+          }
+        }
+      });
+
+      existingObj.on("deselected", () => {
+        const toggle = document.getElementById(`canvas-${existingObj.id}`);
+        if (toggle) toggle.style.display = "none";
       });
       const button = document.getElementById(`canvas-${id}`);
       if (button) {
@@ -656,7 +695,7 @@ const renderAllImageObjects = (
             borderColor: "skyblue",
             borderDashArray: [4, 4],
             hasBorders: true,
-            hasControls: true,
+            hasControls: !locked,
             selectable: true,
             evented: true,
             customType,
@@ -664,6 +703,7 @@ const renderAllImageObjects = (
             layerIndex,
             lockScalingFlip: true,
             singleColor,
+            hasControls: !locked,
             invertColor,
             thresholdValue,
             solidColor
@@ -684,8 +724,14 @@ const renderAllImageObjects = (
           img.controls = createControls(bringPopup, dispatch);
           removeAllHtmlControls(canvas);
 
-          function toggleVisibility(visible) {
+          function toggleVisibility(visible, locked) {
+            // console.log("locked stated", locked)
+
             const toggle = document.getElementById(`canvas-${img.id}`);
+            if (locked) {
+              toggle.style.display = "none";
+              return;
+            }
             if (toggle) {
               toggle.style.display = visible ? "flex" : "none";
             }
@@ -697,9 +743,9 @@ const renderAllImageObjects = (
 
           canvas.add(img);
 
-          img.on("scaling", () => toggleVisibility(false));
-          img.on("rotating", () => toggleVisibility(false));
-          img.on("moving", () => toggleVisibility(false));
+          img.on("scaling", () => toggleVisibility(false, locked));
+          img.on("rotating", () => toggleVisibility(false, locked));
+          img.on("moving", () => toggleVisibility(false, locked));
 
           img.on("mousedown", (e) => {
             const obj = e.target;
@@ -740,9 +786,18 @@ const renderAllImageObjects = (
             toggleVisibility(true);
           });
 
-          img.on("selected", () => {
+          img.on("selected", (e) => {
+            // console.log(e)
             const toggle = document.getElementById(`canvas-${img.id}`);
-            if (toggle) toggle.style.display = "flex";
+            console.log("locked stated", e.target.locked)
+            if (toggle) {
+              if (e.target.locked) {
+                toggle.style.display = "none";
+              }
+              else {
+                toggle.style.display = "flex";
+              }
+            }
           });
 
           img.on("deselected", () => {
@@ -756,7 +811,7 @@ const renderAllImageObjects = (
     }
   });
 
-  updateBoundaryVisibility?.(fabricCanvasRef);
+  updateBoundaryVisibility(fabricCanvasRef, activeSide);
 };
 
 export default renderAllImageObjects;
