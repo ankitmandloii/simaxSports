@@ -150,7 +150,7 @@ const AddImageToolbar = () => {
 
   async function processAndReplaceColors(imageSrc, color, editColor = false, extractedColors = []) {
     try {
-      const canvas = document.createElement('canvas');
+      const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
@@ -214,7 +214,7 @@ const AddImageToolbar = () => {
       // Cleanup
       canvas.width = 0;
       canvas.height = 0;
-      canvas.remove();
+      // canvas.remove();
 
       return objectURL;
 
@@ -238,6 +238,7 @@ const AddImageToolbar = () => {
 
       let currentBase64Image;
       console.log("curent seleteced filter is ", selectedFilter, img.selectedFilter)
+
       if (selectedFilter == "Single Color") {
         if (invertColor) {
           const applyFilterURL = await applyFilterAndGetUrl(imageSrc, color);
@@ -706,7 +707,7 @@ const AddImageToolbar = () => {
 
   function getBase64CanvasImage(imageSrc, color) {
     return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
+      const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
       img.crossOrigin = "anonymous";
@@ -734,7 +735,7 @@ const AddImageToolbar = () => {
           // Clean up canvas
           canvas.width = 0;
           canvas.height = 0;
-          canvas.remove();
+          // canvas.remove();
         }, "image/png", 0.92);
       };
 
@@ -745,7 +746,7 @@ const AddImageToolbar = () => {
   }
   async function makeSolid(imageSrc, threshold) {
     return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
+      const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
@@ -791,9 +792,9 @@ const AddImageToolbar = () => {
           // Clean up canvas
           canvas.width = 0;
           canvas.height = 0;
-          canvas.remove();
+          // canvas.remove();
         }, "image/png", 0.92);
-        canvas.remove();
+        // canvas.remove();
       };
 
       img.onerror = function () {
@@ -833,7 +834,7 @@ const AddImageToolbar = () => {
       imageSrc = imageSrc.replace("monochrome=black", "");
     }
     return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
+      const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
@@ -898,9 +899,9 @@ const AddImageToolbar = () => {
           // Clean up canvas
           canvas.width = 0;
           canvas.height = 0;
-          canvas.remove();
+          // canvas.remove();
         }, "image/png", 0.92);
-        canvas.remove();
+        // canvas.remove();
       };
 
       img.onerror = function () {
@@ -911,7 +912,7 @@ const AddImageToolbar = () => {
 
   function invertColorsAndGetUrl(imageSrc) {
     return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
+      const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
@@ -957,9 +958,9 @@ const AddImageToolbar = () => {
           // Clean up canvas
           canvas.width = 0;
           canvas.height = 0;
-          canvas.remove();
+          // canvas.remove();
         }, "image/png", 0.92);
-        canvas.remove();
+        // canvas.remove();
       };
 
       img.onerror = function () {
@@ -1195,7 +1196,7 @@ const AddImageToolbar = () => {
   function replaceColorAndGetBase64(imageSrc, targetHex, newHex, tolerance = 50) {
     console.log(targetHex, newHex, "replaceColorAndGetBase64 functiion")
     return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
+      const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
@@ -1230,7 +1231,7 @@ const AddImageToolbar = () => {
         ctx.putImageData(imageData, 0, 0);
         const base64 = canvas.toDataURL('image/png');
         resolve(base64);
-        canvas.remove();
+        // canvas.remove();
       };
 
       img.onerror = function () {
@@ -1671,7 +1672,7 @@ const AddImageToolbar = () => {
                     <div
                       className={`${styles.toolbarBoxIconsContainer} ${centerActive ? styles.toolbarBoxIconsContainerActive : ''}`}
                       onClick={() => {
-                        const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+                        const canvasComponent = document.querySelector(`#canvas-${activeSide}`); // Simple way, but ideally use refs or context
                         const rect = canvasComponent.getBoundingClientRect();
                         const centerX = rect.width / 2;
                         const centerY = rect.height / 2;

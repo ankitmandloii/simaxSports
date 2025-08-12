@@ -262,8 +262,8 @@ const ExportTool = ({
         // **********************************************************************************************************************************************************
     };
     return (
-        <div class="canvas-wrapper-5" style={{ position: "relative", top: 5,display:"none" }}  >
-            <canvas ref={canvasRef} id="canvas-export-5" />
+        <div class="canvas-wrapper-5" style={{ position: "relative", top: 5, }}  >
+            <canvas ref={canvasRef} id="canvas-export-5" style={{ display: "none" }} />
         </div>
     );
 

@@ -434,6 +434,7 @@ function App() {
 
         <BottomBar />
       </div>
+      <canvas id="HelperCanvas" style={{ display: "none" }}></canvas>
     </>
   );
 }
