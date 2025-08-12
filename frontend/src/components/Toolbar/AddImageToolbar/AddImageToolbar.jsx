@@ -617,9 +617,9 @@ const AddImageToolbar = () => {
 
     const value = isActive('bg-remove=true');
     toggle('bg-remove=true', value)
-    setRemoveBackground(!removeBackground);
+    setRemoveBackground(!value);
     // update redux store
-    globalDispatch("removeBg", !removeBackground);
+    globalDispatch("removeBg", !value);
     // handleImage(previewUrl);
     setResetDefault(false);
     // fetchPalette();
@@ -1069,9 +1069,9 @@ const AddImageToolbar = () => {
 
     const value = isActive('trim=color');
     toggle('trim=color', value)
-    setCropAndTrim(!cropAndTrim);
+    setCropAndTrim(!value);
     // update redux store
-    globalDispatch("cropAndTrim", !cropAndTrim);
+    globalDispatch("cropAndTrim", !value);
     setResetDefault(false);
     // fetchPalette();
     // setEditColor(false);
@@ -1084,9 +1084,9 @@ const AddImageToolbar = () => {
     // update local state
     const value = isActive('auto=enhance&sharp=80&upscale=true');
     toggle('auto=enhance&sharp=80&upscale=true', value)
-    setSuperResolution(!superResolution);
+    setSuperResolution(!value);
     // update redux store
-    globalDispatch("superResolution", !superResolution);
+    globalDispatch("superResolution", !value);
     setResetDefault(false);
     // fetchPalette();
     // setEditColor(false);
@@ -1672,7 +1672,7 @@ const AddImageToolbar = () => {
                     <div
                       className={`${styles.toolbarBoxIconsContainer} ${centerActive ? styles.toolbarBoxIconsContainerActive : ''}`}
                       onClick={() => {
-                        const canvasComponent = document.querySelector(`#canvas-${activeSide}`); // Simple way, but ideally use refs or context
+                        const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
                         const rect = canvasComponent.getBoundingClientRect();
                         const centerX = rect.width / 2;
                         const centerY = rect.height / 2;

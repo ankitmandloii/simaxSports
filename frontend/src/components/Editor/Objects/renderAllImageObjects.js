@@ -20,6 +20,7 @@ const renderAllImageObjects = (
   // console.log("imageContaintObject", imageContaintObject);
   const canvas = fabricCanvasRef.current;
 
+
   if (!canvas) return;
 
   function createRemoveBackgroundToggle(fabricImage, canvasId, callback, removeBg) {
@@ -463,7 +464,7 @@ const renderAllImageObjects = (
           });
           removeAllHtmlControls(canvas);
           function toggleVisibility(visible, locked) {
-            console.log("locked stated", locked)
+            // console.log("locked stated", locked)
             const toggle = document.getElementById(`canvas-${newImg.id}`);
             if (locked) {
               toggle.style.display = "none";
@@ -522,7 +523,7 @@ const renderAllImageObjects = (
           newImg.on("selected", (e) => {
             // console.log(e)
             const toggle = document.getElementById(`canvas-${newImg.id}`);
-            console.log("locked stated", locked)
+            // console.log("locked stated", locked)
             if (toggle) {
               if (locked) {
                 toggle.style.display = "none";
@@ -578,7 +579,7 @@ const renderAllImageObjects = (
       existingObj.on("selected", (e) => {
         console.log(e)
         const toggle = document.getElementById(`canvas-${existingObj.id}`);
-        console.log("locked stated", locked)
+        // console.log("locked stated", locked)
         if (toggle) {
           if (locked) {
             toggle.style.display = "none";
@@ -724,7 +725,7 @@ const renderAllImageObjects = (
           removeAllHtmlControls(canvas);
 
           function toggleVisibility(visible, locked) {
-            console.log("locked stated", locked)
+            // console.log("locked stated", locked)
 
             const toggle = document.getElementById(`canvas-${img.id}`);
             if (locked) {
@@ -810,7 +811,7 @@ const renderAllImageObjects = (
     }
   });
 
-  updateBoundaryVisibility?.(fabricCanvasRef, activeSide);
+  updateBoundaryVisibility(fabricCanvasRef, activeSide);
 };
 
 export default renderAllImageObjects;
