@@ -577,7 +577,7 @@ const renderAllImageObjects = (
       });
 
       existingObj.on("selected", (e) => {
-        console.log(e)
+        // console.log(e)
         const toggle = document.getElementById(`canvas-${existingObj.id}`);
         // console.log("locked stated", locked)
         if (toggle) {
@@ -787,7 +787,7 @@ const renderAllImageObjects = (
           });
 
           img.on("selected", (e) => {
-            console.log(e)
+            // console.log(e)
             const toggle = document.getElementById(`canvas-${img.id}`);
             console.log("locked stated", e.target.locked)
             if (toggle) {

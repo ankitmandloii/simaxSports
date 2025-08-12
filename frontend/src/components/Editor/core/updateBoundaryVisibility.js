@@ -97,7 +97,7 @@
 import { useCallback } from "react";
 
 const updateBoundaryVisibility = (fabricCanvasRef, activeSide) => {
-  console.log("-----activewee", activeSide)
+  // console.log("-----activewee", activeSide)  
   const canvas = fabricCanvasRef.current;
   if (!canvas) return;
 

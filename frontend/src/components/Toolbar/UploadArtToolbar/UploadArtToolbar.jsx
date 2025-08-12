@@ -10,6 +10,7 @@ import { addImageState } from "../../../redux/FrontendDesign/TextFrontendDesignS
 import style from './UploadArtToolbar.module.css';
 import axios from "axios";
 import { toast } from "react-toastify";
+import ExifReader from "exifreader"
 import { useGoogleLogin } from "@react-oauth/google";
 
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
@@ -37,35 +38,219 @@ const UploadArtToolbar = () => {
     const blob = await response.blob();
     return blob;
   };
+  const validateImageDPI = async (file) => {
+
+    try {
+
+      const arrayBuffer = await file.arrayBuffer();
+
+      const tags = ExifReader.load(arrayBuffer);
+
+      console.log(`Tags for ${file.name}:`, tags);
+
+      const xDpi = tags.XResolution?.value;
+
+      const yDpi = tags.YResolution?.value;
+
+      const resUnit = tags["Resolution Unit"]?.value;
+
+      let isDpiValid = false;
+
+      let isLowDpiWarning = false;
+
+      if (xDpi && yDpi) {
+
+        const dpi = Math.max(xDpi, yDpi);
+
+        console.log(`${file.name} - DPI: ${dpi}`);
+
+        if (dpi >= 300) {
+
+          isDpiValid = true;
+
+        } else if (dpi >= 100) {
+
+          isDpiValid = true;
+
+          isLowDpiWarning = true;
+
+        }
+
+      }
+
+      const imageBitmap = await createImageBitmap(file);
+
+      const { width, height } = imageBitmap;
+
+      console.log(`${file.name} - resolution: ${width}x${height}`);
+
+      const isHighRes = width >= 1000 || height >= 1000;
+
+      const isPrintReady = width >= 1200 && height >= 1200;
+
+      if (!isDpiValid && !isHighRes) {
+
+        return {
+
+          valid: true,
+
+          warning: `${file.name} is low quality (DPI < 100 and small size). Consider using super resolution to enhance quality.`,
+
+        };
+
+      }
+
+      if (isLowDpiWarning || !isPrintReady) {
+
+        return {
+
+          valid: true,
+
+          warning: `${file.name} may not be print-ready (DPI < 300 or small dimensions). Consider using super resolution to enhance quality.`,
+
+        };
+
+      }
+
+      return { valid: true };
+
+    } catch (error) {
+
+      console.warn(`Failed to read DPI or resolution for ${file.name}:`, error);
+
+      return { valid: true };
+
+    }
+
+  };
 
   const handleFiles = async (files) => {
+
     const BASE_URL = process.env.REACT_APP_BASE_URL;
-    if (files.length === 0) return;
+    const stateForSuperResolution = [];
+
+    if (!files.length) return;
 
     const formData = new FormData();
+
+    const warnings = [];
+
     for (let i = 0; i < files.length; i++) {
-      formData.append("images", files[i]);
+
+      const file = files[i];
+
+      if (file.type.startsWith("image/")) {
+
+        const result = await validateImageDPI(file);
+
+        if (result.warning) {
+          stateForSuperResolution[i] = true;
+          // warnings.push(result.warning);
+
+        }
+
+      }
+
+      formData.append("images", file);
+
+    }
+
+    if (warnings.length > 0) {
+
+      warnings.forEach(msg => toast.warn(msg, {
+
+        style: {
+
+          width: "600px",
+
+          whiteSpace: "pre-wrap",
+
+        },
+
+      }));
+
+    }
+
+    if (!formData.has("images")) {
+
+      return;
+
     }
 
     try {
+
       setIsLoading(true);
+
       const response = await axios.post(
+
         `${BASE_URL}imageOperation/upload`,
+
         formData,
+
         { headers: { "Content-Type": "multipart/form-data" } }
+
       );
 
-      response.data.files.forEach((fileObj) => {
-        dispatch(addImageState({ src: fileObj.url }));
+      response.data.files.forEach((fileObj, index) => {
+
+        dispatch(addImageState({ src: `${fileObj.url}${stateForSuperResolution[index] ? "?auto=enhance&sharp=80&upscale=true" : ""}` }));
+
       });
+
       navigate("/design/addImage");
+
     } catch (err) {
-      toast.error("Error uploading files");
+
+      toast.error(err.message, {
+
+        style: {
+
+          width: "600px",
+
+          whiteSpace: "pre-wrap",
+
+        },
+
+      });
+
       console.error("Upload error:", err.response?.data || err.message);
+
     } finally {
+
       setIsLoading(false);
+
     }
+
   };
+
+  // const handleFiles = async (files) => {
+  //   const BASE_URL = process.env.REACT_APP_BASE_URL;
+  //   if (files.length === 0) return;
+
+  //   const formData = new FormData();
+  //   for (let i = 0; i < files.length; i++) {
+  //     formData.append("images", files[i]);
+  //   }
+
+  //   try {
+  //     setIsLoading(true);
+  //     const response = await axios.post(
+  //       `${BASE_URL}imageOperation/upload`,
+  //       formData,
+  //       { headers: { "Content-Type": "multipart/form-data" } }
+  //     );
+
+  //     response.data.files.forEach((fileObj) => {
+  //       dispatch(addImageState({ src: fileObj.url }));
+  //     });
+  //     navigate("/design/addImage");
+  //   } catch (err) {
+  //     toast.error("Error uploading files");
+  //     console.error("Upload error:", err.response?.data || err.message);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const handleDrop = async (e) => {
     e.preventDefault();

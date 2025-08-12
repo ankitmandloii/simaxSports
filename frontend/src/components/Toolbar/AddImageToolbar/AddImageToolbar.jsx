@@ -130,10 +130,17 @@ const AddImageToolbar = () => {
           !BASE_FILTERS.some(f => f.transform.includes(param))
         )
         : [];
+      console.log("cureent effects", currentEffects);
       setActiveEffects(currentEffects);
 
       setRemoveBackground(img.removeBg);
-      setSuperResolution(img.superResolution);
+      if (currentEffects.includes("upscale=true")) {
+        setSuperResolution(true);
+        globalDispatch("superResolution", true);
+      }
+      else {
+        setSuperResolution(img.superResolution);
+      }
       setCropAndTrim(img.cropAndTrim);
       setInvertColor(img.invertColor);
       setSolidColor(img.solidColor);
@@ -296,23 +303,23 @@ const AddImageToolbar = () => {
 
 
   useEffect(() => {
-    const tempImage = new Image();
-    // globalDispatch("loading", true);
-    setLoading(true);
-    tempImage.onload = () => {
-      setLoading(false);
-      // globalDispatch("loading", false)
-      setPreviewUrl(img.src || '');
-      // handleImage(previewUrl, singleColor, selectedFilter, invertColor);
-    }
-    tempImage.onerror = () => {
-      console.error("Failed to load image:", img?.src);
-      setPreviewUrl("https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif");
-      setLoading(false);
-      globalDispatch("loading", false);
-    };
+    // const tempImage = new Image();
+    // // globalDispatch("loading", true);
+    // setLoading(true);
+    // tempImage.onload = () => {
+    //   setLoading(false);
+    //   // globalDispatch("loading", false)
+    //   setPreviewUrl(img.src || '');
+    //   // handleImage(previewUrl, singleColor, selectedFilter, invertColor);
+    // }
+    // tempImage.onerror = () => {
+    //   console.error("Failed to load image:", img?.src);
+    //   setPreviewUrl("https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif");
+    //   setLoading(false);
+    //   globalDispatch("loading", false);
+    // };
 
-    tempImage.src = img?.src
+    // tempImage.src = img?.src
   }, [])
 
 
@@ -1321,7 +1328,7 @@ const AddImageToolbar = () => {
                           }}
                         >
                           {
-                            loading ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} /></> : <> {f.image && <img src={f.image} alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} />}</>
+                            loading || !f.image ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} /></> : <> {f.image && <img src={f.image} alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} />}</>
                           }
 
                           <div className={styles.filterLabel}>{f.name}</div>
@@ -1554,7 +1561,7 @@ const AddImageToolbar = () => {
                     <label className={styles.switch}>
                       <input
                         type="checkbox"
-                        checked={superResolution}
+                        checked={isActive('auto=enhance&sharp=80&upscale=true')}
                         onChange={superResolutiondHandler}
                         disabled={loading}
                       />

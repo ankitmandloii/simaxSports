@@ -140,7 +140,7 @@ function renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, d
 
     // Click event for removing the object
     img.onclick = () => {
-      console.log("fabric obejct locked state", fabricObject, fabricObject.locked);
+      // console.log("fabric obejct locked state", fabricObject, fabricObject.locked);
       if (!fabricObject.locked) {
         const canvas = fabricObject.canvas;
         if (!canvas) return;  // Safety check
