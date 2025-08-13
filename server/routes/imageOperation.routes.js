@@ -9,15 +9,24 @@ const path = require('path');
 const router = express.Router();
 
 const storage = multer.memoryStorage(); //for S3
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, './uploads'); // Folder to save the uploaded file
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, Date.now() + path.extname(file.originalname)); // Set a unique file name
-//   }
-// });
+
 const upload = multer({
+  storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024,  // Max file size: 10MB
+    files: 5                    // Max 2 files
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only JPEG, PNG, and JPG images are allowed"));
+    }
+  }
+});
+
+const uploadforSingleEditImage = multer({
   storage,
   limits: {
     fileSize: 10 * 1024 * 1024,  // Max file size: 10MB
@@ -61,8 +70,8 @@ const testUpload = multer({ storage: multer.memoryStorage() });
 router.post("/upload", upload.array('images', 5), controllers.fileUpload); // Accept both single and multiple files
 router.delete("/delete", controllers.fileDelete);
 // router.post("/image/list",controllers.getImageGalleryList)
-router.post("/generateImageByAi",upload.none(),controllers.generateMultipleImagesByAi);
-router.post("/editImageByAi",upload.array('image', 1),controllers.editImageByAi);
+// router.post("/generateImageByAi",upload.none(),controllers.generateMultipleImagesByAi);
+router.post("/editImageByAi",uploadforSingleEditImage.array('image', 1),controllers.editImageByAi);
 // router.post("/uploadToCloudinary",cloudinaryUpload.array("images"), controllers.fileUploadToCloudinary);
 router.post("/fileBlobDataUploadToCloudinary",testUpload.any(), controllers.fileBlobDataUploadToCloudinary);
 router.delete("/deleteFromCloudinary", controllers.deleteImageFromCloudinary);
