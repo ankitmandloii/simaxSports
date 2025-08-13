@@ -412,3 +412,30 @@ exports.addProductVariants = async (req, res) => {
   });
 };
 
+
+
+
+// controller/products.js
+exports.productsSearch = async (req, res) => {
+  try {
+    const q = (req.query.query || '').trim();
+    if (!q) {
+      return sendResponse(res, statusCode.BAD_REQUEST, false, 'query is required');
+    }
+    const limit  = Math.min(Number(req.query.limit) || 20, 250);
+    const cursor = req.query.cursor || null;
+    const collectionId = req.query.collectionId || null;
+
+    const result = await services.searchProducts({ q, limit, cursor, collectionId });
+
+    if (!result) {
+      return sendResponse(res, statusCode.NOT_FOUND, false, 'No results');
+    }
+
+    return sendResponse(res, statusCode.OK, true, 'Search results', result);
+  } catch (err) {
+    console.error(err);
+    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+  }
+};
+

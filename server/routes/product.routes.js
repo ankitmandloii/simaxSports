@@ -11,5 +11,5 @@ router.post("/collectionList", controllers.getAllCollectionList);
 router.post("/collection/:id", controllers.productsByCollectionId);
 router.post("/addVariantsOnStaticProduct", controllers.addProductVariants);
 
-
+router.get('/search', controllers.productsSearch);
 module.exports = router;

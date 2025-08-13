@@ -537,3 +537,82 @@ export async function getAllCollectionList(limit = 50, cursor = null) {
 
 
 
+// services/products.js
+export async function searchProducts({ q, limit, cursor, collectionId }) {
+  const S_STORE = process.env.SHOPIFY_STORE_URL;
+  const A_TOKEN = process.env.SHOPIFY_API_KEY;
+  const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
+
+  // Build Shopify search string
+  const escaped = q.replace(/"/g, '\\"').trim();
+
+  const parts = [];
+  if (collectionId) {
+    // Shopify's "collection_id:" needs the numeric id
+    const numericId = String(collectionId).replace(/\D/g, '');
+    if (numericId) parts.push(`collection_id:${numericId}`);
+  }
+  // Search across common fields (no brand/vendor bias)
+  parts.push(`(title:*${escaped}* OR sku:${escaped} OR tag:${escaped} OR product_type:*${escaped}*)`);
+  const searchQuery = parts.join(' AND ');
+
+  const gql = `
+    query ProductSearch($first: Int!, $after: String, $query: String!) {
+      products(first: $first, after: $after, query: $query) {
+        pageInfo { hasNextPage endCursor startCursor hasPreviousPage }
+        edges {
+          cursor
+          node {
+            id
+            title
+            handle
+            tags
+            vendor
+            productType
+            images(first: 4) { edges { node { id originalSrc altText } } }
+            variants(first: 50) {
+              edges {
+                node {
+                  id title sku price compareAtPrice
+                  image { id originalSrc altText }
+                  selectedOptions { name value }
+                }
+              }
+            }
+          }
+        }
+      }
+    }`;
+
+  try {
+    const response = await fetch(SHOPIFY_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': A_TOKEN,
+      },
+      body: JSON.stringify({
+        query: gql,
+        variables: { first: Number(limit) || 20, after: cursor || null, query: searchQuery }
+      }),
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const json = await response.json();
+
+    const conn = json?.data?.products;
+    const items = (conn?.edges || []).map(e => e.node);
+
+    return {
+      items,
+      nextCursor: conn?.pageInfo?.hasNextPage ? conn?.pageInfo?.endCursor : null,
+      pageInfo: conn?.pageInfo,
+      raw: json?.data, // optional: remove in production
+    };
+  } catch (error) {
+    console.error('Search failed:', error?.message || error);
+    return null;
+  }
+}
+
+
