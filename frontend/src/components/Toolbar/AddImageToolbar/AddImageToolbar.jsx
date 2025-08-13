@@ -229,6 +229,8 @@ const AddImageToolbar = () => {
 
   async function handleImage(imageSrc, color = "#ffffff", selectedFilter, invertColor, editColor) {
     try {
+
+
       setResetDefault(false);
 
       // globalDispatch("editColor", false);
@@ -1194,17 +1196,14 @@ const AddImageToolbar = () => {
   }
 
   function replaceColorAndGetBase64(imageSrc, targetHex, newHex, tolerance = 50) {
-    console.log(targetHex, newHex, "replaceColorAndGetBase64 functiion")
+    console.log(targetHex, newHex, "replaceColorAndGetBase64 functiion", imageSrc)
     return new Promise((resolve, reject) => {
       const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
       // Support CORS if external URL
-      if (!imageSrc.startsWith("data:image")) {
-        img.crossOrigin = "anonymous";
-      }
-
+      img.crossOrigin = "anonymous";
       img.src = imageSrc;
 
       img.onload = function () {
@@ -1263,7 +1262,7 @@ const AddImageToolbar = () => {
     console.log("apply color blend fucntion called", originalColor, newColor, previewUrl);
     globalDispatch("loading", true);
     setLoading(true);
-    const cuurentBase64Image = await replaceColorAndGetBase64(img.getBase64CanvasImage || base64Image || previewUrl, originalColor, newColor);
+    const cuurentBase64Image = await replaceColorAndGetBase64(img.base64CanvasImage || base64Image || previewUrl, originalColor, newColor);
     globalDispatch("base64CanvasImage", cuurentBase64Image);
     setBase64Image(cuurentBase64Image);
     setLoading(true);
