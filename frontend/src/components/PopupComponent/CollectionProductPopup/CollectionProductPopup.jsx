@@ -258,6 +258,7 @@ import style from './CollectionProductPopup.module.css';
 import { useSelector } from 'react-redux';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
 import ColorWheel from '../../images/color-wheel1.png';
+import ColorSwatchPlaceholder from '../../CommonComponent/ColorSwatchPlaceholder.jsx/ColorSwatchPlaceholder';
 
 const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoading: setParentLoading, setCollectionLoading }) => {
   console.log("=----collectionId",collectionId)
@@ -274,6 +275,8 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
   const [cursor, setCursor] = useState('');
   const [hasNextPage, setHasNextPage] = useState(false);
   const [loading, setLoading] = useState(false);
+    const [swatchLoaded, setSwatchLoaded] = useState(true);
+  
   console.log("------------loadingggg",loading)
 
 
@@ -475,7 +478,8 @@ useEffect(() => {
       const isSelected = selectedColorByProduct[product.id]?.name === color;
        const swatchImage = colorObj?.swatchImg || getSwatchImage(product, color);
       return (
-         <img
+        <>
+         {!swatchLoaded ? <ColorSwatchPlaceholder size={30} /> :  <img
                   key={`${product.id}-${color}-${idx}`}
                   src={swatchImage}
                   alt={color}
@@ -486,7 +490,7 @@ useEffect(() => {
                     height: 30,
                     borderRadius: '20%',
                     cursor: 'pointer',
-                    margin: 5,
+                    margin: 3,
                     display: 'inline-block',
                     border: isSelected ? '2px solid black' : '1px solid gray',
                     objectFit: 'cover'
@@ -502,7 +506,10 @@ useEffect(() => {
                     }
                   }}
                   onClick={(e) => handleColorClick(e, product, color)}
+                   onLoad={() => setSwatchLoaded(true)}
                 />
+                } </>
+        
       );
     });
 

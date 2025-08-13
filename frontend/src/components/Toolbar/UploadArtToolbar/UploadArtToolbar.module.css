@@ -166,3 +166,47 @@
 .marginTop {
   margin: 5px 0 !important;
 }
+
+/* ----uploadpopup */
+.fullScreenOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: white;
+}
+
+.overlayContent {
+  text-align: center;
+  color: white;
+  /* border: 2px solid dashed; */
+  border: 2px solid white;
+  border-style: dashed;
+  padding: 8rem;
+  /* font-size: 3rem; */
+}
+
+.fileIcon {
+  font-size: 2rem;
+}
+
+.overlayContent p {
+  font-size: 15px;
+  margin: 10px 0;
+}
+
+/* .dashed {
+
+  height: 4rem;
+  width: 4rem;
+
+
+} */

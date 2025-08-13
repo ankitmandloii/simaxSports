@@ -20,7 +20,17 @@ import { toast } from 'react-toastify';
 
 const NamesToolbar = () => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
-  const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide]);
+  // const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide]);
+  const { addName, addNumber } = useSelector(
+    (state) => ({
+      addName: state.TextFrontendDesignSlice?.present[activeSide].addName,
+      addNumber: state.TextFrontendDesignSlice?.present[activeSide].addNumber,
+    }),
+    // shallowEqual // Prevents unnecessary re-renders
+  );
+  console.log("-----addName", addName)
+  console.log("-----addNumber", addNumber)
+
   // const addName=useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addName)
   // const addNumber=useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addNumber)
   const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
@@ -109,11 +119,14 @@ const NamesToolbar = () => {
   // Keep local state in sync with Redux on load/update
 
   useEffect(() => {
+    // dispatch(setActiveSide("back"))
+
     setActiveName(addName);
     setActiveNumber(addNumber);
     setActiveColor(nameAndNumberDesign?.fontColor);
     setActiveFont(nameAndNumberDesign?.fontFamily);
     setActiveSize(nameAndNumberDesign?.fontSize);
+
 
   }, [nameAndNumberDesign]);
   return (
@@ -137,10 +150,13 @@ const NamesToolbar = () => {
               onChange={handleAddNames}
             /> */}
             <label className={style.switch}>
+
               <input
                 type="checkbox"
                 checked={activeName}
                 onChange={handleAddNames}
+                disabled={activeSide === "rightSleeve" || activeSide === "leftSleeve"}
+
               />
               <span className={style.slider}></span>
             </label>
@@ -152,6 +168,8 @@ const NamesToolbar = () => {
                 type="checkbox"
                 checked={activeNumber}
                 onChange={handleAddNumber}
+                disabled={activeSide === "rightSleeve" || activeSide === "leftSleeve"}
+
               />
               <span className={style.slider}></span>
             </label>
