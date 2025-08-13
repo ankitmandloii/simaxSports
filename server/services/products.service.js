@@ -307,7 +307,7 @@ export async function getProductsList(limit = 5, cursor = null) {
               hasNextPage
             }
           }
-          images(first: 50) {
+          images(first: 5) {
             edges {
               node {
                 originalSrc
@@ -421,7 +421,7 @@ export async function getProductsByCollectionId(limit, collectionId, cursor) {
               hasNextPage
             }
           }
-                images(first: 50) {
+                images(first: 5) {
                   edges {
                     node {
                       originalSrc
@@ -559,7 +559,12 @@ export async function searchProducts({ q, limit, cursor, collectionId }) {
   const gql = `
     query ProductSearch($first: Int!, $after: String, $query: String!) {
       products(first: $first, after: $after, query: $query) {
-        pageInfo { hasNextPage endCursor startCursor hasPreviousPage }
+        pageInfo {
+          hasNextPage
+          endCursor
+          startCursor
+          hasPreviousPage
+        }
         edges {
           cursor
           node {
@@ -567,15 +572,61 @@ export async function searchProducts({ q, limit, cursor, collectionId }) {
             title
             handle
             tags
-            vendor
-            productType
-            images(first: 4) { edges { node { id originalSrc altText } } }
-            variants(first: 50) {
+            variants(first: 200) {
               edges {
                 node {
-                  id title sku price compareAtPrice
-                  image { id originalSrc altText }
-                  selectedOptions { name value }
+                  id
+                  title
+                  price
+                  compareAtPrice
+                  sku
+                  image {
+                    altText
+                    id
+                    originalSrc
+                  }
+                  selectedOptions {
+                    name
+                    value
+                  }
+                  inventoryItem {
+                    id
+                    inventoryLevels(first: 1) {
+                      edges {
+                        node {
+                          quantities(names: "available") {
+                            name
+                            quantity
+                          }
+                          location {
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
+                  metafields(first: 10, namespace: "custom") {
+                    edges {
+                      node {
+                        key
+                        namespace
+                        value
+                        type
+                      }
+                    }
+                  }
+                }
+              }
+              pageInfo {
+                hasNextPage
+              }
+            }
+            images(first: 5) {
+              edges {
+                node {
+                  originalSrc
+                  altText
+                  id
                 }
               }
             }
@@ -583,6 +634,7 @@ export async function searchProducts({ q, limit, cursor, collectionId }) {
         }
       }
     }`;
+ 
 
   try {
     const response = await fetch(SHOPIFY_API_URL, {
