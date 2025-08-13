@@ -108,72 +108,72 @@ function ProductContainer() {
   const { list: rawProducts } = useSelector((state) => state.products);
   const [searchParams] = useSearchParams();
   // initail with color swatch
-useEffect(() => {
-  if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
-  if (!rawProducts || rawProducts.length === 0) return;
+  useEffect(() => {
+    if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
+    if (!rawProducts || rawProducts.length === 0) return;
 
-  const firstProduct = rawProducts[0];
-  if (!firstProduct || !Array.isArray(firstProduct.colors) || firstProduct.colors.length === 0) return;
+    const firstProduct = rawProducts[0];
+    if (!firstProduct || !Array.isArray(firstProduct.colors) || firstProduct.colors.length === 0) return;
 
-  // Map colors with swatchImg and variantImg
-  const updatedColors = firstProduct.colors.map(color => {
-    let swatchImg = '';
-    let variantImg = '';
-    let selectedImage = '';
+    // Map colors with swatchImg and variantImg
+    const updatedColors = firstProduct.colors.map(color => {
+      let swatchImg = '';
+      let variantImg = '';
+      let selectedImage = '';
 
-    const variant = color?.variant;
+      const variant = color?.variant;
 
-    const variantImagesMetafield = variant?.metafields?.edges?.find(
-      edge => edge.node.key === 'variant_images' && edge.node.namespace === 'custom'
-    );
+      const variantImagesMetafield = variant?.metafields?.edges?.find(
+        edge => edge.node.key === 'variant_images' && edge.node.namespace === 'custom'
+      );
 
-    if (variantImagesMetafield?.node?.value) {
-      try {
-        const parsedImages = JSON.parse(variantImagesMetafield.node.value);
-         console.log("-----------parseimgaes33",parsedImages)
-        if (Array.isArray(parsedImages)) {
-          console.log("-----------parseimgaes",parsedImages)
-          const colorKey = color.name?.toLowerCase().replace(/\s+/g, '') || '';
-          swatchImg =
-            parsedImages.find(img => img.toLowerCase().includes(colorKey)) ||
-            parsedImages[3] ||
-            parsedImages[0] ||
-            '';
-          variantImg = parsedImages[0] || color.img || '';
-          selectedImage = variantImg;
+      if (variantImagesMetafield?.node?.value) {
+        try {
+          const parsedImages = JSON.parse(variantImagesMetafield.node.value);
+          //  console.log("-----------parseimgaes33",parsedImages)
+          if (Array.isArray(parsedImages)) {
+            console.log("-----------parseimgaes", parsedImages)
+            const colorKey = color.name?.toLowerCase().replace(/\s+/g, '') || '';
+            swatchImg =
+              parsedImages.find(img => img.toLowerCase().includes(colorKey)) ||
+              parsedImages[3] ||
+              parsedImages[0] ||
+              '';
+            variantImg = parsedImages[0] || color.img || '';
+            selectedImage = variantImg;
+          }
+        } catch (error) {
+          console.warn('Failed to parse variant_images metafield:', error);
         }
-      } catch (error) {
-        console.warn('Failed to parse variant_images metafield:', error);
       }
-    }
 
-    // Fallback
-    const fallbackImage =
-      color.img || variant?.image?.originalSrc || firstProduct.images?.[0] || '';
-    swatchImg = swatchImg || fallbackImage;
-    variantImg = variantImg || fallbackImage;
-    selectedImage = selectedImage || fallbackImage;
+      // Fallback
+      const fallbackImage =
+        color.img || variant?.image?.originalSrc || firstProduct.images?.[0] || '';
+      swatchImg = swatchImg || fallbackImage;
+      variantImg = variantImg || fallbackImage;
+      selectedImage = selectedImage || fallbackImage;
 
-    return {
-      ...color,
-      swatchImg,
-      variantImg,
+      return {
+        ...color,
+        swatchImg,
+        variantImg,
+      };
+    });
+
+    // Pick first color as selected
+    const firstColor = updatedColors[0];
+    const initialProductWithColor = {
+      ...firstProduct,
+      colors: updatedColors,
+      selectedColor: firstColor,
+      selectedImage: firstColor.variantImg,
+      imgurl: firstColor.variantImg,
     };
-  });
 
-  // Pick first color as selected
-  const firstColor = updatedColors[0];
-  const initialProductWithColor = {
-    ...firstProduct,
-    colors: updatedColors,
-    selectedColor: firstColor,
-    selectedImage: firstColor.variantImg,
-    imgurl: firstColor.variantImg,
-  };
-
-  dispatch(setSelectedProducts([initialProductWithColor]));
-  dispatch(setActiveProduct(initialProductWithColor));
-}, [rawProducts, dispatch, selectedProducts]);
+    dispatch(setSelectedProducts([initialProductWithColor]));
+    dispatch(setActiveProduct(initialProductWithColor));
+  }, [rawProducts, dispatch, selectedProducts]);
 
 
 
@@ -239,46 +239,46 @@ useEffect(() => {
 
   // --
   useEffect(() => {
-  // Initialize with fallback image
-  const defaultImage = activeProduct?.imgurl || '';
+    // Initialize with fallback image
+    const defaultImage = activeProduct?.imgurl || '';
 
-  // Set defaults in case metafields are not available
-  let front = defaultImage;
-  let back = defaultImage;
-  let sleeve = defaultImage;
-  console.log("-----activeProduct",activeProduct)
+    // Set defaults in case metafields are not available
+    let front = defaultImage;
+    let back = defaultImage;
+    let sleeve = defaultImage;
+    console.log("-----activeProduct", activeProduct)
 
-  if (activeProduct?.selectedColor?.variant?.metafields?.edges?.length) {
-    const variantMetafields = activeProduct.selectedColor.variant.metafields.edges.find(
-      (edge) => edge?.node?.key === 'variant_images'
-    )?.node?.value;
+    if (activeProduct?.selectedColor?.variant?.metafields?.edges?.length) {
+      const variantMetafields = activeProduct.selectedColor.variant.metafields.edges.find(
+        (edge) => edge?.node?.key === 'variant_images'
+      )?.node?.value;
 
-    if (variantMetafields) {
-      try {
-        const parsedImages = JSON.parse(variantMetafields);
+      if (variantMetafields) {
+        try {
+          const parsedImages = JSON.parse(variantMetafields);
 
-        // Find specific images by their suffixes in the URL string
-        front = parsedImages.find(img => img.includes('_f_fl')) || defaultImage;
-        back = parsedImages.find(img => img.includes('_b_fl')) || defaultImage;
-        sleeve = parsedImages.find(img => img.includes('_d_fl')) || defaultImage;
-      } catch (err) {
-        console.error('Failed to parse metafields variant_images:', err);
+          // Find specific images by their suffixes in the URL string
+          front = parsedImages.find(img => img.includes('_f_fl')) || defaultImage;
+          back = parsedImages.find(img => img.includes('_b_fl')) || defaultImage;
+          sleeve = parsedImages.find(img => img.includes('_d_fl')) || defaultImage;
+        } catch (err) {
+          console.error('Failed to parse metafields variant_images:', err);
+        }
       }
     }
-  }
 
-  // Set background images
-  setFrontBgImage(front);
-  setBackBgImage(back);
-  setLeftSleeveBgImage(sleeve);
-  setRightSleeveBgImage(sleeve);
+    // Set background images
+    setFrontBgImage(front);
+    setBackBgImage(back);
+    setLeftSleeveBgImage(sleeve);
+    setRightSleeveBgImage(sleeve);
 
-  // Set preview images
-  setFrontPreviewImage(front);
-  setBackPreviewImage(back);
-  setLeftSleevePreviewImage(sleeve);
-  setRightSleevePreviewImage(sleeve);
-}, [activeProduct]);
+    // Set preview images
+    setFrontPreviewImage(front);
+    setBackPreviewImage(back);
+    setLeftSleevePreviewImage(sleeve);
+    setRightSleevePreviewImage(sleeve);
+  }, [activeProduct]);
 
   useEffect(() => {
     if (exportRequested) {
