@@ -822,12 +822,12 @@ const AddImageToolbar = () => {
     }
   };
   useEffect(() => {
-    // if (img?.editColor) {
-    //   setExtractedColors(img?.extractedColors);
-    // }
-    // else {
-    // }
-    fetchPalette();
+    if (img?.editColor) {
+      setExtractedColors(img?.extractedColors);
+    }
+    else {
+      fetchPalette();
+    }
   }, [img?.src]);
 
   function applyFilterAndGetUrl(imageSrc, color) {
@@ -1197,7 +1197,7 @@ const AddImageToolbar = () => {
 
   function replaceColorAndGetBase64(imageSrc, targetHex, newHex, tolerance = 50) {
     console.log(targetHex, newHex, "replaceColorAndGetBase64 functiion", imageSrc)
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
@@ -1206,7 +1206,7 @@ const AddImageToolbar = () => {
       img.crossOrigin = "anonymous";
       img.src = imageSrc;
 
-      img.onload = function () {
+      img.onload = async function () {
         canvas.width = img.width;
         canvas.height = img.height;
         ctx.drawImage(img, 0, 0);
@@ -1229,12 +1229,29 @@ const AddImageToolbar = () => {
 
         ctx.putImageData(imageData, 0, 0);
         const base64 = canvas.toDataURL('image/png');
-        resolve(base64);
+
+
+        const objectURL = await new Promise((resolve, reject) => {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(URL.createObjectURL(blob));
+            } else {
+              reject(new Error("Failed to convert canvas to blob"));
+            }
+          }, "image/png", 0.92);
+        });
+
+        // Cleanup
+        canvas.width = 0;
+        canvas.height = 0;
+        // canvas.remove();
+
+        resolve(objectURL);
         // canvas.remove();
       };
 
       img.onerror = function () {
-        reject(new Error("Failed to load image"));
+        resolve(imageSrc);
       };
     });
   }
