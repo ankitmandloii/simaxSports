@@ -36,6 +36,7 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img }) => {
     const [prompt, setPrompt] = useState('');
     const [loading, setLoading] = useState(false);
     const [resultImage, setResultImage] = useState(null);
+    const BASE_URL = process.env.REACT_APP_BASE_URL;
 
     const handleGenerate = async () => {
         if (!prompt) {
@@ -63,7 +64,7 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img }) => {
             formData.append('size', '1024x1024');
             formData.append('n', '1');
 
-            const res = await fetch('imageOperation/editImageByAi', {
+            const res = await fetch(`${BASE_URL}imageOperation/editImageByAi`, {
                 method: 'POST',
                 body: formData
             });
@@ -71,7 +72,8 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img }) => {
             if (!res.ok) throw new Error("Failed to generate image");
 
             const data = await res.json();
-            setResultImage(data.imageUrl); // assuming backend returns `{ imageUrl: "..." }`
+            console.log(data, "========data")
+            // setResultImage(data.imageUrl); // assuming backend returns `{ imageUrl: "..." }`
         } catch (err) {
             console.error(err);
             alert("Error generating background");
@@ -84,7 +86,7 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img }) => {
         <div>
             <div className='toolbar-main-heading'>
                 <h5 className='Toolbar-badge'>Upload Art</h5>
-                <img src={img?.src} alt="Uploaded" />
+                {/* <img src={img?.src} alt="Uploaded" /> */}
                 <span className={styles.crossIcon} onClick={() => setreplaceBgwithAi(false)}>
                     <CrossIcon />
                 </span>

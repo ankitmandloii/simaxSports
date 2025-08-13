@@ -109,7 +109,7 @@ const ProductAvailableColor = ({
   const colorsToShow = availableColors || product.colors || [];
 
   const popupRef = useRef(null);
-  console.log("-=-=-=-=-=-=-=actionType", colorsToShow);
+  // console.log("-=-=-=-=-=-=-=actionType", colorsToShow);
 
   // Close popup on outside click
   useEffect(() => {

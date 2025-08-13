@@ -154,10 +154,10 @@
   /* transform: translateX(-50%); */
   /* margin-top: 10px;
    */
-    margin-left: 8px;
-   margin-bottom: 5px;
-   margin-top: 10px; 
-   /* margin: auto; */
+  margin-left: 8px;
+  margin-bottom: 5px;
+  margin-top: 10px;
+  /* margin: auto; */
   position: absolute;
   bottom: 0;
   left: 0;
@@ -230,8 +230,8 @@
   height: 1rem;
   width: 1rem;
   align-items: center;
- top: -11px;
-    right: -8px;
+  top: -11px;
+  right: -8px;
   border-radius: 100%;
   /* background-color: #F6F6F6; */
   background-color: white;
@@ -282,7 +282,7 @@
   border-radius: 0px 20px 20px 0px;
   padding-inline: 15px;
   padding-top: 26.87px;
-  padding-bottom: 50px;
+  padding-bottom: 150px;
 }
 
 .miniProdImgContainer {

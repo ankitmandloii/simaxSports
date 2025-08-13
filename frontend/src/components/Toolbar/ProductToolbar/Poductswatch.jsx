@@ -39,16 +39,16 @@ const ProductToolbar = () => {
   // Clone color safely with fallback for swatch and variant images
   const safeCloneColor = (color, fallbackImg = '') => {
     if (!color || typeof color !== 'object' || Array.isArray(color)) {
-      return { 
-        name: String(color), 
+      return {
+        name: String(color),
         swatchImg: fallbackImg,
-        variantImg: fallbackImg 
+        variantImg: fallbackImg
       };
     }
-    return { 
+    return {
       name: color.name,
       swatchImg: color.swatchImg || color.img || fallbackImg,
-      variantImg: color.variantImg || color.img || fallbackImg 
+      variantImg: color.variantImg || color.img || fallbackImg
     };
   };
 
@@ -66,8 +66,8 @@ const ProductToolbar = () => {
         const parsed = JSON.parse(metafield.node.value);
         if (Array.isArray(parsed)) {
           const colorNameLower = colorName.toLowerCase().replace(/\s+/g, '');
-          swatchImage = parsed.find(img => 
-            img.includes('38307_fm') || 
+          swatchImage = parsed.find(img =>
+            img.includes('38307_fm') ||
             img.toLowerCase().includes(colorNameLower)
           ) || parsed[3] || parsed[0] || swatchImage;
         }
@@ -175,7 +175,7 @@ const ProductToolbar = () => {
 
   // Get list of colors not already used by the product
   const getAvailableColorsForProduct = (product) => {
-    console.log("===============availableeeprodddd", product);
+    // console.log("===============availableeeprodddd", product);
     const allColors = product.colors?.length ? product.colors : normalizeColorsFromShopify(product);
     if (!allColors.length) return [];
 

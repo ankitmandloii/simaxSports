@@ -10,19 +10,24 @@
   align-items: center;
   z-index: 999;
 }
-.heading{
+
+.heading {
   font-size: 1.2rem;
 }
-.modalHeader h3{
+
+.modalHeader h3 {
   margin-bottom: 0;
 }
-.hrUnderline{
+
+.hrUnderline {
   opacity: 0.5;
   margin: 10px 0;
 }
+
 .modalContent {
   background: white;
   padding: 20px;
+  padding-bottom: 105px;
   width: 70%;
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -115,7 +120,7 @@
 
 .colorPopup {
   position: absolute;
-  top:70%;
+  top: 70%;
   /* positioned inside modalProduct */
   /* top: 100%; */
   /* place just below the product */
