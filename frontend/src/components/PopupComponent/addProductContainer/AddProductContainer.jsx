@@ -252,6 +252,7 @@ import colorwheel1 from "../../images/color-wheel1.png";
 import { CrossIcon } from "../../iconsSvg/CustomIcon";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ColorSwatchPlaceholder from "../../CommonComponent/ColorSwatchPlaceholder.jsx/ColorSwatchPlaceholder";
 
 const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProductPopup }) => {
   const { list: rawProducts, loading, error } = useSelector((state) => state.products);
@@ -260,6 +261,8 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
   const [products, setProducts] = useState([]);
   const [productStates, setProductStates] = useState({});
   const [imageLoadStates, setImageLoadStates] = useState({});
+  const [swatchLoaded, setSwatchLoaded] = useState(false);  
+
 
   useEffect(() => {
     if (rawProducts.length > 0) {
@@ -278,8 +281,8 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
               const parsed = JSON.parse(variantImages);
               if (Array.isArray(parsed)) {
                 const colorNameLower = color.name.toLowerCase().replace(/\s+/g, '');
-                swatchImage = parsed.find(img => 
-                  img.includes('38307_fm') || 
+                swatchImage = parsed.find(img =>
+                  img.includes('38307_fm') ||
                   img.toLowerCase().includes(colorNameLower)
                 ) || parsed[3] || parsed[0] || '';
               }
@@ -403,10 +406,10 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
-          <h3>Add Product</h3>
+          <h3 className={styles.heading}>Add Product</h3>
           <button onClick={onClose} className={styles.modalClose}>&times;</button>
         </div>
-        <hr />
+        <hr className={styles.hrUnderline} />
         <p>Select From Our Most Popular Products</p>
 
         {loading && products.length === 0 && <div className="loader" />}
@@ -461,44 +464,49 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                         <div className="color-swatch-list">
                           {colors.map((color) => {
                             const isSelected = state.selectedColor?.name === color.name;
-                            // Parse the variant_images from metafields
                             const variantImages = color.variant?.metafields?.edges?.find(
                               edge => edge.node.key === "variant_images"
                             )?.node.value;
                             const swatchImage = variantImages ? JSON.parse(variantImages)[3] : color.swatchImg;
 
+                            // Track load state per swatch
+
                             return (
-                              <img
-                                key={`${productKey}-${color.name}`}
-                                src={swatchImage}
-                                alt={color.name}
-                                title={color.name}
-                                className={`color-swatch ${isSelected ? "selected" : ""}`}
-                                style={{
-                                  width: 30,
-                                  height: 30,
-                                  borderRadius: "20%",
-                                  cursor: "pointer",
-                                  margin: 5,
-                                  display: "inline-block",
-                                  border: isSelected ? "2px solid black" : "1px solid gray",
-                                  objectFit: "cover",
-                                }}
-                                onMouseEnter={() => {
-                                  if (!state.selectedColor) {
-                                    updateProductState(productKey, { hoverImage: color.img });
-                                  }
-                                }}
-                                onMouseLeave={() => {
-                                  if (!state.selectedColor) {
-                                    updateProductState(productKey, { hoverImage: null });
-                                  }
-                                }}
-                                onClick={(e) => handleColorSelect(e, productKey, color)}
-                              />
+                              <React.Fragment key={`${productKey}-${color.name}`}>
+                                {!swatchLoaded && <ColorSwatchPlaceholder size={30} />}
+                                <img
+                                  src={swatchImage}
+                                  alt={color.name}
+                                  title={color.name}
+                                  style={{
+                                    width: 30,
+                                    height: 30,
+                                    borderRadius: "20%",
+                                    cursor: "pointer",
+                                    margin: 5,
+                                    display: swatchLoaded ? "inline-block" : "none", // hide until loaded
+                                    border: isSelected ? "2px solid black" : "1px solid gray",
+                                    objectFit: "cover",
+                                  }}
+                                  className={`color-swatch ${isSelected ? "selected" : ""}`}
+                                  onLoad={() => setSwatchLoaded(true)}
+                                  onMouseEnter={() => {
+                                    if (!state.selectedColor) {
+                                      updateProductState(productKey, { hoverImage: color.img });
+                                    }
+                                  }}
+                                  onMouseLeave={() => {
+                                    if (!state.selectedColor) {
+                                      updateProductState(productKey, { hoverImage: null });
+                                    }
+                                  }}
+                                  onClick={(e) => handleColorSelect(e, productKey, color)}
+                                />
+                              </React.Fragment>
                             );
                           })}
                         </div>
+
 
                         <div className={styles.popupActions}>
                           <button

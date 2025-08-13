@@ -314,19 +314,29 @@ const ProductToolbar = () => {
                           : ''
                           }`}
 
+                        // onClick={(e) => {
+                        //   const clickedColor = i === 0 ? product.selectedColor : product.addedColors?.[i - 1];
+                        //   const clickedColorName = clickedColor?.name;
+                        //   const currentActiveName = activeProduct?.selectedColor?.name;
+
+                        //   if (clickedColorName && clickedColorName !== currentActiveName) {
+                        //     const updatedActiveProduct = {
+                        //       ...product,
+                        //       selectedColor: safeCloneColor(clickedColor),
+                        //       imgurl: clickedColor?.img || product.imgurl,
+                        //     };
+                        //     dispatch(setActiveProduct(updatedActiveProduct));
+                        //   }
+                        //   setActiveThumbnail({ productIndex: index, colorIndex: i });
+                        // }}
                         onClick={(e) => {
                           const clickedColor = i === 0 ? product.selectedColor : product.addedColors?.[i - 1];
-                          const clickedColorName = clickedColor?.name;
-                          const currentActiveName = activeProduct?.selectedColor?.name;
-
-                          if (clickedColorName && clickedColorName !== currentActiveName) {
-                            const updatedActiveProduct = {
-                              ...product,
-                              selectedColor: safeCloneColor(clickedColor),
-                              imgurl: clickedColor?.img || product.imgurl,
-                            };
-                            dispatch(setActiveProduct(updatedActiveProduct));
-                          }
+                          const updatedActiveProduct = {
+                            ...product,
+                            selectedColor: safeCloneColor(clickedColor, product.imgurl),
+                            imgurl: clickedColor?.img || product.imgurl,
+                          };
+                          dispatch(setActiveProduct(updatedActiveProduct));
                           setActiveThumbnail({ productIndex: index, colorIndex: i });
                         }}
                       >

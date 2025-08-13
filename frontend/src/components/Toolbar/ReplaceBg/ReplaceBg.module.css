@@ -1,0 +1,62 @@
+.replacebginput {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    box-shadow: 0 0 4px #007BFF;
+    /* Blue glow like your image */
+    color: #333;
+}
+
+.generateBgbtn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    font-size: 16px;
+    background-color: var(--blue-color);
+    /* Bright orange */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.generateBgbtn:hover {
+    box-shadow: var(--blue-color) 0px 2px 8px 0px;
+
+}
+
+.removeBgbtn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    font-size: 16px;
+    background-color: transparent;
+    /* Bright orange */
+    color: var(--blue-color);
+    border: 2px solid var(--blue-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.removeBgbtn:hover {
+    box-shadow: var(--blue-color) 0px 2px 8px 0px;
+
+}
+
+.rightarrow {
+    color: var(--blue-color);
+}
+
+.crossIcon {
+    position: absolute;
+    right: 0;
+    cursor: pointer;
+
+}

@@ -62,7 +62,7 @@ useEffect(() => {
     {
       path: "/design/addArt",
       icon: <SelectArtIcon />,
-      label: "Select Art",
+      label: "Generate Art",
     },
     {
       path: "/design/addNames",

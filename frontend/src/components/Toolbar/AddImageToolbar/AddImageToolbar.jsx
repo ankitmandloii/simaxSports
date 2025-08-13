@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { duplicateImageState, moveElementBackwardState, moveElementForwardState, toggleImageLockState, toggleLoading, toggleLockState, updateImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 import { useNavigate } from 'react-router-dom';
 import ReplaceBackgroundColorPicker from '../../CommonComponent/ChooseColorBox/ReplaceBackgroundColorPicker.jsx';
+import ReplaceBg from '../ReplaceBg/ReplaceBg.jsx';
 
 
 
@@ -1758,20 +1759,8 @@ const AddImageToolbar = () => {
             </>
 
           </div>
-        </>) : <div>
-        <div className='toolbar-main-heading'>
-          <h5 className='Toolbar-badge'>Upload Art</h5>
-          <span className={styles.crossIcon} onClick={() => setreplaceBgwithAi(true)}><CrossIcon /></span>
-          <h3>Replace BackGround</h3>
-          <p>Type in a Prompt to try our AI Powered Background Replacement Tool. Keep in mind that this cannot work at the same time as the Remove Background feature.</p>
-        </div>
-        <hr />
-        <textarea className={styles.replacebginput} type='text' placeholder='Begin Typing....'></textarea>
-
-        {/* <input className={styles.replacebginput} type='text' placeholder='Begin Typing....'/> */}
-
-        <button className={styles.generateBgbtn} >Generate Background</button>
-      </div>}
+        </>) :
+        (<ReplaceBg replacebgwithAi={replacebgwithAi} setreplaceBgwithAi={setreplaceBgwithAi} img={img} />)}
     </div>
 
   );

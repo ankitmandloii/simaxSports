@@ -1,6 +1,6 @@
 .fabContainer {
   position: fixed;
-  bottom: 84px;
+  bottom: 50px;
   right: 20px;
   display: flex;
   flex-direction: column-reverse;
@@ -124,19 +124,21 @@
 
 @media screen and (max-width: 768px) {
   .fabContainer {
-      bottom: 84px;
-      right: 20px;
+    bottom: 84px;
+    right: 20px;
   }
 
   .fabMain {
     width: 5vh;
     height: 5vh;
-    font-size: 3vh; /* Size relative to screen height */
+    font-size: 3vh;
+    /* Size relative to screen height */
   }
 
   .fabActions .fabButton {
     width: 5vh;
     height: 5vh;
-    font-size: clamp(1vh, 3vh, 2.5vh); /* Ensures scaling with height but not too small or large */
+    font-size: clamp(1vh, 3vh, 2.5vh);
+    /* Ensures scaling with height but not too small or large */
   }
 }

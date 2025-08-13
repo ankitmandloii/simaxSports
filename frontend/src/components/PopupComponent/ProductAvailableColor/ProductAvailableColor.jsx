@@ -129,7 +129,7 @@ const ProductAvailableColor = ({
   return (
     <div className="color-popup-overlay">
       <div className={style.colorPopupContainerSpanBox} ref={popupRef} style={{
-        ...(actionType === 'change' ? { left: '-30%' } : { right: '0' })
+        ...(actionType === 'change' ? { left: '-15%' } : { right: '0' })
       }}>
         <span onClick={onClose} className={style.crossProdIConn}>
           <CrossIcon />

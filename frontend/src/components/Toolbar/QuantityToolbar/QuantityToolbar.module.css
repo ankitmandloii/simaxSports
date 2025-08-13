@@ -212,7 +212,7 @@
 }
 
 .downArrow {
-  background-color: #fff;
+  /* background-color: #fff; */
   display: flex;
   align-items: center;
 }
