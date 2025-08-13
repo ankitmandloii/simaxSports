@@ -7,6 +7,7 @@ const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/cl
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const path = require('path');
+// const archiver = require("archiver");
 // const axios = require('axios');
 
 
@@ -218,42 +219,201 @@ exports.readFile = async (request, response, path) => {
 }
 
 
-// exports.generateImage = async (req, res) => {
+
+
+// controllers/generateImageByAi.js
+// exports.generateImageByAi = async (req, res) => {
+//   try {
+//     const body = req.body || {};
+//     const prompt = body.prompt || "Make subtle improvements";
+//     const size = body.size || "1024x1024";
+//     const n = parseInt(body.n || "1", 10);
+//     const model = body.model || "gpt-image-1";
+
+//     const resp = await fetch("https://api.openai.com/v1/images/generations", {
+//       method: "POST",
+//       headers: {
+//         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({ model, prompt, size, n }),
+//     });
+
+//     const data = await resp.json();
+//     if (!resp.ok) {
+//       return res.status(resp.status).json(data);
+//     }
+
+//     // Prefer b64_json; fall back to url
+//     let imgBuffer;
+//     const first = data?.data?.[0];
+
+//     if (first?.b64_json) {
+//       imgBuffer = Buffer.from(first.b64_json, "base64");
+//     } else if (first?.url) {
+//       const imgResp = await fetch(first.url);
+//       if (!imgResp.ok) {
+//         return res.status(502).json({ message: "Failed to fetch image URL", data: first });
+//       }
+//       const arr = await imgResp.arrayBuffer();
+//       imgBuffer = Buffer.from(arr);
+//     } else {
+//       return res.status(502).json({ message: "OpenAI returned no image data", data });
+//     }
+
+//     const filename = `generated_${Date.now()}.png`;
+//     res.setHeader("Content-Type", "image/png");
+//     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+//     return res.send(imgBuffer);
+//   } catch (err) {
+//     console.error("Generate image error:", err);
+//     return res.status(500).json({ message: "Image generation failed", error: String(err) });
+//   }
+// };
+
+// controllers/generateMultipleImagesByAi.js
 
 
 
-const crypto = require("crypto");
+// exports.generateMultipleImagesByAi = async (req, res) => {
+//   try {
+//     const body = req.body || {};
+//     const prompt = body.prompt || "A beautiful nature scene";
+//     const size = body.size || "1024x1024";
+//     const n = parseInt(body.n || "3", 10);  // Set the number of images to generate
+//     const model = body.model || "gpt-image-1";
 
-const IMGIX_DOMAIN = process.env.IMGIX_DOMAIN; // e.g. simaxdesigns.imgix.net
-const SECURE_TOKEN = process.env.SECURE_TOKEN; // your imgix signing token
+//     const resp = await fetch("https://api.openai.com/v1/images/generations", {
+//       method: "POST",
+//       headers: {
+//         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         model,
+//         prompt,
+//         size,
+//         n,  // Number of images to generate
+//       }),
+//     });
 
-exports.generateImage = async (req, res) => {
-    const { prompt } = req.body;
+//     const data = await resp.json();
+//     if (!resp.ok) {
+//       return res.status(resp.status).json(data);
+//     }
 
-    if (!prompt) {
-        return res.status(400).json({ success: false, error: "Prompt is required" });
+//     const images = data?.data || [];
+//     if (images.length === 0) {
+//       return res.status(502).json({ message: "OpenAI returned no image data", data });
+//     }
+
+//     // Initialize an array for image buffers
+//     const imageBuffers = [];
+
+//     // Check and store image buffers for all images
+//     images.forEach((imgData, index) => {
+//       if (imgData?.b64_json) {
+//         try {
+//           const imgBuffer = Buffer.from(imgData.b64_json, "base64");
+//           imageBuffers.push({
+//             buffer: imgBuffer,
+//             filename: `generated_${Date.now()}_${index + 1}.png`,
+//           });
+//         } catch (err) {
+//           console.error(`Error processing image ${index + 1}:`, err);
+//         }
+//       } else {
+//         console.warn(`Image ${index + 1} is missing 'b64_json'. Skipping.`);
+//       }
+//     });
+
+//     if (imageBuffers.length === 0) {
+//       return res.status(502).json({ message: "No valid image data found" });
+//     }
+
+//     // Create a zip file and send it as the response
+//     const zip = archiver("zip", {
+//       zlib: { level: 9 }, // Set compression level to maximum
+//     });
+
+//     res.setHeader("Content-Type", "application/zip");
+//     res.setHeader("Content-Disposition", "attachment; filename=generated_images.zip");
+
+//     zip.pipe(res);
+
+//     imageBuffers.forEach((image) => {
+//       zip.append(image.buffer, { name: image.filename });
+//     });
+
+//     zip.finalize();  // Finish the zip stream
+
+//     zip.on("finish", () => {
+//       console.log("ZIP file has been sent.");
+//     });
+
+//   } catch (err) {
+//     console.error("Generate images error:", err);
+//     return res.status(500).json({ message: "Image generation failed", error: String(err) });
+//   }
+// };
+
+
+
+
+// controller snippet
+exports.editImageByAi = async (req, res) => {
+  try {
+    const baseImage = req.files?.[0] || req.file;
+    if (!baseImage) return res.status(400).json({ message: "Missing file: image" });
+
+    const prompt = req.body.prompt || "Make subtle improvements";
+    const size = req.body.size || "1024x1024";
+    const n = req.body.n || "1";
+    const model = req.body.model || "gpt-image-1";
+
+    // IMPORTANT: use Web FormData + Blob
+    const form = new FormData();
+    form.append("model", model);
+    form.append("prompt", prompt);
+    form.append("size", size);
+    form.append("n", n);
+
+    // Convert Buffer -> Blob
+    const imgBlob = new Blob([baseImage.buffer], {
+      type: baseImage.mimetype || "image/png",
+    });
+    form.append("image", imgBlob, baseImage.originalname || "image.png");
+
+    // Optional mask
+    const mask = req.files?.find(f => f.fieldname === "mask");
+    if (mask) {
+      const maskBlob = new Blob([mask.buffer], {
+        type: mask.mimetype || "image/png",
+      });
+      form.append("mask", maskBlob, mask.originalname || "mask.png");
     }
 
-    try {
-        const encodedPrompt = encodeURIComponent(prompt);
-        const pathAndQuery = `/ai?text2image=true&prompt=${encodedPrompt}`;
+    const resp = await fetch("https://api.openai.com/v1/images/edits", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
+      body: form, // DO NOT spread getHeaders() when using Web FormData
+    });
 
-        // Generate HMAC SHA1 signature
-        const signature = crypto
-            .createHmac("sha1", SECURE_TOKEN)
-            .update(pathAndQuery)
-            .digest("hex");
+    const data = await resp.json();
+    if (!resp.ok) return res.status(resp.status).json(data);
 
-        const signedUrl = `https://${IMGIX_DOMAIN}${pathAndQuery}&s=${signature}`;
+    const b64 = data?.data?.[0]?.b64_json;
+    if (!b64) return res.status(502).json({ message: "OpenAI returned no image data", data });
 
-        // Optional: You could check the image status via Imgix if it supports polling (currently it doesn’t)
-        // For now, return the signed URL for the client to use
-        return res.json({ success: true, imageUrl: signedUrl });
-    } catch (error) {
-        console.error("Error generating Imgix image:", error);
-        return res.status(500).json({ success: false, error: "Something went wrong with image generation" });
-    }
+    const imgBuffer = Buffer.from(b64, "base64");
+    res.setHeader("Content-Type", "image/png");
+    return res.send(imgBuffer);
+  } catch (err) {
+    console.error("Edit image error:", err);
+    res.status(500).json({ message: "Image edit failed", error: String(err) });
+  }
 };
+
 
 
 

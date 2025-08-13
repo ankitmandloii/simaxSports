@@ -61,8 +61,8 @@ const testUpload = multer({ storage: multer.memoryStorage() });
 router.post("/upload", upload.array('images', 5), controllers.fileUpload); // Accept both single and multiple files
 router.delete("/delete", controllers.fileDelete);
 // router.post("/image/list",controllers.getImageGalleryList)
-router.post("/generateImage",controllers.generateImage);
-
+router.post("/generateImageByAi",upload.none(),controllers.generateMultipleImagesByAi);
+router.post("/editImageByAi",upload.array('image', 1),controllers.editImageByAi);
 // router.post("/uploadToCloudinary",cloudinaryUpload.array("images"), controllers.fileUploadToCloudinary);
 router.post("/fileBlobDataUploadToCloudinary",testUpload.any(), controllers.fileBlobDataUploadToCloudinary);
 router.delete("/deleteFromCloudinary", controllers.deleteImageFromCloudinary);
