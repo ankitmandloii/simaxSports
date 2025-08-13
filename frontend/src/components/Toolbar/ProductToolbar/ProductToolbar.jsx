@@ -779,6 +779,8 @@ const ProductToolbar = () => {
       allVariants: originalProduct.allVariants || [],
     };
 
+    console.log("originalProduct id ",originalProduct);
+
     if (colorIndex === 0) {
       // Deleting main color
       if (product.addedColors.length > 0) {

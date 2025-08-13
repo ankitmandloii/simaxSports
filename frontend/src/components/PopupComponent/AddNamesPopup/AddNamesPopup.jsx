@@ -9,8 +9,11 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
-  const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+  // const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+  const activeSide = "back";
   // const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
+  const productState = useSelector((state) => state.productSelection.products);
+  console.log("productState..........", productState);
   const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide]);
   const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
   console.log("---------addnamedesignSlice", nameAndNumberDesign)
@@ -65,10 +68,10 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
   };
 
 
-  const addRow = (key) => {
+  const addRow = (key, size) => {
     setRowsByKey((prev) => ({
       ...prev,
-      [key]: [...(prev[key] || []), { selectionId: Date.now(), size: '', name: '', number: '' }],
+      [key]: [...(prev[key] || []), { selectionId: Date.now(), size: size ? size : "", name: '', number: '' }],
     }));
   };
 
@@ -171,10 +174,35 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
       toast.error("All required fields (Size, Name, Number) must be filled.");
       // alert("All required fields must be filled.");
     } else {
+      console.log(selectionsRows, "selectionsRows");
+
+      const sizeCountWithId = selectionsRows.map(([id, items]) => {
+        const sizeCount = {};
+
+        items.forEach(item => {
+          const size = item.size;
+          if (sizeCount[size]) {
+            sizeCount[size] += 1;
+          } else {
+            sizeCount[size] = 1;
+          }
+        });
+
+        return {
+          id,
+          sizeCount
+        };
+      });
+
+      console.log('sizeCountWithId', sizeCountWithId)
+
       selectionsRows.forEach(([id, rows]) => {
+        const found = sizeCountWithId.find(obj => obj.id === id);
+
         dispatch(UpdateNameAndNumberProduct({
           id,
           newSelections: rows,
+          sizeCount: found?.sizeCount || {}, // send sizeCount too
           isRenderOrNot: true
         }));
       });
@@ -244,7 +272,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
                           <option value="">Not Available</option>
                         ) : (
                           <>
-                            <option value="" disabled>Select Size</option>
+                            <option value="" disabled>Size</option>
                             {product.sizes.map((s, indx) => {
                               const sizeValue = typeof s === 'object' ? s.size : s;
                               return (

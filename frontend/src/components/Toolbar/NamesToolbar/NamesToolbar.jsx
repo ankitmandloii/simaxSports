@@ -129,6 +129,10 @@ const NamesToolbar = () => {
 
 
   }, [nameAndNumberDesign]);
+
+  useEffect(() => {
+    dispatch(setActiveSide("back"))
+  }, [])
   return (
     <div className={`toolbar-main-container ${style.NamesToolbarBox}`}>
 

@@ -566,12 +566,69 @@ const TextFrontendDesignSlice = createSlice({
         // console.log("product added succesfully");
       }
     },
+    // UpdateNameAndNumberProduct: (state, action) => {
+    //   const {
+    //     id,
+    //     newSelections = [], // Array of { selectionId, name, number, size }
+    //     side = "back",
+    //     isRenderOrNot,
+    //   } = action.payload;
+
+    //   // Save to undo history
+    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+    //   const list = state.present[side]?.nameAndNumberProductList;
+    //   if (!list) return;
+
+    //   const product = list.find((p) => p.id === id);
+    //   if (!product) {
+    //     // console.log("Product not found:", id);
+    //     return;
+    //   }
+
+    //   // Create a map of new selectionIds
+    //   const incomingMap = new Map(
+    //     newSelections.map((sel) => [sel.selectionId, sel])
+    //   );
+
+    //   // Filter out selections not in the incoming list
+    //   product.selections = product.selections.filter((existing) => {
+    //     const incoming = incomingMap.get(existing.selectionId);
+    //     if (incoming) {
+    //       // Only update if not locked
+    //       if (!existing.locked) {
+    //         Object.assign(existing, incoming);
+    //       }
+    //       // Keep it
+    //       return true;
+    //     }
+    //     // Remove if not present in new list
+    //     return false;
+    //   });
+
+    //   // Add any new selectionIds that didn't already exist
+    //   const existingIds = new Set(product.selections.map((s) => s.selectionId));
+    //   newSelections.forEach((sel) => {
+    //     if (!existingIds.has(sel.selectionId)) {
+    //       product.selections.push(sel);
+    //     }
+    //   });
+
+    //   // Optional render flag toggle
+    //   if (isRenderOrNot) {
+    //     state.present[side].setRendering = !state.present[side].setRendering;
+    //   }
+
+    //   // Clear redo history
+    //   state.future[side] = [];
+    // },
     UpdateNameAndNumberProduct: (state, action) => {
       const {
         id,
         newSelections = [], // Array of { selectionId, name, number, size }
-        side = state.activeSide,
+        side = "back",
         isRenderOrNot,
+        sizeCount = {} // 👈 extract sizeCount from payload
       } = action.payload;
 
       // Save to undo history
@@ -581,10 +638,7 @@ const TextFrontendDesignSlice = createSlice({
       if (!list) return;
 
       const product = list.find((p) => p.id === id);
-      if (!product) {
-        // console.log("Product not found:", id);
-        return;
-      }
+      if (!product) return;
 
       // Create a map of new selectionIds
       const incomingMap = new Map(
@@ -595,24 +649,24 @@ const TextFrontendDesignSlice = createSlice({
       product.selections = product.selections.filter((existing) => {
         const incoming = incomingMap.get(existing.selectionId);
         if (incoming) {
-          // Only update if not locked
           if (!existing.locked) {
             Object.assign(existing, incoming);
           }
-          // Keep it
           return true;
         }
-        // Remove if not present in new list
         return false;
       });
 
-      // Add any new selectionIds that didn't already exist
+      // Add new selections not already present
       const existingIds = new Set(product.selections.map((s) => s.selectionId));
       newSelections.forEach((sel) => {
         if (!existingIds.has(sel.selectionId)) {
           product.selections.push(sel);
         }
       });
+
+      // ✅ Save sizeCount to product
+      product.sizeCount = sizeCount;
 
       // Optional render flag toggle
       if (isRenderOrNot) {
@@ -624,7 +678,7 @@ const TextFrontendDesignSlice = createSlice({
     },
 
     removeNameAndNumberProduct: (state, action) => {
-      const { side = state.activeSide, id } = action.payload;
+      const { side = "back", id } = action.payload;
 
       if (!state.present[side]) return;
 
