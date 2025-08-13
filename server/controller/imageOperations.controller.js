@@ -219,296 +219,79 @@ exports.readFile = async (request, response, path) => {
 }
 
 
-
+//generate images in base64 API
 // exports.generateMultipleImagesByAi = async (req, res) => {
-//     try {
-//         const prompt = req.body.prompt ?? "Make subtle improvements";
-//         const size = req.body.size ?? "1024x1024";
-//         const n = Number(req.body.n ?? 1);
-//         const model = req.body.model ?? "gpt-image-1";
- 
-//         // Optional controls (can pass in body or querystring):
-//         // view: "json" | "image" | "html"
-//         // imageIndex: which image to stream when view=image
-//         const view = (req.query.view || req.body.view || "json").toLowerCase();
-//         const imageIndex = Number(req.query.imageIndex ?? req.body.imageIndex ?? 0);
- 
-//         // 1) Call OpenAI (JSON only; multipart/form-data is rejected by the API)
-//         const genResp = await fetch("https://api.openai.com/v1/images/generations", {
-//             method: "POST",
-//             headers: {
-//                 Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify({ model, prompt, size, n }),
-//         });
- 
-//         const genData = await genResp.json();
-//         if (!genResp.ok) return res.status(genResp.status).json(genData);
- 
-//         const items = Array.isArray(genData?.data) ? genData.data : [];
-//         if (!items.length) {
-//             return res.status(502).json({ message: "OpenAI returned no image data", data: genData });
+//   try {
+//     const promptBase = req.body.prompt ?? "A beautiful landscape painting";
+//     const size       = req.body.size   ?? "1024x1024";
+//     const model      = req.body.model  ?? "gpt-image-1";
+//     const count      = Number(req.body.count ?? 8); // default 8 images
+
+//     const jitter     = String(req.body.jitter ?? "true").toLowerCase() === "true";
+//     const maxConcurrent = 3; // safe limit to avoid rate limit errors
+
+//     const postOnce = async (body, attempt = 0) => {
+//       const r = await fetch("https://api.openai.com/v1/images/generations", {
+//         method: "POST",
+//         headers: {
+//           Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify(body),
+//       });
+//       if (!r.ok && (r.status === 429 || r.status >= 500) && attempt < 3) {
+//         const wait = Math.min(4000, 500 * Math.pow(2, attempt));
+//         await new Promise(s => setTimeout(s, wait));
+//         return postOnce(body, attempt + 1);
+//       }
+//       return r;
+//     };
+
+//     const results = new Array(count);
+//     let next = 0;
+
+//     const worker = async () => {
+//       while (next < count) {
+//         const i = next++;
+//         const noise = jitter ? ` — v${i+1}-${Math.random().toString(36).slice(2, 6)}` : "";
+//         const prompt = jitter ? `${promptBase}${noise}` : promptBase;
+
+//         const body = { model, prompt, size, n: 1, response_format: "b64_json" };
+//         try {
+//           const resp = await postOnce(body);
+//           const data = await resp.json();
+//           if (resp.ok && data?.data?.[0]?.b64_json) {
+//             results[i] = `data:image/png;base64,${data.data[0].b64_json}`;
+//           } else {
+//             results[i] = null;
+//           }
+//         } catch {
+//           results[i] = null;
 //         }
- 
-//         // Prefer URLs (current API default). Fall back to b64 if present.
-//         const urls = items.map(d => d?.url).filter(Boolean);
-//         const b64s = items.map(d => d?.b64_json).filter(Boolean);
- 
-//         // ---- VIEW: SINGLE IMAGE (best for Postman Preview) ----
-//         if (view === "image") {
-//             const i = Math.min(Math.max(0, imageIndex), items.length - 1);
- 
-//             // If we have a URL, stream it
-//             if (urls[i]) {
-//                 const r = await fetch(urls[i]);
-//                 if (!r.ok) return res.status(502).json({ message: "Could not fetch generated image URL" });
- 
-//                 // Pass through content-type from OpenAI CDN (usually image/png or image/webp)
-//                 const ct = r.headers.get("content-type") || "image/png";
-//                 res.setHeader("Content-Type", ct);
-//                 // No 'Content-Disposition' so Postman shows inline
-//                 const buf = Buffer.from(await r.arrayBuffer());
-//                 return res.send(buf);
-//             }
- 
-//             // Else if we only have base64 from API, decode and send
-//             if (b64s[i]) {
-//                 const buf = Buffer.from(b64s[i], "base64");
-//                 res.setHeader("Content-Type", "image/png");
-//                 return res.send(buf);
-//             }
- 
-//             return res.status(502).json({ message: "No usable image data at that index." });
-//         }
- 
-//         // ---- VIEW: HTML PAGE WITH ALL IMAGES (nice gallery in Postman) ----
-//         if (view === "html") {
-//             // Build src list from urls or b64s
-//             const srcs = urls.length
-//                 ? urls
-//                 : b64s.map(b64 => `data:image/png;base64,${b64}`);
- 
-//             const html = `<!doctype html>
-// <html>
-// <head>
-//   <meta charset="utf-8" />
-//   <title>Generated Images</title>
-//   <style>
-//     body { font-family: sans-serif; padding: 20px; }
-//     h1 { font-size: 18px; }
-//     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-//     .card { border: 1px solid #eee; border-radius: 12px; padding: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
-//     img { max-width: 100%; height: auto; display: block; border-radius: 8px; }
-//     .meta { font-size: 12px; color: #666; margin-top: 6px; }
-//   </style>
-// </head>
-// <body>
-//   <h1>${model} — ${n} image(s) — ${size}</h1>
-//   <div class="grid">
-//     ${srcs.map((src, idx) => `
-//       <div class="card">
-//         <img src="${src}" alt="Generated ${idx + 1}" />
-//         <div class="meta">#${idx + 1}</div>
-//       </div>`).join("")}
-//   </div>
-// </body>
-// </html>`;
- 
-//             res.setHeader("Content-Type", "text/html; charset=utf-8");
-//             return res.status(200).send(html);
-//         }
- 
-//         // ---- VIEW: JSON (default) ----
-//         // Include both urls and dataUrls (if only b64 present)
-//         const dataUrls = (!urls.length && b64s.length)
-//             ? b64s.map(b64 => `data:image/png;base64,${b64}`)
-//             : [];
- 
-//         return res.status(200).json({
-//             message: "Images generated",
-//             prompt, size, n, model,
-//             urls,
-//             dataUrls,       // only present if URLs were not returned
-//             raw: genData,   // keep the raw OpenAI payload in case you need metadata
-//         });
- 
-//     } catch (err) {
-//         console.error("Generate image error:", err);
-//         return res.status(500).json({ message: "Image generation failed", error: String(err) });
+//       }
+//     };
+
+//     const workers = Array.from({ length: Math.min(maxConcurrent, count) }, worker);
+//     await Promise.all(workers);
+
+//     const okImages = results.filter(Boolean);
+//     if (!okImages.length) {
+//       return res.status(502).json({ message: "No images generated" });
 //     }
+
+//     res.status(200).json({
+//       message: `Generated ${okImages.length} image(s)`,
+//       prompt: promptBase,
+//       size,
+//       model,
+//       count,
+//       images: okImages // array of base64 data URLs
+//     });
+//   } catch (err) {
+//     console.error("Generate image error:", err);
+//     res.status(500).json({ message: "Image generation failed", error: String(err) });
+//   }
 // };
- 
- 
-// controller snippet
- 
- 
-// Looping variants for DALL·E 3 (gpt-image-1)
-exports.generateMultipleImagesByAi = async (req, res) => {
-  try {
-    const promptBase = req.body.prompt ?? "Make subtle improvements";
-    const size = req.body.size ?? "1024x1024";
-    const model = req.body.model ?? "gpt-image-1";
- 
-    // How many images to generate (looped calls of n=1)
-    const count = Math.max(1, Number(req.body.count ?? req.body.n ?? 1));
- 
-    // Optional controls
-    const view = (req.query.view || req.body.view || "json").toLowerCase();
-    const imageIndex = Number(req.query.imageIndex ?? req.body.imageIndex ?? 0);
- 
-    // Light randomness to avoid near-identical outputs (off by default)
-    const jitter = String(req.body.jitter ?? "false").toLowerCase() === "true";
- 
-    // Concurrency controls (keep modest to avoid 429s)
-    const maxConcurrent = Math.max(1, Number(req.body.maxConcurrent ?? 2));
-    const tasks = new Array(count).fill(0).map((_, i) => i);
- 
-    // helper: exponential backoff fetch
-    const postOnce = async (body, attempt = 0) => {
-      const r = await fetch("https://api.openai.com/v1/images/generations", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-      if (!r.ok) {
-        // retry 429/5xx up to 3 times
-        if ((r.status === 429 || r.status >= 500) && attempt < 3) {
-          const waitMs = Math.min(4000, 500 * Math.pow(2, attempt)); // 500,1000,2000,4000
-          await new Promise((s) => setTimeout(s, waitMs));
-          return postOnce(body, attempt + 1);
-        }
-      }
-      return r;
-    };
- 
-    // Run with limited concurrency
-    const results = [];
-    let idx = 0;
-    const runWorker = async () => {
-      while (idx < tasks.length) {
-        const i = idx++;
-        const noise = jitter ? ` [v${i + 1}]` : ""; // harmless suffix
-        const prompt = jitter ? `${promptBase}${noise}` : promptBase;
- 
-        const body = { model, prompt, size /* n omitted on purpose (must be 1) */ };
-        const genResp = await postOnce(body);
-        const genData = await genResp.json();
- 
-        if (!genResp.ok) {
-          results[i] = { ok: false, status: genResp.status, error: genData };
-          continue;
-        }
- 
-        const items = Array.isArray(genData?.data) ? genData.data : [];
-        if (!items.length) {
-          results[i] = { ok: false, status: 502, error: { message: "No image data" }, raw: genData };
-          continue;
-        }
- 
-        // DALL·E 3 returns a single item; still normalize to arrays
-        const url = items[0]?.url || null;
-        const b64 = items[0]?.b64_json || null;
- 
-        results[i] = { ok: true, url, b64, raw: genData };
-      }
-    };
- 
-    const workers = Array.from({ length: Math.min(maxConcurrent, count) }, runWorker);
-    await Promise.all(workers);
- 
-    // Collate outputs
-    const urls = results.map(r => r?.url).filter(Boolean);
-    const b64s = results.map(r => r?.b64).filter(Boolean);
- 
-    // If the user asked for a single image stream
-    if (view === "image") {
-      const itemsLen = results.filter(r => r && (r.url || r.b64)).length;
-      if (!itemsLen) {
-        return res.status(502).json({ message: "OpenAI returned no image data", results });
-      }
-      const i = Math.min(Math.max(0, imageIndex), results.length - 1);
-      const r = results[i];
- 
-      if (r?.url) {
-        const rr = await fetch(r.url);
-        if (!rr.ok) return res.status(502).json({ message: "Could not fetch generated image URL" });
-        const ct = rr.headers.get("content-type") || "image/png";
-        res.setHeader("Content-Type", ct);
-        const buf = Buffer.from(await rr.arrayBuffer());
-        return res.send(buf);
-      }
- 
-      if (r?.b64) {
-        const buf = Buffer.from(r.b64, "base64");
-        res.setHeader("Content-Type", "image/png");
-        return res.send(buf);
-      }
- 
-      return res.status(502).json({ message: "No usable image data at that index.", results });
-    }
- 
-    // Nice gallery view
-    if (view === "html") {
-      const srcs = urls.length
-        ? urls
-        : b64s.map(b64 => `data:image/png;base64,${b64}`);
- 
-      const html = `<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <title>${model} — ${count} image(s) — ${size}</title>
-  <style>
-    body { font-family: system-ui, sans-serif; padding: 20px; }
-    h1 { font-size: 18px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-    .card { border: 1px solid #eee; border-radius: 12px; padding: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
-    img { max-width: 100%; height: auto; display: block; border-radius: 8px; }
-    .meta { font-size: 12px; color: #666; margin-top: 6px; }
-  </style>
-</head>
-<body>
-  <h1>${model} — ${count} image(s) — ${size}${jitter ? " — jitter:on" : ""}</h1>
-  <div class="grid">
-    ${srcs.map((src, idx) => `
-      <div class="card">
-        <img src="${src}" alt="Generated ${idx + 1}" />
-        <div class="meta">#${idx + 1}</div>
-      </div>`).join("")}
-  </div>
-</body>
-</html>`;
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      return res.status(200).send(html);
-    }
- 
-    // Default: JSON view
-    const dataUrls = (!urls.length && b64s.length)
-      ? b64s.map(b64 => `data:image/png;base64,${b64}`)
-      : [];
- 
-    const errors = results
-      .map((r, i) => ({ i, r }))
-      .filter(({ r }) => !r?.ok)
-      .map(({ i, r }) => ({ index: i, status: r?.status ?? 500, error: r?.error ?? { message: "Unknown error" } }));
- 
-    return res.status(200).json({
-      message: `Generated ${urls.length + b64s.length} image(s) from ${count} calls`,
-      prompt: promptBase, size, count, model, jitter, maxConcurrent,
-      urls, dataUrls,
-      errors,                  // per-call failures, if any
-      raw: results.map(r => r?.raw).filter(Boolean) // optional, for debugging
-    });
- 
-  } catch (err) {
-    console.error("Generate image error:", err);
-    return res.status(500).json({ message: "Image generation failed", error: String(err) });
-  }
-};
 
 
 
@@ -564,6 +347,100 @@ exports.editImageByAi = async (req, res) => {
   } catch (err) {
     console.error("Edit image error:", err);
     res.status(500).json({ message: "Image edit failed", error: String(err) });
+  }
+};
+
+
+const MAX_RETRIES = 3;
+
+async function postWithBackoff(body, attempt = 0) {
+  const resp = await fetch("https://api.openai.com/v1/images/generations", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  // Retry 429/5xx with exponential backoff
+  if (!resp.ok && (resp.status === 429 || resp.status >= 500) && attempt < MAX_RETRIES) {
+    const wait = Math.min(4000, 500 * 2 ** attempt); // 500, 1000, 2000, 4000
+    await new Promise(r => setTimeout(r, wait));
+    return postWithBackoff(body, attempt + 1);
+  }
+  return resp;
+}
+
+exports.generateMultipleImagesByAi = async (req, res) => {
+  try {
+    const promptBase = req.body.prompt ?? "A beautiful landscape painting";
+    const size       = req.body.size   ?? "1024x1024";
+    const model      = req.body.model  ?? "gpt-image-1";
+    const count      = Math.max(1, Number(req.body.count ?? 5));
+
+    // small prompt noise to reduce near-duplicates
+    const jitter = String(req.body.jitter ?? "true").toLowerCase() === "true";
+
+    // run a few calls in parallel to be fast but avoid 429s
+    const maxConcurrent = Math.max(1, Math.min(Number(req.body.maxConcurrent ?? 3), 5));
+
+    const results = new Array(count);
+    let next = 0;
+
+    const worker = async () => {
+      while (next < count) {
+        const i = next++;
+        const noise = jitter ? ` — v${i + 1}-${Math.random().toString(36).slice(2, 6)}` : "";
+        const prompt = jitter ? `${promptBase}${noise}` : promptBase;
+
+        // Ask for URL output (default). Do NOT set response_format.
+        const body = { model, prompt, size, n: 1 };
+
+        try {
+          const resp = await postWithBackoff(body);
+          const data = await resp.json();
+
+          if (!resp.ok) {
+            results[i] = { ok: false, status: resp.status, error: data };
+            continue;
+          }
+
+          const item = Array.isArray(data?.data) ? data.data[0] : undefined;
+          const url  = item?.url || null;
+
+          results[i] = url ? { ok: true, url } : { ok: false, status: 502, error: { message: "No URL" } };
+        } catch (err) {
+          results[i] = { ok: false, status: 500, error: { message: String(err) } };
+        }
+      }
+    };
+
+    const workers = Array.from({ length: Math.min(maxConcurrent, count) }, worker);
+    await Promise.all(workers);
+
+    const ok = results.filter(r => r?.ok && r.url).map(r => r.url);
+    const errors = results
+      .map((r, i) => ({ i, r }))
+      .filter(({ r }) => !r?.ok)
+      .map(({ i, r }) => ({ index: i, status: r?.status ?? 500, error: r?.error ?? { message: "Unknown error" } }));
+
+    if (!ok.length) {
+      return res.status(502).json({ message: "No images generated", errors });
+    }
+
+    return res.status(200).json({
+      message: `Generated ${ok.length} image(s)`,
+      prompt: promptBase,
+      size,
+      model,
+      count,
+      urls: ok,     // <-- plain URLs (not base64)
+      errors,       // any per-call failures
+    });
+  } catch (err) {
+    console.error("Generate image error:", err);
+    return res.status(500).json({ message: "Image generation failed", error: String(err) });
   }
 };
 
