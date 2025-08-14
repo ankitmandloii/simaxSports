@@ -6,13 +6,18 @@ const DesignSchema = new Schema(
   {
     DesignName: { type: String, default: 'Untitled Design', trim: true },
     present: {
-      front:       { type: PresentSideSchema, required: true, default: () => ({}) },
-      back:        { type: PresentSideSchema, required: true, default: () => ({}) },
-      leftSleeve:  { type: PresentSideSchema, required: true, default: () => ({}) },
+      front: { type: PresentSideSchema, required: true, default: () => ({}) },
+      back: { type: PresentSideSchema, required: true, default: () => ({}) },
+      leftSleeve: { type: PresentSideSchema, required: true, default: () => ({}) },
       rightSleeve: { type: PresentSideSchema, required: true, default: () => ({}) },
     },
     FinalImages: [{ type: String }],
-    status:  { type: String, enum: ['draft', 'published', 'archived'], default: 'draft', index: true },
+    DesignNotes: {
+      FrontDesignNotes: { type: String },
+      BackDesignNotes: { type: String },
+      ExtraInfo: { type: String }
+    },
+    status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft', index: true },
     version: { type: Number, default: 1 },
   },
   { timestamps: true }
