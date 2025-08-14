@@ -49,7 +49,7 @@
   position: relative;
   max-height: 90vh;
   overflow-y: auto;
-  top: 8%;
+  /* top: 8%; */
   min-height: 600px;
 }
 
@@ -414,8 +414,8 @@
 }
 
 .searchIcon:hover {
-  transform: scale(1.1);
-  background: linear-gradient(135deg, #00f2fe, #4facfe);
+  transform: scale(1);
+  /* background: linear-gradient(135deg, #00f2fe, #4facfe); */
 }
 
 .searchIcon:active {

@@ -27,6 +27,7 @@ function ProductContainer() {
   const sleevedesign = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   const exportRequested = useSelector((state) => state.canvasExport.exportRequested);
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
+  // console.log("----activeProduct in prodyuctContainer", activeProduct)
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
 
   const isQuantityPage = location.pathname === "/quantity" || location.pathname === '/review';
@@ -48,7 +49,7 @@ function ProductContainer() {
   }
 
   const invertedColor = invertHexColor(activeProductColorHex);
-
+  const [activeProductTitle, setActiveProductTitle] = useState("");
   const [frontBgImage, setFrontBgImage] = useState('');
   const [backBgImage, setBackBgImage] = useState('');
   const [rightSleeveBgImage, setRightSleeveBgImage] = useState('');
@@ -178,7 +179,6 @@ function ProductContainer() {
 
 
 
-
   // Initialize the first product and its first color variant
   // useEffect(() => {
   //   if (Array.isArray(selectedProducts) && selectedProducts.length !== 0) return;
@@ -241,12 +241,13 @@ function ProductContainer() {
   useEffect(() => {
     // Initialize with fallback image
     const defaultImage = activeProduct?.imgurl || '';
+    setActiveProductTitle(activeProduct?.name);
 
     // Set defaults in case metafields are not available
     let front = defaultImage;
     let back = defaultImage;
     let sleeve = defaultImage;
-    console.log("-----activeProduct", activeProduct)
+    // console.log("-----activeProduct", activeProduct)
 
     if (activeProduct?.selectedColor?.variant?.metafields?.edges?.length) {
       const variantMetafields = activeProduct.selectedColor.variant.metafields.edges.find(
@@ -325,6 +326,7 @@ function ProductContainer() {
             setBackPreviewImage={() => { }}
             setLeftSleevePreviewImage={() => { }}
             setRightSleevePreviewImage={() => { }}
+            activeProductTitle={activeProductTitle}
           />
         </div>
 
@@ -339,6 +341,8 @@ function ProductContainer() {
             setBackPreviewImage={setBackPreviewImage}
             setLeftSleevePreviewImage={() => { }}
             setRightSleevePreviewImage={() => { }}
+            activeProductTitle={activeProductTitle}
+
           />
         </div>
 
@@ -353,6 +357,8 @@ function ProductContainer() {
             setBackPreviewImage={() => { }}
             setLeftSleevePreviewImage={() => { }}
             setRightSleevePreviewImage={setRightSleevePreviewImage}
+            activeProductTitle={activeProductTitle}
+
           />
         </div>
 
@@ -367,6 +373,8 @@ function ProductContainer() {
             setBackPreviewImage={() => { }}
             setRightSleevePreviewImage={() => { }}
             setLeftSleevePreviewImage={setLeftSleevePreviewImage}
+            activeProductTitle={activeProductTitle}
+
           />
         </div>
 

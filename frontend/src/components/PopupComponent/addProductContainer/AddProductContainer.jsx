@@ -600,6 +600,12 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
 
       const data = await response.json();
       const items = data?.result?.items || [];
+      if (items.length === 0) {
+        setProducts([]);
+        setSearchError(null); // no error, just empty
+        setSearchLoading(false);
+        return;
+      }
 
       const productsWithKeys = items.map((product) => {
         const variants = product.variants?.edges?.map((v) => v.node) || [];
@@ -893,6 +899,10 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
 
             {error || searchError ? (
               <p style={{ color: "red" }}>{error || searchError}</p>
+            ) : products.length === 0 && searchQuery ? (
+              <p style={{ color: "gray", textAlign: 'center', fontSize: '1rem', marginTop: '3rem', marginBottom: '3rem' }}>No matching products found.</p>
+            ) : products.length === 0 && !searchQuery ? (
+              <p style={{ color: "gray" }}>No products available.</p>
             ) : (
               <ul className={styles.productList}>
                 {products.map((product) => {

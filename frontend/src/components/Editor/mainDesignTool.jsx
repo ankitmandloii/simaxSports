@@ -44,7 +44,8 @@ const MainDesignTool = ({
   setBackPreviewImage,
   setLeftSleevePreviewImage,
   setRightSleevePreviewImage,
-  setPreviewForCurrentSide
+  setPreviewForCurrentSide,
+  activeProductTitle
 }) => {
   const warningColor = "skyblue"
 
@@ -89,7 +90,6 @@ const MainDesignTool = ({
   // **********************************************************************************************************************************************************
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
 
   // **********************************************************************************************************************************************************
   //                                                                                    USE MEMO AREA
@@ -136,6 +136,37 @@ const MainDesignTool = ({
       })
     );
   };
+  // Function to detect ProductTye
+  function getProductType(title) {
+    const keywords = [
+      "Zip",
+      "Sleeveless",
+      "T-shirt",
+      "Hoodie",
+      "Polo",
+      "Zip(?: Pullover)?", // handles both "Zip" and "Zip Pullover"
+      "Tee",
+      "Jacket",
+      "Long Sleeve",
+      "Sweatshirt",
+      "Tank"
+    ];
+
+    const lowerTitle = title?.toLowerCase();
+
+    for (let key of keywords) {
+      const regex = new RegExp(`\\b${key}\\b`, "i"); // \b ensures whole word match
+      if (regex.test(title)) {
+        return key;
+      }
+    }
+
+    return "Unknown";
+  }
+  console.log("--------activeTitle", getProductType(activeProductTitle));
+
+
+  // ---
 
   const checkBoundary = (e) => {
     return;

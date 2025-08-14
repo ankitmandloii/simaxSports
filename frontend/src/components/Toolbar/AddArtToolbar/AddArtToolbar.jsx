@@ -16,7 +16,6 @@ const AddArtToolbar = () => {
   const [triggeredSearchTerm, setTriggeredSearchTerm] = useState('');
   const [promptGuide, setPromptGuide] = useState(false);
 
-
   const navigate = useNavigate();
 
   const handleSearchClick = () => {
@@ -41,6 +40,7 @@ const AddArtToolbar = () => {
         <h5 className="Toolbar-badge">Art Powered By AI</h5>
         <h2>Add Art</h2>
         <p>Add your own artwork or choose from our library to personalize your design.</p>
+
       </div>
 
       {subArt ? (
@@ -88,7 +88,7 @@ const AddArtToolbar = () => {
                   }
                 }}
               />
-        <p onClick={()=>setPromptGuide(true)} className={style.promptGuidePara}> AI Prompt Guide</p>
+              <p onClick={() => setPromptGuide(true)} className={style.promptGuidePara}> AI Prompt Guide</p>
             </div>
           </div>
 
@@ -110,9 +110,10 @@ const AddArtToolbar = () => {
           </button>
         </div>
       )}
-  {promptGuide && <PromptGuide onClose={() => setPromptGuide(false)} />}
-
+      {promptGuide && <PromptGuide onClose={() => setPromptGuide(false)} />}
     </div>
+
+
   );
 };
 

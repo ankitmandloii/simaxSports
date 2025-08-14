@@ -6,12 +6,16 @@ import { StartOverIcon } from "../iconsSvg/CustomIcon";
 import StartOverConfirmationPopup from "../PopupComponent/StartOverPopup/StartOverPopup";
 import { useLocation } from "react-router-dom";
 import styles from './redoundo.module.css';
+import EditWithAipopup from "../PopupComponent/EditWithAipopup/EditWithAipopup";
 function RedoundoComponent() {
   const location = useLocation();
   const canUndo = useSelector(selectCanUndo);
   const canRedo = useSelector(selectCanRedo);
   const canStartOver = useSelector(selectCanStartOver);
   const [startOverPopup, setStartOverPopup] = useState(false);
+  const [show, setShow] = useState(false);
+
+
   const dispatch = useDispatch();
 
   const closeStartOverPopup = () => {
@@ -54,7 +58,9 @@ function RedoundoComponent() {
           </button>
         </li>
       </ul>
+      {/* <button onClick={() => setShow(true)}>Edit AI</button> */}
       {startOverPopup && <StartOverConfirmationPopup onCancel={closeStartOverPopup} />}
+      {show && <EditWithAipopup onClose={() => setShow(false)} />}
 
     </>
 
