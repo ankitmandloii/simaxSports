@@ -283,24 +283,24 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const apiKey = process.env.REACT_APP_DALLE_API_KEY;
-//   const systemPrompt = `
-// You are an AI specialized in creating detailed, high-resolution, transparent-background images optimized explicitly for shirt and apparel designs. Every image you generate should meet these requirements:
- 
-// 1. No Background:
-//    - Always generate transparent (alpha-channel) backgrounds.
-//    - Avoid shadows, gradients, or any backdrop elements.
- 
-// 2. Resolution and Quality:
-//    - Produce high-resolution images (minimum 300 dpi).
-//    - Ensure smooth edges suitable for direct printing or embroidery.
- 
-// 3. Color and Contrast:
-//    - Prioritize bold, distinct colors and clear contrast suitable for apparel printing methods like screen printing and direct-to-garment (DTG).
- 
+  //   const systemPrompt = `
+  // You are an AI specialized in creating detailed, high-resolution, transparent-background images optimized explicitly for shirt and apparel designs. Every image you generate should meet these requirements:
 
- 
-// Always generate images that are ready to be printed or embroidered directly onto clothing, requiring no further editing or background removal.
-// `;
+  // 1. No Background:
+  //    - Always generate transparent (alpha-channel) backgrounds.
+  //    - Avoid shadows, gradients, or any backdrop elements.
+
+  // 2. Resolution and Quality:
+  //    - Produce high-resolution images (minimum 300 dpi).
+  //    - Ensure smooth edges suitable for direct printing or embroidery.
+
+  // 3. Color and Contrast:
+  //    - Prioritize bold, distinct colors and clear contrast suitable for apparel printing methods like screen printing and direct-to-garment (DTG).
+
+
+
+  // Always generate images that are ready to be printed or embroidered directly onto clothing, requiring no further editing or background removal.
+  // `;
 
   const fetchDalleImages = async (query, pageNumber = 1) => {
     const prompt = `A high-quality illustration of ${query}, centered, no background, bold colors, sharp outlines,it must be spelled correctly, suitable for printing on T-shirts.`;
@@ -336,8 +336,8 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
       );
       setHasMore(newResults.length === imagesPerPage);
     } catch (err) {
-      console.error('DALL-E API error:', err);
-      toast.error('Rate limit exceeded for images per minute in organization');
+      console.error('DALL-E API error:', err?.response?.data?.error?.message);
+      toast.error(err?.response?.data?.error?.message);
     } finally {
       setLoading(false);
     }
@@ -391,7 +391,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
 
     try {
       const fetchUrl = `${BASE_URL}imageOperation/fetch-image?url=${encodeURIComponent(img.urls.full)}`;
-      console.log("fetchhhhh",fetchUrl)
+      console.log("fetchhhhh", fetchUrl)
       const response = await fetch(fetchUrl, { signal: controller.signal });
 
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -512,23 +512,23 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
 
           {queries.length > 0 && !inputValue && (
             <>
-            <div className={style.queryContainer}>
-              <h2>{category}</h2>
-              <div className={style.textButtonGroup}>
-                {queries.map((query) => (
-                  <button
-                    key={query}
-                    className={style.textButton}
-                    onClick={() => {
-                      setInputValue(query);
-                      // fetchDalleImages(query, 1);
-                      setPage(1);
-                    }}
-                  >
-                    {query}
-                  </button>
-                ))}
-              </div>
+              <div className={style.queryContainer}>
+                <h2>{category}</h2>
+                <div className={style.textButtonGroup}>
+                  {queries.map((query) => (
+                    <button
+                      key={query}
+                      className={style.textButton}
+                      onClick={() => {
+                        setInputValue(query);
+                        // fetchDalleImages(query, 1);
+                        setPage(1);
+                      }}
+                    >
+                      {query}
+                    </button>
+                  ))}
+                </div>
               </div>
             </>
           )}
