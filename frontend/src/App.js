@@ -426,6 +426,7 @@ function App() {
           pauseOnHover
           draggable
           theme="light"
+          limit={1}
         />
 
         {continueEditPopup && (

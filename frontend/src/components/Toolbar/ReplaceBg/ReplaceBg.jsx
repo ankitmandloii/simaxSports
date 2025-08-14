@@ -87,7 +87,7 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img }) => {
             <div className='toolbar-main-heading'>
                 <h5 className='Toolbar-badge'>Upload Art</h5>
                 {/* <img src={img?.src} alt="Uploaded" /> */}
-                <span className={styles.crossIcon} onClick={() => setreplaceBgwithAi(false)}>
+                <span className={styles.crossIcon} onClick={(e)=>{e.stopPropagation(); setreplaceBgwithAi(true);}}>
                     <CrossIcon />
                 </span>
                 <h3>Replace BackGround</h3>
