@@ -9,8 +9,8 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
-  // const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
-  const activeSide = "back";
+  const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+  // const activeSide = "back";
   // const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
   const productState = useSelector((state) => state.productSelection.products);
   console.log("productState..........", productState);

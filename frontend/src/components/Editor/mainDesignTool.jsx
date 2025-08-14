@@ -84,6 +84,7 @@ const MainDesignTool = ({
   const [selectedObject, setSelectedObject] = useState(null);
   const [loading, setLoading] = useState(false);
   const [resize, setResize] = useState(0);
+  const [productCategory, setProductCategory] = useState(getProductType(activeProductTitle))
 
   // **********************************************************************************************************************************************************
   //                                                                                    USE DISPTACHS AREA
@@ -163,7 +164,7 @@ const MainDesignTool = ({
 
     return "Unknown";
   }
-  console.log("--------activeTitle", getProductType(activeProductTitle));
+  // console.log("--------activeTitle", getProductType(activeProductTitle));
 
 
   // ---
@@ -203,6 +204,7 @@ const MainDesignTool = ({
     syncMirrorCanvas(fabric, fabricCanvasRef, activeSide, setFrontPreviewImage, setBackPreviewImage, setLeftSleevePreviewImage, setRightSleevePreviewImage);
   }
   const renderCurveTextObjectsHelper = () => {
+    const productCategory = getProductType(activeProductTitle);
     renderCurveTextObjects(
       fabricCanvasRef,
       dispatch,
@@ -216,7 +218,8 @@ const MainDesignTool = ({
       setSelectedTextState,
       globalDispatch,
       activeSide,
-      bringPopup
+      bringPopup,
+      productCategory
 
     )
   }
@@ -236,7 +239,8 @@ const MainDesignTool = ({
       addNumber,
       addName,
       updateNameAndNumberDesignState,
-      bringPopup
+      bringPopup,
+      getProductType(activeProductTitle)
     );
   }
   const renderAllImageObjectsHelper = () => {
@@ -255,7 +259,8 @@ const MainDesignTool = ({
       globalDispatch,
       activeSide,
       handleScale,
-      bringPopup
+      bringPopup,
+      getProductType(activeProductTitle)
     )
   }
 
@@ -471,29 +476,18 @@ const MainDesignTool = ({
     document.querySelectorAll('[data-fabric-control]').forEach(el => el.remove());
   }
 
-  useEffect(() => {
-    const canvasElement = canvasRef.current;
-    const wrapperElement = canvasElement.parentNode;
 
-    const canvasWidth = wrapperElement.clientWidth;
-    const canvasHeight = wrapperElement.clientHeight;
+  function createWarningForSweatShirt(canvasWidth, canvasHeight, canvas) {
 
-    const canvas = new fabric.Canvas(canvasElement, {
-      width: canvasWidth,
-      height: canvasHeight,
-    });
-    canvas.preserveObjectStacking = true;
-    fabricCanvasRef.current = canvas;
-
-    const boxWidth = 250;
-    const boxHeight = 395;
+    const boxWidth = canvasWidth * 0.36;  // 40% of canvas width
+    const boxHeight = canvasHeight * 0.6; // 60% of canvas height
 
     const boxLeft = (canvasWidth - boxWidth) / 2;
-    const boxTop = ((canvasHeight - boxHeight) / 2) - 30;
+    const boxTop = ((canvasHeight - boxHeight) / 2);
 
     const boundaryBox = new fabric.Rect({
       left: boxLeft,
-      top: boxTop + 20,
+      top: boxTop - 30,
       width: boxWidth,
       height: boxHeight,
       fill: "transparent",
@@ -506,44 +500,44 @@ const MainDesignTool = ({
       name: "boundaryBox"
 
     });
-    const boundaryBoxInner = new fabric.Rect({
-      left: boxLeft + 5,
-      top: boxTop + 25,
-      width: boxWidth - 10,
-      height: boxHeight - 40,
-      fill: "transparent",
-      stroke: warningColor || "skyblue",
-      strokeWidth: 1,
-      selectable: false,
-      evented: false,
-      visible: false,
-      isSync: false,
-      objectCaching: false,
-      strokeDashArray: [3, 1], // ← use this instead of borderDashArray
-      name: "boundaryBoxInner"
-    });
-    const boundaryBoxLeft = new fabric.Rect({
-      left: boxLeft + 145,
-      top: boxTop + 25,
-      width: 100,
-      height: 100,
-      fill: "transparent",
-      stroke: warningColor || "skyblue",
-      strokeWidth: 1,
-      selectable: false,
-      evented: false,
-      visible: false,
-      isSync: false,
-      strokeWidth: 1,
-      selectable: false,
-      objectCaching: false,
-      strokeDashArray: [3, 1],
-      name: "boundaryBoxLeft"
-    });
+    // const boundaryBoxInner = new fabric.Rect({
+    //   left: boxLeft + 5,
+    //   top: boxTop + 25,
+    //   width: boxWidth - 10,
+    //   height: boxHeight - 40,
+    //   fill: "transparent",
+    //   stroke: warningColor || "skyblue",
+    //   strokeWidth: 1,
+    //   selectable: false,
+    //   evented: false,
+    //   visible: false,
+    //   isSync: false,
+    //   objectCaching: false,
+    //   strokeDashArray: [3, 1], // ← use this instead of borderDashArray
+    //   name: "boundaryBoxInner"
+    // });
+    // const boundaryBoxLeft = new fabric.Rect({
+    //   left: boxLeft + 145,
+    //   top: boxTop + 25,
+    //   width: 100,
+    //   height: 100,
+    //   fill: "transparent",
+    //   stroke: warningColor || "skyblue",
+    //   strokeWidth: 1,
+    //   selectable: false,
+    //   evented: false,
+    //   visible: false,
+    //   isSync: false,
+    //   strokeWidth: 1,
+    //   selectable: false,
+    //   objectCaching: false,
+    //   strokeDashArray: [3, 1],
+    //   name: "boundaryBoxLeft"
+    // });
 
     const warningText = new fabric.Text("Please keep design inside the box", {
       left: boxLeft + boxWidth / 2,
-      top: boxTop + 30,
+      top: boxTop - 20,
       fontSize: 15,
       fontFamily: "proxima-soft, sans-serif",
       fill: "white" || "#00F8E7FF",
@@ -561,63 +555,63 @@ const MainDesignTool = ({
     // canvas.requestRenderAll();
 
 
-    const adultText = new fabric.Text("Adult", {
-      left: boxLeft + boxWidth / 2,
-      top: boxTop + 390,
-      width: boxWidth - 20,           // ✅ important for wrapping
-      fontSize: 13,
-      fontFamily: "proxima-soft, sans-serif",
-      fill: "white" || "#00F8E7FF",
-      selectable: false,
-      evented: false,
-      visible: false,                  // ✅ visible for testing
-      isSync: false,
-      originX: "center",
-      originY: "top",
-      textAlign: "center",
-      name: "adultText",
-    });
-    const leftChestText = new fabric.Text("Left Chest", {
-      left: boxLeft + 70 + boxWidth / 2,
-      top: boxTop + 105,
-      // width: boxWidth - 20,             // ✅ important for wrapping
-      fontSize: 13,
-      fontFamily: "proxima-soft, sans-serif",
-      fill: "white" || "#00F8E7FF",
-      selectable: false,
-      evented: false,
-      visible: false,                  // ✅ visible for testing
-      isSync: false,
-      originX: "center",
-      originY: "top",
-        textAlign: "center",
-      name: "leftChestText",
-      scaleX: 1,
-      scaleY: 1,
-    });
-    const youthText = new fabric.Text("Youth", {
-      left: boxLeft + boxWidth / 2,
-      top: boxTop + 350,
-      width: boxWidth - 20,           // ✅ important for wrapping
-      fontSize: 13,
-      fontFamily: "proxima-soft, sans-serif",
-      fill: "white" || "#00F8E7FF",
-      selectable: false,
-      evented: false,
-      visible: false,                  // ✅ visible for testing
-      isSync: false,
-      originX: "center",
-      originY: "top",
-      textAlign: "center",
-      name: "youthText",
-      scaleX: 1,
-      scaleY: 1,
-    });
+    // const adultText = new fabric.Text("Adult", {
+    //   left: boxLeft + boxWidth / 2,
+    //   top: boxTop + 390,
+    //   width: boxWidth - 20,           // ✅ important for wrapping
+    //   fontSize: 13,
+    //   fontFamily: "proxima-soft, sans-serif",
+    //   fill: "white" || "#00F8E7FF",
+    //   selectable: false,
+    //   evented: false,
+    //   visible: false,                  // ✅ visible for testing
+    //   isSync: false,
+    //   originX: "center",
+    //   originY: "top",
+    //   textAlign: "center",
+    //   name: "adultText",
+    // });
+    // const leftChestText = new fabric.Text("Left Chest", {
+    //   left: boxLeft + 70 + boxWidth / 2,
+    //   top: boxTop + 105,
+    //   // width: boxWidth - 20,             // ✅ important for wrapping
+    //   fontSize: 13,
+    //   fontFamily: "proxima-soft, sans-serif",
+    //   fill: "white" || "#00F8E7FF",
+    //   selectable: false,
+    //   evented: false,
+    //   visible: false,                  // ✅ visible for testing
+    //   isSync: false,
+    //   originX: "center",
+    //   originY: "top",
+    //   textAlign: "center",
+    //   name: "leftChestText",
+    //   scaleX: 1,
+    //   scaleY: 1,
+    // });
+    // const youthText = new fabric.Text("Youth", {
+    //   left: boxLeft + boxWidth / 2,
+    //   top: boxTop + 350,
+    //   width: boxWidth - 20,           // ✅ important for wrapping
+    //   fontSize: 13,
+    //   fontFamily: "proxima-soft, sans-serif",
+    //   fill: "white" || "#00F8E7FF",
+    //   selectable: false,
+    //   evented: false,
+    //   visible: false,                  // ✅ visible for testing
+    //   isSync: false,
+    //   originX: "center",
+    //   originY: "top",
+    //   textAlign: "center",
+    //   name: "youthText",
+    //   scaleX: 1,
+    //   scaleY: 1,
+    // });
 
 
     const centerX = boxLeft + boxWidth / 2;
-    const centerY1 = boxTop + 20;
-    const centerY2 = boxTop + 20 + boxHeight;
+    const centerY1 = boxTop - 30;
+    const centerY2 = boxTop - 30 + boxHeight;
 
     const centerVerticalLine = new fabric.Line([centerX, centerY1, centerX, centerY2], {
       stroke: warningColor || "skyblue",
@@ -664,29 +658,181 @@ const MainDesignTool = ({
 
 
     canvas.add(boundaryBox, centerVerticalLine);
-    canvas.add(boundaryBoxLeft);
-    canvas.add(adultText);
-    canvas.add(youthText);
-    canvas.add(leftChestText);
-    canvas.add(boundaryBoxInner);
-    canvas.add(leftBorder);
+    // canvas.add(boundaryBoxLeft);
+    // canvas.add(adultText);
+    // canvas.add(youthText);
+    // canvas.add(leftChestText);
+    // canvas.add(boundaryBoxInner);
+    // canvas.add(leftBorder);
     canvas.add(warningText);
     // canvas.sendToBack(leftBorder);
     warningText.initDimensions();
     warningText.initDimensions();
 
 
-    youthText.initDimensions();
-    adultText.initDimensions();
+    // youthText.initDimensions();
+    // adultText.initDimensions();
     canvas.bringToFront(warningText);
-    canvas.bringToFront(youthText);
-    canvas.bringToFront(adultText);
-    canvas.bringToFront(leftChestText)
+    // canvas.bringToFront(youthText);
+    // canvas.bringToFront(adultText);
+    // canvas.bringToFront(leftChestText)
     canvas.bringToFront(boundaryBox);
-    canvas.bringToFront(boundaryBoxInner);
-    canvas.bringToFront(boundaryBoxLeft);
+    // canvas.bringToFront(boundaryBoxInner);
+    // canvas.bringToFront(boundaryBoxLeft);
     canvas.bringToFront(centerVerticalLine);
+  }
 
+
+  function createWarningForZip(canvasWidth, canvasHeight, canvas) {
+    const boxWidth = canvasWidth * 0.15;  // 40% of canvas width
+    const boxHeight = canvasHeight * 0.15; // 60% of canvas height
+
+    const centerX = canvasWidth / 2;
+    const spacing = canvasWidth * 0.05;
+
+    // 🟡 Move the boxes slightly higher than center
+    const boxTop = canvasHeight * 0.15;
+
+
+    const boxLeft = (canvasWidth - boxWidth) / 2;
+
+
+    const boxWidthBack = canvasWidth * 0.4;  // 40% of canvas width
+    const boxHeightBack = canvasHeight * 0.6; // 60% of canvas height
+
+    const boxLeftBack = (canvasWidth - boxWidthBack) / 2;
+    const boxTopBack = ((canvasHeight - boxHeightBack) / 2);
+
+    const warningText = new fabric.Text("Please keep design inside the box", {
+      left: boxLeftBack + boxWidthBack / 2,
+      top: boxTopBack - 20,
+      fontSize: 15,
+      fontFamily: "proxima-soft, sans-serif",
+      fill: "white" || "#00F8E7FF",
+      selectable: false,
+      evented: false,
+      visible: false,
+      originX: "center", // ⬅️ Centers text
+      originY: "top",
+      name: "warningText",
+    });
+
+    const boundaryBox = new fabric.Rect({
+      left: boxLeftBack,
+      top: boxTopBack - 30,
+      width: boxWidthBack,
+      height: boxHeightBack,
+      fill: "transparent",
+
+      stroke: warningColor || "skyblue",
+      strokeWidth: 1,
+      selectable: false,
+      evented: false,
+      visible: false,
+      isSync: false,
+      name: "boundaryBox"
+    });
+
+    // RIGHT box (on the left)
+    const boundaryBoxRight = new fabric.Rect({
+      left: centerX - boxWidth - spacing,
+      top: boxTop,
+      width: boxWidth,
+      height: boxHeight,
+      fill: "transparent",
+      stroke: warningColor || "skyblue",
+      strokeWidth: 1,
+      selectable: false,
+      evented: false,
+      visible: false,
+      objectCaching: false,
+      strokeDashArray: [3, 1],
+      name: "boundaryBoxRight"
+    });
+
+    // RIGHT text inside box, aligned to bottom center
+    const rightChestText = new fabric.Text("Right Chest", {
+      left: boundaryBoxRight.left + boxWidth / 2,
+      top: boundaryBoxRight.top + boxHeight - 18, // 👈 inside the box near bottom
+      fontSize: 13,
+      fontFamily: "proxima-soft, sans-serif",
+      fill: "white",
+      selectable: false,
+      evented: false,
+      visible: false,
+      originX: "center",
+      originY: "top",
+      name: "rightChestText"
+    });
+
+    // LEFT box (on the right)
+    const boundaryBoxLeft = new fabric.Rect({
+      left: centerX + spacing,
+      top: boxTop,
+      width: boxWidth,
+      height: boxHeight,
+      fill: "transparent",
+      stroke: warningColor || "skyblue",
+      strokeWidth: 1,
+      selectable: false,
+      evented: false,
+      visible: false,
+      objectCaching: false,
+      strokeDashArray: [3, 1],
+      name: "boundaryBoxLeft"
+    });
+
+    // LEFT text inside box, aligned to bottom center
+    const leftChestText = new fabric.Text("Left Chest", {
+      left: boundaryBoxLeft.left + boxWidth / 2,
+      top: boundaryBoxLeft.top + boxHeight - 18, // 👈 inside the box near bottom
+      fontSize: 13,
+      fontFamily: "proxima-soft, sans-serif",
+      fill: "white",
+      selectable: false,
+      evented: false,
+      visible: false,
+      originX: "center",
+      originY: "top",
+      name: "leftChestText"
+    });
+
+    // Add everything to canvas
+
+    canvas.add(warningText, boundaryBox, boundaryBoxLeft, leftChestText, boundaryBoxRight, rightChestText, boundaryBox);
+
+    // Bring to front
+    canvas.bringToFront(boundaryBox);
+    canvas.bringToFront(warningText);
+    canvas.bringToFront(boundaryBoxRight);
+    canvas.bringToFront(leftChestText);
+    canvas.bringToFront(rightChestText);
+    canvas.bringToFront(boundaryBoxLeft);
+  }
+
+
+  useEffect(() => {
+    const canvasElement = canvasRef.current;
+    const wrapperElement = canvasElement.parentNode;
+
+    const canvasWidth = wrapperElement.clientWidth;
+    const canvasHeight = wrapperElement.clientHeight;
+
+    const canvas = new fabric.Canvas(canvasElement, {
+      width: canvasWidth,
+      height: canvasHeight,
+    });
+    canvas.preserveObjectStacking = true;
+    fabricCanvasRef.current = canvas;
+    console.log("productCategory before warning", productCategory)
+
+    if (getProductType(activeProductTitle) === "Zip") {
+      createWarningForZip(canvasWidth, canvasHeight, canvas)
+    }
+    else {
+      createWarningForSweatShirt(canvasWidth, canvasHeight, canvas)
+
+    }
 
 
     const handleSelection = (e) => {
@@ -724,7 +870,7 @@ const MainDesignTool = ({
       const removedObject = e.target;
       removeAllHtmlControls();
       syncMirrorCanvasHelper(activeSide);
-      updateBoundaryVisibility(fabricCanvasRef, activeSide);
+      updateBoundaryVisibility(fabricCanvasRef, activeSide, getProductType(activeProductTitle));
       dispatch(deleteTextState(removedObject.id));
       // dispatch(deleteImageState(removedObject.id));
 
@@ -736,92 +882,92 @@ const MainDesignTool = ({
     };
 
     const handleObjectModified = (e) => {
-      updateBoundaryVisibility(fabricCanvasRef, activeSide);
+      updateBoundaryVisibility(fabricCanvasRef, activeSide, getProductType(activeProductTitle));
       syncMirrorCanvasHelper(activeSide);
       // handleScale(e);
     };
 
     const handleMoving = (e) => {
       // checkBoundary(e);
-      const canvas = fabricCanvasRef.current;
-      // if (!canvas) return;
+      // const canvas = fabricCanvasRef.current;
+      // // if (!canvas) return;
 
-      const objects = canvas.getObjects();
-      if (activeSide === 'front') {
-        boundaryBox.visible = true;
-        warningText.visible = true;
-        centerVerticalLine.visible = true;
-        boundaryBoxInner.visible = true;
-        boundaryBoxLeft.visible = true;
-        if (leftChestText) leftChestText.visible = true;
-        if (youthText) youthText.visible = true;
-        if (adultText) adultText.visible = true;
-      }
-      else {
-        boundaryBox.visible = true;
+      // const objects = canvas.getObjects();
+      // if (activeSide === 'front') {
+      //   boundaryBox.visible = true;
+      //   warningText.visible = true;
+      //   centerVerticalLine.visible = true;
+      //   boundaryBoxInner.visible = true;
+      //   boundaryBoxLeft.visible = true;
+      //   if (leftChestText) leftChestText.visible = true;
+      //   if (youthText) youthText.visible = true;
+      //   if (adultText) adultText.visible = true;
+      // }
+      // else {
+      //   boundaryBox.visible = true;
 
-        centerVerticalLine.visible = true;
+      //   centerVerticalLine.visible = true;
 
-      }
-
-
+      // }
 
 
-      // Detect center collision
-      const textObjects = objects.filter(
-        (obj) => obj.type === "curved-text" || obj.type === "image"
-      );
 
-      let anyObjectAtCenter = false;
 
-      textObjects.forEach((obj) => {
-        obj.setCoords();
+      // // Detect center collision
+      // const textObjects = objects.filter(
+      //   (obj) => obj.type === "curved-text" || obj.type === "image"
+      // );
 
-        const objCenterX = obj.getCenterPoint().x;
-        const delta = Math.abs(objCenterX - canvasCenterX);
+      // let anyObjectAtCenter = false;
 
-        if (delta <= 2) {
-          anyObjectAtCenter = true;
+      // textObjects.forEach((obj) => {
+      //   obj.setCoords();
 
-          // Temporarily lock movement
-          obj.lockMovementX = true;
-          canvas.requestRenderAll();
+      //   const objCenterX = obj.getCenterPoint().x;
+      //   const delta = Math.abs(objCenterX - canvasCenterX);
 
-          setTimeout(() => {
-            obj.lockMovementX = false;
-            canvas.requestRenderAll();
-          }, 1000);
-        }
+      //   if (delta <= 2) {
+      //     anyObjectAtCenter = true;
 
-        obj.setCoords();
-      });
+      //     // Temporarily lock movement
+      //     obj.lockMovementX = true;
+      //     canvas.requestRenderAll();
 
-      // Show / hide the left / right borders
-      // leftBorder.set({ visible: anyObjectAtCenter });
-      // rightBorder.set({ visible: anyObjectAtCenter });
+      //     setTimeout(() => {
+      //       obj.lockMovementX = false;
+      //       canvas.requestRenderAll();
+      //     }, 1000);
+      //   }
 
-      // Change center line color if hitting center
-      const originalStroke = centerVerticalLine.originalStroke || centerVerticalLine.stroke || "skyblue";
-      if (!centerVerticalLine.originalStroke) {
-        centerVerticalLine.originalStroke = originalStroke;
-      }
+      //   obj.setCoords();
+      // });
 
-      centerVerticalLine.set("stroke", anyObjectAtCenter ? "orange" : originalStroke);
+      // // Show / hide the left / right borders
+      // // leftBorder.set({ visible: anyObjectAtCenter });
+      // // rightBorder.set({ visible: anyObjectAtCenter });
 
-      canvas.requestRenderAll();
+      // // Change center line color if hitting center
+      // const originalStroke = centerVerticalLine.originalStroke || centerVerticalLine.stroke || "skyblue";
+      // if (!centerVerticalLine.originalStroke) {
+      //   centerVerticalLine.originalStroke = originalStroke;
+      // }
+
+      // centerVerticalLine.set("stroke", anyObjectAtCenter ? "orange" : originalStroke);
+
+      // canvas.requestRenderAll();
     };
 
     const showBoundaryOnAction = () => {
-      boundaryBox.visible = true;
-      warningText.visible = true;
+      // boundaryBox.visible = true;
+      // warningText.visible = true;
 
 
-      centerVerticalLine.visible = true;
-      boundaryBoxInner.visible = true;
-      boundaryBoxLeft.visible = true;
-      if (leftChestText) leftChestText.visible = true;
-      if (youthText) youthText.visible = true;
-      if (adultText) adultText.visible = true;
+      // centerVerticalLine.visible = true;
+      // boundaryBoxInner.visible = true;
+      // boundaryBoxLeft.visible = true;
+      // if (leftChestText) leftChestText.visible = true;
+      // if (youthText) youthText.visible = true;
+      // if (adultText) adultText.visible = true;
 
     }
 
@@ -876,7 +1022,7 @@ const MainDesignTool = ({
           // canvas.add(img);
           // canvas.bringToFront(img);
           syncMirrorCanvasHelper(activeSide);
-          updateBoundaryVisibility(fabricCanvasRef, activeSide);
+          updateBoundaryVisibility(fabricCanvasRef, activeSide, getProductType(activeProductTitle));
         },
         { crossOrigin: "anonymous" }
       );
@@ -905,7 +1051,7 @@ const MainDesignTool = ({
 
 
   useEffect(() => {
-    updateBoundaryVisibility(fabricCanvasRef, activeSide);
+    updateBoundaryVisibility(fabricCanvasRef, activeSide, getProductType(activeProductTitle));
   }, [addName, addNumber, nameAndNumberDesignState, textContaintObject, imageContaintObject]);
 
   // **********************************************************************************************************************************************************
@@ -987,7 +1133,8 @@ const MainDesignTool = ({
         setSelectedTextState,
         globalDispatch,
         activeSide,
-        bringPopup
+        bringPopup,
+        getProductType(activeProductTitle)
 
       )
     }
@@ -1012,7 +1159,7 @@ const MainDesignTool = ({
     });
 
     canvas.renderAll();
-    updateBoundaryVisibility?.(fabricCanvasRef, activeSide);
+    updateBoundaryVisibility(fabricCanvasRef, activeSide, getProductType(activeProductTitle));
 
   };
   // **********************************************************************************************************************************************************

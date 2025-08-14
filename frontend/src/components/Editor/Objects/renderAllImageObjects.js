@@ -15,9 +15,12 @@ const renderAllImageObjects = (
   globalDispatch,
   activeSide,
   handleScale,
-  bringPopup
+  bringPopup,
+  productCategory
 ) => {
   // console.log("imageContaintObject", imageContaintObject);
+  console.log("productCategory.......", productCategory)
+  
   const canvas = fabricCanvasRef.current;
 
 
@@ -813,7 +816,7 @@ const renderAllImageObjects = (
     }
   });
 
-  updateBoundaryVisibility(fabricCanvasRef, activeSide);
+  updateBoundaryVisibility(fabricCanvasRef, activeSide, productCategory);
 };
 
 export default renderAllImageObjects;

@@ -15,8 +15,11 @@ const renderNameAndNumber = (
   addNumber,
   addName,
   updateNameAndNumberDesignState,
-  bringPopup
+  bringPopup,
+  productCategory
 ) => {
+  console.log("productCategory.......", productCategory)
+
   const canvas = fabricCanvasRef.current;
   if (!canvas || !nameAndNumberDesignState) {
     // console.warn("Canvas or nameAndNumberDesignState is missing.");

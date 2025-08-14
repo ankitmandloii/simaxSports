@@ -13,8 +13,10 @@ const renderCurveTextObjects = (
   setSelectedTextState,
   globalDispatch,
   activeSide,
-  bringPopup
+  bringPopup,
+  productCategory
 ) => {
+  console.log("productCategory.......", productCategory)
   const canvas = fabricCanvasRef.current;
   if (textContaintObject && textContaintObject.length === 0) {
     let existingTextbox = canvas
@@ -275,7 +277,7 @@ const renderCurveTextObjects = (
     });
 
     canvas.renderAll();
-    updateBoundaryVisibility(fabricCanvasRef, activeSide);
+    updateBoundaryVisibility(fabricCanvasRef, activeSide, productCategory);
   }
 };
 
