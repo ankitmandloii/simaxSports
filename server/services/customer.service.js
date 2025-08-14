@@ -251,8 +251,7 @@ exports.getOrderList = async () => {
   const A_TOKEN = process.env.SHOPIFY_API_KEY;
 
   const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
-  // const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`;
-
+  //will implement for Pagination
   const query = `
     {
       orders(first: 10, reverse: true) {

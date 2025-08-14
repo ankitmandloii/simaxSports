@@ -5,6 +5,9 @@ const { statusCode } = require("../constant/statusCodes.js");
 const AdminSettings = require("../schema/adminSettingsSchema.js");
 const { emitSettingUpdate } = require('../socket.js');
 
+const { UserDesigns } = require('../model/designSchemas/UserDesignsSchema.js');
+const { default: mongoose } = require("mongoose");
+
 
 exports.sendEmailDesign = async (req, res) => {
     try {
@@ -60,4 +63,101 @@ exports.getSettings = async (req, res) => {
         console.log(error)
         return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
     }
+};
+
+
+
+///////////////////////////////////////Design API's//////////////////////////////////////////////////////////////////////////////////////
+function ensureEmail(email) {
+  if (!email) {
+    const err = new Error('ownerEmail is required');
+    err.status = 400;
+    throw err;
+  }
+}
+
+exports.saveDesignsFromFrontEnd = async (req, res) => {
+   try {
+    const { ownerEmail, design, designId } = req.body;
+    ensureEmail(ownerEmail);
+
+    if (!design && !designId) {
+      return res.status(400).json({ message: 'Provide `design` for create or `designId` + `design` for update.' });
+    }
+
+    // If updating an existing design by ID
+    if (designId) {
+      if (!mongoose.isValidObjectId(designId)) {
+        return res.status(400).json({ message: 'Invalid designId' });
+      }
+
+      // Try update existing design in-place
+      const updateRes = await UserDesigns.updateOne(
+        { ownerEmail, 'designs._id': designId },
+        { $set: { 'designs.$': design } }
+      );
+
+      if (updateRes.matchedCount === 0) {
+        // No existing design with this id for this user; push it as new with specified _id
+        const toInsert = { ...design, _id: designId };
+        await UserDesigns.updateOne(
+          { ownerEmail },
+          { $push: { designs: toInsert } },
+          { upsert: true }
+        );
+      }
+
+      const doc = await UserDesigns.findOne({ ownerEmail }).lean();
+      return res.status(200).json({ message: 'Saved', userDesigns: doc });
+    }
+
+    // Creating a new design (no designId provided)
+    // Let Mongo assign a new _id to the subdoc
+    const result = await UserDesigns.findOneAndUpdate(
+      { ownerEmail },
+      { $push: { designs: design } },
+      { upsert: true, new: true }
+    ).lean();
+
+    return res.status(201).json({ message: 'Created', userDesigns: result });
+  } catch (err) {
+   console.log(`Some Error Occured ${err}`)
+  }
+};
+
+
+exports.getDesignsFromFrontEnd = async (req, res) => {
+try {
+    const { ownerEmail } = req.query;
+    console.log("ownerEmail",ownerEmail)
+    ensureEmail(ownerEmail);
+
+    const doc = await UserDesigns.findOne({ ownerEmail }).lean();
+    return res.status(200).json({ userDesigns: doc || { ownerEmail, designs: [] } });
+  } catch (err) {
+     console.log(`Some Error Occured ${err}`)
+  }
+};
+
+
+exports.deleteDesignsFromFrontEnd = async (req, res) => {
+try {
+    const { ownerEmail } = req.body; // or from auth token/session
+    const { designId } = req.params;
+    ensureEmail(ownerEmail);
+
+    if (!mongoose.isValidObjectId(designId)) {
+      return res.status(400).json({ message: 'Invalid designId' });
+    }
+
+    const result = await UserDesigns.findOneAndUpdate(
+      { ownerEmail },
+      { $pull: { designs: { _id: designId } } },
+      { new: true }
+    ).lean();
+
+    return res.status(200).json({ message: 'Deleted', userDesigns: result });
+  } catch (err) {
+     console.log(`Some Error Occured ${err}`)
+  }
 };
