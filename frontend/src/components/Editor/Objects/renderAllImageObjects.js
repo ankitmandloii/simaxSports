@@ -156,6 +156,7 @@ const renderAllImageObjects = (
     }
 
     checkbox.addEventListener("change", () => {
+      const addImageToolbarBgBtn = document.querySelector("#removeBackgroundInput");
       const checked = checkbox.checked;
       slider.style.backgroundColor = checked ? "#3b82f6" : "#ccc";
       circle.style.transform = checked ? "translateX(16px)" : "translateX(0)";
@@ -179,24 +180,25 @@ const renderAllImageObjects = (
 
       // Show loading state
       globalDispatch("loading", true, id);
-      globalDispatch("loadingSrc", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s", id);
+      // globalDispatch("loadingSrc", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s", id);
 
       // Update image source
       fabricImage.setSrc(newSrc, () => {
         canvas.renderAll();
         globalDispatch("loading", false, id);
-        globalDispatch("loadingSrc", null, id);
-        globalDispatch("src", newSrc, id);
-        globalDispatch("base64CanvasImage", newSrc, id);
-        globalDispatch("selectedFilter", "Normal", id);
+        // globalDispatch("loadingSrc", null, id);
+        // globalDispatch("src", newSrc, id);
+        // globalDispatch("base64CanvasImage", newSrc, id);
+        // globalDispatch("selectedFilter", "Normal", id);
         globalDispatch("removeBg", checked, id);
-        globalDispatch("removeBgParamValue", checked ? "bg-remove=true" : "", id);
+        // globalDispatch("removeBgParamValue", checked ? "bg-remove=true" : "", id);
         if (callback) callback(checked, fabricImage);
       }, { crossOrigin: "anonymous" });
 
       // Sync with toolbar checkbox
-      const toolbarCheckbox = document.querySelector(`.toolbarBox input[type="checkbox"]`);
-      if (toolbarCheckbox && toolbarCheckbox.checked !== checked) {
+      const toolbarCheckbox = document.querySelector(`#addImageToolbarBgBtn`);
+      console.log(toolbarCheckbox, "toolbarCheckbox");
+      if (toolbarCheckbox) {
         toolbarCheckbox.checked = checked;
         const event = new Event('change');
         toolbarCheckbox.dispatchEvent(event);

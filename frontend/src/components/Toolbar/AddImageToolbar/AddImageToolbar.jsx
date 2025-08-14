@@ -153,7 +153,7 @@ const AddImageToolbar = () => {
   async function processAndReplaceColors(imageSrc, color, editColor = false, extractedColors = []) {
     try {
       const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
       const img = new Image();
 
       // Handle cross-origin
@@ -350,7 +350,7 @@ const AddImageToolbar = () => {
       };
     }));
     // console.log(filters, "&&&&&&&&&&&&")
-  }, [activeEffects, selectedImageId]);
+  }, [activeEffects, selectedImageId, img?.src]);
 
   const handleRangeInputSizeChange = (e) => {
 
@@ -603,6 +603,18 @@ const AddImageToolbar = () => {
     return false;
   }
 
+
+  const hasMounted = useRef(false); // ✅ move to top level
+
+  useEffect(() => {
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return; // ⛔ skip on first render
+    }
+
+    removeBackgroundHandler(); // ✅ run on subsequent changes only
+  }, [img?.removeBg]);
+
   function removeBackgroundHandler(e) {
     // update local state
     console.log("clicked on backgournd remove button");
@@ -711,7 +723,7 @@ const AddImageToolbar = () => {
   function getBase64CanvasImage(imageSrc, color) {
     return new Promise((resolve, reject) => {
       const canvas = document.getElementById('HelperCanvas');
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.src = imageSrc;
@@ -750,7 +762,7 @@ const AddImageToolbar = () => {
   async function makeSolid(imageSrc, threshold) {
     return new Promise((resolve, reject) => {
       const canvas = document.getElementById('HelperCanvas');
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
       const img = new Image();
 
       img.crossOrigin = "anonymous";
@@ -838,7 +850,7 @@ const AddImageToolbar = () => {
     }
     return new Promise((resolve, reject) => {
       const canvas = document.getElementById('HelperCanvas');
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
       const img = new Image();
 
       // If imageSrc is base64, directly set img.src
@@ -916,7 +928,7 @@ const AddImageToolbar = () => {
   function invertColorsAndGetUrl(imageSrc) {
     return new Promise((resolve, reject) => {
       const canvas = document.getElementById('HelperCanvas');
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
       const img = new Image();
 
       // If imageSrc is base64, directly set img.src
@@ -1200,7 +1212,7 @@ const AddImageToolbar = () => {
     console.log(targetHex, newHex, "replaceColorAndGetBase64 functiion", imageSrc)
     return new Promise(async (resolve, reject) => {
       const canvas = document.getElementById('HelperCanvas');
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
       const img = new Image();
 
       // Support CORS if external URL

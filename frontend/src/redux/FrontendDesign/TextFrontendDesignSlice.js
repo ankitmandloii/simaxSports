@@ -727,7 +727,7 @@ const TextFrontendDesignSlice = createSlice({
       const image = state.present[side]?.images?.find((img) => img.id === id);
       if (image && !image.locked) Object.assign(image, changes);
       if (isRenderOrNot) {
-        state.present[side].setRendering = !state.present[side].setRendering;
+        // state.present[side].setRendering = !state.present[side].setRendering;
       }
       state.future[side] = [];
     },

@@ -559,7 +559,7 @@ const MainDesignTool = ({
       isSync: false,
       originX: "center",
       originY: "top",
-      textAlign: "center",
+        textAlign: "center",
       name: "leftChestText",
       scaleX: 1,
       scaleY: 1,
