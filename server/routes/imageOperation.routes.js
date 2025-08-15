@@ -209,7 +209,7 @@ router.post("/upload", upload.array('images', 5), controllers.fileUpload); // Ac
 router.delete("/delete", controllers.fileDelete);
 // router.post("/image/list",controllers.getImageGalleryList)
 router.post("/editImageByAi",uploadforSingleEditImage.array('image', 1),controllers.editImageByAi);
-router.get("/generateImageByAi",controllers.generateMultipleImagesByAi);
+router.post("/generateImageByAi",controllers.generateMultipleImagesByAi);
 // router.post("/uploadToCloudinary",cloudinaryUpload.array("images"), controllers.fileUploadToCloudinary);
 router.post("/fileBlobDataUploadToCloudinary",testUpload.any(), controllers.fileBlobDataUploadToCloudinary);
 router.delete("/deleteFromCloudinary", controllers.deleteImageFromCloudinary);
