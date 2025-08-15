@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useToast } from '../admin/ToastContext';
 import {
   Page,
   Card,
@@ -23,7 +24,7 @@ export function Dashboard() {
   const [showBack, setShowBack] = useState(false);
   const [showLeftSleeve, setShowLeftSleeve] = useState(false);
   const [showRightSleeve, setShowRightSleeve] = useState(false);
-
+  const { showToast } = useToast();
   // Fetch design data from API
   useEffect(() => {
     const fetchDesigns = async () => {
@@ -350,9 +351,9 @@ export function Dashboard() {
     ).then((response) => {
       if (response.ok) {
         setUserDesigns((prev) => prev.filter((design) => design._id !== designId));
-        alert("Design deleted successfully!");
+        showToast({ content: "Design deleted successfully!", error: false });
       } else {
-        alert("Failed to delete design");
+        showToast({ content: "Failed to delete design", error: true });
       }
     });
   }
