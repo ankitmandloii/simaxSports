@@ -139,11 +139,16 @@ const MainDesignTool = ({
   };
   // Function to detect ProductTye
   function getProductType(title) {
+
     const keywords = [
       "Zip",
       "Sleeveless",
       "T-shirt",
       "Hoodie",
+      "Women's Sweatshirt",
+      "Unisex Sweatshirt",
+      "Hooded Sweatshirt",
+      "Pullover Hoodie",
       "Polo",
       "Zip(?: Pullover)?", // handles both "Zip" and "Zip Pullover"
       "Tee",
@@ -164,6 +169,43 @@ const MainDesignTool = ({
 
     return "Unknown";
   }
+  // function getProductType(title) {
+  //   const keywords = [
+  //     "Unisex",
+  //     "Women's",
+  //     "Men's",
+  //     "Hooded",
+  //     "Hoodie",
+  //     "Sweatshirt",
+  //     "T-shirt",
+  //     "Long Sleeve",
+  //     "Sleeveless",
+  //     "Tee",
+  //     "Tank",
+  //     "Polo",
+  //     "Jacket",
+  //     "Zip",
+  //   ];
+
+  //   // Normalize curly quotes to straight quotes
+  //   const normalizeQuotes = (str) =>
+  //     str.replace(/[\u2018\u2019\u201A\u201B]/g, "'") // curly single quotes → '
+  //       .replace(/[\u201C\u201D\u201E\u201F]/g, '"'); // curly double quotes → "
+
+  //   const lowerTitle = normalizeQuotes(title?.toLowerCase());
+  //   const matchedKeywords = [];
+
+  //   for (let keyword of keywords) {
+  //     const regex = new RegExp(`\\b${keyword.toLowerCase()}\\b`, "i");
+  //     if (regex.test(lowerTitle)) {
+  //       matchedKeywords.push(keyword);
+  //     }
+  //   }
+
+  //   return matchedKeywords.length ? matchedKeywords.join(" ") : "Unknown";
+  // }
+
+
   // console.log("--------activeTitle", getProductType(activeProductTitle));
 
 
@@ -538,7 +580,7 @@ const MainDesignTool = ({
     const warningText = new fabric.Text("Please keep design inside the box", {
       left: boxLeft + boxWidth / 2,
       top: boxTop - 20,
-      fontSize: 15,
+      fontSize: canvasHeight * 0.03,
       fontFamily: "proxima-soft, sans-serif",
       fill: "white" || "#00F8E7FF",
       selectable: false,
@@ -681,61 +723,37 @@ const MainDesignTool = ({
     // canvas.bringToFront(boundaryBoxLeft);
     canvas.bringToFront(centerVerticalLine);
   }
+  function createWarningForhoodie(canvasWidth, canvasHeight, canvas) {
+    let boxWidth = canvasWidth * 0.4;
+    let boxHeight = canvasHeight * 0.34;
+    let boxLeft = (canvasWidth - boxWidth) / 2;
+    let boxTop = (canvasHeight - boxHeight) / 2;
+
+    if (activeSide === "front") {
+      boxTop -= canvasHeight * 0.12;
+    } else if (activeSide == "back") {
+      boxTop -= canvasHeight * 0.07;
+    }
+    else {
+      boxLeft += canvasWidth * 0.15
+      boxWidth = canvasWidth * 0.18;
+      boxHeight = canvasHeight * 0.34;
+      boxTop -= canvasHeight * 0.10;
+    }
 
 
-  function createWarningForZip(canvasWidth, canvasHeight, canvas) {
-    const boxWidth = canvasWidth * 0.15;  // 40% of canvas width
-    const boxHeight = canvasHeight * 0.15; // 60% of canvas height
 
-    const centerX = canvasWidth / 2;
-    const spacing = canvasWidth * 0.05;
-
-    // 🟡 Move the boxes slightly higher than center
-    const boxTop = canvasHeight * 0.15;
-
-
-    const boxLeft = (canvasWidth - boxWidth) / 2;
-
-
-    const boxWidthBack = canvasWidth * 0.4;  // 40% of canvas width
-    const boxHeightBack = canvasHeight * 0.6; // 60% of canvas height
-
-    const boxLeftBack = (canvasWidth - boxWidthBack) / 2;
-    const boxTopBack = ((canvasHeight - boxHeightBack) / 2);
-
-    const warningText = new fabric.Text("Please keep design inside the box", {
-      left: boxLeftBack + boxWidthBack / 2,
-      top: boxTopBack - 20,
-      fontSize: 15,
-      fontFamily: "proxima-soft, sans-serif",
-      fill: "white" || "#00F8E7FF",
-      selectable: false,
-      evented: false,
-      visible: false,
-      originX: "center", // ⬅️ Centers text
-      originY: "top",
-      name: "warningText",
-    });
+    // Dynamic proportions
+    const warningTextYOffset = canvasHeight * 0.03;
+    const leftBoxWidth = canvasWidth * 0.15;
+    const leftBoxHeight = canvasWidth * 0.15;
+    const leftChestTextFontSize = canvasHeight * 0.02;
+    const warningTextFontSize = canvasHeight * 0.03;
+    const leftChestTextGap = canvasHeight * 0.01;
+    const textGapFromBottom = canvasHeight * 0.0225;
 
     const boundaryBox = new fabric.Rect({
-      left: boxLeftBack,
-      top: boxTopBack - 30,
-      width: boxWidthBack,
-      height: boxHeightBack,
-      fill: "transparent",
-
-      stroke: warningColor || "skyblue",
-      strokeWidth: 1,
-      selectable: false,
-      evented: false,
-      visible: false,
-      isSync: false,
-      name: "boundaryBox"
-    });
-
-    // RIGHT box (on the left)
-    const boundaryBoxRight = new fabric.Rect({
-      left: centerX - boxWidth - spacing,
+      left: boxLeft,
       top: boxTop,
       width: boxWidth,
       height: boxHeight,
@@ -745,16 +763,181 @@ const MainDesignTool = ({
       selectable: false,
       evented: false,
       visible: false,
-      objectCaching: false,
+      isSync: false,
+      name: "boundaryBox"
+    });
+
+    const boundaryBoxLeft = new fabric.Rect({
+      left: boxLeft + boxWidth - leftBoxWidth, // align to top-right corner
+      top: boxTop,
+      width: leftBoxWidth,
+      height: leftBoxHeight,
+      fill: "transparent",
+      stroke: warningColor || "skyblue",
+      strokeWidth: 1,
       strokeDashArray: [3, 1],
+      selectable: false,
+      evented: false,
+      visible: false,
+      isSync: false,
+      objectCaching: false,
+      name: "boundaryBoxLeft"
+    });
+
+    const warningText = new fabric.Text("Please keep design inside the box", {
+      left: boxLeft + boxWidth / 2,
+      top: boxTop - warningTextYOffset,
+      fontSize: warningTextFontSize,
+      fontFamily: "proxima-soft, sans-serif",
+      fill: "white",
+      selectable: false,
+      evented: false,
+      visible: false,
+      originX: "center",
+      originY: "top",
+      name: "warningText"
+    });
+
+    const leftChestText = new fabric.Text("Left Chest", {
+      left: boundaryBoxLeft.left + leftBoxWidth / 2, // center under box
+      top: boundaryBoxLeft.top + leftBoxHeight - textGapFromBottom,
+      fontSize: leftChestTextFontSize,
+      fontFamily: "proxima-soft, sans-serif",
+      fill: "white",
+      selectable: false,
+      evented: false,
+      visible: false,
+      isSync: false,
+      originX: "center",
+      originY: "top",
+      textAlign: "center",
+      name: "leftChestText"
+    });
+
+    const centerX = boxLeft + boxWidth / 2;
+    const centerY1 = boxTop;
+    const centerY2 = boxTop + boxHeight;
+
+    const centerVerticalLine = new fabric.Line([centerX, centerY1, centerX, centerY2], {
+      stroke: warningColor || "skyblue",
+      strokeWidth: 1,
+      strokeDashArray: [3, 1],
+      selectable: false,
+      evented: false,
+      visible: false,
+      name: "centerVerticalLine"
+    });
+
+    const canvasCenterX = canvas.getWidth() / 2;
+
+    const leftBorder = new fabric.Line([canvasCenterX - 2, centerY1, canvasCenterX - 2, centerY2], {
+      stroke: '#005bff',
+      strokeWidth: 1,
+      selectable: false,
+      evented: false,
+      name: 'centerVerticalLineLeftBorder',
+      visible: false
+    });
+
+    const rightBorder = new fabric.Line([canvasCenterX + 2, centerY1, canvasCenterX + 2, centerY2], {
+      stroke: '#005bff',
+      strokeWidth: 1,
+      selectable: false,
+      evented: false,
+      name: 'centerVerticalLineRightBorder',
+      visible: false
+    });
+
+    // Add all elements
+    canvas.add(
+      boundaryBox,
+      boundaryBoxLeft,
+      warningText,
+      leftChestText,
+      centerVerticalLine,
+      rightBorder
+    );
+
+    // Ensure proper layer order
+    warningText.initDimensions();
+    canvas.bringToFront(warningText);
+    canvas.bringToFront(boundaryBox);
+    canvas.bringToFront(centerVerticalLine);
+  }
+  function createWarningForZip(canvasWidth, canvasHeight, canvas) {
+    // MAIN BACK BOX
+    const boxWidthBack = canvasWidth * 0.4;
+    const boxHeightBack = canvasHeight * 0.6;
+    const boxLeftBack = (canvasWidth - boxWidthBack) / 2;
+    const boxTopBack = (canvasHeight - boxHeightBack) / 2;
+
+    // CHEST BOXES
+    const chestBoxWidth = canvasWidth * 0.15;
+    const chestBoxHeight = canvasHeight * 0.15;
+    const centerX = canvasWidth / 2;
+    const spacing = canvasWidth * 0.05;
+    const chestBoxTop = canvasHeight * 0.2;
+
+    // DYNAMIC TEXT/OFFSET VALUES
+
+    const textFontSize = canvasHeight * 0.02;      // ≈13px
+    const textGapFromBottom = canvasHeight * 0.0225; // ≈18px
+    const warningTextOffset = canvasHeight * 0.03;   // ≈20px
+    const backBoxTopOffset = canvasHeight * 0.0375;  // ≈30px
+
+    // WARNING TEXT ABOVE MAIN BACK BOX
+    const warningText = new fabric.Text("Please keep design inside the box", {
+      left: boxLeftBack + boxWidthBack / 2,
+      top: boxTopBack - warningTextOffset,
+      fontSize: canvasHeight * 0.03,
+      fontFamily: "proxima-soft, sans-serif",
+      fill: "white",
+      selectable: false,
+      evented: false,
+      visible: false,
+      originX: "center",
+      originY: "top",
+      name: "warningText",
+    });
+
+    // MAIN BACK BOUNDARY BOX
+    const boundaryBox = new fabric.Rect({
+      left: boxLeftBack,
+      top: boxTopBack - backBoxTopOffset,
+      width: boxWidthBack,
+      height: boxHeightBack,
+      fill: "transparent",
+      stroke: warningColor || "skyblue",
+      strokeWidth: 1,
+      selectable: false,
+      evented: false,
+      visible: false,
+      isSync: false,
+      name: "boundaryBox"
+    });
+
+    // RIGHT CHEST BOX (left side)
+    const boundaryBoxRight = new fabric.Rect({
+      left: centerX - chestBoxWidth - spacing,
+      top: chestBoxTop,
+      width: chestBoxWidth,
+      height: chestBoxHeight,
+      fill: "transparent",
+      stroke: warningColor || "skyblue",
+      strokeWidth: 1,
+      strokeDashArray: [3, 1],
+      selectable: false,
+      evented: false,
+      visible: false,
+      objectCaching: false,
       name: "boundaryBoxRight"
     });
 
-    // RIGHT text inside box, aligned to bottom center
+    // RIGHT CHEST TEXT
     const rightChestText = new fabric.Text("Right Chest", {
-      left: boundaryBoxRight.left + boxWidth / 2,
-      top: boundaryBoxRight.top + boxHeight - 18, // 👈 inside the box near bottom
-      fontSize: 13,
+      left: boundaryBoxRight.left + chestBoxWidth / 2,
+      top: boundaryBoxRight.top + chestBoxHeight - textGapFromBottom,
+      fontSize: textFontSize,
       fontFamily: "proxima-soft, sans-serif",
       fill: "white",
       selectable: false,
@@ -765,28 +948,28 @@ const MainDesignTool = ({
       name: "rightChestText"
     });
 
-    // LEFT box (on the right)
+    // LEFT CHEST BOX (right side)
     const boundaryBoxLeft = new fabric.Rect({
       left: centerX + spacing,
-      top: boxTop,
-      width: boxWidth,
-      height: boxHeight,
+      top: chestBoxTop,
+      width: chestBoxWidth,
+      height: chestBoxHeight,
       fill: "transparent",
       stroke: warningColor || "skyblue",
       strokeWidth: 1,
+      strokeDashArray: [3, 1],
       selectable: false,
       evented: false,
       visible: false,
       objectCaching: false,
-      strokeDashArray: [3, 1],
       name: "boundaryBoxLeft"
     });
 
-    // LEFT text inside box, aligned to bottom center
+    // LEFT CHEST TEXT
     const leftChestText = new fabric.Text("Left Chest", {
-      left: boundaryBoxLeft.left + boxWidth / 2,
-      top: boundaryBoxLeft.top + boxHeight - 18, // 👈 inside the box near bottom
-      fontSize: 13,
+      left: boundaryBoxLeft.left + chestBoxWidth / 2,
+      top: boundaryBoxLeft.top + chestBoxHeight - textGapFromBottom,
+      fontSize: textFontSize,
       fontFamily: "proxima-soft, sans-serif",
       fill: "white",
       selectable: false,
@@ -797,11 +980,17 @@ const MainDesignTool = ({
       name: "leftChestText"
     });
 
-    // Add everything to canvas
+    // ADD TO CANVAS
+    canvas.add(
+      warningText,
+      boundaryBox,
+      boundaryBoxLeft,
+      leftChestText,
+      boundaryBoxRight,
+      rightChestText
+    );
 
-    canvas.add(warningText, boundaryBox, boundaryBoxLeft, leftChestText, boundaryBoxRight, rightChestText, boundaryBox);
-
-    // Bring to front
+    // BRING TO FRONT
     canvas.bringToFront(boundaryBox);
     canvas.bringToFront(warningText);
     canvas.bringToFront(boundaryBoxRight);
@@ -809,7 +998,106 @@ const MainDesignTool = ({
     canvas.bringToFront(rightChestText);
     canvas.bringToFront(boundaryBoxLeft);
   }
+  function createWarningForTankTop(canvasWidth, canvasHeight, canvas) {
+    const boxWidth = canvasWidth * 0.38;
+    const boxHeight = canvasHeight * 0.5;
+    const boxLeft = (canvasWidth - boxWidth) / 2;
 
+    // Center the box slightly higher (tanks are usually cut shorter)
+    const boxTop = (canvasHeight - boxHeight) / 2 - canvasHeight * 0.04;
+
+    // Dynamic proportions
+    const warningTextYOffset = canvasHeight * 0.03;
+    const leftBoxWidth = canvasWidth * 0.14;
+    const leftBoxHeight = canvasWidth * 0.14;
+    const leftChestTextFontSize = canvasHeight * 0.016;
+    const warningTextFontSize = canvasHeight * 0.03;
+    const leftChestTextGap = canvasHeight * 0.01;
+
+    // Main print boundary
+    const boundaryBox = new fabric.Rect({
+      left: boxLeft,
+      top: boxTop,
+      width: boxWidth,
+      height: boxHeight,
+      fill: "transparent",
+      stroke: warningColor || "skyblue",
+      strokeWidth: 1,
+      selectable: false,
+      evented: false,
+      visible: false,
+      isSync: false,
+      name: "boundaryBox"
+    });
+
+
+    // Warning text above main box
+    const warningText = new fabric.Text("Please keep design inside the box", {
+      left: boxLeft + boxWidth / 2,
+      top: boxTop - warningTextYOffset,
+      fontSize: warningTextFontSize,
+      fontFamily: "proxima-soft, sans-serif",
+      fill: "white",
+      selectable: false,
+      evented: false,
+      visible: false,
+      originX: "center",
+      originY: "top",
+      name: "warningText"
+    });
+
+    // Vertical center guideline
+    const centerX = boxLeft + boxWidth / 2;
+    const centerY1 = boxTop;
+    const centerY2 = boxTop + boxHeight;
+
+    const centerVerticalLine = new fabric.Line([centerX, centerY1, centerX, centerY2], {
+      stroke: warningColor || "skyblue",
+      strokeWidth: 1,
+      strokeDashArray: [3, 1],
+      selectable: false,
+      evented: false,
+      visible: false,
+      name: "centerVerticalLine"
+    });
+
+    // Slight borders around center for guidance
+    const canvasCenterX = canvas.getWidth() / 2;
+
+    const leftBorder = new fabric.Line([canvasCenterX - 2, centerY1, canvasCenterX - 2, centerY2], {
+      stroke: '#005bff',
+      strokeWidth: 1,
+      selectable: false,
+      evented: false,
+      name: 'centerVerticalLineLeftBorder',
+      visible: false
+    });
+
+    const rightBorder = new fabric.Line([canvasCenterX + 2, centerY1, canvasCenterX + 2, centerY2], {
+      stroke: '#005bff',
+      strokeWidth: 1,
+      selectable: false,
+      evented: false,
+      name: 'centerVerticalLineRightBorder',
+      visible: false
+    });
+
+    // Add to canvas
+    canvas.add(
+      boundaryBox,
+      warningText,
+      centerVerticalLine,
+      leftBorder,
+      rightBorder
+    );
+
+    // Bring relevant elements to front
+    warningText.initDimensions();
+    canvas.bringToFront(warningText);
+    canvas.bringToFront(boundaryBox);
+    canvas.bringToFront(centerVerticalLine);
+
+  }
 
   useEffect(() => {
     const canvasElement = canvasRef.current;
@@ -829,9 +1117,14 @@ const MainDesignTool = ({
     if (getProductType(activeProductTitle) === "Zip") {
       createWarningForZip(canvasWidth, canvasHeight, canvas)
     }
+    else if ((getProductType(activeProductTitle) === "Hoodie") || (getProductType(activeProductTitle) === "Hooded Sweatshirt")) {
+      createWarningForhoodie(canvasWidth, canvasHeight, canvas)
+
+    } else if ((getProductType(activeProductTitle) === "Tank")) {
+      createWarningForTankTop(canvasWidth, canvasHeight, canvas)
+    }
     else {
       createWarningForSweatShirt(canvasWidth, canvasHeight, canvas)
-
     }
 
 

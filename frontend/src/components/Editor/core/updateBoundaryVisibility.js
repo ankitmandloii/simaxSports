@@ -107,7 +107,7 @@ const updateBoundaryVisibility = (fabricCanvasRef, activeSide, productCategory) 
       const showBoundary = !allInside;
       if (boundaryBox) boundaryBox.visible = showBoundary;
       if (warningText) { warningText.visible = showBoundary; }
-      if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+      // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
     }
   }
   else {
@@ -134,7 +134,7 @@ const updateBoundaryVisibility = (fabricCanvasRef, activeSide, productCategory) 
       if (leftChestText) leftChestText.visible = showBoundary;
       if (adultText) adultText.visible = showBoundary;
       if (youthText) youthText.visible = showBoundary;
-      if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+      // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
       if (warningText) { warningText.visible = showBoundary; }
     }
     else {
@@ -145,7 +145,7 @@ const updateBoundaryVisibility = (fabricCanvasRef, activeSide, productCategory) 
       if (adultText) adultText.visible = false;
       if (youthText) youthText.visible = false;
       if (warningText) { warningText.visible = showBoundary; }
-      if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+      // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
 
     }
   }
