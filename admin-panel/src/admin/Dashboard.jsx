@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useToast } from '../admin/ToastContext';
+import React, { useEffect, useMemo, useState } from "react";
+import { useToast } from "../admin/ToastContext";
 import {
   Page,
   Card,
@@ -12,324 +12,243 @@ import {
   Thumbnail,
   Badge,
   Modal,
+  Tabs,
+  Divider,
+  Box,
 } from "@shopify/polaris";
 
 export function Dashboard() {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const [userDesigns, setUserDesigns] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDesign, setSelectedDesign] = useState(null); // For modal
-  const [modalOpen, setModalOpen] = useState(false); // Modal visibility
-  const [showFront, setShowFront] = useState(false);
-  const [showBack, setShowBack] = useState(false);
-  const [showLeftSleeve, setShowLeftSleeve] = useState(false);
-  const [showRightSleeve, setShowRightSleeve] = useState(false);
+
+  const [selectedDesign, setSelectedDesign] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(0); // 0: front, 1: back, 2: left, 3: right
+  const [galleryIndex, setGalleryIndex] = useState(0);
+
   const { showToast } = useToast();
-  // Fetch design data from API
+
   useEffect(() => {
-    const fetchDesigns = async () => {
-
+    (async () => {
       try {
-
-        const response = await fetch(
-          `${BASE_URL}design/get-AllOrderedDesignfrontEnd`
-        );
-        const data = await response.json();
-        console.log("data", data?.data?.designs)
-        setUserDesigns(data?.data?.designs ?? []); // Extract designs from the response
-      } catch (error) {
-        console.error("Error fetching designs:", error);
+        const res = await fetch(`${BASE_URL}design/get-AllOrderedDesignfrontEnd`);
+        const data = await res.json();
+        setUserDesigns(data?.data?.designs ?? []);
+      } catch (e) {
+        console.error(e);
+        showToast({ content: "Failed to load designs", error: true });
       } finally {
         setLoading(false);
       }
-    };
+    })();
+  }, [BASE_URL, showToast]);
 
-    fetchDesigns();
-  }, []);
-
-  // Handle View Design click
   const handleViewDesign = (design) => {
     setSelectedDesign(design);
     setModalOpen(true);
+    setActiveTab(0);
+    setGalleryIndex(0);
   };
 
-  // Close the modal
   const handleCloseModal = () => {
     setModalOpen(false);
     setSelectedDesign(null);
   };
 
-  // Toggle visibility of design sections
-  const toggleSection = (section) => {
-    if (section === "front") setShowFront(!showFront);
-    if (section === "back") setShowBack(!showBack);
-    if (section === "leftSleeve") setShowLeftSleeve(!showLeftSleeve);
-    if (section === "rightSleeve") setShowRightSleeve(!showRightSleeve);
-  };
+  const statusTone = (status) =>
+    (status || "").toLowerCase().includes("ordered") ? "success" : "info";
 
   if (loading) {
-    return <Page fullWidth title="Dashboard" subtitle="Loading... Please wait" />;
+    return <Page fullWidth title="Dashboard" subtitle="Loading… Please wait" />;
   }
 
   return (
     <Page fullWidth title="Dashboard" subtitle="Manage your designs here.">
       <Layout>
         <Layout.Section>
-          <Card title="All Designs" sectioned>
-            {userDesigns.length === 0 ? (
-              <Text variant="bodySm" tone="subdued">
-                No designs found.
+          <Card>
+            <Box padding="400">
+              <Text variant="headingLg" as="h2">
+                All Designs
               </Text>
-            ) : (
-              <ResourceList
-                items={userDesigns}
-                renderItem={(item) => {
-                  const { _id, DesignName, present, status, DesignNotes, FinalImages, ownerEmail,version,createdAt } = item;
-                  return (
-                    <ResourceItem id={_id}>
-                      <TextContainer>
-                        <Text variant="headingLg">{DesignName}</Text>
-                        <Text variant="headingSm">Email: {ownerEmail}</Text>
-                        <Badge
-                          tone={status?.toLowerCase().includes("ordered")
-                            ? "Success"
-                            : "info"}
-                          style={{ marginBottom: "10px" }}
-                        >
-                          {status}
-                        </Badge>
+            </Box>
+            <Divider />
+            <Box padding="400">
+              {userDesigns.length === 0 ? (
+                <Text variant="bodySm" tone="subdued">
+                  No designs found.
+                </Text>
+              ) : (
+                <ResourceList
+                  items={userDesigns}
+                  renderItem={(item) => {
+                    const {
+                      _id,
+                      DesignName,
+                      present,
+                      status,
+                      FinalImages,
+                      ownerEmail,
+                      version,
+                      createdAt,
+                    } = item;
 
-                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                          <Thumbnail
-                            source={present.front.images[0]?.src || "/placeholder.png"}
-                            alt="Design Image"
-                            size="small"
-                          />
+                    const firstThumb =
+                      present?.front?.images?.[0]?.src ||
+                      FinalImages?.[0] ||
+                      "/placeholder.png";
+
+                    return (
+                      <ResourceItem id={_id} media={<Thumbnail source={firstThumb} size="small" />}>
+                        <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
                           <TextContainer>
-                            <Text variant="bodyMd" as="p">version : {version}</Text>
-                            <Text variant="bodySm" tone="subdued">Saved Date : {new Date(createdAt).toUTCString()}</Text>
+                            <Text variant="headingMd" as="h3">
+                              {DesignName}
+                            </Text>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                              <Badge tone={statusTone(status)}>{status}</Badge>
+                              <Text variant="bodySm" tone="subdued">
+                                version: <strong>{version ?? "-"}</strong>
+                              </Text>
+                              <Text variant="bodySm" tone="subdued">
+                                Created: {new Date(createdAt).toLocaleString("en-GB", { timeZone: "UTC" })} UTC
+                              </Text>
+                            </div>
+                            <Text variant="bodySm" tone="subdued">
+                              Email: {ownerEmail}
+                            </Text>
                           </TextContainer>
+
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <Button onClick={() => handleViewDesign(item)} primary>
+                              View details
+                            </Button>
+                            <Button destructive onClick={() => handleDelete(_id, ownerEmail)}>
+                              Delete
+                            </Button>
+                          </div>
                         </div>
-                        <div style={{ display: "flex", gap: "10px" }}>
-                          <Button primary onClick={() => handleViewDesign(item)}>
-                            View Details
-                          </Button>
-                          <Button destructive onClick={() => handleDelete(_id, ownerEmail)}>
-                            Delete
-                          </Button>
-                        </div>
-                      </TextContainer>
-                    </ResourceItem>
-                  );
-                }}
-              />
-            )}
+                      </ResourceItem>
+                    );
+                  }}
+                />
+              )}
+            </Box>
           </Card>
         </Layout.Section>
       </Layout>
 
-      {/* Modal to view design details */}
+      {/* BEAUTIFUL MODAL */}
       <Modal
         open={modalOpen}
         onClose={handleCloseModal}
-        title="Design Details"
-        primaryAction={{
-          content: "Close",
-          onAction: handleCloseModal,
-        }}
+        title={
+          selectedDesign ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <Text variant="headingLg">{selectedDesign.DesignName}</Text>
+              <Badge tone={statusTone(selectedDesign.status)}>{selectedDesign.status}</Badge>
+            </div>
+          ) : (
+            "Design Details"
+          )
+        }
+        primaryAction={{ content: "Close", onAction: handleCloseModal }}
+        large
       >
         <Modal.Section>
           {selectedDesign && (
-            <div>
-              {/* Design Name and Status */}
-              <Text variant="headingLg">{selectedDesign.DesignName}</Text>
-              <Badge
-                tone={selectedDesign.status?.toLowerCase().includes("ordered")
-                  ? "Success"
-                  : "info"}
-                style={{ marginBottom: "10px" }}
-              >
-                {selectedDesign.status}
-              </Badge>
-
-              {/* Final Images */}
-              {selectedDesign.FinalImages && selectedDesign.FinalImages.length > 0 && (
-                <div style={{ marginBottom: "20px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 20 }}>
+              {/* LEFT: Gallery */}
+              <Card>
+                <Box padding="400">
                   <Text variant="headingMd">Final Design Images</Text>
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    {selectedDesign.FinalImages.map((image, index) => (
-                      <Thumbnail
-                        key={index}
-                        source={image}
-                        alt={`Final Design Image ${index + 1}`}
-                        size="large"
-                      />
+                </Box>
+                <Divider />
+                <Box padding="400">
+                  <div
+                    style={{
+                      width: "100%",
+                      aspectRatio: "4 / 3",
+                      borderRadius: 12,
+                      overflow: "hidden",
+                      border: "1px solid var(--p-color-border)",
+                      background: "var(--p-color-bg-surface-secondary)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <img
+                      src={(selectedDesign.FinalImages || [])[galleryIndex]}
+                      alt="Selected preview"
+                      style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
+                    />
+                  </div>
+
+                  <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "repeat(4, minmax(0,1fr))", gap: 10 }}>
+                    {(selectedDesign.FinalImages || []).map((img, i) => (
+                      <button
+                        key={img + i}
+                        onClick={() => setGalleryIndex(i)}
+                        style={{
+                          border: i === galleryIndex ? "2px solid var(--p-color-border-interactive)" : "1px solid var(--p-color-border)",
+                          borderRadius: 10,
+                          padding: 0,
+                          overflow: "hidden",
+                          background: "transparent",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <img src={img} alt={`thumb-${i}`} style={{ width: "100%", height: 72, objectFit: "cover" }} />
+                      </button>
                     ))}
                   </div>
-                </div>
-              )}
-
-              {/* Front Design Section */}
-              <Button onClick={() => toggleSection("front")} variant="primary">
-                {showFront ? "Hide Front Design Details" : "Show Front Design Details"}
-              </Button>
-              {showFront && (
-                <div style={{ marginTop: "20px" }}>
-                  <Text variant="headingMd">Front Design</Text>
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    {selectedDesign.present.front.images.map((img, index) => (
-                      <Thumbnail key={index} source={img.src} alt={`Image ${index + 1}`} size="large" />
-                    ))}
-                    {selectedDesign.present.front.texts.map((text, index) => (
-                      <Card key={index} sectioned>
-                        <Text variant="bodyMd" tone="subdued"> Content: <span style={{ fontWeight: "bold", color: "black" }}> {text.content}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontFamily}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Color: <span style={{ fontWeight: "bold", color: "black" }}> {text.textColor}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font Weight: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontWeight}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font Size: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontSize}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font Style: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontStyle}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Position: X: <span style={{ fontWeight: "bold", color: "black" }}> {text.position?.x}</span> Y: <span style={{ fontWeight: "bold", color: "black" }}> {text.position?.y}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Layer Index: <span style={{ fontWeight: "bold", color: "black" }}> {text.layerIndex}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Size: <span style={{ fontWeight: "bold", color: "black" }}> {text.size}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Scale X: <span style={{ fontWeight: "bold", color: "black" }}> {text.scaleX}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Scale Y: <span style={{ fontWeight: "bold", color: "black" }}> {text.scaleY}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Angle: <span style={{ fontWeight: "bold", color: "black" }}> {text.angle}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Spacing: <span style={{ fontWeight: "bold", color: "black" }}> {text.spacing}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Arc: <span style={{ fontWeight: "bold", color: "black" }}> {text.arc}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Center: <span style={{ fontWeight: "bold", color: "black" }}> {text.center}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Flip X: <span style={{ fontWeight: "bold", color: "black" }}> {text.flipX ? "true" : "false"}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Flip Y: <span style={{ fontWeight: "bold", color: "black" }}> {text.flipY ? "true" : "false"}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Width: <span style={{ fontWeight: "bold", color: "black" }}> {text.width}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Height: <span style={{ fontWeight: "bold", color: "black" }}> {text.height}</span> </Text>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Back Design Section */}
-              <Button onClick={() => toggleSection("back")} variant="primary">
-                {showBack ? "Hide Back Design Details" : "Show Back Design Details"}
-              </Button>
-              {showBack && (
-                <div style={{ marginTop: "20px" }}>
-                  <Text variant="headingMd">Back Design</Text>
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    {selectedDesign.present.back.images.map((img, index) => (
-                      <Thumbnail key={index} source={img.src} alt={`Image ${index + 1}`} size="large" />
-                    ))}
-                    {selectedDesign.present.back.texts.map((text, index) => (
-                      <Card key={index} sectioned>
-                        <Text variant="bodyMd" tone="subdued"> Content: <span style={{ fontWeight: "bold", color: "black" }}> {text.content}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontFamily}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Color: <span style={{ fontWeight: "bold", color: "black" }}> {text.textColor}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font Weight: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontWeight}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font Size: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontSize}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font Style: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontStyle}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Position: X: <span style={{ fontWeight: "bold", color: "black" }}> {text.position?.x}</span> Y: <span style={{ fontWeight: "bold", color: "black" }}> {text.position?.y}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Layer Index: <span style={{ fontWeight: "bold", color: "black" }}> {text.layerIndex}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Size: <span style={{ fontWeight: "bold", color: "black" }}> {text.size}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Scale X: <span style={{ fontWeight: "bold", color: "black" }}> {text.scaleX}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Scale Y: <span style={{ fontWeight: "bold", color: "black" }}> {text.scaleY}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Angle: <span style={{ fontWeight: "bold", color: "black" }}> {text.angle}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Spacing: <span style={{ fontWeight: "bold", color: "black" }}> {text.spacing}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Arc: <span style={{ fontWeight: "bold", color: "black" }}> {text.arc}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Center: <span style={{ fontWeight: "bold", color: "black" }}> {text.center}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Flip X: <span style={{ fontWeight: "bold", color: "black" }}> {text.flipX ? "true" : "false"}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Flip Y: <span style={{ fontWeight: "bold", color: "black" }}> {text.flipY ? "true" : "false"}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Width: <span style={{ fontWeight: "bold", color: "black" }}> {text.width}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Height: <span style={{ fontWeight: "bold", color: "black" }}> {text.height}</span> </Text>
-
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Left Sleeve Design Section */}
-              <Button onClick={() => toggleSection("leftSleeve")} variant="primary">
-                {showLeftSleeve ? "Hide Left Sleeve Details" : "Show Left Sleeve Details"}
-              </Button>
-              {showLeftSleeve && (
-                <div style={{ marginTop: "20px" }}>
-                  <Text variant="headingMd">Left Sleeve Design</Text>
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    {selectedDesign.present.leftSleeve.images.map((img, index) => (
-                      <Thumbnail key={index} source={img.src} alt={`Image ${index + 1}`} size="large" />
-                    ))}
-                    {selectedDesign.present.leftSleeve.texts.map((text, index) => (
-                      <Card key={index} sectioned>
-                        <Text variant="bodyMd" tone="subdued"> Content: <span style={{ fontWeight: "bold", color: "black" }}> {text.content}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontFamily}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Color: <span style={{ fontWeight: "bold", color: "black" }}> {text.textColor}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font Weight: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontWeight}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font Size: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontSize}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font Style: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontStyle}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Position: X: <span style={{ fontWeight: "bold", color: "black" }}> {text.position?.x}</span> Y: <span style={{ fontWeight: "bold", color: "black" }}> {text.position?.y}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Layer Index: <span style={{ fontWeight: "bold", color: "black" }}> {text.layerIndex}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Size: <span style={{ fontWeight: "bold", color: "black" }}> {text.size}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Scale X: <span style={{ fontWeight: "bold", color: "black" }}> {text.scaleX}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Scale Y: <span style={{ fontWeight: "bold", color: "black" }}> {text.scaleY}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Angle: <span style={{ fontWeight: "bold", color: "black" }}> {text.angle}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Spacing: <span style={{ fontWeight: "bold", color: "black" }}> {text.spacing}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Arc: <span style={{ fontWeight: "bold", color: "black" }}> {text.arc}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Center: <span style={{ fontWeight: "bold", color: "black" }}> {text.center}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Flip X: <span style={{ fontWeight: "bold", color: "black" }}> {text.flipX ? "true" : "false"}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Flip Y: <span style={{ fontWeight: "bold", color: "black" }}> {text.flipY ? "true" : "false"}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Width: <span style={{ fontWeight: "bold", color: "black" }}> {text.width}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Height: <span style={{ fontWeight: "bold", color: "black" }}> {text.height}</span> </Text>
-
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Right Sleeve Design Section */}
-              <Button onClick={() => toggleSection("rightSleeve")} variant="primary">
-                {showRightSleeve ? "Hide Right Sleeve Details" : "Show Right Sleeve Details"}
-              </Button>
-              {showRightSleeve && (
-                <div style={{ marginTop: "20px" }}>
-                  <Text variant="headingMd">Right Sleeve Design</Text>
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    {selectedDesign.present.rightSleeve.images.map((img, index) => (
-                      <Thumbnail key={index} source={img.src} alt={`Image ${index + 1}`} size="large" />
-                    ))}
-                    {selectedDesign.present.rightSleeve.texts.map((text, index) => (
-                      <Card key={index} sectioned>
-                        <Text variant="bodyMd" tone="subdued"> Content: <span style={{ fontWeight: "bold", color: "black" }}> {text.content}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontFamily}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Color: <span style={{ fontWeight: "bold", color: "black" }}> {text.textColor}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font Weight: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontWeight}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font Size: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontSize}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Font Style: <span style={{ fontWeight: "bold", color: "black" }}> {text.fontStyle}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Position: X: <span style={{ fontWeight: "bold", color: "black" }}> {text.position?.x}</span> Y: <span style={{ fontWeight: "bold", color: "black" }}> {text.position?.y}</span>
-                        </Text> <Text variant="bodySm" tone="subdued"> Layer Index: <span style={{ fontWeight: "bold", color: "black" }}> {text.layerIndex}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Size: <span style={{ fontWeight: "bold", color: "black" }}> {text.size}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Scale X: <span style={{ fontWeight: "bold", color: "black" }}> {text.scaleX}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Scale Y: <span style={{ fontWeight: "bold", color: "black" }}> {text.scaleY}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Angle: <span style={{ fontWeight: "bold", color: "black" }}> {text.angle}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Spacing: <span style={{ fontWeight: "bold", color: "black" }}> {text.spacing}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Arc: <span style={{ fontWeight: "bold", color: "black" }}> {text.arc}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Center: <span style={{ fontWeight: "bold", color: "black" }}> {text.center}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Flip X: <span style={{ fontWeight: "bold", color: "black" }}> {text.flipX ? "true" : "false"}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Flip Y: <span style={{ fontWeight: "bold", color: "black" }}> {text.flipY ? "true" : "false"}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Width: <span style={{ fontWeight: "bold", color: "black" }}> {text.width}</span> </Text>
-                        <Text variant="bodySm" tone="subdued"> Height: <span style={{ fontWeight: "bold", color: "black" }}> {text.height}</span> </Text>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Design Notes */}
-              <Text variant="headingMd">Design Notes</Text>
-              <Card sectioned>
-                <Text variant="bodySm"><strong>Front Notes:</strong> {selectedDesign.DesignNotes?.FrontDesignNotes}</Text>
-                <Text variant="bodySm"><strong>Back Notes:</strong> {selectedDesign.DesignNotes?.BackDesignNotes}</Text>
-                <Text variant="bodySm"><strong>Extra Info:</strong> {selectedDesign.DesignNotes?.ExtraInfo}</Text>
+                </Box>
               </Card>
+
+              {/* RIGHT: Tabs + Notes */}
+              <div style={{ display: "grid", gap: 20 }}>
+                <Card>
+                  <Box padding="400">
+                    <Tabs
+                      tabs={[
+                        { id: "front", content: "Front" },
+                        { id: "back", content: "Back" },
+                        { id: "left", content: "Left sleeve" },
+                        { id: "right", content: "Right sleeve" },
+                      ]}
+                      selected={activeTab}
+                      onSelect={setActiveTab}
+                    />
+                  </Box>
+                  <Divider />
+                  <Box padding="400">
+                    {activeTab === 0 && <AreaDetails area={selectedDesign.present?.front} />}
+                    {activeTab === 1 && <AreaDetails area={selectedDesign.present?.back} />}
+                    {activeTab === 2 && <AreaDetails area={selectedDesign.present?.leftSleeve} />}
+                    {activeTab === 3 && <AreaDetails area={selectedDesign.present?.rightSleeve} />}
+                  </Box>
+                </Card>
+
+                <Card>
+                  <Box padding="400" paddingBlockEnd="200">
+                    <Text variant="headingMd">Design Notes</Text>
+                  </Box>
+                  <Divider />
+                  <Box padding="400" style={{ display: "grid", gap: 8 }}>
+                    <NoteRow label="Front notes" value={selectedDesign?.DesignNotes?.FrontDesignNotes} />
+                    <NoteRow label="Back notes" value={selectedDesign?.DesignNotes?.BackDesignNotes} />
+                    <NoteRow label="Extra info" value={selectedDesign?.DesignNotes?.ExtraInfo} />
+                  </Box>
+                </Card>
+
+                <Box paddingBlockStart="0" paddingBlockEnd="0" paddingInlineStart="0" paddingInlineEnd="0">
+                  <Text variant="bodySm" tone="subdued">
+                    Saved: {new Date(selectedDesign.createdAt).toLocaleString("en-GB", { timeZone: "UTC" })} UTC
+                  </Text>
+                </Box>
+              </div>
             </div>
           )}
         </Modal.Section>
@@ -337,20 +256,92 @@ export function Dashboard() {
     </Page>
   );
 
-  // Handle Delete Design
+  // ——— helpers ———
+
+  function NoteRow({ label, value }) {
+    return (
+      <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 8 }}>
+        <Text tone="subdued">{label}:</Text>
+        <Text>{value || "-"}</Text>
+      </div>
+    );
+  }
+
+  function AreaDetails({ area }) {
+    if (!area) {
+      return <Text tone="subdued">No details available.</Text>;
+    }
+
+    const { images = [], texts = [] } = area;
+
+    return (
+      <div style={{ display: "grid", gap: 12 }}>
+        {images.length > 0 && (
+          <>
+            <Text variant="headingSm">Images</Text>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 10 }}>
+              {images.map((img, idx) => (
+                <div key={idx} style={{ border: "1px solid var(--p-color-border)", borderRadius: 12, overflow: "hidden" }}>
+                  <img src={img.src} alt={`img-${idx}`} style={{ width: "100%", height: 84, objectFit: "cover" }} />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {texts.length > 0 && (
+          <>
+            <Divider />
+            <Text variant="headingSm">Text elements</Text>
+            <div style={{ display: "grid", gap: 8 }}>
+              {texts.map((t, idx) => (
+                <Card key={idx}>
+                  <Box padding="400" style={{ display: "grid", gap: 6 }}>
+                    <Text>
+                      <strong>Content:</strong> {t.content}
+                    </Text>
+                    <Text tone="subdued">
+                      Font: <strong>{t.fontFamily}</strong> • Size: <strong>{t.fontSize}</strong> • Weight:{" "}
+                      <strong>{t.fontWeight}</strong> • Style: <strong>{t.fontStyle}</strong> • Color:{" "}
+                      <strong>{t.textColor}</strong>
+                    </Text>
+                    <Text tone="subdued">
+                      Position: X <strong>{t.position?.x}</strong>, Y <strong>{t.position?.y}</strong> • Angle:{" "}
+                      <strong>{t.angle}</strong> • Spacing: <strong>{t.spacing}</strong> • Arc: <strong>{t.arc}</strong>
+                    </Text>
+                    <Text tone="subdued">
+                      ScaleX <strong>{t.scaleX}</strong> • ScaleY <strong>{t.scaleY}</strong> • FlipX{" "}
+                      <strong>{t.flipX ? "true" : "false"}</strong> • FlipY{" "}
+                      <strong>{t.flipY ? "true" : "false"}</strong>
+                    </Text>
+                    <Text tone="subdued">
+                      Layer: <strong>{t.layerIndex}</strong> • Size: <strong>{t.size}</strong> • W×H:{" "}
+                      <strong>
+                        {t.width}×{t.height}
+                      </strong>
+                    </Text>
+                  </Box>
+                </Card>
+              ))}
+            </div>
+          </>
+        )}
+
+        {images.length === 0 && texts.length === 0 && (
+          <Text tone="subdued">No assets for this area.</Text>
+        )}
+      </div>
+    );
+  }
+
   function handleDelete(designId, ownerEmail) {
-    console.log("ownerEmail", ownerEmail)
-    const BASE_URL = process.env.REACT_APP_BASE_URL;
-    fetch(
-      `${BASE_URL}design/delete-designfrontEnd/${designId}`,
-      {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ownerEmail: ownerEmail }),
-      }
-    ).then((response) => {
+    fetch(`${BASE_URL}design/delete-designfrontEnd/${designId}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ownerEmail }),
+    }).then((response) => {
       if (response.ok) {
-        setUserDesigns((prev) => prev.filter((design) => design._id !== designId));
+        setUserDesigns((prev) => prev.filter((d) => d._id !== designId));
         showToast({ content: "Design deleted successfully!", error: false });
       } else {
         showToast({ content: "Failed to delete design", error: true });
