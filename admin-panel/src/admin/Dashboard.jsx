@@ -83,11 +83,12 @@ export function Dashboard() {
               <ResourceList
                 items={userDesigns}
                 renderItem={(item) => {
-                  const { _id, DesignName, present, status, DesignNotes, FinalImages, ownerEmail } = item;
+                  const { _id, DesignName, present, status, DesignNotes, FinalImages, ownerEmail,version,createdAt } = item;
                   return (
                     <ResourceItem id={_id}>
                       <TextContainer>
                         <Text variant="headingLg">{DesignName}</Text>
+                        <Text variant="headingSm">Email: {ownerEmail}</Text>
                         <Badge
                           tone={status?.toLowerCase().includes("ordered")
                             ? "Success"
@@ -104,8 +105,8 @@ export function Dashboard() {
                             size="small"
                           />
                           <TextContainer>
-                            <Text variant="bodyMd" as="p">{DesignNotes?.FrontDesignNotes}</Text>
-                            <Text variant="bodySm" tone="subdued">{DesignNotes?.ExtraInfo}</Text>
+                            <Text variant="bodyMd" as="p">version : {version}</Text>
+                            <Text variant="bodySm" tone="subdued">Saved Date : {new Date(createdAt).toUTCString()}</Text>
                           </TextContainer>
                         </div>
                         <div style={{ display: "flex", gap: "10px" }}>
