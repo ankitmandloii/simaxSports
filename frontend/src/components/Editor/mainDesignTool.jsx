@@ -866,10 +866,11 @@ const MainDesignTool = ({
   }
   function createWarningForZip(canvasWidth, canvasHeight, canvas) {
     // MAIN BACK BOX
-    const boxWidthBack = canvasWidth * 0.4;
-    const boxHeightBack = canvasHeight * 0.6;
-    const boxLeftBack = (canvasWidth - boxWidthBack) / 2;
-    const boxTopBack = (canvasHeight - boxHeightBack) / 2;
+    let boxWidthBack = canvasWidth * 0.4;
+    let boxHeightBack = canvasHeight * 0.6;
+    let boxLeftBack = (canvasWidth - boxWidthBack) / 2;
+    let boxTopBack = (canvasHeight - boxHeightBack) / 2;
+
 
     // CHEST BOXES
     const chestBoxWidth = canvasWidth * 0.15;
@@ -884,6 +885,15 @@ const MainDesignTool = ({
     const textGapFromBottom = canvasHeight * 0.0225; // ≈18px
     const warningTextOffset = canvasHeight * 0.03;   // ≈20px
     const backBoxTopOffset = canvasHeight * 0.0375;  // ≈30px
+
+
+    if (activeSide === "leftSleeve" || activeSide == "rightSleeve") {
+
+      boxLeftBack += canvasWidth * 0.17
+      boxWidthBack = canvasWidth * 0.16;
+      boxHeightBack = canvasHeight * 0.34;
+      // boxTopBack ;
+    }
 
     // WARNING TEXT ABOVE MAIN BACK BOX
     const warningText = new fabric.Text("Please keep design inside the box", {
