@@ -10,6 +10,6 @@ router.get('/admin-get-settings', controllers.getSettings)
 router.post('/save-designfrontEnd', controllers.saveDesignsFromFrontEnd);
 router.get('/get-designfrontEnd', controllers.getDesignsFromFrontEnd);
 router.delete('/delete-designfrontEnd/:designId', controllers.deleteDesignsFromFrontEnd);
-
+router.get("/get-AllOrderedDesignfrontEnd", controllers.getAllOrderedDesigns);
 
 module.exports = router;

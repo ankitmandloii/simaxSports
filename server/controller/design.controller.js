@@ -139,6 +139,70 @@ try {
   }
 };
 
+exports.getAllOrderedDesigns = async (req, res) => {
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 50, 1), 200);
+  const skip = (page - 1) * limit;
+
+  try {
+    const [result] = await UserDesigns.aggregate([
+      {
+        $project: {
+          ownerEmail: 1,
+          updatedAt: 1,
+          orderedDesigns: {
+            $filter: {
+              input: { $ifNull: ["$designs", []] },
+              as: "d",
+              cond: { $eq: ["$$d.status", "ordered"] },
+            },
+          },
+        },
+      },
+      { $unwind: "$orderedDesigns" },
+      {
+        $group: {
+          _id: null,
+          designs: { $push: "$orderedDesigns" },
+          total: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          total: 1,
+          designs: { $slice: ["$designs", skip, limit] },
+        },
+      },
+    ]).exec();
+
+    if (!result) {
+      return res.status(200).json({
+        ok: true,
+        data: { designs: [], page, limit, total: 0, totalPages: 0 },
+      });
+    }
+
+    const totalPages = result.total ? Math.ceil(result.total / limit) : 0;
+
+    return res.status(200).json({
+      ok: true,
+      data: {
+        designs: result.designs,
+        page,
+        limit,
+        total: result.total,
+        totalPages,
+      },
+    });
+  } catch (err) {
+    console.error("getAllOrderedDesigns error:", err);
+    return res.status(500).json({
+      ok: false,
+      error: "INTERNAL_ERROR",
+      message: "Failed to fetch ordered designs.",
+    });
+  }
+};
 
 exports.deleteDesignsFromFrontEnd = async (req, res) => {
 try {

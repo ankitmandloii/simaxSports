@@ -5,7 +5,7 @@ import Login from './admin/Login';
 
 
 import AdminLayout from './admin/AdminLayout';
-import Dashboard from './admin/Dashboard';
+
 import ProductList from './admin/ProductList';
 import ProductDesign from './admin/ProductDesign';
 import OrderList from './admin/OrderList';
@@ -17,6 +17,7 @@ import AccountSettings from './admin/settings/AccountSettings';
 import { ToastProvider } from './admin/ToastContext'; // Import the ToastProvider
 import NotFound from './admin/NotFound';
 import ActiveUsers from './admin/ActiveUsers';
+import {Dashboard} from './admin/Dashboard';
 
 function App() {
   return (

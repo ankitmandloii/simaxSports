@@ -17,7 +17,7 @@ const DesignSchema = new Schema(
       BackDesignNotes: { type: String },
       ExtraInfo: { type: String }
     },
-    status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft', index: true },
+    status: { type: String, enum: ['draft', 'ordered', 'archived'], default: 'draft', index: true },
     version: { type: Number, default: 1 },
   },
   { timestamps: true }
