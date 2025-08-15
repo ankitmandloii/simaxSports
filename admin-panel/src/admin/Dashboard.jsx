@@ -83,7 +83,7 @@ export function Dashboard() {
               <ResourceList
                 items={userDesigns}
                 renderItem={(item) => {
-                  const { _id, DesignName, present, status, DesignNotes, FinalImages } = item;
+                  const { _id, DesignName, present, status, DesignNotes, FinalImages, ownerEmail } = item;
                   return (
                     <ResourceItem id={_id}>
                       <TextContainer>
@@ -112,7 +112,7 @@ export function Dashboard() {
                           <Button primary onClick={() => handleViewDesign(item)}>
                             View Details
                           </Button>
-                          <Button destructive onClick={() => handleDelete(_id)}>
+                          <Button destructive onClick={() => handleDelete(_id, ownerEmail)}>
                             Delete
                           </Button>
                         </div>
@@ -336,14 +336,15 @@ export function Dashboard() {
   );
 
   // Handle Delete Design
-  function handleDelete(designId) {
+  function handleDelete(designId, ownerEmail) {
+    console.log("ownerEmail", ownerEmail)
     const BASE_URL = process.env.REACT_APP_BASE_URL;
     fetch(
       `${BASE_URL}design/delete-designfrontEnd/${designId}`,
       {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ownerEmail: "testuser@example.com" }),
+        body: JSON.stringify({ ownerEmail: ownerEmail }),
       }
     ).then((response) => {
       if (response.ok) {
