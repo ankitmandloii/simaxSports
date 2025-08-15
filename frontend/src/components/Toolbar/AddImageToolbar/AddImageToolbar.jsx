@@ -298,6 +298,11 @@ const AddImageToolbar = () => {
     }
   }
 
+  function replaceBgHandler(imageSrc) {
+    console.log("--------------------replace call", imageSrc)
+    globalDispatch("src", imageSrc);
+    handleImage(imageSrc, singleColor, selectedFilter, invertColor, editColor);
+  }
 
   useEffect(() => {
     const tempImage = new Image();
@@ -1773,7 +1778,7 @@ const AddImageToolbar = () => {
 
           </div>
         </>) :
-        (<ReplaceBg replacebgwithAi={replacebgwithAi} setreplaceBgwithAi={setreplaceBgwithAi} img={img} />)}
+        (<ReplaceBg replacebgwithAi={replacebgwithAi} setreplaceBgwithAi={setreplaceBgwithAi} replaceBgHandler={replaceBgHandler} img={img} />)}
     </div>
 
   );

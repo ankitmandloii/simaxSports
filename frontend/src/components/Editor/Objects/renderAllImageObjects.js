@@ -20,7 +20,7 @@ const renderAllImageObjects = (
 ) => {
   // console.log("imageContaintObject", imageContaintObject);
   console.log("productCategory.......", productCategory)
-  
+
   const canvas = fabricCanvasRef.current;
 
 
@@ -411,7 +411,8 @@ const renderAllImageObjects = (
     // const normalizeUrl = (url) => decodeURIComponent(url.trim().toLowerCase());
     if (
       existingObj &&
-      (base64CanvasImage != existingObj?.base64CanvasImage || singleColor != existingObj?.singleColor || invertColor != existingObj?.invertColor || thresholdValue != existingObj?.thresholdValue || solidColor != existingObj?.solidColor)
+
+      (src != existingObj?.src || base64CanvasImage != existingObj?.base64CanvasImage || singleColor != existingObj?.singleColor || invertColor != existingObj?.invertColor || thresholdValue != existingObj?.thresholdValue || solidColor != existingObj?.solidColor)
     ) {
       canvas.remove(existingObj);
       fabric.Image.fromURL(
