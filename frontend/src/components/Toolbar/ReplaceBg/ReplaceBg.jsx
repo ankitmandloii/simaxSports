@@ -132,7 +132,8 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
             setResultBlob(blob); // Store the blob for upload
         } catch (err) {
             console.error('Error generating background:', err.message, { imgSrc: img.src });
-            alert(`Error generating background: ${err.message}`);
+            // alert(`Error generating background: ${err.message}`);
+            toast.error(`Error generating background: ${err.message}`)
         } finally {
             setLoading(false);
         }
