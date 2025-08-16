@@ -989,8 +989,24 @@ const MainDesignTool = ({
       originY: "top",
       name: "leftChestText"
     });
+    const centerXVertical = boxLeftBack + boxWidthBack / 2;
+    const centerY1 = boxTopBack - backBoxTopOffset;
+    const centerY2 = boxTopBack + boxHeightBack - backBoxTopOffset;
+
+    const centerVerticalLine = new fabric.Line([centerXVertical, centerY1, centerX, centerY2], {
+      stroke: warningColor || "skyblue",
+      strokeWidth: 1,
+      strokeDashArray: [3, 1],
+      selectable: false,
+      evented: false,
+      visible: false,
+      name: "centerVerticalLine"
+    });
 
     // ADD TO CANVAS
+    if (activeSide == "back") {
+      canvas.add(centerVerticalLine);
+    }
     canvas.add(
       warningText,
       boundaryBox,
@@ -1007,6 +1023,9 @@ const MainDesignTool = ({
     canvas.bringToFront(leftChestText);
     canvas.bringToFront(rightChestText);
     canvas.bringToFront(boundaryBoxLeft);
+    if (activeSide == "back") {
+      canvas.bringToFront(centerVerticalLine);
+    }
   }
   function createWarningForTankTop(canvasWidth, canvasHeight, canvas) {
     const boxWidth = canvasWidth * 0.38;
@@ -1136,6 +1155,8 @@ const MainDesignTool = ({
     else {
       createWarningForSweatShirt(canvasWidth, canvasHeight, canvas)
     }
+    canvas.requestRenderAll();
+
 
 
     const handleSelection = (e) => {
@@ -1190,87 +1211,240 @@ const MainDesignTool = ({
       // handleScale(e);
     };
 
-    const handleMoving = (e) => {
-      // checkBoundary(e);
-      // const canvas = fabricCanvasRef.current;
-      // // if (!canvas) return;
-
-      // const objects = canvas.getObjects();
-      // if (activeSide === 'front') {
-      //   boundaryBox.visible = true;
-      //   warningText.visible = true;
-      //   centerVerticalLine.visible = true;
-      //   boundaryBoxInner.visible = true;
-      //   boundaryBoxLeft.visible = true;
-      //   if (leftChestText) leftChestText.visible = true;
-      //   if (youthText) youthText.visible = true;
-      //   if (adultText) adultText.visible = true;
-      // }
-      // else {
-      //   boundaryBox.visible = true;
-
-      //   centerVerticalLine.visible = true;
-
-      // }
+    // const handleMoving = (e) => {
+    //   checkBoundary(e);
+    //   const canvas = fabricCanvasRef.current;
+    //   if (!canvas) return;
 
 
 
+    //   // const objects = canvas.getObjects();
+    //   // if (activeSide === 'front') {
+    //   //   boundaryBox.visible = true;
+    //   //   warningText.visible = true;
+    //   //   centerVerticalLine.visible = true;
+    //   //   boundaryBoxInner.visible = true;
+    //   //   boundaryBoxLeft.visible = true;
+    //   //   if (leftChestText) leftChestText.visible = true;
+    //   //   if (youthText) youthText.visible = true;
+    //   //   if (adultText) adultText.visible = true;
+    //   // }
+    //   // else {
+    //   //   boundaryBox.visible = true;
+    //   //   centerVerticalLine.visible = true;
 
-      // // Detect center collision
-      // const textObjects = objects.filter(
-      //   (obj) => obj.type === "curved-text" || obj.type === "image"
-      // );
+    //   // }
 
-      // let anyObjectAtCenter = false;
+    //   if (productCategory == "Zip") {
 
-      // textObjects.forEach((obj) => {
-      //   obj.setCoords();
+    //     if (activeSide == "front") {
+    //       const showBoundary = true;
+    //       if (boundaryBoxLeft) boundaryBoxLeft.visible = showBoundary;
+    //       if (boundaryBoxRight) boundaryBoxRight.visible = showBoundary;
+    //       if (leftChestText) leftChestText.visible = showBoundary;
+    //       if (rightChestText) rightChestText.visible = showBoundary;
+    //       if (warningText) { warningText.visible = showBoundary; }
+    //     }
+    //     else {
+    //       const showBoundary = true;
+    //       if (boundaryBox) boundaryBox.visible = showBoundary;
+    //       if (warningText) { warningText.visible = showBoundary; }
+    //       // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+    //     }
+    //   }
+    //   else {
+    //     const showBoundary = true;
+    //     if (activeSide == 'front') {
+    //       if (boundaryBox) boundaryBox.visible = showBoundary;
+    //       if (boundaryBoxInner) boundaryBoxInner.visible = showBoundary;
+    //       if (boundaryBoxLeft) boundaryBoxLeft.visible = showBoundary;
+    //       if (leftChestText) leftChestText.visible = showBoundary;
+    //       if (adultText) adultText.visible = showBoundary;
+    //       if (youthText) youthText.visible = showBoundary;
+    //       // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+    //       if (warningText) { warningText.visible = showBoundary; }
+    //     }
+    //     else {
+    //       if (boundaryBox) boundaryBox.visible = showBoundary;
+    //       if (boundaryBoxInner) boundaryBoxInner.visible = false;
+    //       if (boundaryBoxLeft) boundaryBoxLeft.visible = false;
+    //       if (leftChestText) leftChestText.visible = false;
+    //       if (adultText) adultText.visible = false;
+    //       if (youthText) youthText.visible = false;
+    //       if (warningText) { warningText.visible = showBoundary; }
+    //       // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
 
-      //   const objCenterX = obj.getCenterPoint().x;
-      //   const delta = Math.abs(objCenterX - canvasCenterX);
+    //     }
+    //   }
 
-      //   if (delta <= 2) {
-      //     anyObjectAtCenter = true;
 
-      //     // Temporarily lock movement
-      //     obj.lockMovementX = true;
-      //     canvas.requestRenderAll();
 
-      //     setTimeout(() => {
-      //       obj.lockMovementX = false;
-      //       canvas.requestRenderAll();
-      //     }, 1000);
-      //   }
 
-      //   obj.setCoords();
-      // });
+    //   // // Detect center collision
+    //   // const textObjects = objects.filter(
+    //   //   (obj) => obj.type === "curved-text" || obj.type === "image"
+    //   // );
 
-      // // Show / hide the left / right borders
-      // // leftBorder.set({ visible: anyObjectAtCenter });
-      // // rightBorder.set({ visible: anyObjectAtCenter });
+    //   // let anyObjectAtCenter = false;
 
-      // // Change center line color if hitting center
-      // const originalStroke = centerVerticalLine.originalStroke || centerVerticalLine.stroke || "skyblue";
-      // if (!centerVerticalLine.originalStroke) {
-      //   centerVerticalLine.originalStroke = originalStroke;
-      // }
+    //   // textObjects.forEach((obj) => {
+    //   //   obj.setCoords();
 
-      // centerVerticalLine.set("stroke", anyObjectAtCenter ? "orange" : originalStroke);
+    //   //   const objCenterX = obj.getCenterPoint().x;
+    //   //   const delta = Math.abs(objCenterX - canvasCenterX);
 
-      // canvas.requestRenderAll();
-    };
+    //   //   if (delta <= 2) {
+    //   //     anyObjectAtCenter = true;
+
+    //   //     // Temporarily lock movement
+    //   //     obj.lockMovementX = true;
+    //   //     canvas.requestRenderAll();
+
+    //   //     setTimeout(() => {
+    //   //       obj.lockMovementX = false;
+    //   //       canvas.requestRenderAll();
+    //   //     }, 1000);
+    //   //   }
+
+    //   //   obj.setCoords();
+    //   // });
+
+    //   // // Show / hide the left / right borders
+    //   // // leftBorder.set({ visible: anyObjectAtCenter });
+    //   // // rightBorder.set({ visible: anyObjectAtCenter });
+
+    //   // // Change center line color if hitting center
+    //   // const originalStroke = centerVerticalLine.originalStroke || centerVerticalLine.stroke || "skyblue";
+    //   // if (!centerVerticalLine.originalStroke) {
+    //   //   centerVerticalLine.originalStroke = originalStroke;
+    //   // }
+
+    //   // centerVerticalLine.set("stroke", anyObjectAtCenter ? "orange" : originalStroke);
+
+    //   // canvas.requestRenderAll();
+    // };
 
     const showBoundaryOnAction = () => {
-      // boundaryBox.visible = true;
-      // warningText.visible = true;
+
+      const canvas = fabricCanvasRef.current;
+      const objects = canvas.getObjects();
+      const boundaryBox = objects.find((obj) => obj.name === "boundaryBox");
+      const boundaryBoxInner = objects.find((obj) => obj.name === "boundaryBoxInner");
+      const boundaryBoxLeft = objects.find((obj) => obj.name === "boundaryBoxLeft");
+      const boundaryBoxRight = objects.find((obj) => obj.name === "boundaryBoxRight");
+      const centerVerticalLine = objects.find((obj) => obj.name === "centerVerticalLine");
+      const warningText = objects.find((obj) => obj.name === "warningText");
+      const centerVerticalLineLeftBorder = objects.find((obj) => obj.name === "centerVerticalLineLeftBorder");
+      const centerVerticalLineRightBorder = objects.find((obj) => obj.name === "centerVerticalLineRightBorder");
+      const leftChestText = objects.find((obj) => obj.name === "leftChestText");
+      const rightChestText = objects.find((obj) => obj.name === "rightChestText");
+      const youthText = objects.find((obj) => obj.name === "youthText");
+      const adultText = objects.find((obj) => obj.name === "adultText");
+      const leftBorder = objects.find((obj) => obj.name === "centerVerticalLineLeftBorder");
+      const rightBorder = objects.find((obj) => obj.name === "centerVerticalLineRightBorder");
+      const productCategory = getProductType(activeProductTitle)
+      if (!canvas) return;
+      if (productCategory == "Zip") {
+
+        if (activeSide == "front") {
+          const showBoundary = true;
+          if (boundaryBoxLeft) boundaryBoxLeft.visible = showBoundary;
+          if (boundaryBoxRight) boundaryBoxRight.visible = showBoundary;
+          if (leftChestText) leftChestText.visible = showBoundary;
+          if (rightChestText) rightChestText.visible = showBoundary;
+          if (warningText) { warningText.visible = showBoundary; }
+        }
+        else {
+          const showBoundary = true;
+          if (boundaryBox) boundaryBox.visible = showBoundary;
+          if (warningText) { warningText.visible = showBoundary; }
+          // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+        }
+      }
+      else {
+        const showBoundary = true;
+        if (activeSide == 'front') {
+          if (boundaryBox) boundaryBox.visible = showBoundary;
+          if (boundaryBoxInner) boundaryBoxInner.visible = showBoundary;
+          if (boundaryBoxLeft) boundaryBoxLeft.visible = showBoundary;
+          if (leftChestText) leftChestText.visible = showBoundary;
+          if (adultText) adultText.visible = showBoundary;
+          if (youthText) youthText.visible = showBoundary;
+          // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+          if (warningText) { warningText.visible = showBoundary; }
+        }
+        else {
+          if (boundaryBox) boundaryBox.visible = showBoundary;
+          if (boundaryBoxInner) boundaryBoxInner.visible = false;
+          if (boundaryBoxLeft) boundaryBoxLeft.visible = false;
+          if (leftChestText) leftChestText.visible = false;
+          if (adultText) adultText.visible = false;
+          if (youthText) youthText.visible = false;
+          if (warningText) { warningText.visible = showBoundary; }
+          // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+        }
+      }
 
 
-      // centerVerticalLine.visible = true;
-      // boundaryBoxInner.visible = true;
-      // boundaryBoxLeft.visible = true;
-      // if (leftChestText) leftChestText.visible = true;
-      // if (youthText) youthText.visible = true;
-      // if (adultText) adultText.visible = true;
+      if (activeSide == "leftSleeve" || activeSide == "rightSleeve") {
+        canvas.renderAll();
+        return;
+      }
+      // // Detect center collision
+      const canvasCenterX = canvas.getWidth() / 2;
+      const textObjects = objects.filter(
+        (obj) => obj.type === "curved-text" || obj.type === "image"
+      );
+
+      let anyObjectAtCenter = false;
+
+      textObjects.forEach((obj) => {
+        obj.setCoords();
+
+        const objCenterX = obj.getCenterPoint().x;
+        const delta = Math.abs(objCenterX - canvasCenterX);
+
+        if (delta <= 4) {
+          anyObjectAtCenter = true;
+
+          // Temporarily lock movement
+          obj.lockMovementX = true;
+          canvas.requestRenderAll();
+
+          setTimeout(() => {
+            obj.lockMovementX = false;
+            canvas.requestRenderAll();
+          }, 1000);
+        }
+
+        obj.setCoords();
+      });
+
+      // Show / hide the left / right borders
+      // leftBorder.set({ visible: anyObjectAtCenter });
+      // rightBorder.set({ visible: anyObjectAtCenter });
+      if (centerVerticalLine) {
+        if (anyObjectAtCenter) {
+          // alert("center");
+          centerVerticalLine.visible = true
+        }
+        else {
+          centerVerticalLine.visible = false
+        }
+        // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+        // Change center line color if hitting center
+        const originalStroke = centerVerticalLine.originalStroke || centerVerticalLine.stroke || "skyblue";
+        if (!centerVerticalLine.originalStroke) {
+          centerVerticalLine.originalStroke = originalStroke;
+        }
+
+        centerVerticalLine.set("stroke", anyObjectAtCenter ? "orange" : originalStroke);
+
+      }
+
+      canvas.requestRenderAll();
+
+
 
     }
 
@@ -1280,7 +1454,7 @@ const MainDesignTool = ({
       ["object:added", handleObjectAdded],
       ["object:removed", handleObjectRemoved],
       ["object:modified", handleObjectModified],
-      ["object:moving", handleMoving],
+      ["object:moving", showBoundaryOnAction],
       ["object:scaling", showBoundaryOnAction],
       ["object:rotating", showBoundaryOnAction],
       ["selection:created", handleSelection],

@@ -62,6 +62,7 @@ const updateBoundaryVisibility = (fabricCanvasRef, activeSide, productCategory) 
   //   centerVerticalLine.set("stroke", anyObjectAtCenter ? "orange" : originalStroke);
   // }
   // console.log("productCategory before warning", productCategory)
+  if (centerVerticalLine) { centerVerticalLine.visible = false; }
   if (productCategory == "Zip") {
 
     if (activeSide == "front") {
@@ -145,7 +146,7 @@ const updateBoundaryVisibility = (fabricCanvasRef, activeSide, productCategory) 
       if (adultText) adultText.visible = false;
       if (youthText) youthText.visible = false;
       if (warningText) { warningText.visible = showBoundary; }
-      // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+
 
     }
   }
