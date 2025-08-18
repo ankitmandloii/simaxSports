@@ -136,7 +136,7 @@ export function Dashboard() {
                             <Button onClick={() => handleViewDesign(item)} primary>
                               View details
                             </Button>
-                            <Button destructive onClick={() => handleDelete(_id, ownerEmail)}>
+                            <Button  destructive onClick={() => handleDelete(_id, ownerEmail)}>
                               Delete
                             </Button>
                           </div>

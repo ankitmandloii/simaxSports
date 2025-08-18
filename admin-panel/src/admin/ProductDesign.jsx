@@ -121,7 +121,7 @@ export default function ProductDesignList() {
   }, [products]);
 
   return (
-    <Page fullWidth title="Product List" subtitle="Manage your products from here.">
+    <Page fullWidth title="Product Design List" subtitle="Manage your designs from here.">
       <Card sectioned>
         {loading ? (
           <BlockStack gap="300">

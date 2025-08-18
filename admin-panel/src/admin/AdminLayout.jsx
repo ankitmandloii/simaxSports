@@ -99,12 +99,12 @@ export default function AdminLayout({ children }) {
             selected: location.pathname === '/admin/product-design',
             onClick: () => navigate('/admin/product-design'),
           },
-          {
-            label: 'Product List',
-            icon: ProductIcon,
-            selected: location.pathname === '/admin/product-list',
-            onClick: () => navigate('/admin/product-list'),
-          },
+          // {
+          //   label: 'Product List',
+          //   icon: ProductIcon,
+          //   selected: location.pathname === '/admin/product-list',
+          //   onClick: () => navigate('/admin/product-list'),
+          // },
           {
             label: 'Order List',
             icon: OrderIcon,
