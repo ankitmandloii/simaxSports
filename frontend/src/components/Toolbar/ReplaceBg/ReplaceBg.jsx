@@ -316,7 +316,7 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
                                     e.stopPropagation();
                                     setreplaceBgwithAi(true);
                                 }}>Discard</button>
-                                <button className={styles.useImageButton} onClick={() => handleFiles(resultImage)}>Save</button>
+                                <button className={styles.useImageButton} onClick={() => handleFiles(resultImage)}>Select</button>
 
 
                             </div>
