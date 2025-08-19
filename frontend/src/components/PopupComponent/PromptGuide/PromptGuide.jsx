@@ -52,7 +52,7 @@
 
 //         <h3 className={styles.subtitle}>Example Output</h3>
 //        <img src={Bears} className={styles.bear}/>
-        
+
 //         {/* This div correctly displays three images */}
 //         {/* <div className={styles.examples}>
 //           <img src="/prompt-examples/1.png" alt="Example 1" />
@@ -88,8 +88,11 @@
 import React from "react";
 import "./PromptEx.css";
 import Bear from "../../images/good-news-bears.png";
-import rabbit1 from '../../images/rabbit1.png'
-import rabbit2 from '../../images/rabbit2.png'
+import rabbit1 from '../../images/RB1.png'
+import rabbit2 from '../../images/RB2.png'
+import rabbit3 from '../../images/RB3.png'
+import { IoMdClose } from "react-icons/io";
+
 
 
 const PromptGuide = ({ onClose }) => {
@@ -99,7 +102,7 @@ const PromptGuide = ({ onClose }) => {
         <div className="prompt-wrapper">
           <div className="prompt-header">Example Prompt</div>
           <button className="close" onClick={onClose}>
-            ×
+            <IoMdClose />
           </button>
 
           <div className="prompt-box">
@@ -133,11 +136,12 @@ const PromptGuide = ({ onClose }) => {
           <div className="output-section">
             <div className="output-title">Example Output</div>
             {/* <img src={Bear} className="bearImg" alt="Good News Bears logo" /> */}
-             <div className="output-images">
-          <img src={rabbit2} alt="output 1" />
-           <img src={rabbit1} alt="output 1" />
-          <img src={rabbit2} alt="output 1" />
-        </div>
+            <div className="output-images">
+
+              <img src={rabbit1} alt="output 1" />
+              <img src={rabbit2} alt="output 1" />
+              <img src={rabbit3} alt="output 1" />
+            </div>
           </div>
         </div>
       </div>

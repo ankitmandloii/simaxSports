@@ -267,7 +267,7 @@ const QuantityToolbar = () => {
           </label>
         </div>
 
-      <button className={style.calculateBtn} onClick={() => navigate("/review")}>CALCULATE PRICING</button>
+        <button className={style.calculateBtn} onClick={() => navigate("/review")}>CALCULATE PRICING</button>
       </div>
     </div>
   );

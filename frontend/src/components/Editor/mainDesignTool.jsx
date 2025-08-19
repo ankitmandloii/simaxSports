@@ -33,7 +33,8 @@ import syncMirrorCanvas from "./core/syncMirrorCanvas";
 import { createControls } from "./utils/customControls";
 import { markDesignButtonClicked, setHoveredRoute } from "../../redux/ProductSlice/HoverSlice";
 import { AddArtIcon, AddProductIcon, NumberArtIcon, SelectArtIcon } from "../iconsSvg/CustomIcon";
-
+import { CgNotes } from "react-icons/cg";
+import DesignNotesPopup from "../PopupComponent/DesignNotesPopup/DesignNotesPopup";
 fabric.CurvedText = CurvedText;
 const MainDesignTool = ({
 
@@ -53,9 +54,17 @@ const MainDesignTool = ({
   //                                                                                    USE SELECTORS AREA
   // **********************************************************************************************************************************************************
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+  const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
+  console.log("-------------------rrrrrr", activeNameAndNumberPrintSide)
   // const addName  = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addName);
   // const  addNumber = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addNumber);
-  const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide])
+  const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice);
+  // const { addName, addNumber } = useSelector(
+  //   (state) => ({
+  //     addName: state.TextFrontendDesignSlice.present[activeSide]?.addName || false,
+  //     addNumber: state.TextFrontendDesignSlice.present[activeSide]?.addNumber || false,
+  //   })
+  // );
 
   // console.log("--------------------------namenumber",addName,addNumber)
   const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
@@ -67,6 +76,7 @@ const MainDesignTool = ({
   const isRender = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].setRendering);
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
   const loadingState = useSelector(state => state.TextFrontendDesignSlice.present[activeSide].loadingState);
+
   // console.log("loadingState redux ........", loadingState)
 
   // **********************************************************************************************************************************************************
@@ -85,6 +95,7 @@ const MainDesignTool = ({
   const [loading, setLoading] = useState(false);
   const [resize, setResize] = useState(0);
   const [productCategory, setProductCategory] = useState(getProductType(activeProductTitle))
+  const [showNotes, setShowNotes] = useState(false);
 
   // **********************************************************************************************************************************************************
   //                                                                                    USE DISPTACHS AREA
@@ -105,6 +116,9 @@ const MainDesignTool = ({
     return imgs;
   }, []);
   // for route buttons
+  const handleClose = () => {
+    setShowNotes(false)
+  }
   const handleHover = (path) => dispatch(setHoveredRoute(path));
   const handleLeave = () => dispatch(setHoveredRoute(null));
   // const handleClick = (route) => {
@@ -266,6 +280,7 @@ const MainDesignTool = ({
     )
   }
   const renderNameAndNumberHelper = () => {
+
     renderNameAndNumber(
       fabricCanvasRef,
       dispatch,
@@ -278,11 +293,13 @@ const MainDesignTool = ({
       fabric,
       globalDispatch,
       activeSide,
+
       addNumber,
       addName,
       updateNameAndNumberDesignState,
       bringPopup,
-      getProductType(activeProductTitle)
+      getProductType(activeProductTitle),
+      activeNameAndNumberPrintSide
     );
   }
   const renderAllImageObjectsHelper = () => {
@@ -1737,12 +1754,25 @@ const MainDesignTool = ({
           </div>
         )}
 
+      {(hasClicked || addName || addNumber || imageContaintObject.length > 0 || textContaintObject.length > 0) && (
+        <div className={style.notesroute}>
+          <button
+            // onMouseEnter={() => handleHover("/design/addNotes")}
+            // onMouseLeave={handleLeave}
+            onClick={() => setShowNotes(true)}
+            className={style.canvaButton}
+          >
+            <span className={style.icon}><CgNotes /></span> Add Notes
+          </button>
+        </div>
+      )}
       <LayerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onLayerAction={handleLayerAction}
         fabricCanvas={fabricCanvasRef.current}
       />
+      {showNotes && <DesignNotesPopup handleClose={handleClose} />}
       {/* <div class="tenor-gif-embed" data-postid="6449096453315144907" data-share-method="host" data-aspect-ratio="0.991667" data-width="100%" style={{ zIndex: 9999999, position: "absolute", top: "50%", left: "50%" }}>
         <a href="https://tenor.com/view/loading-gif-6449096453315144907">Loading Sticker</a>from <a href="https://tenor.com/search/loading-stickers"
         >Loading Stickers</a></div> */}

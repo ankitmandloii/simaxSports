@@ -109,8 +109,8 @@ const initialState = {
       texts: [],
       images: [],
       setRendering: false,
-      addNumber: false,
-      addName: false,
+      // addNumber: false,
+      // addName: false,
 
       // 🆕 Design settings for Name & Number (front)
       nameAndNumberDesignState: {
@@ -134,8 +134,8 @@ const initialState = {
       texts: [],
       images: [],
       setRendering: false,
-      addNumber: false,
-      addName: false,
+      // addNumber: false,
+      // addName: false,
       loadingState: {
         loading: false,
         position: getStaringCenterPostion()
@@ -191,8 +191,10 @@ const initialState = {
   },
 
   // 🆕 Global state
-
+  addNumber: false,
+  addName: false,
   sleeveDesign: false,
+  activeNameAndNumberPrintSide: "back"
 };
 
 const TextFrontendDesignSlice = createSlice({
@@ -202,6 +204,9 @@ const TextFrontendDesignSlice = createSlice({
     // ✅ Original reducers (unchanged)
     setActiveSide: (state, action) => {
       state.activeSide = action.payload;
+    },
+    setactiveNameAndNumberPrintSide: (state, action) => {
+      state.activeNameAndNumberPrintSide = action.payload;
     },
 
     // Add a new text object
@@ -434,8 +439,8 @@ const TextFrontendDesignSlice = createSlice({
           selectedImageId: null,
           images: [],
           setRendering: false,
-          addName: false,
-          addNumber: false,
+          // addName: false,
+          // addNumber: false,
           // ===
           nameAndNumberDesignState: {
             id: "front",
@@ -455,8 +460,8 @@ const TextFrontendDesignSlice = createSlice({
           selectedImageId: null,
           images: [],
           setRendering: false,
-          addName: false,
-          addNumber: false,
+          // addName: false,
+          // addNumber: false,
           // ===
           nameAndNumberDesignState: {
             id: "front",
@@ -489,8 +494,10 @@ const TextFrontendDesignSlice = createSlice({
       state.addNumber = false;
     },
     setRendering: (state, action) => {
+      // console.log("------setRendering", state.activeSide);
       const side = state.activeSide;
       state.present[side].setRendering = !state.present[side].setRendering;
+      // console.log("===after", state.present[side].setRendering)
     },
 
     // ************************************ 🆕 Name/Number Flags and states ******************************************************************
@@ -508,10 +515,10 @@ const TextFrontendDesignSlice = createSlice({
           y: centerY,
         }
       }
-      // state.addNumber = action.payload;
-      if (state.present[side]?.nameAndNumberDesignState) {
-        Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
-      }
+      state.addNumber = action.payload;
+      // if (state.present[side]?.nameAndNumberDesignState) {
+      //   Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
+      // }
       state.present[side].addNumber = action.payload;
       state.present[side].setRendering = !state.present[side].setRendering;
 
@@ -532,16 +539,18 @@ const TextFrontendDesignSlice = createSlice({
         }
       }
       // state.addNumber = action.payload;
-      if (state.present[side]?.nameAndNumberDesignState) {
-        Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
-      }
-      // state.addName = action.payload;
+      // if (state.present[side]?.nameAndNumberDesignState) {
+      //   Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
+      // }
+      state.addName = action.payload;
       state.present[side].setRendering = !state.present[side].setRendering;
     },
 
+
     // 🆕 Update design state (front/back)
     updateNameAndNumberDesignState: (state, action) => {
-      const { side = state.activeSide, changes } = action.payload;
+      const { changes } = action.payload;
+      const side = "back";
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
       if (state.present[side]?.nameAndNumberDesignState) {
@@ -1146,6 +1155,7 @@ export const {
   toggleSleeveDesign,
   copyElementToSide,
   selectedImageIdState,
+  setactiveNameAndNumberPrintSide,
   toggleLoading
 } = TextFrontendDesignSlice.actions;
 
@@ -1165,8 +1175,8 @@ export const selectCanStartOver = (state) => {
   return (
     state.TextFrontendDesignSlice.present[side]?.texts?.length > 0 ||
     state.TextFrontendDesignSlice.present[side]?.images?.length > 0 ||
-    state.TextFrontendDesignSlice.present[side]?.addName ||
-    state.TextFrontendDesignSlice.present[side]?.addNumber
+    state.TextFrontendDesignSlice.addName ||
+    state.TextFrontendDesignSlice.addNumber
   );
   // return state.TextFrontendDesignSlice.present[side]?.length > 0;
 };
@@ -1175,3 +1185,4 @@ export const selectCanStartOver = (state) => {
 
 // }
 export default TextFrontendDesignSlice.reducer;
+

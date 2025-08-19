@@ -8,6 +8,7 @@ import '../../../App.css';
 import PromptGuide from '../../PopupComponent/PromptGuide/PromptGuide';
 import screenshot from '../../images/Screenshot .png'
 import { RiInformation2Fill } from "react-icons/ri";
+import { IoIosInformationCircleOutline } from 'react-icons/io';
 
 const AddArtToolbar = () => {
   const [subArt, setSubArt] = useState(false);
@@ -88,7 +89,7 @@ const AddArtToolbar = () => {
                   }
                 }}
               />
-              <p onClick={() => setPromptGuide(true)} className={style.promptGuidePara}> AI Prompt Guide</p>
+              <p onClick={() => setPromptGuide(true)} className={style.promptGuidePara}><IoIosInformationCircleOutline />AI Prompt Guide</p>
             </div>
           </div>
 

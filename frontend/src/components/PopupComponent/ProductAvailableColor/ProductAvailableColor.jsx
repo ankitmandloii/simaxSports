@@ -169,9 +169,9 @@ const ProductAvailableColor = ({
         ) : (
           <p style={{
             textAlign: 'center',
-            fontStyle: 'italic',
+            // fontStyle: 'italic',
             marginTop: '20px',
-            color: 'red',
+            color: 'grey',
             fontSize: '1rem'
           }}>
             No colors available

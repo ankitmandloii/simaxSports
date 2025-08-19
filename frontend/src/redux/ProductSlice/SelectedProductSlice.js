@@ -23,6 +23,7 @@ const selectedProductSlice = createSlice({
       );
     },
     setActiveProduct(state, action) {
+      // console.log("-----------------activedispatch", action.payload);
       state.activeProduct = action.payload;
     },
     // In your reducer (SelectedProductSlice)

@@ -18,16 +18,23 @@
   border: none;
   outline: none;
 }
-.promptGuidePara{
+
+.promptGuidePara {
   color: var(--blue-color);
   margin: 10px;
   cursor: pointer;
   font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  /* justify-content: center; */
 }
-.promptGuidePara:hover{
+
+.promptGuidePara:hover {
   text-decoration: underline;
 }
-.promptGuidePara span{
+
+.promptGuidePara span {
   margin-top: 20px;
   font-size: 1.1rem;
 }
@@ -56,9 +63,10 @@
 
 }
 
-.artButton:hover{
+.artButton:hover {
   background: #eadede;
 }
+
 .artButton svg {
   /* font-size: 4px; */
   height: 15px;

@@ -8,9 +8,9 @@ import { getHexFromName } from '../../utils/colorUtils.js';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
-  const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
-  // const activeSide = "back";
+const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
+  // const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+  const activeSide = "back";
   // const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
   const productState = useSelector((state) => state.productSelection.products);
   console.log("productState..........", productState);
@@ -207,7 +207,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
         }));
       });
 
-      showAddnamesPopupHAndler();
+      showAddnamesPopupHandler();
     }
   };
 
@@ -229,7 +229,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
             <h2>Edit Names & Numbers List</h2>
             <p>Personalize your apparel with Names and/or Numbers!</p>
           </div>
-          <button className={styles.closeBtn} onClick={showAddnamesPopupHAndler}>
+          <button className={styles.closeBtn} onClick={showAddnamesPopupHandler}>
             <CrossIcon />
           </button>
         </div>
@@ -362,7 +362,7 @@ const AddNamesPopup = ({ showAddnamesPopupHAndler }) => {
 
             <div className={styles.popupFooter}>
               <button className={styles.primaryBtn} onClick={saveAndExit}>Save & Close</button>
-              <button className={styles.linkBtn} onClick={showAddnamesPopupHAndler}>Exit Without Saving</button>
+              <button className={styles.linkBtn} onClick={showAddnamesPopupHandler}>Exit Without Saving</button>
             </div>
           </div>
         </div>

@@ -1,166 +1,122 @@
 import React, { useEffect, useState } from 'react';
-// import './NamesToolbar.css';
-import style from './NamesToolbar.module.css'
+import style from './NamesToolbar.module.css';
 import FrontBtn from '../../images/Front.png';
 import BackBtn from '../../images/Back.png';
-// import SmallBtn from '../../images/sm-btn.png';
 import SmallBtn from '../../images/small.png';
-
 import LargeBtn from '../../images/large.png';
 import InterStatebutton from '../../images/font1.png';
 import Collegiatebutton from '../../images/font2.png';
 import AddNamesPopup from '../../PopupComponent/AddNamesPopup/AddNamesPopup';
 import { AngleActionIcon } from '../../iconsSvg/CustomIcon';
-import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox.jsx'
-import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox.jsx'
+import SpanColorBox from '../../CommonComponent/SpanColorBox/SpanColorBox.jsx';
+import ChooseColorBox from '../../CommonComponent/ChooseColorBox/ChooseColorBox.jsx';
 import { useDispatch, useSelector } from 'react-redux';
-import { setActiveSide, setAddName, setAddNumber, updateNameAndNumberDesignState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
+import { setactiveNameAndNumberPrintSide, setActiveSide, setAddName, setAddNumber, updateNameAndNumberDesignState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const NamesToolbar = () => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
-  // const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide]);
-  const { addName, addNumber } = useSelector(
-    (state) => ({
-      addName: state.TextFrontendDesignSlice?.present[activeSide].addName,
-      addNumber: state.TextFrontendDesignSlice?.present[activeSide].addNumber,
-    }),
-    // shallowEqual // Prevents unnecessary re-renders
-  );
-  console.log("-----addName", addName)
-  console.log("-----addNumber", addNumber)
+  const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
 
-  // const addName=useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addName)
-  // const addNumber=useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addNumber)
-  const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
+  // const { addName, addNumber } = useSelector(
+  //   (state) => ({
+  //     addName: state.TextFrontendDesignSlice.present[activeSide]?.addName || false,
+  //     addNumber: state.TextFrontendDesignSlice.present[activeSide]?.addNumber || false,
+  //   })
+  // );
+  const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice)
+  const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide]?.nameAndNumberDesignState);
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [showAddnamesPopup, setshowAddnamesPopup] = useState(false);
-  const [showColorpopup, setshowcolorpopup] = useState(false);
-
-  const showAddnamesPopupHAndler = () => {
-    if (!selectedProducts || selectedProducts.length === 0) {
-      toast.info("Please Add Product First");      // Orange
-      navigate("/design/product");
-      return;
-    }
-    setshowAddnamesPopup(!showAddnamesPopup)
-  }
-  const showColorPopupHandler = () => {
-    setshowcolorpopup(!showColorpopup)
-  }
+  const [showAddnamesPopup, setShowAddnamesPopup] = useState(false);
+  const [showColorPopup, setShowColorPopup] = useState(false);
   const [activeNumber, setActiveNumber] = useState(addNumber);
   const [activeName, setActiveName] = useState(addName);
-
-
   const [activeSize, setActiveSize] = useState(nameAndNumberDesign?.fontSize);
   const [activeFont, setActiveFont] = useState(nameAndNumberDesign?.fontFamily);
   const [activeColor, setActiveColor] = useState(nameAndNumberDesign?.fontColor);
 
+  const showAddnamesPopupHandler = () => {
+    console.log("--------------------nameeee")
+    if (!selectedProducts || selectedProducts.length === 0) {
+      toast.info("Please Add Product First");
+      navigate("/design/product");
+      return;
+    }
+    setShowAddnamesPopup(!showAddnamesPopup);
+  };
+
+  const showColorPopupHandler = () => {
+    setShowColorPopup(!showColorPopup);
+  };
+
   const sideHandler = (value) => {
-    dispatch(updateNameAndNumberDesignState({ changes: { side: value } }));
-    dispatch(setActiveSide(value))
-  }
+    // console.log("---------value", value)
+    dispatch(setActiveSide(value));
+    dispatch(setactiveNameAndNumberPrintSide(value));
+
+  };
+
   const handleColorChange = (color) => {
-    dispatch(updateNameAndNumberDesignState({ changes: { fontColor: color } }));
+    dispatch(updateNameAndNumberDesignState({ side: activeSide, changes: { fontColor: color } }));
     setActiveColor(color);
   };
 
   const handleAddNames = () => {
-    const value = !(addName);
-    setActiveName(value)
+    const value = !addName;
+    setActiveName(value);
     dispatch(setAddName(value));
-    // setTimeout(() => {
-    //   dispatch(setAddName(value));
-    // }, 50);
+  };
 
-  }
   const handleAddNumber = () => {
-    const value = !(addNumber);
-    setActiveNumber(value)
+    const value = !addNumber;
+    setActiveNumber(value);
     dispatch(setAddNumber(value));
-    // setTimeout(() => {
-    //   dispatch(setAddNumber(value));
-    // }, 50);
-  }
-
-  // ************************************************* WE HAVE TO CHANGE THIS DYNAMICALLY LATER ***********************************************************************************
-  // ************************************************* WE HAVE TO CHANGE THIS DYNAMICALLY LATER ***********************************************************************************
+  };
 
   const sizeHandler = (value) => {
-    dispatch(updateNameAndNumberDesignState({ changes: { fontSize: value } }));
-    // if (value == "small") {
-    //   if (activeSide === 'front') {
-    //     dispatch(updateNameAndNumberDesignState({ changes: { position: { x: 393, y: 272 } } }));
-    //   }
-    //   else {
-    //     dispatch(updateNameAndNumberDesignState({ changes: { position: { x: 325, y: 300 } } }));
-    //   }
-    // }
-    // else {
-    //   dispatch(updateNameAndNumberDesignState({ changes: { position: { x: 330, y: 350 } } }));
-    // }
+    dispatch(updateNameAndNumberDesignState({ side: activeSide, changes: { fontSize: value } }));
     setActiveSize(value);
-  }
+  };
 
   const fontHandler = (value) => {
-    dispatch(updateNameAndNumberDesignState({ changes: { fontFamily: value } }));
-    // const cle = setTimeout(() => {
-    //   dispatch(updateNameAndNumberDesignState({ changes: { fontFamily: value } }));
-    // }, 50);
+    dispatch(updateNameAndNumberDesignState({ side: activeSide, changes: { fontFamily: value } }));
     setActiveFont(value);
-  }
-
-
-  // Keep local state in sync with Redux on load/update
+  };
 
   useEffect(() => {
-    // dispatch(setActiveSide("back"))
-
     setActiveName(addName);
     setActiveNumber(addNumber);
     setActiveColor(nameAndNumberDesign?.fontColor);
     setActiveFont(nameAndNumberDesign?.fontFamily);
     setActiveSize(nameAndNumberDesign?.fontSize);
-
-
-  }, [nameAndNumberDesign]);
+  }, [addName, addNumber, nameAndNumberDesign, activeSide]);
 
   useEffect(() => {
-    dispatch(setActiveSide("back"))
-  }, [])
+    dispatch(setActiveSide("back"));
+  }, []);
+
   return (
     <div className={`toolbar-main-container ${style.NamesToolbarBox}`}>
-
-      <div className='toolbar-main-heading'>
-        <h5 className='Toolbar-badge'>Names And Numbers</h5>
+      <div className="toolbar-main-heading">
+        <h5 className="Toolbar-badge">Names And Numbers</h5>
         <h2>Names & Numbers Tools</h2>
-        {/* <p>Use personalized Names & Numbers for projects like team jerseys where you need a unique name and/or number for each item.</p> */}
       </div>
 
-      <div className="toolbar-box
-      ">
+      <div className="toolbar-box">
         {/* Step 1 */}
         <div className={style.addNamesNumberrsRow}>
-          <h5>Step1</h5>
-          <label className={style.namescheckboxDiv} >
-            {/* <input
-              type="checkbox"
-              checked={activeName}
-              onChange={handleAddNames}
-            /> */}
+          <h5>Step 1</h5>
+          <label className={style.namescheckboxDiv}>
             <label className={style.switch}>
-
               <input
                 type="checkbox"
                 checked={activeName}
                 onChange={handleAddNames}
                 disabled={activeSide === "rightSleeve" || activeSide === "leftSleeve"}
-
               />
               <span className={style.slider}></span>
             </label>
@@ -173,32 +129,27 @@ const NamesToolbar = () => {
                 checked={activeNumber}
                 onChange={handleAddNumber}
                 disabled={activeSide === "rightSleeve" || activeSide === "leftSleeve"}
-
               />
               <span className={style.slider}></span>
             </label>
-            {/* <input
-              type="checkbox"
-              checked={activeNumber}
-              onChange={handleAddNumber}
-            /> */}
             <span>Add Numbers</span>
           </label>
         </div>
-        {/* ***************************show only when either number or name checked************ */}
+
+        {/* Show only when either name or number is checked */}
         <div className={`${(activeName || activeNumber) ? style.Active : style.Deactive} step-toggle-container`}>
           {/* Side */}
           <div className={style.addNamesNumberrsRow}>
             <h5>Side</h5>
             <div className={style.namesButtonMainContainer}>
               <button
-                className={`${style.namesToolbarButton} ${activeSide === 'front' ? style.namesToolbarButtonActive : ''}`}
+                className={`${style.namesToolbarButton} ${activeNameAndNumberPrintSide === 'front' ? style.namesToolbarButtonActive : ''}`}
                 onClick={() => sideHandler("front")}
               >
                 <img src={FrontBtn} alt="Front" />
               </button>
               <button
-                className={`${style.namesToolbarButton} ${activeSide === 'back' ? style.namesToolbarButtonActive : ''}`}
+                className={`${style.namesToolbarButton} ${activeNameAndNumberPrintSide === 'back' ? style.namesToolbarButtonActive : ''}`}
                 onClick={() => sideHandler("back")}
               >
                 <img src={BackBtn} alt="Back" />
@@ -230,14 +181,12 @@ const NamesToolbar = () => {
             <h5>Font</h5>
             <div className={style.namesButtonMainContainer}>
               <button
-                // className={`names-toolbar-button ${activeFont === "Oswald" ? 'active' : ''}`}
                 className={`${style.namesToolbarButton} ${activeFont === 'Oswald' ? style.namesToolbarButtonActive : ''}`}
                 onClick={() => fontHandler("Oswald")}
               >
                 <img src={InterStatebutton} alt="Interstate" />
               </button>
               <button
-                // className={`names-toolbar-button ${activeFont == 'Chakra Petch' ? 'active' : ''}`}
                 className={`${style.namesToolbarButton} ${activeFont === 'Chakra Petch' ? style.namesToolbarButtonActive : ''}`}
                 onClick={() => fontHandler('Chakra Petch')}
               >
@@ -255,28 +204,21 @@ const NamesToolbar = () => {
                 <SpanColorBox color={activeColor} />
                 <AngleActionIcon />
               </div>
-              {showColorpopup && <ChooseColorBox showColorPopupHandler={showColorPopupHandler} onColorChange={handleColorChange}
-                defaultColor={activeColor} />}
-              {/* <button
-              className={`names-toolbar-button ${activeColor === 'frontColor' ? 'active' : ''}`}
-              onClick={() => setActiveColor('frontColor')}
-            >
-              <img src={FrontBtn} alt="Color1"/>
-            </button>
-            <button
-              className={`names-toolbar-button ${activeColor === 'backColor' ? 'active' : ''}`}
-              onClick={() => setActiveColor('backColor')}
-            >
-              <img src={BackBtn} alt="Color2"/>
-            </button> */}
+              {showColorPopup && (
+                <ChooseColorBox
+                  showColorPopupHandler={showColorPopupHandler}
+                  onColorChange={handleColorChange}
+                  defaultColor={activeColor}
+                />
+              )}
             </div>
           </div>
-          <button className={style.blackButton} onClick={showAddnamesPopupHAndler}>Add Names/Numbers</button>
-
+          <button className={style.blackButton} onClick={showAddnamesPopupHandler}>
+            Add Names/Numbers
+          </button>
         </div>
-
       </div>
-      {showAddnamesPopup && <AddNamesPopup showAddnamesPopupHAndler={showAddnamesPopupHAndler} />}
+      {showAddnamesPopup && <AddNamesPopup showAddnamesPopupHandler={showAddnamesPopupHandler} />}
     </div>
   );
 };

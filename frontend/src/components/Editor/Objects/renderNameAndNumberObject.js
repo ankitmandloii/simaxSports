@@ -16,7 +16,9 @@ const renderNameAndNumber = (
   addName,
   updateNameAndNumberDesignState,
   bringPopup,
-  productCategory
+  productCategory,
+  // proudctType,
+  activeNameAndNumberPrintSide
 ) => {
   console.log("productCategory.......", productCategory)
 
@@ -57,7 +59,7 @@ const renderNameAndNumber = (
 
   const textObjects = [];
 
-  if (addName && name) {
+  if (addName && name && activeNameAndNumberPrintSide == activeSide) {
     const nameText = new fabric.Text(name, {
       fontSize: baseFontSize * 0.3,
       fontFamily: fontFamily,
@@ -69,8 +71,11 @@ const renderNameAndNumber = (
     nameText.left = -nameText.width / 2;
     textObjects.push(nameText);
   }
+  console.log("-----------activesiede", activeSide)
+  console.log("-----------activeNameAndNumberPrintSide", activeNameAndNumberPrintSide)
 
-  if (addNumber && number) {
+
+  if (addNumber && number && activeNameAndNumberPrintSide == activeSide) {
     const numberText = new fabric.Text(number, {
       fontSize: baseFontSize,
       fontFamily: fontFamily,
