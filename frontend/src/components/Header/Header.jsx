@@ -18,7 +18,9 @@ const Header = () => {
   return (
     <header className={style.appHeader}>
       <div className={style.leftSection}>
-        <img src={logo} alt="SIMAX" className={style.logo} />
+        <Link to="/design/product">
+          <img src={logo} alt="SIMAX" className={style.logo} />
+        </Link>
 
         <nav className={style.navSteps}>
           <Link
