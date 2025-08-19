@@ -207,7 +207,11 @@ const TextFrontendDesignSlice = createSlice({
       state.activeSide = action.payload;
     },
     setactiveNameAndNumberPrintSide: (state, action) => {
-      state.activeNameAndNumberPrintSide = action.payload;
+      const side = state.activeSide;
+      // console.log("NAMEandnumber", action.payload)
+      state.activeNameAndNumberPrintSide = action.payload
+      state.present[side].setRendering = !state.present[side].setRendering;
+      // console.log("slicenumber", state.activeNameAndNumberPrintSide)
     },
 
     // Add a new text object
