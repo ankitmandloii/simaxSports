@@ -951,7 +951,7 @@ const MainDesignTool = ({
   }
   function createWarningForT_shirt(canvasWidth, canvasHeight, canvas) {
     let boxWidth = canvasWidth * 0.36;
-    let boxHeight = canvasHeight * 0.6;
+    let boxHeight = canvasHeight * 0.5;
     let boxLeft = (canvasWidth - boxWidth) / 2;
     let boxTop = (canvasHeight - boxHeight) / 2;
 
@@ -994,7 +994,7 @@ const MainDesignTool = ({
     const chestBoxWidth = canvasWidth * 0.14;
     const chestBoxHeight = canvasHeight * 0.18;
     const chestBoxLeftOffset = canvasWidth * 0.22;
-    const chestBoxTopOffset = canvasHeight * 0.05   ;
+    const chestBoxTopOffset = canvasHeight * 0.05;
 
     const boundaryBoxLeft = new fabric.Rect({
       left: boxLeft + chestBoxLeftOffset,
@@ -1080,7 +1080,7 @@ const MainDesignTool = ({
 
     // Center vertical line
     const centerX = boxLeft + boxWidth / 2;
-    const centerY1 = boxTop - canvasHeight * 0.04;
+    const centerY1 = boxTop - canvasHeight * 0.07;
     const centerY2 = centerY1 + boxHeight;
 
     const centerVerticalLine = new fabric.Line([centerX, centerY1, centerX, centerY2], {
@@ -1495,22 +1495,22 @@ const MainDesignTool = ({
 
     // WARNING TEXT ABOVE MAIN BACK BOX
     if (activeSide !== "leftSleeve" && activeSide !== "rightSleeve") {
-      const warningText = new fabric.Text("Please keep design inside the box", {
-        left: boxLeftBack + boxWidthBack / 2,
-        top: boxTopBack - warningTextOffset,
-        fontSize: canvasHeight * 0.03,
-        fontFamily: "proxima-soft, sans-serif",
-        fill: "white",
-        selectable: false,
-        evented: false,
-        visible: false,
-        originX: "center",
-        originY: "top",
-        name: "warningText",
-      });
+      // const warningText = new fabric.Text("Please keep design inside the box", {
+      //   left: boxLeftBack + boxWidthBack / 2,
+      //   top: boxTopBack - warningTextOffset,
+      //   fontSize: canvasHeight * 0.03,
+      //   fontFamily: "proxima-soft, sans-serif",
+      //   fill: "white",
+      //   selectable: false,
+      //   evented: false,
+      //   visible: false,
+      //   originX: "center",
+      //   originY: "top",
+      //   name: "warningText",
+      // });
 
-      canvas.add(warningText);
-      canvas.bringToFront(warningText);
+      // canvas.add(warningText);
+      // canvas.bringToFront(warningText);
     }
     // MAIN BACK BOUNDARY BOX
     const boundaryBox = new fabric.Rect({
@@ -1610,7 +1610,7 @@ const MainDesignTool = ({
       canvas.add(centerVerticalLine);
     }
     canvas.add(
-      boundaryBox,
+      // boundaryBox,
       boundaryBoxLeft,
       leftChestText,
       boundaryBoxRight,
@@ -1618,12 +1618,14 @@ const MainDesignTool = ({
     );
 
     // BRING TO FRONT
-    canvas.bringToFront(boundaryBox);
-    canvas.bringToFront(boundaryBoxRight);
+    // canvas.bringToFront(boundaryBox);
+    // canvas.bringToFront(boundaryBoxRight);
     canvas.bringToFront(leftChestText);
     canvas.bringToFront(rightChestText);
-    canvas.bringToFront(boundaryBoxLeft);
+    // canvas.bringToFront(boundaryBoxLeft);
     if (activeSide == "back") {
+      canvas.bringToFront(boundaryBox);
+      canvas.bringToFront(boundaryBoxRight);
       canvas.bringToFront(centerVerticalLine);
     }
   }

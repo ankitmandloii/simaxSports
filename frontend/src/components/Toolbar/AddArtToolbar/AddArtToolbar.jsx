@@ -39,7 +39,7 @@ const AddArtToolbar = () => {
     <div className="toolbar-main-container">
       <div className="toolbar-main-heading ai-relative">
         <h5 className="Toolbar-badge">Art Powered By AI</h5>
-        <h2>Add Art</h2>
+        <h2>Generate Art</h2>
         <p>Add your own artwork or choose from our library to personalize your design.</p>
 
       </div>
@@ -75,7 +75,7 @@ const AddArtToolbar = () => {
               <input
                 type="text"
                 className={style.searchInput}
-                placeholder="Search for Clipart and AI Generated Art"
+                placeholder="Describe what you want to create"
                 value={searchTerm}
                 onChange={(e) => {
                   const value = e.target.value;
