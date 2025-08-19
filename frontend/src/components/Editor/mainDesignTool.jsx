@@ -1619,10 +1619,10 @@ const MainDesignTool = ({
 
     // BRING TO FRONT
     // canvas.bringToFront(boundaryBox);
-    // canvas.bringToFront(boundaryBoxRight);
+    canvas.bringToFront(boundaryBoxRight);
     canvas.bringToFront(leftChestText);
     canvas.bringToFront(rightChestText);
-    // canvas.bringToFront(boundaryBoxLeft);
+    canvas.bringToFront(boundaryBoxLeft);
     if (activeSide == "back") {
       canvas.bringToFront(boundaryBox);
       canvas.bringToFront(boundaryBoxRight);
