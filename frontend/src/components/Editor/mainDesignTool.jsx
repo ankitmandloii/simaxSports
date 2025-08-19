@@ -67,7 +67,7 @@ const MainDesignTool = ({
   // );
 
   // console.log("--------------------------namenumber",addName,addNumber)
-  const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberDesignState)
+  const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.nameAndNumberDesignState)
   // console.log("--------------namesssDesign",nameAndNumberDesignState)
   const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);

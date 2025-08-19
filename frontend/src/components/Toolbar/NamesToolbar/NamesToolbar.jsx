@@ -26,7 +26,7 @@ const NamesToolbar = () => {
   //   })
   // );
   const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice)
-  const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide]?.nameAndNumberDesignState);
+  const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice?.nameAndNumberDesignState);
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
 
   const dispatch = useDispatch();

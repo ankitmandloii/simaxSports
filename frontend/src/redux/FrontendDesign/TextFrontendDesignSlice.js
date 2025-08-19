@@ -114,15 +114,15 @@ const initialState = {
       // addName: false,
 
       // 🆕 Design settings for Name & Number (front)
-      nameAndNumberDesignState: {
-        id: "front",
-        name: "NAME",
-        number: "00",
-        fontColor: "#000000",
-        fontFamily: "Oswald",
-        fontSize: "large",
-        position: getStaringCenterPostion(),
-      },
+      // nameAndNumberDesignState: {
+      //   id: "front",
+      //   name: "NAME",
+      //   number: "00",
+      //   fontColor: "#000000",
+      //   fontFamily: "Oswald",
+      //   fontSize: "large",
+      //   position: getStaringCenterPostion(),
+      // },
 
       // 🆕 Product list for Name & Number (front)
       nameAndNumberProductList: [
@@ -143,15 +143,15 @@ const initialState = {
       },
 
       // 🆕 Design settings for Name & Number (back)
-      nameAndNumberDesignState: {
-        id: "back",
-        name: "NAME",
-        number: "00",
-        fontColor: "#000000",
-        fontFamily: "Oswald",
-        fontSize: "large",
-        position: getStaringCenterPostion(),
-      },
+      // nameAndNumberDesignState: {
+      //   id: "back",
+      //   name: "NAME",
+      //   number: "00",
+      //   fontColor: "#000000",
+      //   fontFamily: "Oswald",
+      //   fontSize: "large",
+      //   position: getStaringCenterPostion(),
+      // },
       // 🆕 Product list for Name & Number (back)
       nameAndNumberProductList: [
         // productId: [{ colorVariant, size, name, number }]
@@ -195,6 +195,15 @@ const initialState = {
   addNumber: false,
   addName: false,
   sleeveDesign: false,
+  nameAndNumberDesignState: {
+    id: "front",
+    name: "NAME",
+    number: "00",
+    fontColor: "#000000",
+    fontFamily: "Oswald",
+    fontSize: "large",
+    position: getStaringCenterPostion(),
+  },
   activeNameAndNumberPrintSide: "back"
 };
 
@@ -558,8 +567,8 @@ const TextFrontendDesignSlice = createSlice({
       const side = "back";
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
-      if (state.present[side]?.nameAndNumberDesignState) {
-        Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
+      if (state?.nameAndNumberDesignState) {
+        Object.assign(state?.nameAndNumberDesignState, changes);
       }
       state.present[side].setRendering = nanoid();
       state.future[side] = [];
