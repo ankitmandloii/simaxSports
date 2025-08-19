@@ -221,14 +221,14 @@ exports.readFile = async (request, response, path) => {
 
 //generate images in base64 API
 // exports.generateMultipleImagesByAi = async (req, res) => {
+//   console.log("DALL-E-3 MULTI (looped) START");
 //   try {
 //     const promptBase = req.body.prompt ?? "A beautiful landscape painting";
 //     const size       = req.body.size   ?? "1024x1024";
-//     const model      = req.body.model  ?? "gpt-image-1";
-//     const count      = Number(req.body.count ?? 8); // default 8 images
-
+//     const model      = req.body.model  ?? "dall-e-3"; // dall-e-3 only allows n=1
+//     const count      = Number(req.body.count ?? 2);   // how many you want
 //     const jitter     = String(req.body.jitter ?? "true").toLowerCase() === "true";
-//     const maxConcurrent = 3; // safe limit to avoid rate limit errors
+//     const maxConcurrent = 3; // prevent hitting rate limits
 
 //     const postOnce = async (body, attempt = 0) => {
 //       const r = await fetch("https://api.openai.com/v1/images/generations", {
@@ -250,13 +250,18 @@ exports.readFile = async (request, response, path) => {
 //     const results = new Array(count);
 //     let next = 0;
 
+//     // worker consumes tasks until all "count" are done
 //     const worker = async () => {
-//       while (next < count) {
+//       while (true) {
 //         const i = next++;
-//         const noise = jitter ? ` — v${i+1}-${Math.random().toString(36).slice(2, 6)}` : "";
+//         if (i >= count) break; // exit loop when finished
+
+//         // optional prompt jitter to force variation
+//         const noise  = jitter ? ` — v${i+1}-${Math.random().toString(36).slice(2, 6)}` : "";
 //         const prompt = jitter ? `${promptBase}${noise}` : promptBase;
 
 //         const body = { model, prompt, size, n: 1, response_format: "b64_json" };
+
 //         try {
 //           const resp = await postOnce(body);
 //           const data = await resp.json();
@@ -264,35 +269,38 @@ exports.readFile = async (request, response, path) => {
 //             results[i] = `data:image/png;base64,${data.data[0].b64_json}`;
 //           } else {
 //             results[i] = null;
+//             console.error("Image gen failed:", data?.error || data);
 //           }
-//         } catch {
+//         } catch (err) {
 //           results[i] = null;
+//           console.error("Worker error:", err);
 //         }
 //       }
 //     };
 
-//     const workers = Array.from({ length: Math.min(maxConcurrent, count) }, worker);
-//     await Promise.all(workers);
+//     // spin up N workers, each fetching images until done
+//     await Promise.all(
+//       Array.from({ length: Math.min(maxConcurrent, count) }, worker)
+//     );
 
 //     const okImages = results.filter(Boolean);
 //     if (!okImages.length) {
 //       return res.status(502).json({ message: "No images generated" });
 //     }
 
-//     res.status(200).json({
+//     return res.status(200).json({
 //       message: `Generated ${okImages.length} image(s)`,
 //       prompt: promptBase,
 //       size,
 //       model,
 //       count,
-//       images: okImages // array of base64 data URLs
+//       images: okImages, // array of base64-encoded data URLs
 //     });
 //   } catch (err) {
 //     console.error("Generate image error:", err);
-//     res.status(500).json({ message: "Image generation failed", error: String(err) });
+//     return res.status(500).json({ message: "Image generation failed", error: String(err) });
 //   }
 // };
-
 
 
 
