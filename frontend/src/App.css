@@ -17,6 +17,12 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Helvetica";
+  src: url("../public/fonts/helvetica-255/Helvetica.ttf") format("opentype");
+  font-display: swap;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -27,7 +33,8 @@
 body {
   position: relative;
   /* width: 100%; */
-  font-family: "Roboto-Regular", sans-serif;
+  /* font-family: "Roboto-Regular", sans-serif; */
+  font-family: "Helvetica", "Roboto-Regular", sans-serif;
   overflow: hidden;
 }
 
@@ -118,9 +125,8 @@ h4 {
 
 .page-content {
   display: flex;
-  /* max-width: 1901px; */
-  /* margin: 0 auto; */
-  margin-top: 21px;
+
+  /* margin-top: 21px; */
   z-index: 999;
 }
 
@@ -128,11 +134,11 @@ h4 {
   display: flex;
   max-width: 695px;
   width: 100%;
-  padding: 0 10px;
+  /* padding: 0 10px; */
   /* max-height: 680px; */
   max-width: 530px;
   height: 90vh;
-  margin-left: 21px;
+  /* margin-left: 21px; */
   z-index: 999;
 }
 
@@ -296,7 +302,7 @@ input[type="range"]::-moz-range-track {
   /* max-height: 680px; */
   min-width: 400px;
   /* height: 100%; */
-  border-radius: 0px 20px 20px 0px;
+  /* border-radius: 0px 20px 20px 0px; */
   padding-inline: 15px;
   padding-top: 26.87px;
   padding-bottom: 60px;

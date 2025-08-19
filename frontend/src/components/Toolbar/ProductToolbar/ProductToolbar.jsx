@@ -274,7 +274,7 @@ const ProductToolbar = () => {
     <div className={style.toolbarMainContainer}>
       <div className={style.productToolbar}>
         <div className="toolbar-main-heading">
-          <h5 className="Toolbar-badge">Product</h5>
+          <h5 className="Toolbar-badge">Products</h5>
           <h2>Manage Your Products</h2>
           <p>You can select multiple products and colors</p>
         </div>
