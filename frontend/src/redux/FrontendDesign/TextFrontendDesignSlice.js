@@ -87,7 +87,8 @@ const createNewImage = (
   replaceSrc: false,
   selectedFilter: "Normal",
   editColor: false,
-  extractedColors: []
+  extractedColors: [],
+  removeBgImagebtn: false,
 });
 
 const initialState = {

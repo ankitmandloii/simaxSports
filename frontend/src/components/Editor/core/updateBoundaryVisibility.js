@@ -63,7 +63,7 @@ const updateBoundaryVisibility = (fabricCanvasRef, activeSide, productCategory) 
   // }
   // console.log("productCategory before warning", productCategory)
   if (centerVerticalLine) { centerVerticalLine.visible = false; }
-  if (productCategory == "Zip") {
+  if (productCategory == "Zip" || productCategory == "Jacket" || productCategory == "Polo") {
 
     if (activeSide == "front") {
       const allInside = textObjects.every((obj) => {

@@ -41,10 +41,8 @@ const AddImageToolbar = () => {
   const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   const allImageData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
-
   const img = allImageData?.find((img) => img.id == selectedImageId);
   const isLocked = img?.locked;
-
   const [rangeValuesSize, setRangeValuesSize] = useState(0);
   const [rangeValuesRotate, setRangeValuesRotate] = useState(0);
   const [flipXValue, setflipXValue] = useState(false);
@@ -105,24 +103,8 @@ const AddImageToolbar = () => {
     setThreshold(img.thresholdValue);
     setSolidColor(img.solidColor);
     setEditColor(img.editColor);
-
-    // const tempImage = new Image();
-    // globalDispatch("loading", true);
-    // setLoading(true);
-    // tempImage.onload = () => {
-    //   setLoading(false);
-    //   globalDispatch("loading", false)
     setPreviewUrl(img.src || '');
     console.log(previewUrl);
-    // }
-    // tempImage.onerror = () => {
-    //   console.error("Failed to load image:", img?.src);
-    //   setPreviewUrl("https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif");
-    //   setLoading(false);
-    //   globalDispatch("loading", false);
-    // };
-
-    // tempImage.src = img?.src
     try {
       const params = img.src?.split('?')[1] || '';
       const currentTransform = params ? `?${params}` : '';
@@ -139,13 +121,6 @@ const AddImageToolbar = () => {
       setCropAndTrim(img.cropAndTrim);
       setInvertColor(img.invertColor);
       setSolidColor(img.solidColor);
-      // console.log("----------seleeee", selectedFilter);
-
-
-      // const baseFilter = BASE_FILTERS.find(f =>
-      //   currentTransform.includes(f.transform.replace('?', ''))
-      // ) || BASE_FILTERS[0];
-      // setSelectedFilter(baseFilter.name);
     } catch { }
   }, [img, selectedImageId, resetDefault, img?.loading]);
 
@@ -225,9 +200,6 @@ const AddImageToolbar = () => {
       throw error;
     }
   }
-
-
-
   async function handleImage(imageSrc, color = "#ffffff", selectedFilter, invertColor, editColor) {
     try {
 
@@ -619,7 +591,7 @@ const AddImageToolbar = () => {
     }
     console.log("remove background is calling");
     removeBackgroundHandler(); // ✅ run on subsequent changes only
-  }, [img?.removeBg]);
+  }, [img?.removeBgImagebtn]);
 
   function removeBackgroundHandler(e) {
     // update local state
@@ -1144,7 +1116,7 @@ const AddImageToolbar = () => {
     };
     fetchPalette();
 
-
+    hasMounted.current = true;
     dispatch(updateImageState({ id: selectedImageId, changes }));
 
     // 2. Reset local component states

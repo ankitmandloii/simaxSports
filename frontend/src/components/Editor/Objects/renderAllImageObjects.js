@@ -194,6 +194,7 @@ const renderAllImageObjects = (
         // globalDispatch("base64CanvasImage", newSrc, id);
         // globalDispatch("selectedFilter", "Normal", id);
         globalDispatch("removeBg", checked, id);
+        globalDispatch("removeBgImagebtn", checked, id);
         // globalDispatch("removeBgParamValue", checked ? "bg-remove=true" : "", id);
         if (callback) callback(checked, fabricImage);
       }, { crossOrigin: "anonymous" });
