@@ -55,7 +55,6 @@ const MainDesignTool = ({
   // **********************************************************************************************************************************************************
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
-  console.log("-------------------rrrrrr", activeNameAndNumberPrintSide)
   // const addName  = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addName);
   // const  addNumber = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addNumber);
   const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice);
@@ -2001,7 +2000,7 @@ const MainDesignTool = ({
       removeAllHtmlControls();
       syncMirrorCanvasHelper(activeSide);
       updateBoundaryVisibility(fabricCanvasRef, activeSide, getProductType(activeProductTitle));
-      dispatch(deleteTextState(removedObject.id));
+      // dispatch(deleteTextState(removedObject.id));
       // dispatch(deleteImageState(removedObject.id));
 
 
@@ -2500,8 +2499,8 @@ const MainDesignTool = ({
 
       <canvas ref={canvasRef} id={`canvas-${id}`} />
       {!hasClicked && !addName && !addNumber &&
-        imageContaintObject.length == 0 &&
-        textContaintObject.length == 0 && (
+        imageContaintObject?.length == 0 &&
+        textContaintObject?.length == 0 && (
           <div className={style.buttonsroute}>
             <button
               onMouseEnter={() => handleHover("/design/addText")}

@@ -155,6 +155,7 @@ function renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, d
           fabricObject._htmlControls = null;
         }
         dispatch(deleteImageState(fabricObject.id));
+        dispatch(deleteTextState(fabricObject.id));
 
         // Remove object from canvas
         canvas.remove(fabricObject);
@@ -683,76 +684,76 @@ function rotateWithCenter(eventData, transform, x, y) {
   transform.target.set({ centeredRotation: true });
   return fabric.controlsUtils.rotationWithSnapping(eventData, transform, x, y);
 }
-function RenderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, dispatch) {
-  const canvas = fabricObject.canvas;
-  if (!canvas || !canvas.upperCanvasEl) return;
+// function RenderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, dispatch) {
+//   const canvas = fabricObject.canvas;
+//   if (!canvas || !canvas.upperCanvasEl) return;
 
-  if (!fabricObject._htmlControls) fabricObject._htmlControls = {};
-  if (!fabricObject._htmlControls.delete) {
-    const el = document.createElement("div");
-    Object.assign(el.style, {
-      position: "absolute",
-      width: "28px", // Size of the circle (unchanged from original)
-      height: "28px", // Same as above
-      cursor: "pointer",
-      backgroundColor: "white", // White background for the circle
-      borderRadius: "50%", // Ensures it's a circle
-      border: "1px solid #B0B0B0", // Added grey border around the circle
-      boxShadow: "0 0 4px rgba(0,0,0,0.2)", // Light shadow effect
-      display: "flex",
-      alignItems: "center", // Vertically center the icon
-      justifyContent: "center", // Horizontally center the icon
-      padding: "2px", // Padding for icon positioning (unchanged from original)
-      zIndex: "99",
-    });
+//   if (!fabricObject._htmlControls) fabricObject._htmlControls = {};
+//   if (!fabricObject._htmlControls.delete) {
+//     const el = document.createElement("div");
+//     Object.assign(el.style, {
+//       position: "absolute",
+//       width: "28px", // Size of the circle (unchanged from original)
+//       height: "28px", // Same as above
+//       cursor: "pointer",
+//       backgroundColor: "white", // White background for the circle
+//       borderRadius: "50%", // Ensures it's a circle
+//       border: "1px solid #B0B0B0", // Added grey border around the circle
+//       boxShadow: "0 0 4px rgba(0,0,0,0.2)", // Light shadow effect
+//       display: "flex",
+//       alignItems: "center", // Vertically center the icon
+//       justifyContent: "center", // Horizontally center the icon
+//       padding: "2px", // Padding for icon positioning (unchanged from original)
+//       zIndex: "99",
+//     });
 
-    const img = document.createElement("img");
-    img.src = deleteIconDataURL; // Ensure correct icon URL
-    img.style.width = "16px"; // Icon size (unchanged from original)
-    img.style.height = "16px"; // Icon size (unchanged from original)
-    img.style.pointerEvents = "auto"; // Ensure the icon is clickable
+//     const img = document.createElement("img");
+//     img.src = deleteIconDataURL; // Ensure correct icon URL
+//     img.style.width = "16px"; // Icon size (unchanged from original)
+//     img.style.height = "16px"; // Icon size (unchanged from original)
+//     img.style.pointerEvents = "auto"; // Ensure the icon is clickable
 
-    // Hover effect to change background and icon color
-    el.onmouseenter = () => {
-      el.style.backgroundColor = "#005bff"; // Blue background on hover
-      img.style.filter = "invert(1)"; // Invert icon color to white
-    };
-    el.onmouseleave = () => {
-      el.style.backgroundColor = "white"; // Reset background to white
-      img.style.filter = "invert(0)"; // Restore icon color
-    };
+//     // Hover effect to change background and icon color
+//     el.onmouseenter = () => {
+//       el.style.backgroundColor = "#005bff"; // Blue background on hover
+//       img.style.filter = "invert(1)"; // Invert icon color to white
+//     };
+//     el.onmouseleave = () => {
+//       el.style.backgroundColor = "white"; // Reset background to white
+//       img.style.filter = "invert(0)"; // Restore icon color
+//     };
 
-    // Click event for removing the object
-    img.onclick = () => {
-      if (!isLocked(null, { target: fabricObject })) {
-        const canvas = fabricObject.canvas;
-        if (!canvas) return;  // Safety check
+//     // Click event for removing the object
+//     img.onclick = () => {
+//       if (!isLocked(null, { target: fabricObject })) {
+//         const canvas = fabricObject.canvas;
+//         if (!canvas) return;  // Safety check
 
-        // Remove HTML controls
-        if (fabricObject.htmlDeleteEl) {
-          fabricObject.htmlDeleteEl.remove();
-          fabricObject.htmlDeleteEl = null;
-        }
-        if (fabricObject._htmlControls) {
-          Object.values(fabricObject._htmlControls).forEach(el => el.remove());
-          fabricObject._htmlControls = null;
-        }
-        dispatch(deleteImageState(fabricObject.id));
+//         // Remove HTML controls
+//         if (fabricObject.htmlDeleteEl) {
+//           fabricObject.htmlDeleteEl.remove();
+//           fabricObject.htmlDeleteEl = null;
+//         }
+//         if (fabricObject._htmlControls) {
+//           Object.values(fabricObject._htmlControls).forEach(el => el.remove());
+//           fabricObject._htmlControls = null;
+//         }
+//         dispatch(deleteImageState(fabricObject.id));
 
-        // Remove object from canvas
-        canvas.remove(fabricObject);
-        canvas.requestRenderAll();
-      }
-    };
+//         // Remove object from canvas
+//         canvas.remove(fabricObject);
+//         canvas.requestRenderAll();
+//       }
+//     };
 
-    el.appendChild(img); // Append the icon to the div
-    document.body.appendChild(el); // Add the delete button to the body
-    fabricObject._htmlControls.delete = el; // Store the control reference for later removal
-  }
+//     el.appendChild(img); // Append the icon to the div
+//     document.body.appendChild(el); // Add the delete button to the body
+//     fabricObject._htmlControls.delete = el; // Store the control reference for later removal
+//   }
 
-  // Position the delete control on the canvas
-  positionHtmlControl(fabricObject._htmlControls.delete, canvas, left, top);
-}
+//   // Position the delete control on the canvas
+//   positionHtmlControl(fabricObject._htmlControls.delete, canvas, left, top);
+// }
 // Main exported function to create controls object
 export function createControls(bringPopup, dispatch) {
   return {
