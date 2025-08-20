@@ -18,6 +18,7 @@
   cursor: pointer;
   display: none;
 }
+
 /* .hovered {
   background-color: #e0f7ff;
   color: #0077cc;
@@ -49,11 +50,11 @@
 }
 
 .sidebar {
-  width: 98px;
-  max-width: 98px;
+  width: 110px;
+  max-width: 110px;
   height: 100%;
   background-color: var(--black-color);
-  border-radius: 20px 0 0 20px;
+  /* border-radius: 20px 0 0 20px; */
 }
 
 .collapsed {
@@ -83,14 +84,16 @@
   background-color: #6c5ce710;
 } */
 
-.active{
+.active {
   background-color: #fff;
   color: #000;
 }
-.hovered{
+
+.hovered {
   background-color: #fff;
   color: #000;
 }
+
 .sidebarIcon svg {
   font-size: 18px;
   height: 23px;
@@ -108,7 +111,7 @@
 }
 
 .sidebarLabel {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   text-align: center;
 }
