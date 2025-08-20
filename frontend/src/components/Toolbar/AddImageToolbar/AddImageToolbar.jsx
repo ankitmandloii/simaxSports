@@ -104,7 +104,7 @@ const AddImageToolbar = () => {
     setSolidColor(img.solidColor);
     setEditColor(img.editColor);
     setPreviewUrl(img.src || '');
-    console.log(previewUrl);
+    // console.log(previewUrl);
     try {
       const params = img.src?.split('?')[1] || '';
       const currentTransform = params ? `?${params}` : '';
@@ -114,7 +114,7 @@ const AddImageToolbar = () => {
           !BASE_FILTERS.some(f => f.transform.includes(param))
         )
         : [];
-      console.log("cureent effects", currentEffects);
+      // console.log("cureent effects", currentEffects);
       setActiveEffects(currentEffects);
       setRemoveBackground(img.removeBg);
       setSuperResolution(img.superResolution);
@@ -207,13 +207,14 @@ const AddImageToolbar = () => {
       setResetDefault(false);
 
       // globalDispatch("editColor", false);
+      // globalDispatch("loading", true); // Corrected the typo here
       console.log("handle image function called with src", imageSrc);
-      globalDispatch("loading", true); // Corrected the typo here
 
       // Await the base64 image after processing the image
 
       let currentBase64Image;
-      console.log("curent seleteced filter is ", selectedFilter, img.selectedFilter)
+      // console.log("curent seleteced filter is ", selectedFilter, img.selectedFilter)
+
 
       if (selectedFilter == "Single Color") {
         if (invertColor) {
@@ -225,7 +226,7 @@ const AddImageToolbar = () => {
         }
       }
       else if (selectedFilter == "Normal") {
-        console.log("edit color state is: ", editColor)
+        // console.log("edit color state is: ", editColor)
         if (editColor) {
           currentBase64Image = await processAndReplaceColors(imageSrc, color, editColor, extractedColors);
         }
@@ -437,7 +438,7 @@ const AddImageToolbar = () => {
       // dispatch(toggleLoading({ changes }));
       // globalDispatch("loadingSrc", loadingPlaceholder);
       // globalDispatch("src", img.src); // keep old src while loading
-      globalDispatch("loading", true); // keep old src while loading
+      // globalDispatch("loading", true); // keep old src while loading
       // globalDispatch("transform", transform);
 
       // Load transformed image
@@ -449,15 +450,16 @@ const AddImageToolbar = () => {
 
         globalDispatch("src", newUrl);
         await handleImage(newUrl, singleColor, selectedFilter, invertColor, false);
-        dispatch(toggleLoading({ changes: { loading: false } }));
-        globalDispatch("loadingSrc", null);
+        // dispatch(toggleLoading({ changes: { loading: false } }));
+
+        // globalDispatch("loadingSrc", null);
         // globalDispatch("loading", false);
 
-        globalDispatch("removeBg", transform.includes("bg-remove=true"));
-        globalDispatch(
-          "removeBgParamValue",
-          transform.includes("bg-remove=true") ? "bg-remove=true" : ""
-        );
+        // globalDispatch("removeBg", transform.includes("bg-remove=true"));
+        // globalDispatch(
+        //   "removeBgParamValue",
+        //   transform.includes("bg-remove=true") ? "bg-remove=true" : ""
+        // );
 
         // console.log("URL..............", newUrl)
 
@@ -583,18 +585,19 @@ const AddImageToolbar = () => {
 
   const hasMounted = useRef(false); // ✅ move to top level
 
-  useEffect(() => {
-    console.log("hasmounted", hasMounted)
-    if (!hasMounted.current) {
-      hasMounted.current = true;
-      return; // ⛔ skip on first render
-    }
-    console.log("remove background is calling");
-    removeBackgroundHandler(); // ✅ run on subsequent changes only
-  }, [img?.removeBgImagebtn]);
+  // useEffect(() => {
+  //   console.log("hasmounted", hasMounted)
+  //   if (!hasMounted.current) {
+  //     hasMounted.current = true;
+  //     return; // ⛔ skip on first render
+  //   }
+  //   console.log("remove background is calling");
+  //   removeBackgroundHandler(); // ✅ run on subsequent changes only
+  // }, [img?.removeBgImagebtn]);
 
   function removeBackgroundHandler(e) {
     // update local state
+    globalDispatch("loading", true);
     console.log("clicked on backgournd remove button");
     const checked = !removeBackground;
     const canvasToggle = document.querySelector(`[id^="canvas-"] input[type="checkbox"]`);
@@ -1059,7 +1062,7 @@ const AddImageToolbar = () => {
 
   function cropAndTrimdHandler(e) {
     // update local state
-
+    globalDispatch("loading", true);
     const value = isActive('trim=color');
     toggle('trim=color', value)
     setCropAndTrim(!value);
@@ -1075,6 +1078,8 @@ const AddImageToolbar = () => {
 
   function superResolutiondHandler(e) {
     // update local state
+    globalDispatch("loading", true);
+
     const value = isActive('auto=enhance&sharp=80&upscale=true');
     toggle('auto=enhance&sharp=80&upscale=true', value)
     setSuperResolution(!value);
@@ -1117,7 +1122,6 @@ const AddImageToolbar = () => {
     fetchPalette();
 
     hasMounted.current = true;
-    dispatch(updateImageState({ id: selectedImageId, changes }));
 
     // 2. Reset local component states
     setRemoveBackground(false);
@@ -1136,6 +1140,11 @@ const AddImageToolbar = () => {
     // const enhanceKey = 'auto=enhance&sharp=80&upscale=true';
     if (previewUrl?.split("?")?.length > 1) {
       applyTransform('', true, false);
+      dispatch(updateImageState({ id: selectedImageId, changes }));
+    }
+    else {
+      changes.src = previewUrl.split("?")[0];
+      dispatch(updateImageState({ id: selectedImageId, changes }));
     }
     setResetDefault(true);
     // handleImage(img.src.split("?")[0], "#ffffff");

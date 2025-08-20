@@ -19,7 +19,7 @@ const renderAllImageObjects = (
   productCategory
 ) => {
   // console.log("imageContaintObject", imageContaintObject);
-  console.log("productCategory.......", productCategory)
+  // console.log("productCategory.......", productCategory)
 
   const canvas = fabricCanvasRef.current;
 

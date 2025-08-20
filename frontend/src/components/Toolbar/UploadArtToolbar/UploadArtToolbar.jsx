@@ -599,7 +599,8 @@ const UploadArtToolbar = () => {
 
       response.data.files.forEach((fileObj, index) => {
         dispatch(addImageState({
-          src: `${fileObj.url}${stateForSuperResolution[index] ? "?auto=enhance&sharp=80&upscale=true" : ""}`
+          // src: `${fileObj.url}${stateForSuperResolution[index] ? "?auto=enhance&sharp=80&upscale=true" : ""}`
+          src: `${fileObj.url}`
         }));
       });
 

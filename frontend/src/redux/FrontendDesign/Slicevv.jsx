@@ -399,30 +399,30 @@ const TextFrontendDesignSlice = createSlice({
     },
     // ----------- Undo / Redo per side ------------
     // In your slice (TextFrontendDesignSlice.js)
-undo: (state) => {
-  const side = state.activeSide;
-  if (state.past[side].length > 0) {
-    // 1. Get the CORRECT previous state (last item in past array)
-    const previousState = state.past[side][state.past[side].length - 1];
-    
-    // 2. Deep clone it to avoid Immer/Proxy issues
-    const stateToRestore = JSON.parse(JSON.stringify(previousState));
-    
-    // 3. Push current state to future (for redo)
-    state.future[side].push(JSON.parse(JSON.stringify(state.present[side])));
-    
-    // 4. COMPLETELY replace present state
-    state.present[side] = stateToRestore;
-    
-    // 5. Remove the restored state from past
-    state.past[side].pop();
-    
-    console.log("Restored state:", {
-      addName: state.present[side].addName,
-      addNumber: state.present[side].addNumber
-    });
-  }
-},
+    undo: (state) => {
+      const side = state.activeSide;
+      if (state.past[side].length > 0) {
+        // 1. Get the CORRECT previous state (last item in past array)
+        const previousState = state.past[side][state.past[side].length - 1];
+
+        // 2. Deep clone it to avoid Immer/Proxy issues
+        const stateToRestore = JSON.parse(JSON.stringify(previousState));
+
+        // 3. Push current state to future (for redo)
+        state.future[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+        // 4. COMPLETELY replace present state
+        state.present[side] = stateToRestore;
+
+        // 5. Remove the restored state from past
+        state.past[side].pop();
+
+        console.log("Restored state:", {
+          addName: state.present[side].addName,
+          addNumber: state.present[side].addNumber
+        });
+      }
+    },
     redo: (state) => {
       const side = state.activeSide;
       if (state.future[side].length > 0) {
@@ -521,28 +521,28 @@ undo: (state) => {
     //   // state.addName = action.payload;
     //   state.present[side].setRendering = !state.present[side].setRendering;
     // },
-   setAddName: (state, action) => {
-  const side = state.activeSide;
-  // ✅ Deep clone current state before modifying
-  state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-  // Update state
-  state.present[side].addName = action.payload;
-  // Clear future (new action invalidates redo)
-  state.future[side] = [];
-   console.log("Saved addname state to past:", {
-    addName: action.payload,
-    pastLength: state.past[side].length
-  });
-},
+    setAddName: (state, action) => {
+      const side = state.activeSide;
+      // ✅ Deep clone current state before modifying
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+      // Update state
+      state.present[side].addName = action.payload;
+      // Clear future (new action invalidates redo)
+      state.future[side] = [];
+      console.log("Saved addname state to past:", {
+        addName: action.payload,
+        pastLength: state.past[side].length
+      });
+    },
     setAddNumber: (state, action) => {
       const side = state.activeSide;
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       state.present[side].addNumber = action.payload;
       state.future[side] = [];
-       console.log("Saved addNumber state to past:", {
-    addNumber: action.payload,
-    pastLength: state.past[side].length
-  });
+      console.log("Saved addNumber state to past:", {
+        addNumber: action.payload,
+        pastLength: state.past[side].length
+      });
     },
 
     // 🆕 Update design state (front/back)
@@ -639,29 +639,29 @@ undo: (state) => {
     },
 
     addImageState: (state, action) => {
-      const { src, id = nanoid(), side = state.activeSide, isRenderOrNot } = action.payload;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
-      const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
-      const rect = canvasComponent.getBoundingClientRect();
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const newImage = createNewImage(
-        { src: src },
-        // { src: src + "?auto=enhance&sharp=80&upscale=true" },
-        totalElements,
-        centerX
-      );
+      // const { src, id = nanoid(), side = state.activeSide, isRenderOrNot } = action.payload;
+      // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+      // const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
+      // const canvasComponent = document.querySelector("canvas"); // Simple way, but ideally use refs or context
+      // const rect = canvasComponent.getBoundingClientRect();
+      // const centerX = rect.width / 2;
+      // const centerY = rect.height / 2;
       // const newImage = createNewImage(
-      //   { src },
-      //   state.present[side].images.length
+      //   { src: src },
+      //   // { src: src + "?auto=enhance&sharp=80&upscale=true" },
+      //   totalElements,
+      //   centerX
       // );
-      if (!state.present[side].images) {
-        state.present[side].images = [];
-      }
-      state.present[side].selectedImageId = newImage.id;
-      state.present[side].images.push(newImage);
-      state.future[side] = [];
+      // // const newImage = createNewImage(
+      // //   { src },
+      // //   state.present[side].images.length
+      // // );
+      // if (!state.present[side].images) {
+      //   state.present[side].images = [];
+      // }
+      // state.present[side].selectedImageId = newImage.id;
+      // state.present[side].images.push(newImage);
+      // state.future[side] = [];
       // state.present[side].setRendering = !state.present[side].setRendering;
     },
 
@@ -809,43 +809,43 @@ undo: (state) => {
     // },
 
     // deleteeee reducers
-    deleteTextState: (state, action) => {
-      const side = state.activeSide;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    // deleteTextState: (state, action) => {
+    //   const side = state.activeSide;
+    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
-      const deletedText = state.present[side].texts.find(t => t.id === action.payload);
-      if (!deletedText) return;
-      const deletedLayerIndex = deletedText?.layerIndex || 0;
+    //   const deletedText = state.present[side].texts.find(t => t.id === action.payload);
+    //   if (!deletedText) return;
+    //   const deletedLayerIndex = deletedText?.layerIndex || 0;
 
-      // Remove the text
-      state.present[side].texts = state.present[side].texts.filter(
-        (t) => t.id !== action.payload
-      );
+    //   // Remove the text
+    //   state.present[side].texts = state.present[side].texts.filter(
+    //     (t) => t.id !== action.payload
+    //   );
 
-      const allElements = [
-        ...state.present[side].texts,
-        ...state.present[side].images
-      ].sort((a, b) => a.layerIndex - b.layerIndex);
+    //   const allElements = [
+    //     ...state.present[side].texts,
+    //     ...state.present[side].images
+    //   ].sort((a, b) => a.layerIndex - b.layerIndex);
 
-      allElements.forEach((element, index) => {
-        if (element.layerIndex > deletedLayerIndex) {
-          if (element.type === 'text') {
-            const textIndex = state.present[side].texts.findIndex(t => t.id === element.id);
-            if (textIndex !== -1) {
-              state.present[side].texts[textIndex].layerIndex = index;
-            }
-          } else {
-            const imageIndex = state.present[side].images.findIndex(i => i.id === element.id);
-            if (imageIndex !== -1) {
-              state.present[side].images[imageIndex].layerIndex = index;
-            }
-          }
-        }
-      });
+    //   allElements.forEach((element, index) => {
+    //     if (element.layerIndex > deletedLayerIndex) {
+    //       if (element.type === 'text') {
+    //         const textIndex = state.present[side].texts.findIndex(t => t.id === element.id);
+    //         if (textIndex !== -1) {
+    //           state.present[side].texts[textIndex].layerIndex = index;
+    //         }
+    //       } else {
+    //         const imageIndex = state.present[side].images.findIndex(i => i.id === element.id);
+    //         if (imageIndex !== -1) {
+    //           state.present[side].images[imageIndex].layerIndex = index;
+    //         }
+    //       }
+    //     }
+    //   });
 
-      state.future[side] = [];
-      state.present[side].setRendering = !state.present[side].setRendering;
-    },
+    //   state.future[side] = [];
+    //   state.present[side].setRendering = !state.present[side].setRendering;
+    // },
 
     deleteImageState: (state, action) => {
       const side = state.activeSide;

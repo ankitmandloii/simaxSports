@@ -16,7 +16,7 @@ const renderCurveTextObjects = (
   bringPopup,
   productCategory
 ) => {
-  console.log("productCategory.......", productCategory)
+  // console.log("productCategory.......", productCategory)
   const canvas = fabricCanvasRef.current;
   if (textContaintObject && textContaintObject.length === 0) {
     let existingTextbox = canvas
