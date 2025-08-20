@@ -215,7 +215,8 @@ router.post("/fileBlobDataUploadToCloudinary",testUpload.any(), controllers.file
 router.delete("/deleteFromCloudinary", controllers.deleteImageFromCloudinary);
 
 
-
+router.post("/saveImageUrlToDbWithThereKey",controllers.saveImageUrlToDbWithThereKey)
+router.get("/getImageUrlToDbWithThereKey",controllers.getImageUrlToDbWithThereKey)
 
 
 

@@ -7,6 +7,7 @@ const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/cl
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const path = require('path');
+const SaveImageSchema = require("../model/saveImageSchema.js");
 // const archiver = require("archiver");
 // const axios = require('axios');
 
@@ -383,9 +384,9 @@ async function postWithBackoff(body, attempt = 0) {
 exports.generateMultipleImagesByAi = async (req, res) => {
   try {
     const promptBase = req.body.prompt ?? "A beautiful landscape painting";
-    const size       = req.body.size   ?? "1024x1024";
-    const model      = req.body.model  ?? "gpt-image-1";
-    const count      = Math.max(1, Number(req.body.count ?? 5));
+    const size = req.body.size ?? "1024x1024";
+    const model = req.body.model ?? "dall-e-3";
+    const count = Math.max(1, Number(req.body.count ?? 5));
 
     // small prompt noise to reduce near-duplicates
     const jitter = String(req.body.jitter ?? "true").toLowerCase() === "true";
@@ -456,49 +457,69 @@ exports.generateMultipleImagesByAi = async (req, res) => {
 
 
 
-// const uploadImageToCloudinary = (fileBuffer, fileName, folder) => {
-//     console.log("uploadImageToCloudinary")
+
+
+// Helper function to save Blob data as PNG
+// async function uploadImageToCloudinary(buffer, originalFileName, folderName) {
 //   return new Promise((resolve, reject) => {
-//     const stream = cloudinary.uploader.upload_stream(
+//     // Create a unique public ID for Cloudinary
+//     const publicId = `${folderName}/${path.parse(originalFileName).name}_${Date.now()}`;
+
+//     // Use Cloudinary's uploader.upload_stream to upload a buffer
+//     const uploadStream = cloudinary.uploader.upload_stream(
 //       {
-//         folder,
-//         resource_type: "image"
+//         resource_type: 'image',
+//         folder: folderName,
+//         public_id: publicId, // Set a public ID
+//         overwrite: true // Overwrite if public ID exists (good for re-uploads)
 //       },
 //       (error, result) => {
-//         if (error) return reject(error);
-//         resolve({
-//           name: fileName,
-//           secureUrl: result.secure_url,
-//           publicId: result.public_id
-//         });
+//         if (error) {
+//           console.error("Cloudinary upload error:", error);
+//           return reject(error);
+//         }
+//         resolve(result); // result will contain the Cloudinary URL and other info
 //       }
 //     );
 
-//     stream.end(fileBuffer);
+//     // Pipe the buffer to the upload stream
+//     uploadStream.end(buffer);
 //   });
-// };
+// }
 
 
-// exports.fileUploadToCloudinary = async (req, res) => {
+// exports.fileBlobDataUploadToCloudinary = async (req, res) => {
 //   try {
-//     const files = req.files || [];
-//     console.log("filesfiles",files.length)
-//     if (!files.length) {
-//       return res.status(400).json({ message: "No file(s) uploaded" });
+//     // Multer puts all files into req.files when using upload.any()
+//     const uploadedFiles = req.files || []; // This will be an array of file objects from Multer
+
+//     console.log("Received files count:", uploadedFiles.length);
+
+//     if (!uploadedFiles.length) {
+//       return res.status(400).json({ message: "No image files provided." });
 //     }
 
-//     const uploaded = [];
+//     const uploadedResults = [];
 
-//     for (const file of files) {
-//         console.log("filesComessssssss");
-//       const result = await uploadImageToCloudinary(file.buffer, file.originalname , process.env.FOLDER_NAME);
-//       uploaded.push(result);
+//     // Process each uploaded file
+//     for (let i = 0; i < uploadedFiles.length; i++) {
+//       const file = uploadedFiles[i]; // Each 'file' object is from Multer
+
+//       // `file.buffer` contains the binary data of the uploaded image
+//       // `file.originalname` is the filename provided by the frontend (e.g., 'image_0.png')
+//       console.log(`Processing file: ${file.originalname}, Size: ${file.size} bytes`);
+
+//       // Upload the buffer directly to Cloudinary
+//       const result = await uploadImageToCloudinary(file.buffer, file.originalname, process.env.FOLDER_NAME || 'your_default_folder');
+
+//       // Push the Cloudinary result (including the URL) to the uploaded array
+//       uploadedResults.push(result.secure_url);
 //     }
 
 //     return res.status(200).json({
 //       success: true,
-//       uploaded: uploaded.length,
-//       files: uploaded
+//       uploadedCount: uploadedResults.length,
+//       files: uploadedResults // This array will contain Cloudinary response objects
 //     });
 //   } catch (error) {
 //     console.error("Upload error:", error);
@@ -510,77 +531,89 @@ exports.generateMultipleImagesByAi = async (req, res) => {
 // };
 
 
-// Helper function to save Blob data as PNG
-async function uploadImageToCloudinary(buffer, originalFileName, folderName) {
-    return new Promise((resolve, reject) => {
-        // Create a unique public ID for Cloudinary
-        const publicId = `${folderName}/${path.parse(originalFileName).name}_${Date.now()}`;
- 
-        // Use Cloudinary's uploader.upload_stream to upload a buffer
-        const uploadStream = cloudinary.uploader.upload_stream(
-            {
-                resource_type: 'image',
-                folder: folderName,
-                public_id: publicId, // Set a public ID
-                overwrite: true // Overwrite if public ID exists (good for re-uploads)
-            },
-            (error, result) => {
-                if (error) {
-                    console.error("Cloudinary upload error:", error);
-                    return reject(error);
-                }
-                resolve(result); // result will contain the Cloudinary URL and other info
-            }
-        );
- 
-        // Pipe the buffer to the upload stream
-        uploadStream.end(buffer);
-    });
+function sanitizeName(name) {
+  return name.replace(/[^a-zA-Z0-9._-]/g, "_");
 }
- 
- 
-exports.fileBlobDataUploadToCloudinary = async (req, res) => {
-    try {
-        // Multer puts all files into req.files when using upload.any()
-        const uploadedFiles = req.files || []; // This will be an array of file objects from Multer
- 
-        console.log("Received files count:", uploadedFiles.length);
- 
-        if (!uploadedFiles.length) {
-            return res.status(400).json({ message: "No image files provided." });
-        }
- 
-        const uploadedResults = [];
- 
-        // Process each uploaded file
-        for (let i = 0; i < uploadedFiles.length; i++) {
-            const file = uploadedFiles[i]; // Each 'file' object is from Multer
- 
-            // `file.buffer` contains the binary data of the uploaded image
-            // `file.originalname` is the filename provided by the frontend (e.g., 'image_0.png')
-            console.log(`Processing file: ${file.originalname}, Size: ${file.size} bytes`);
- 
-            // Upload the buffer directly to Cloudinary
-            const result = await uploadImageToCloudinary(file.buffer, file.originalname, process.env.FOLDER_NAME || 'your_default_folder');
- 
-            // Push the Cloudinary result (including the URL) to the uploaded array
-            uploadedResults.push(result.secure_url);
-        }
- 
-        return res.status(200).json({
-            success: true,
-            uploadedCount: uploadedResults.length,
-            files: uploadedResults // This array will contain Cloudinary response objects
-        });
-    } catch (error) {
-        console.error("Upload error:", error);
-        return res.status(500).json({
-            message: "File upload failed",
-            error: error.message
-        });
-    }
-};
 
+function buildObjectKey(originalFileName, folderName) {
+  const ext = path.extname(originalFileName) || "";
+  const base = path.basename(originalFileName, ext);
+  const safeBase = sanitizeName(base);
+  const safeExt = sanitizeName(ext) || "";
+  const folder = folderName || process.env.FOLDER_NAME || "your_default_folder";
+  return `${folder}/${safeBase}_${Date.now()}${safeExt}`.replace(/\/{2,}/g, "/");
+}
+
+function buildPublicS3Url({ bucket, region, key }) {
+  // virtual-hosted–style URL
+  return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
+}
+
+async function uploadBufferToS3(buffer, originalFileName, folderName, mimetype) {
+  const Bucket = process.env.S3_BUCKET;
+  if (!Bucket) throw new Error("S3_BUCKET env var is required");
+  const Key = buildObjectKey(originalFileName, folderName);
+
+  const cmd = new PutObjectCommand({
+    Bucket,
+    Key,
+    Body: buffer,
+    ContentType: mimetype || "application/octet-stream",
+    // ACL: "public-read", // Only if your bucket is public. Prefer keeping private + CloudFront.
+    CacheControl: "public, max-age=31536000, immutable",
+  });
+
+  await s3Client.send(cmd);
+
+  return {
+    key: Key,
+    bucket: Bucket,
+    url: buildPublicS3Url({ bucket: Bucket, region: process.env.AWS_REGION, key: Key }),
+  };
+}
+
+// ---- handler: same name/signature/response as your Cloudinary version ----
+exports.fileBlobDataUploadToCloudinary = async (req, res) => {
+  try {
+    // Multer with memoryStorage puts files in req.files
+    const uploadedFiles = req.files || [];
+
+    console.log("Received files count:", uploadedFiles.length);
+
+    if (!uploadedFiles.length) {
+      return res.status(400).json({ message: "No image files provided." });
+    }
+
+    const uploadedResults = [];
+
+    for (let i = 0; i < uploadedFiles.length; i++) {
+      const file = uploadedFiles[i];
+      console.log(`Processing file: ${file.originalname}, Size: ${file.size} bytes, Type: ${file.mimetype}`);
+
+      const result = await uploadBufferToS3(
+        file.buffer,
+        file.originalname,
+        process.env.FOLDER_NAME || "your_default_folder",
+        file.mimetype
+      );
+
+      // Push the S3 public URL to results (matches prior shape: array of URLs)
+      uploadedResults.push(result.url);
+    }
+
+    return res.status(200).json({
+      success: true,
+      uploadedCount: uploadedResults.length,
+      files: uploadedResults, // array of S3 URLs
+    });
+  } catch (error) {
+    console.error("Upload error:", error);
+    return res.status(500).json({
+      message: "File upload failed",
+      error: error.message,
+    });
+  }
+};
 //delete
 
 exports.deleteImageFromCloudinary = async (req, res) => {
@@ -603,3 +636,66 @@ exports.deleteImageFromCloudinary = async (req, res) => {
     res.status(500).json({ message: "Failed to delete image", error: error.message });
   }
 };
+
+
+//save to db image with key 
+exports.saveImageUrlToDbWithThereKey = async (req, res) => {
+  try {
+    const { key, urls } = req.body;
+    if (!key || !urls) return res.status(400).json({ error: 'key and urls required' });
+
+    const arr = Array.isArray(urls) ? urls.flat() : (urls ? [urls] : []);
+    const clean = arr.filter(u => typeof u === 'string' && u.trim()).map(u => u.trim());
+
+    const doc = await SaveImageSchema.findOneAndUpdate(
+      { key },
+      {
+        $setOnInsert: { key },
+        ...(clean.length ? { $addToSet: { urls: { $each: clean } } } : {})
+      },
+      {
+        upsert: true,
+        new: true,
+        setDefaultsOnInsert: true,
+        runValidators: true
+      }
+    );
+    res.json({ message: 'Added', data: doc });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
+exports.getImageUrlToDbWithThereKey = async (req, res) => {
+  try {
+    const { key } = req.body;
+
+    let skip  = Number.parseInt(req.query.skip  ?? '0', 10);
+    let limit = Number.parseInt(req.query.limit ?? '100', 10);
+
+    if (!Number.isFinite(skip)  || skip  < 0)   skip  = 0;
+    if (!Number.isFinite(limit) || limit <= 0)  limit = 100;
+    if (limit > 200) limit = 200; // cap to prevent huge payloads
+
+    const doc = await SaveImageSchema.findOne(
+      { key },
+      { _id: 0, key: 1, urls: { $slice: [skip, limit] } } // $slice [skip, limit]
+    ).lean(); // return POJOs for speed
+
+    if (!doc) return res.status(404).json({ error: 'Key not found' });
+
+    const returned = Array.isArray(doc.urls) ? doc.urls.length : 0;
+    res.json({
+      key: doc.key,
+      urls: doc.urls ?? [],
+      nextSkip: skip + returned
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
