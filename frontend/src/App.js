@@ -300,11 +300,11 @@ function App() {
     setContinueEditPopup(false);
   };
   // set initial
-  useEffect(() => {
-    // if (location.pathname === "/") {
-    // }
-    navigate("design/product", { replace: true });
-  }, []);
+  // useEffect(() => {
+  // if (location.pathname === "/") {
+  // }
+  // navigate("design/product", { replace: true });
+  // }, []);
 
 
   return (

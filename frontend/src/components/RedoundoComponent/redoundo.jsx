@@ -8,6 +8,7 @@ import { useLocation } from "react-router-dom";
 import styles from './redoundo.module.css';
 import EditWithAipopup from "../PopupComponent/EditWithAipopup/EditWithAipopup";
 import DesignNotesPopup from "../PopupComponent/DesignNotesPopup/DesignNotesPopup";
+import ShareDesignPopup from "../PopupComponent/ShareDesignPopup/ShareDesignPopup";
 function RedoundoComponent() {
   const location = useLocation();
   const canUndo = useSelector(selectCanUndo);
@@ -64,6 +65,8 @@ function RedoundoComponent() {
       {/* <button onClick={() => setShow(true)}>Edit AI</button> */}
       {startOverPopup && <StartOverConfirmationPopup onCancel={closeStartOverPopup} />}
       {/* {show && <EditWithAipopup onClose={() => setShow(false)} />} */}
+      {/* {show && <ShareDesignPopup />} */}
+
 
 
     </>

@@ -200,19 +200,469 @@
 
 // export default Review
 
+// vvcode
+// import React, { useState, useEffect } from "react";
+// import styles from "./Review.module.css";
+// import { LuArrowLeft, LuArrowRight } from "react-icons/lu";
+// import { RxCross2 } from "react-icons/rx";
+// import { FaTshirt } from "react-icons/fa";
+// import { BiTargetLock } from "react-icons/bi";
+// import { IoIosColorPalette } from "react-icons/io";
+// import { useNavigate } from "react-router-dom";
+// import { useSelector } from "react-redux";
+// import { generateDesigns } from "../../components/Editor/utils/helper";
+// import { toast } from "react-toastify"; // Add react-toastify for user feedback
 
+// const randomDiscount = () => Math.floor(Math.random() * 21) + 15; // 15% to 35%
+
+// const Review = () => {
+//   const [discount, setDiscount] = useState(0);
+//   const [loading, setLoading] = useState(false);
+//   const [showPopup, setShowPopup] = useState(false);
+//   const navigate = useNavigate();
+//   const productState = useSelector((state) => state.productSelection.products);
+//   const designState = useSelector((state) => state.TextFrontendDesignSlice);
+//   const { present, DesignNotes } = designState;
+//   const BASE_URL = process.env.REACT_APP_BASE_URL || "https://simax-sports-x93p.vercel.app/api/";
+
+//   // Prepare design payload
+//   const designPayload = {
+//     ownerEmail: "testuser@example33.com", // Replace with actual user email
+//     design: {
+//       DesignName: "Demo T-Shirt 55555",
+//       present: {
+//         front: {
+//           texts: present.front.texts.map((text) => ({
+//             id: text.id,
+//             layerIndex: text.layerIndex,
+//             position: text.position,
+//             content: text.content,
+//             fontWeight: text.fontWeight,
+//             fontStyle: text.fontStyle,
+//             fontFamily: text.fontFamily,
+//             textColor: text.textColor,
+//           })),
+//           images: present.front.images.map((image) => ({
+//             id: image.id,
+//             layerIndex: image.layerIndex,
+//             position: image.position,
+//             src: image.src,
+//           })),
+//         },
+//         back: {
+//           texts: present.back.texts.map((text) => ({
+//             id: text.id,
+//             layerIndex: text.layerIndex,
+//             position: text.position,
+//             content: text.content,
+//             fontWeight: text.fontWeight,
+//             fontStyle: text.fontStyle,
+//             fontFamily: text.fontFamily,
+//             textColor: text.textColor,
+//           })),
+//           images: present.back.images.map((image) => ({
+//             id: image.id,
+//             layerIndex: image.layerIndex,
+//             position: image.position,
+//             src: image.src,
+//           })),
+//         },
+//         leftSleeve: {
+//           texts: present.leftSleeve.texts.map((text) => ({
+//             id: text.id,
+//             layerIndex: text.layerIndex,
+//             position: text.position,
+//             content: text.content,
+//             fontWeight: text.fontWeight,
+//             fontStyle: text.fontStyle,
+//             fontFamily: text.fontFamily,
+//             textColor: text.textColor,
+//           })),
+//           images: present.leftSleeve.images.map((image) => ({
+//             id: image.id,
+//             layerIndex: image.layerIndex,
+//             position: image.position,
+//             src: image.src,
+//           })),
+//         },
+//         rightSleeve: {
+//           texts: present.rightSleeve.texts.map((text) => ({
+//             id: text.id,
+//             layerIndex: text.layerIndex,
+//             position: text.position,
+//             content: text.content,
+//             fontWeight: text.fontWeight,
+//             fontStyle: text.fontStyle,
+//             fontFamily: text.fontFamily,
+//             textColor: text.textColor,
+//           })),
+//           images: present.rightSleeve.images.map((image) => ({
+//             id: image.id,
+//             layerIndex: image.layerIndex,
+//             position: image.position,
+//             src: image.src,
+//           })),
+//         },
+//       },
+//       FinalImages: [],
+//       DesignNotes: {
+//         FrontDesignNotes: DesignNotes.FrontDesignNotes || "",
+//         BackDesignNotes: DesignNotes.BackDesignNotes || "",
+//         ExtraInfo: DesignNotes.ExtraInfo || "",
+//       },
+//       status: "draft",
+//       version: 1,
+//     },
+//   };
+
+//   async function uploadBlobData(blobDataArray) {
+//     try {
+//       const formData = new FormData();
+//       blobDataArray = blobDataArray.slice(0, 4);
+//       // Append each blob as a file to the FormData
+//       blobDataArray.forEach((blob, index) => {
+//         // Append each Blob as a file to the FormData
+//         formData.append(`image_${index}`, blob, `image_${index}.png`);
+//       });
+
+//       // The URL of your backend API endpoint
+//       const apiUrl = `${process.env.REACT_APP_BASE_URL}imageOperation/fileBlobDataUploadToCloudinary`;
+
+//       // Send the data to the backend
+//       const response = await fetch(apiUrl, {
+//         method: 'POST',
+//         body: formData,
+//       });
+
+//       // Handle the response
+//       if (!response.ok) {
+//         throw new Error('Failed to upload images');
+//       }
+
+//       // Assuming the response is in JSON format
+//       const responseData = await response.json();
+//       console.log('Response from backend:', responseData);
+
+//       return responseData;
+//     } catch (e) {
+//       console.error("Error uploading blob data:", e);
+//       throw e;
+//     }
+//   }
+
+//   async function saveDesignFunction(payload) {
+//     try {
+//       // Check for existing design
+
+
+//       // Create new design if none exists
+//       const response = await fetch(`${BASE_URL}design/save-designfrontEnd`, {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify(payload),
+//       });
+
+//       if (!response.ok) {
+//         throw new Error(`Failed to save design: ${response.statusText}`);
+//       }
+
+//       const responseData = await response.json();
+//       console.log("Design saved successfully:", responseData);
+//       return responseData;
+//     } catch (error) {
+//       console.error("Error saving design:", error);
+//       throw error;
+//     }
+//   }
+
+//   const reviewItems = Object.entries(productState).map(([id, product]) => {
+//     // console.log("product udner entries", product)
+//     const sizes = Object.entries(product.selections).reduce((acc, [size, qty]) => {
+//       if (qty > 0) acc[size] = qty;
+//       return acc;
+//     }, {});
+//     console.log("productstate ", product)
+
+//     return {
+//       name: product?.name,
+//       color: product?.color,
+//       sizes,
+//       image: product?.imgurl,
+//       variantId: product?.variantId,
+//       allImages: [product?.allImages?.[0], product?.allImages?.[1], product?.allImages?.[2], product?.allImages?.[2]],
+//       allVariants: product?.allVariants,
+//       price: product?.price,
+//       sku: product?.sku,
+//       inventory_quantity: product?.inventory_quantity,
+//     };
+//   });
+
+
+
+//   console.log("reviewItems", reviewItems);
+
+//   useEffect(() => {
+//     setDiscount(randomDiscount());
+//   }, []);
+
+//   const totalItems = reviewItems.reduce((acc, item) => acc + Object.values(item.sizes).reduce((a, b) => a + b, 0), 0);
+//   const originalPrice = 30.36;
+//   const discountedPrice = (originalPrice * (1 - discount / 100)).toFixed(2);
+//   const totalPrice = (totalItems * discountedPrice).toFixed(2);
+//   const printAreaCount = useSelector((state) => {
+//     const present = state.TextFrontendDesignSlice.present;
+//     const areas = ["front", "back", "leftSleeve", "rightSleeve"];
+//     return areas.reduce((count, area) => {
+//       const hasContent = present[area].texts.length + present[area].images.length;
+//       return hasContent + count;
+//     }, 0);
+//   });
+
+//   const goBack = () => {
+//     navigate("/quantity")
+//   }
+//   const [url, setUrl] = useState("");
+//   const [backgroundImage, setBackgroundImage] = useState("");
+//   const [activeSide, setActiveSide] = useState("");
+//   // const [loading, setLoading] = useState(false); // Track loading state
+
+//   function base64toBlob(base64String, contentType = 'image/png') {
+//     // 1. Remove the data URI prefix (e.g., "data:image/png;base64,")
+//     if (!base64String) return;
+//     const base64WithoutPrefix = base64String.replace(/^data:image\/(png|jpeg|gif|webp|svg\+xml);base64,/, '');
+
+//     // 2. Decode Base64 to binary string
+//     // Use atob() for Base64 decoding
+//     const binaryString = atob(base64WithoutPrefix);
+
+//     // 3. Convert binary string to ArrayBuffer
+//     const len = binaryString.length;
+//     const bytes = new Uint8Array(len);
+//     for (let i = 0; i < len; i++) {
+//       bytes[i] = binaryString.charCodeAt(i);
+//     }
+
+//     // 4. Create a Blob from the ArrayBuffer
+//     return new Blob([bytes], { type: contentType });
+//   }
+
+//   function makeVariantDataForShopify(reviewItems, CloudinaryImages) {
+//     const data = reviewItems.map((product) => {
+//       if (product.variantId) {
+//         //it is a variant
+//         const obj = {
+//           "product_id": product?.variantId,
+//           "option1": "S",
+//           "option2": product?.color,
+//           "price": product?.price,
+//           "sku": "B665D8502",
+//           "inventory_quantity": product?.inventory_quantity,
+//           "image_urls": ["https://simaxdesigns.imgix.net/uploads/1753094129600_front-design.png"]
+//         }
+//         const sizeskey = Object.keys(product?.sizes);
+//         const color = product?.color;
+//         const variantTitles = sizeskey.map((size) => {
+//           return `${color} / ${size}`;
+//         })
+//         console.log(variantTitles);
+//       }
+//       else {
+//         // is it a product
+//         const sizeskey = Object.keys(product?.sizes);
+//         const color = product?.color;
+//         const variantTitles = sizeskey.map((size) => {
+//           return `${color} / ${size}`;
+//         })
+//         console.log(variantTitles);
+
+//       }
+//     })
+//   }
+
+//   const cartHandler = async () => {
+//     setLoading(true);
+//     try {
+//       const allFrontImagesElement = present.front.images;
+//       const allBackImagesElement = present.back.images;
+//       const allLeftImagesElement = present.leftSleeve.images;
+//       const allRightImagesElement = present.rightSleeve.images;
+
+//       const allFrontTextElement = present.front.texts;
+//       const allBackTextElement = present.back.texts;
+//       const allLeftTextElement = present.leftSleeve.texts;
+//       const allRightTextElement = present.rightSleeve.texts;
+
+
+//       // Prepare an array of promises for each design generation task
+//       const designPromises = reviewItems.map(async (item, index) => {
+//         const frontBackground = item.allImages[0];
+//         const backBackground = item.allImages[1];
+//         const leftBackgroud = item.allImages[2];
+
+//         // Generate front design
+//         const frontDesignImages = await generateDesigns(
+//           [frontBackground], // backgrounds expects an array
+//           allFrontTextElement, // texts expects an array of arrays, so wrap current index
+//           allFrontImagesElement // images expects an array of arrays, so wrap current index
+//         );
+
+//         // Generate back design
+//         const backDesignImages = await generateDesigns(
+//           [backBackground], // backgrounds expects an array
+//           allBackTextElement, // texts expects an array of arrays, so wrap current index
+//           allBackImagesElement // images expects an array of arrays, so wrap current index
+//         );
+//         // Generate left design
+//         // const leftDesignImages = await generateDesigns(
+//         //   [leftBackgroud], // backgrounds expects an array
+//         //   allLeftTextElement, // texts expects an array of arrays, so wrap current index
+//         //   allLeftImagesElement // images expects an array of arrays, so wrap current index
+//         // );
+
+//         return {
+//           front: frontDesignImages[0], // generateDesigns returns an array, take the first element
+//           back: backDesignImages[0],
+//           // left: leftDesignImages[0],
+//         };
+//       });
+
+//       // Wait for all design generation promises to resolve
+//       const results = await Promise.all(designPromises);
+//       console.log('All Generated Designs:', results,);
+//       console.log('All Generated Designs:', results);
+
+//       const blobData = results.reduce((arr, item) => {
+//         arr.push(base64toBlob(item.front, 'image/png'));
+//         arr.push(base64toBlob(item.back, 'image/png'));
+//         // arr.push(base64toBlob(item.left, 'image/png'));
+//         return arr;
+//       }, []);
+
+//       console.log("blobData:", blobData);
+//       const cloudinaryResponse = await uploadBlobData(blobData);
+//       console.log("Cloudinary Response:", cloudinaryResponse);
+
+//       designPayload.design.FinalImages = cloudinaryResponse?.files?.map((url) => url) || [];
+//       await saveDesignFunction(designPayload);
+
+//       const variantData = makeVariantDataForShopify(reviewItems, cloudinaryResponse);
+//       // Optionally dispatch variantData or send to Shopify API
+//       toast.success("Design saved and variants prepared successfully!");
+//     } catch (error) {
+//       console.error("Error in cartHandler:", error);
+//       toast.error("Failed to save design or prepare variants.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className={styles.container}>
+//       <div className={styles.header}>
+//         {/* <span className={styles.reviewOrder}>REVIEW YOUR ORDER</span>
+//         <h5 className='Toolbar-badge'>Review Your Order</h5> */}
+//         <div className='toolbar-main-heading'>
+//           <h5 className='Toolbar-badge'>Review Your Order</h5>
+//         </div>
+//         <div className={styles.titleRow}>
+//           <div className={styles.arrow} onClick={goBack}><LuArrowLeft /></div>
+//           <h3>Your Products & Pricing</h3>
+//           <div className={styles.close} onClick={() => navigate("/design/product")}>
+//             <RxCross2 />
+//           </div>
+//         </div>
+//         <hr />
+//       </div>
+//       {/* <h3>Your Products & Pricing</h3> */}
+//       <div className={styles.priceInfo}>
+//         <p>
+//           <span className={styles.strike}>${originalPrice}</span>
+//           <span className={styles.discounted}> ${discountedPrice} each</span>
+//         </p>
+//         <p>
+//           <span className={styles.strikeSmall}>${(originalPrice * totalItems).toFixed(2)}</span>
+//           <span className={`${styles.total}`}> <span className={styles.dollarText}>${totalPrice}</span> total with {discount}% off Bulk Discount</span>
+
+
+//         </p>
+//         <div className={styles.metaInfo}>
+//           <div><FaTshirt /> {totalItems} items</div>
+//           <div><BiTargetLock /> {printAreaCount} print area</div>
+//           <div><IoIosColorPalette /> 1 color</div>
+//           {/* <div>✅ 100% Satisfaction Guarantee</div> */}
+//         </div></div>
+
+//       <p className={styles.bulkDeal}>
+//         <b>Buy More & Save:</b> 21 items for<span className={styles.dollarText}>$17.95</span>  ea. <span>|</span> 25 items for <span className={styles.dollarText}>$16.983</span> ea.
+//       </p>
+
+//       <div className={styles.summaryBlock}>
+//         <p className={styles.summaryTitle}>Summary <span>({totalItems} items)</span></p>
+//         {reviewItems.map((item, idx) => (
+//           <div key={idx} className={styles.summaryItem}>
+//             <img src={item.image} alt={item.name} />
+//             <div className={styles.itemDetails}>
+//               <div className={styles.itemHeader}>
+//                 <p className={styles.itemName}>{item.name}</p>
+//                 <p className={styles.itemPrice}>${discountedPrice} <span>each</span></p>
+//               </div>
+//               <p className={styles.itemSubtitle}>{item.color} | {totalItems} Items</p>
+//               <div className={styles.sizes}>
+//                 {Object.entries(item.sizes).map(([size, count]) => (
+//                   <button key={size}>{size}-{count}</button>
+//                 ))}
+//                 <span className={styles.edit} onClick={goBack}>Edit sizes</span>
+//               </div>
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+
+//       <div className={styles.extraFees}>
+//         <p>Collegiate License <span>$39.44</span></p>
+//       </div>
+
+//       <button className={styles.addToCart} onClick={cartHandler} disabled={loading} > {loading ? "Processing..." : "ADD TO CART"} <LuArrowRight /> </button>
+//       {/* <p className={styles.payment}>or 4 interest free payments of ~${(totalPrice / 4).toFixed(2)} with</p>
+//       <div className={styles.paymentIcons}>
+//         <span>afterpay</span><span>Kl arna.</span><span>sezzle</span><span>affirm</span>
+//       </div> */}
+
+//       <div className={styles.review}>
+//         <img src="https://www.ninjaprinthouse.com/design/images/chelsea.png" alt="Reviewer" />
+//         <div>
+//           <blockquote>
+//             "This company is amazing! Shipping is super fast and they are competitively priced. We will absolutely use them again."
+//           </blockquote>
+//           <p><strong>Chelsea E.</strong> Ordered 35 pieces</p>
+//         </div>
+//       </div>
+
+
+//       <div class="canvas-wrapper" style={{ position: "relative", top: 5, display: "none" }} >
+//         <canvas id="canvas-export" style={{ display: "none" }} />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Review;
+// ninjaaa flowwww
 import React, { useState, useEffect } from "react";
 import styles from "./Review.module.css";
-import { LuArrowLeft } from "react-icons/lu";
+import { LuArrowLeft, LuArrowRight } from "react-icons/lu";
 import { RxCross2 } from "react-icons/rx";
 import { FaTshirt } from "react-icons/fa";
 import { BiTargetLock } from "react-icons/bi";
 import { IoIosColorPalette } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { LuArrowRight } from "react-icons/lu";
-import ExportTool from "../../components/Editor/ExportTool";
 import { generateDesigns } from "../../components/Editor/utils/helper";
+import { toast } from "react-toastify";
+import AddToCartPopup from "../../components/PopupComponent/AddToCartPopup/AddToCartPopup";
+// const randomDiscount = () => Math.floor(Math.random() * 21) + 15;
 import { apiConnecter } from "../../components/utils/apiConnector";
 import BlankProductWarning from "./BlankProductWarning";
 import SaveDesignModal from "./SaveDesignModal";
@@ -227,8 +677,102 @@ const randomDiscount = () => Math.floor(Math.random() * 21) + 15; // 15% to 35%
 
 const Review = () => {
   const [discount, setDiscount] = useState(0);
+  // const [loading, setLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
   const productState = useSelector((state) => state.productSelection.products);
+  const designState = useSelector((state) => state.TextFrontendDesignSlice);
+  const { present, DesignNotes } = designState;
+  const BASE_URL = process.env.REACT_APP_BASE_URL || "https://simax-sports-x93p.vercel.app/api/";
+
+  const designPayload = {
+    ownerEmail: "testuser@example33.com",
+    design: {
+      DesignName: "Demo T-Shirt 55555",
+      present: {
+        front: {
+          texts: present.front.texts.map((text) => ({
+            id: text.id,
+            layerIndex: text.layerIndex,
+            position: text.position,
+            content: text.content,
+            fontWeight: text.fontWeight,
+            fontStyle: text.fontStyle,
+            fontFamily: text.fontFamily,
+            textColor: text.textColor,
+          })),
+          images: present.front.images.map((image) => ({
+            id: image.id,
+            layerIndex: image.layerIndex,
+            position: image.position,
+            src: image.src,
+          })),
+        },
+        back: {
+          texts: present.back.texts.map((text) => ({
+            id: text.id,
+            layerIndex: text.layerIndex,
+            position: text.position,
+            content: text.content,
+            fontWeight: text.fontWeight,
+            fontStyle: text.fontStyle,
+            fontFamily: text.fontFamily,
+            textColor: text.textColor,
+          })),
+          images: present.back.images.map((image) => ({
+            id: image.id,
+            layerIndex: image.layerIndex,
+            position: image.position,
+            src: image.src,
+          })),
+        },
+        leftSleeve: {
+          texts: present.leftSleeve.texts.map((text) => ({
+            id: text.id,
+            layerIndex: text.layerIndex,
+            position: text.position,
+            content: text.content,
+            fontWeight: text.fontWeight,
+            fontStyle: text.fontStyle,
+            fontFamily: text.fontFamily,
+            textColor: text.textColor,
+          })),
+          images: present.leftSleeve.images.map((image) => ({
+            id: image.id,
+            layerIndex: image.layerIndex,
+            position: image.position,
+            src: image.src,
+          })),
+        },
+        rightSleeve: {
+          texts: present.rightSleeve.texts.map((text) => ({
+            id: text.id,
+            layerIndex: text.layerIndex,
+            position: text.position,
+            content: text.content,
+            fontWeight: text.fontWeight,
+            fontStyle: text.fontStyle,
+            fontFamily: text.fontFamily,
+            textColor: text.textColor,
+          })),
+          images: present.rightSleeve.images.map((image) => ({
+            id: image.id,
+            layerIndex: image.layerIndex,
+            position: image.position,
+            src: image.src,
+          })),
+        },
+      },
+      FinalImages: [],
+      DesignNotes: {
+        FrontDesignNotes: DesignNotes.FrontDesignNotes || "",
+        BackDesignNotes: DesignNotes.BackDesignNotes || "",
+        ExtraInfo: DesignNotes.ExtraInfo || "",
+      },
+      status: "draft",
+      version: 1,
+    },
+  };
   const design = useSelector((state) => state.TextFrontendDesignSlice.present);
   const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice);
   const [loading, setLoading] = useState(false)
@@ -241,36 +785,52 @@ const Review = () => {
       blobDataArray = blobDataArray.slice(0, 6);
       // Append each blob as a file to the FormData
       blobDataArray.forEach((blob, index) => {
-        // Append each Blob as a file to the FormData
         formData.append(`image_${index}`, blob, `image_${index}.png`);
       });
 
-      // The URL of your backend API endpoint
       const apiUrl = `${process.env.REACT_APP_BASE_URL}imageOperation/fileBlobDataUploadToCloudinary`;
 
-      // Send the data to the backend
       const response = await fetch(apiUrl, {
         method: 'POST',
         body: formData,
       });
 
-      // Handle the response
       if (!response.ok) {
         throw new Error('Failed to upload images');
       }
 
-      // Assuming the response is in JSON format
       const responseData = await response.json();
       console.log('Response from backend:', responseData);
       localStorage.setItem("data", JSON.stringify(responseData));
       return responseData;
     } catch (e) {
-      console.log('Error while uploading Blob data:', e);
+      console.error("Error uploading blob data:", e);
+      throw e;
     }
   }
 
+  async function saveDesignFunction(payload) {
+    try {
+      const response = await fetch(`${BASE_URL}design/save-designfrontEnd`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
+      if (!response.ok) {
+        throw new Error(`Failed to save design: ${response.statusText}`);
+      }
 
+      const responseData = await response.json();
+      console.log("Design saved successfully:", responseData);
+      return responseData;
+    } catch (error) {
+      console.error("Error saving design:", error);
+      throw error;
+    }
+  }
 
   const reviewItems = Object.entries(productState).map(([id, product]) => {
     console.log("product udner entries", product)
@@ -278,23 +838,21 @@ const Review = () => {
       if (qty > 0) acc[size] = qty;
       return acc;
     }, {});
-    console.log("productstate ", product)
+    console.log("productstate ", product);
 
     return {
       name: product?.name,
       color: product?.color,
-      sizes, // { S: 2, M: 3, ... }
+      sizes,
       image: product?.imgurl,
       variantId: product?.variantId,
-      allImages: [product?.allImages?.[0], product.allImages?.[1], product.allImages?.[2], product.allImages?.[2]],
+      allImages: [product?.allImages?.[0], product?.allImages?.[1], product?.allImages?.[2], product?.allImages?.[2]],
       allVariants: product?.allVariants,
       price: product?.price,
       sku: product?.sku,
-      inventory_quantity: product?.inventory_quantity
+      inventory_quantity: product?.inventory_quantity,
     };
   });
-
-
 
   console.log("reviewItems", reviewItems);
 
@@ -346,29 +904,22 @@ const Review = () => {
   };
 
   const goBack = () => {
-    navigate("/quantity")
-  }
+    navigate("/quantity");
+  };
+
   const [url, setUrl] = useState("");
   const [backgroundImage, setBackgroundImage] = useState("");
   const [activeSide, setActiveSide] = useState("");
 
   function base64toBlob(base64String, contentType = 'image/png') {
-    // 1. Remove the data URI prefix (e.g., "data:image/png;base64,")
     if (!base64String) return;
     const base64WithoutPrefix = base64String.replace(/^data:image\/(png|jpeg|gif|webp|svg\+xml);base64,/, '');
-
-    // 2. Decode Base64 to binary string
-    // Use atob() for Base64 decoding
     const binaryString = atob(base64WithoutPrefix);
-
-    // 3. Convert binary string to ArrayBuffer
     const len = binaryString.length;
     const bytes = new Uint8Array(len);
     for (let i = 0; i < len; i++) {
       bytes[i] = binaryString.charCodeAt(i);
     }
-
-    // 4. Create a Blob from the ArrayBuffer
     return new Blob([bytes], { type: contentType });
   }
 
@@ -457,78 +1008,73 @@ const Review = () => {
     }
   }
 
-  const cartHandler = async () => {
+  const cartHandler = () => {
+    setShowPopup(true);
+  };
+
+  const handleSaveDesign = async (designName) => {
+    setLoading(true);
+    setShowPopup(false);
     try {
-      // const allFrontImages = reviewItems.reduce((arr, item) => { arr.push(item.allImages[0]); return arr }, []);
-      // const allBackImages = reviewItems.reduce((arr, item) => { arr.push(item.allImages[1]); return arr }, []);
+      designPayload.design.DesignName = designName;
 
-      const allFrontImagesElement = design.front.images;
-      const allBackImagesElement = design.back.images;
-      const allLeftImagesElement = design.leftSleeve.images;
-      const allRightImagesElement = design.rightSleeve.images;
+      const allFrontImagesElement = present.front.images;
+      const allBackImagesElement = present.back.images;
+      const allLeftImagesElement = present.leftSleeve.images;
+      const allRightImagesElement = present.rightSleeve.images;
 
-      const allFrontTextElement = design.front.texts;
-      const allBackTextElement = design.back.texts;
-      const allLeftTextElement = design.leftSleeve.texts;
-      const allRightTextElement = design.rightSleeve.texts;
+      const allFrontTextElement = present.front.texts;
+      const allBackTextElement = present.back.texts;
+      const allLeftTextElement = present.leftSleeve.texts;
+      const allRightTextElement = present.rightSleeve.texts;
 
-
-      // Prepare an array of promises for each design generation task
       const designPromises = reviewItems.map(async (item, index) => {
         const frontBackground = item.allImages[0];
         const backBackground = item.allImages[1];
-        const leftBackgroud = item.allImages[2];
+        const leftBackground = item.allImages[2];
 
-        // Generate front design
         const frontDesignImages = await generateDesigns(
-          [frontBackground], // backgrounds expects an array
-          allFrontTextElement, // texts expects an array of arrays, so wrap current index
-          allFrontImagesElement // images expects an array of arrays, so wrap current index
+          [frontBackground],
+          allFrontTextElement,
+          allFrontImagesElement
         );
 
-        // Generate back design
         const backDesignImages = await generateDesigns(
-          [backBackground], // backgrounds expects an array
-          allBackTextElement, // texts expects an array of arrays, so wrap current index
-          allBackImagesElement // images expects an array of arrays, so wrap current index
+          [backBackground],
+          allBackTextElement,
+          allBackImagesElement
         );
-        // Generate left design
-        // const leftDesignImages = await generateDesigns(
-        //   [leftBackgroud], // backgrounds expects an array
-        //   allLeftTextElement, // texts expects an array of arrays, so wrap current index
-        //   allLeftImagesElement // images expects an array of arrays, so wrap current index
-        // );
 
         return {
-          front: frontDesignImages[0], // generateDesigns returns an array, take the first element
+          front: frontDesignImages[0],
           back: backDesignImages[0],
-          // left: leftDesignImages[0],
         };
       });
 
-      // Wait for all design generation promises to resolve
       const results = await Promise.all(designPromises);
-      console.log('All Generated Designs:', results,);
       console.log('All Generated Designs:', results);
 
       const blobData = results.reduce((arr, item) => {
         arr.push(base64toBlob(item.front, 'image/png'));
         arr.push(base64toBlob(item.back, 'image/png'));
-        // arr.push(base64toBlob(item.left, 'image/png'));
         return arr;
-      }, [])
-      console.log("blobdata", blobData);
-      const CloudinaryImages = await uploadBlobData(blobData);
-      console.log('All Generated Designs:', CloudinaryImages);
-      makeVariantDataForShopify(reviewItems, CloudinaryImages);
-      // setGeneratedDesignImages(results);
+      }, []);
 
+      console.log("blobData:", blobData);
+      const cloudinaryResponse = await uploadBlobData(blobData);
+      console.log("Cloudinary Response:", cloudinaryResponse);
+
+      designPayload.design.FinalImages = cloudinaryResponse?.files?.map((url) => url) || [];
+      await saveDesignFunction(designPayload);
+
+      const variantData = makeVariantDataForShopify(reviewItems, cloudinaryResponse);
+      toast.success("Design saved and variants prepared successfully!");
     } catch (error) {
-      console.error('Overall Error generating designs:', error);
+      console.error("Error in cartHandler:", error);
+      toast.error("Failed to save design or prepare variants.");
     } finally {
-      // setLoadingDesigns(false);
+      setLoading(false);
     }
-
   };
 
   const shouldShowBlankProductWarning = (design) => {
@@ -561,15 +1107,15 @@ const Review = () => {
     <div className={styles.container}>
       <SaveDesignModal></SaveDesignModal>
       <div className={styles.header}>
-        {/* <span className={styles.reviewOrder}>REVIEW YOUR ORDER</span>
-        <h5 className='Toolbar-badge'>Review Your Order</h5> */}
         <div className='toolbar-main-heading'>
           <h5 className='Toolbar-badge'>Review Your Order</h5>
         </div>
         <div className={styles.titleRow}>
           <div className={styles.arrow} onClick={goBack}><LuArrowLeft /></div>
           <h3>Your Products & Pricing</h3>
-          <div className={styles.close} onClick={() => navigate("/design/product")}><RxCross2></RxCross2></div >
+          <div className={styles.close} onClick={() => navigate("/design/product")}>
+            <RxCross2 />
+          </div>
         </div>
         <hr />
       </div>
@@ -648,7 +1194,7 @@ const Review = () => {
         </div>
       </div>
 
-
+      {showPopup && <AddToCartPopup onSave={handleSaveDesign} onClose={() => setShowPopup(false)} />}
       <div class="canvas-wrapper" style={{ position: "relative", top: 5, display: "none" }} >
         <canvas id="canvas-export" style={{ display: "none" }} />
       </div>

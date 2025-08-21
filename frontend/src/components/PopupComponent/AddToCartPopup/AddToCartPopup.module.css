@@ -1,0 +1,169 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 15px;
+    /* small padding to avoid edge clipping */
+}
+
+.popup {
+    background: #fff;
+    padding: 35px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    /* responsive width */
+    text-align: center;
+    position: relative;
+}
+
+.closeButton {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    border: none;
+    background: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #999;
+}
+
+.header {
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--blue-color);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.title {
+    font-size: 22px;
+    margin: 0 0 8px;
+    color: #333;
+}
+
+.subText {
+    font-size: 14px;
+    color: #666;
+    margin: 10px 0;
+}
+
+.loggedIn {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+.input {
+    width: 100%;
+    padding: 10px;
+    margin: 12px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+}
+
+.input:focus {
+    outline: none;
+}
+
+.charLimit {
+    font-size: 12px;
+    color: #999;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.saveButton {
+    background-color: var(--blue-color);
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 14px;
+    font-weight: bold;
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.saveButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.saveButton:hover:not(:disabled) {
+    background-color: var(--blue-color);
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.saveButton:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.privacy {
+    font-size: 12px;
+    color: #999;
+    margin-top: 15px;
+}
+
+.link {
+    color: var(--blue-color);
+    cursor: pointer;
+}
+
+/* 📱 Responsive styles */
+@media (max-width: 768px) {
+    .popup {
+        padding: 25px;
+    }
+
+    .title {
+        font-size: 20px;
+    }
+
+    .subText {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .popup {
+        padding: 20px;
+        max-width: 90%;
+        /* shrink to fit small screens */
+    }
+
+    .header {
+        font-size: 13px;
+    }
+
+    .title {
+        font-size: 18px;
+    }
+
+    .subText,
+    .loggedIn {
+        font-size: 12px;
+    }
+
+    .saveButton {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .privacy {
+        font-size: 11px;
+    }
+}

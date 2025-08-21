@@ -346,10 +346,11 @@ const AddImageToolbar = () => {
     const currentAvg = (scaleX + scaleY) / 2;
 
     const scaleRatio = parsed / currentAvg;
-
+    globalDispatch("loadingText", true);
     globalDispatch("scaleX", scaleX * scaleRatio);
     globalDispatch("scaleY", scaleY * scaleRatio);
     globalDispatch("scaledValue", parsed);
+    globalDispatch("loadingText", true);
     setResetDefault(false);
   };
 
@@ -359,9 +360,12 @@ const AddImageToolbar = () => {
     const parsed = parseFloat(rangeValuesSize);
     if (isNaN(parsed) || parsed < 0.2 || parsed > 10) {
       setRangeValuesSize("1");
+      globalDispatch("loadingText", true);
+
       globalDispatch("scaleX", 1);
       globalDispatch("scaleY", 1);
       globalDispatch("scaledValue", 1);
+      globalDispatch("loadingText", false);
     }
     setResetDefault(false);
   };
@@ -374,8 +378,9 @@ const AddImageToolbar = () => {
 
     const parsed = parseFloat(rawValue);
     if (isNaN(parsed) || parsed < 0 || parsed > 360) return;
-
+    globalDispatch("loadingText", true);
     globalDispatch("angle", parsed);
+    globalDispatch("loadingText", false);
     setResetDefault(false);
   };
 
@@ -384,13 +389,17 @@ const AddImageToolbar = () => {
     const parsed = parseFloat(rangeValuesRotate);
     if (isNaN(parsed) || parsed < 0 || parsed > 360) {
       setRangeValuesRotate("0");
+      globalDispatch("loadingText", true);
       globalDispatch("angle", 0);
+      globalDispatch("loadingText", false);
     }
     setResetDefault(false);
   };
   const handleDuplicateImage = () => {
     if (!selectedImageId) return;
+    globalDispatch("loadingText", true);
     dispatch(duplicateImageState(selectedImageId));
+    globalDispatch("loadingText", false);
   };
 
 
@@ -531,7 +540,9 @@ const AddImageToolbar = () => {
   const callForXFlip = () => {
     const value = !(img.flipX);
     setflipXValue(value);
+    globalDispatch("loadingText", true);
     globalDispatch("flipX", value);
+    globalDispatch("loadingText", false);
     // console.log("clicked", value);
     setResetDefault(false);
   }
@@ -541,7 +552,12 @@ const AddImageToolbar = () => {
     const value = !(img.flipY);
     setflipYValue(value);
     //console.log("y value ", value);
+    globalDispatch("loadingText", true);
+
+
     globalDispatch("flipY", value);
+    globalDispatch("loadingText", false);
+
     setResetDefault(false);
   }
 
@@ -1692,7 +1708,11 @@ const AddImageToolbar = () => {
                         const rect = canvasComponent.getBoundingClientRect();
                         const centerX = rect.width / 2;
                         const centerY = rect.height / 2;
+                        globalDispatch("loadingText", true);
+
                         globalDispatch("position", { x: centerX, y: img.position.y });
+                        globalDispatch("loadingText", false);
+
                         setCenterActive(!centerActive);
                         setResetDefault(false);
                       }}
