@@ -89,6 +89,7 @@ const createNewImage = (
   editColor: false,
   extractedColors: [],
   removeBgImagebtn: false,
+  loadingText: false
 });
 
 const initialState = {
@@ -210,7 +211,12 @@ const initialState = {
     back: {},
     leftSleeve: {},
     rightSleeve: {},
-  }
+  },
+  DesignNotes: {
+    FrontDesignNotes: "",
+    BackDesignNotes: "",
+    ExtraInfo: ""
+  },
 };
 
 const TextFrontendDesignSlice = createSlice({
@@ -444,23 +450,28 @@ const TextFrontendDesignSlice = createSlice({
     undo: (state) => {
       const side = state.activeSide;
       if (state.past[side].length === 0) return;
-      console.log("past state", (JSON.parse(JSON.stringify(state.past[side]))));
 
       console.log("↩️ [undo] Triggered for side:", side);
 
-      // Take snapshot of current state → push to future
+      // Save current state → future
       state.future[side].unshift(
         JSON.parse(JSON.stringify(state.present[side]))
       );
 
-      // Restore last snapshot from past
-      const previous = state.past[side].pop();
-      state.present[side] = previous;
+      // Peek at last snapshot
+      const lastSnapshot = state.past[side][state.past[side].length - 1];
 
-      // ❌ REMOVE this line (causes infinite toggling)
-      // state.present[side].setRendering = !state.present[side].setRendering;
+      if (lastSnapshot?.__type === "image" && state.past[side].length > 1) {
+        // Pop twice if last change was an image
+        state.past[side].pop();
+        state.present[side] = state.past[side].pop();
+        console.log("🖼️ [undo] Double-pop for image change");
+      } else {
+        // Normal undo
+        state.present[side] = state.past[side].pop();
+      }
 
-      // ✅ Instead, explicitly force a re-render by flipping a new "version" counter
+      // Force re-render
       if (!state.present[side].renderVersion) {
         state.present[side].renderVersion = 0;
       }
@@ -469,10 +480,22 @@ const TextFrontendDesignSlice = createSlice({
     },
 
 
+
     redo: (state) => {
       const side = state.activeSide;
       if (state.future[side].length === 0) return;
       const next = state.future[side].shift();
+      const canvasComponent = document.querySelector(`#canvas-${side}`);
+      const canvas = canvasComponent?.fabric; // or however you store your Fabric instance
+      console.log(canvas);
+
+      if (canvas) {
+        const activeObject = canvas.getActiveObject();
+        if (activeObject) {
+          console.log("Active object:", activeObject);
+          console.log("Type:", activeObject.type); // 'image', 'text', 'rect', etc.
+        }
+      }
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       state.present[side] = next;
       state.present[side].setRendering = !state.present[side].setRendering;
@@ -580,7 +603,7 @@ const TextFrontendDesignSlice = createSlice({
     },
     setAddName: (state, action) => {
       const side = state.activeSide;
-      state.present[side].addName = action.payload;
+      // state.present[side].addName = action.payload;
       const canvasComponent = document.querySelector(`#canvas-${side}`); // Simple way, but ideally use refs or context
       const rect = canvasComponent.getBoundingClientRect();
       const centerX = rect.width / 2;
@@ -605,7 +628,7 @@ const TextFrontendDesignSlice = createSlice({
     updateNameAndNumberDesignState: (state, action) => {
       const { changes } = action.payload;
       const side = "back";
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+      // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
       if (state?.nameAndNumberDesignState) {
         Object.assign(state?.nameAndNumberDesignState, changes);
@@ -793,7 +816,10 @@ const TextFrontendDesignSlice = createSlice({
       const last = JSON.stringify(state.past[side][state.past[side].length - 1]);
 
       if (snapshot !== last) {
-        state.past[side].push(JSON.parse(snapshot));
+        const parsed = JSON.parse(snapshot);
+        parsed.__type = "image"; // tag it
+        state.past[side].push(parsed);
+        // state.past[side].push(JSON.parse(snapshot));
       }
 
 
@@ -817,6 +843,7 @@ const TextFrontendDesignSlice = createSlice({
 
       state.present[side].selectedImageId = newImage.id;
       state.present[side].images.push(newImage);
+
       console.log("🖼️ [addImageState] New image added:", newImage);
 
       state.future[side] = [];
@@ -824,19 +851,73 @@ const TextFrontendDesignSlice = createSlice({
     },
 
     // ---neww
+    // updateImageState: (state, action) => {
+    //   const { id, changes, side = state.activeSide, isRenderOrNot } = action.payload;
+    //   const image = state.present[side]?.images?.find(img => img.id === id);
+    //   if (!image || image.locked) return;
+
+
+
+    //   if (changes?.loading || changes?.loadingText) {
+    //     console.log("data temp store..", changes);
+    //     console.log("we are storing present data to past when laoding true ", JSON.parse(JSON.stringify(state.present[side])))
+    //     state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    //   }
+    //   // Buffer changes until operation is done
+
+    //   if (!state.imageChangeBuffer[side][id]) {
+    //     state.imageChangeBuffer[side][id] = [];
+    //   }
+    //   state.imageChangeBuffer[side][id].push(changes);
+
+    //   // Apply changes immediately so UI updates
+    //   Object.assign(image, changes);
+
+    //   // ✅ Only commit snapshot when loading:false
+    //   if (changes.loading === false || changes.loadingText === false) {
+    //     const combined = state.imageChangeBuffer[side][id].reduce(
+    //       (acc, curr) => ({ ...acc, ...curr, loading: false }),
+    //       {}
+    //     );
+    //     // Save history
+    //     console.log("we are storing present data to past when laoding false ", JSON.parse(JSON.stringify(state.present[side])))
+    //     // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    //     const snapshot = JSON.stringify(state.present[side]);
+    //     const last = state.past[side].length
+    //       ? JSON.stringify(state.past[side][state.past[side].length - 1])
+    //       : null;
+
+    //     if (snapshot !== last) {
+    //       state.past[side].push(JSON.parse(snapshot));
+    //     }
+
+    //     Object.assign(image, combined);
+
+    //     // cleanup
+    //     delete state.imageChangeBuffer[side][id];
+    //     state.future[side] = [];
+    //   }
+
+    //   // skip undo history if rendering-only
+    //   if (isRenderOrNot) {
+    //     if (!state.present[side].renderVersion) state.present[side].renderVersion = 0;
+    //     state.present[side].renderVersion++;
+    //   }
+    // },
     updateImageState: (state, action) => {
       const { id, changes, side = state.activeSide, isRenderOrNot } = action.payload;
       const image = state.present[side]?.images?.find(img => img.id === id);
       if (!image || image.locked) return;
 
-      console.log("changes..", changes);
-
-      if (changes?.loading) {
-        console.log("we are storing present data to past when laoding true ", JSON.parse(JSON.stringify(state.present[side])))
-        state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+      if (changes?.loading || changes?.loadingText) {
+        console.log("data temp store..", changes);
+        console.log("we are storing present data to past when laoding true ", JSON.parse(JSON.stringify(state.present[side])));
+        const snap = JSON.parse(JSON.stringify(state.present[side]));
+        snap.__type = "image"; // 🏷️ tag snapshot
+        state.past[side].push(snap);
       }
-      // Buffer changes until operation is done
 
+      // Buffer changes until operation is done
       if (!state.imageChangeBuffer[side][id]) {
         state.imageChangeBuffer[side][id] = [];
       }
@@ -846,14 +927,25 @@ const TextFrontendDesignSlice = createSlice({
       Object.assign(image, changes);
 
       // ✅ Only commit snapshot when loading:false
-      if (changes.loading === false) {
+      if (changes.loading === false || changes.loadingText === false) {
         const combined = state.imageChangeBuffer[side][id].reduce(
           (acc, curr) => ({ ...acc, ...curr, loading: false }),
           {}
         );
         // Save history
-        console.log("we are storing present data to past when laoding false ", JSON.parse(JSON.stringify(state.present[side])))
-        state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+        console.log("we are storing present data to past when laoding false ", JSON.parse(JSON.stringify(state.present[side])));
+
+        const snapshot = JSON.stringify(state.present[side]);
+        const last = state.past[side].length
+          ? JSON.stringify(state.past[side][state.past[side].length - 1])
+          : null;
+
+        if (snapshot !== last) {
+          const snap = JSON.parse(snapshot);
+          snap.__type = "image"; // 🏷️ tag snapshot
+          state.past[side].push(snap);
+        }
+
         Object.assign(image, combined);
 
         // cleanup
@@ -867,6 +959,7 @@ const TextFrontendDesignSlice = createSlice({
         state.present[side].renderVersion++;
       }
     },
+
 
 
 
@@ -1266,7 +1359,13 @@ const TextFrontendDesignSlice = createSlice({
           present: state.present,
         });
       }
-    }
+    },
+    setDesignNotes: (state, action) => {
+      const { key, value } = action.payload;
+      if (state.DesignNotes.hasOwnProperty(key)) {
+        state.DesignNotes[key] = value;
+      }
+    },
 
 
   },
@@ -1274,6 +1373,7 @@ const TextFrontendDesignSlice = createSlice({
 
 // ✅ Export Actions
 export const {
+  setDesignNotes,
   moveElementToLowest,
   moveElementToTopmost,
   moveElementBackwardState,

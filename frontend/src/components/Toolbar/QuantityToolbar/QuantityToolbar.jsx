@@ -47,7 +47,7 @@ const QuantityToolbar = () => {
   }, [productState])
 
   useEffect(() => {
-    if (!selectedProducts || selectedProducts.length === 0) return;
+    if (!selectedProducts || selectedProducts?.length === 0) return;
 
     const newAllProducts = [];
     function getVariantImagesFromMetafields(metafieldss) {
@@ -82,16 +82,16 @@ const QuantityToolbar = () => {
 
     function getSizeCountFromNameNumberState(id) {
       // selections[size] = quantity;
-      const sizeCount = nameAndNumberProductList.find((product) => product.id == id).sizeCount;
+      const sizeCount = nameAndNumberProductList?.find((product) => product.id == id).sizeCount;
       return sizeCount;
     }
 
-    selectedProducts.forEach((product) => {
+    selectedProducts?.forEach((product) => {
       console.log("product.............", product)
-      const addedColors = product.addedColors || [];
+      const addedColors = product?.addedColors || [];
       const consistentTitle = product?.title || product?.name || product?.handle || 'Product';
 
-      const extraProducts = addedColors.map((variantProduct) => {
+      const extraProducts = addedColors?.map((variantProduct) => {
         console.log("variants......", variantProduct);
         const prod = {
           id: variantProduct?.variant?.id?.split("/").reverse()[0],
@@ -120,7 +120,7 @@ const QuantityToolbar = () => {
         id: id,
         imgurl: product?.imgurl,
         color: product?.selectedColor?.name,
-        size: product.selectedColor?.variant?.selectedOptions[1]?.value,
+        size: product?.selectedColor?.variant?.selectedOptions[1]?.value,
         sizes: getSizeOptions(product),
         title: consistentTitle,
         selections: [],
@@ -135,9 +135,9 @@ const QuantityToolbar = () => {
     });
 
     setAllProducts(newAllProducts);
-    nameAndNumberProductList.forEach((product) => {
-      const availableSizes = product.sizeCount || {};
-      const allSizes = product.sizes || [];
+    nameAndNumberProductList?.forEach((product) => {
+      const availableSizes = product?.sizeCount || {};
+      const allSizes = product?.sizes || [];
 
       if (Object.keys(availableSizes).length > 0) {
         console.log(" // Step 1: Update available sizes with actual values")
@@ -146,7 +146,7 @@ const QuantityToolbar = () => {
         }
 
         console.log("// Step 2: Set remaining sizes to 0");
-        allSizes.forEach(size => {
+        allSizes?.forEach(size => {
           if (!(size.size in availableSizes)) {
             console.log("size is set to zero ", size);
             handleQuantityChange(product.id, size.size, 0);
@@ -155,7 +155,7 @@ const QuantityToolbar = () => {
       } else {
         console.log(" // No sizeCount data — set all sizes to 0");
 
-        allSizes.forEach(size => {
+        allSizes?.forEach(size => {
           handleQuantityChange(product.id, size.size, 0);
         });
       }
