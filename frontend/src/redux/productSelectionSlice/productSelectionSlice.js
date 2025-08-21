@@ -35,11 +35,12 @@ const productSelectionSlice = createSlice({
           variantId,
           price,
           sku,
-          inventory_quantity
+          inventory_quantity,
+          sizes
         };
-        sizes.forEach(size => {
-          state.products[id].selections[size.size] = 0;
-        });
+        // sizes.forEach(size => {
+        //   state.products[id].selections[size.size] = 0;
+        // });
       }
     },
     updateSizeQuantity(state, action) {

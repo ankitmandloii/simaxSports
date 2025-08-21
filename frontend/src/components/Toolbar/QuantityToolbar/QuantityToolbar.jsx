@@ -8,6 +8,7 @@ import {
   updateSizeQuantity
 } from '../../../redux/productSelectionSlice/productSelectionSlice.js';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const adultSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"];
 const womenSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
@@ -50,6 +51,7 @@ const QuantityToolbar = () => {
 
     const newAllProducts = [];
     function getVariantImagesFromMetafields(metafieldss) {
+      console.log("metafieldss.....", metafieldss)
       // const defaultImage = activeProduct?.imgurl || '';
 
       let front = null;
@@ -66,9 +68,9 @@ const QuantityToolbar = () => {
           const parsedImages = JSON.parse(variantImagesField);
           console.log(parsedImages, "parsedImages");
 
-          front = parsedImages.find((img) => img.includes('_f_fm')) || null;
-          back = parsedImages.find((img) => img.includes('_b_fm')) || null;
-          sleeve = parsedImages.find((img) => img.includes('_d_fm')) || null;
+          front = parsedImages.find((img) => img.includes('_f_fl')) || null;
+          back = parsedImages.find((img) => img.includes('_b_fl')) || null;
+          sleeve = parsedImages.find((img) => img.includes('_d_fl')) || null;
         }
       } catch (error) {
         console.error('Error parsing variant_images metafield:', error);
@@ -104,6 +106,7 @@ const QuantityToolbar = () => {
           allImages: getVariantImagesFromMetafields(variantProduct?.variant?.metafields),
           selections: [],
           price: variantProduct?.variant?.price,
+          allVariants: variantProduct?.allVariants,
           inventory_quantity: variantProduct?.variant?.inventoryItem?.inventoryLevels?.edges?.[0]?.node?.quantities?.[0]?.quantity
         };
         console.log("prod", prod)
@@ -124,6 +127,8 @@ const QuantityToolbar = () => {
         allImages: getVariantImagesFromMetafields(product?.selectedColor?.variant?.metafields),
         allVariants: product?.allVariants,
       };
+      console.log("mainProduct..", mainProduct);
+
 
       dispatch(addProduct(mainProduct));
       newAllProducts.push(mainProduct, ...extraProducts);
@@ -158,29 +163,61 @@ const QuantityToolbar = () => {
 
   }, [selectedProducts, nameAndNumberProductList]);
 
+  // const getSizeOptions = (product) => {
+  //   if (product?.allVariants?.length) {
+  //     const sizeVariantPairs = product?.allVariants.flatMap((variant) => {
+  //       const sizeOption = variant?.selectedOptions.find((opt) => opt.name === 'Size');
+  //       return sizeOption ? [{ size: sizeOption.value, variantId: variant.id }] : [];
+  //     });
+  //     return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
+  //   }
+
+  //   if (product?.variants?.edges?.length) {
+  //     const sizeVariantPairs = product?.variants.edges.flatMap(({ node }) => {
+  //       const sizeOption = node?.selectedOptions.find((opt) => opt.name === 'Size');
+  //       return sizeOption ? [{ size: sizeOption.value, variantId: node.id }] : [];
+  //     });
+  //     return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
+  //   }
+
+  //   return [];
+  // };
   const getSizeOptions = (product) => {
-    if (product?.allVariants?.length) {
-      const sizeVariantPairs = product?.allVariants.flatMap((variant) => {
-        const sizeOption = variant?.selectedOptions.find((opt) => opt.name === 'Size');
-        return sizeOption ? [{ size: sizeOption.value, variantId: variant.id }] : [];
+    console.log("product under getSize optinns  ", product)
+    const extractAvailableSizeVariants = (variants, accessor = (v) => v) => {
+      const sizeVariantPairs = variants.flatMap((variantWrapper) => {
+        const variant = accessor(variantWrapper);
+        const sizeOption = variant?.selectedOptions?.find((opt) => opt.name === 'Size');
+
+        const inventoryQty = variant?.inventoryItem?.inventoryLevels?.edges?.[0]?.node?.quantities?.[0]?.quantity || 0;
+        console.log("inventoryQty", inventoryQty)
+
+        if (sizeOption && inventoryQty > 0) {
+          return [{
+            size: sizeOption.value,
+            variantId: variant.id,
+            quantity: inventoryQty
+          }];
+        }
+
+        return [];
       });
-      return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
+
+      // Remove duplicate sizes (only keep the first available one)
+      return Array.from(new Map(sizeVariantPairs.map(item => [item.size, item])).values());
+    };
+
+    if (product?.allVariants?.length) {
+      return extractAvailableSizeVariants(product.allVariants);
     }
 
-    if (product?.variants?.edges?.length) {
-      const sizeVariantPairs = product?.variants.edges.flatMap(({ node }) => {
-        const sizeOption = node?.selectedOptions.find((opt) => opt.name === 'Size');
-        return sizeOption ? [{ size: sizeOption.value, variantId: node.id }] : [];
-      });
-      return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
-    }
 
     return [];
   };
 
-  const getAvailableSizes = (product) => {
+  const getAvailableSizesAndQuantity = (product) => {
     if (product.sizes && product.sizes.length > 0) {
-      return product.sizes.map(item => item.size);
+      return product.sizes.map(item => item);
     }
     return product.name?.toLowerCase().includes('women') ? womenSizes : adultSizes;
   };
@@ -190,6 +227,23 @@ const QuantityToolbar = () => {
     return Object.values(productState[product.id].selections).reduce((sum, qty) => sum + qty, 0);
   };
 
+
+  function calculatePrice() {
+    const shouldRedirectToReview = (productState) => {
+      return Object.values(productState).some((product) => {
+        return Object.values(product.selections || {}).some(quantity => quantity >= 1);
+      });
+    };
+    if (shouldRedirectToReview(productState)) {
+      // Redirect to Review page
+      navigate("/review");
+    }
+    else {
+      toast.warn("A minimum quantity of 1 is required.");
+    }
+
+
+  }
   return (
     <div className={` ${style.toolbarMainContainer} ${style.toolbarMargin}`}>
       <div className='toolbar-main-heading'>
@@ -232,17 +286,17 @@ const QuantityToolbar = () => {
                 <div className={style.sizeGroup}>
                   <h5>Available Sizes</h5>
                   <div className={style.sizeInputs}>
-                    {getAvailableSizes(product).map(size => (
-                      <div className={style.sizeBox} key={`${product.id}-${size}`}>
-                        <label>{size}</label>
+                    {getAvailableSizesAndQuantity(product).map(item => (
+                      <div className={style.sizeBox} key={`${product.id}-${item.size}`}>
+                        <label>{item.size}</label>
                         <input
                           type="number"
                           min="0"
-                          max="100"
-                          value={productState[product.id]?.selections?.[size] || ''}
+                          max={item.quantity}
+                          value={productState[product.id]?.selections?.[item.size] || ''}
                           onChange={(e) => {
-                            if (e.target.value > 100) return;
-                            handleQuantityChange(product.id, size, e.target.value)
+                            if (e.target.value > item.quantity) return;
+                            handleQuantityChange(product.id, item.size, e.target.value)
                           }
                           }
                         />
@@ -267,7 +321,7 @@ const QuantityToolbar = () => {
           </label>
         </div>
 
-        <button className={style.calculateBtn} onClick={() => navigate("/review")}>CALCULATE PRICING</button>
+        <button className={style.calculateBtn} onClick={() => calculatePrice()}>CALCULATE PRICING</button>
       </div>
     </div>
   );

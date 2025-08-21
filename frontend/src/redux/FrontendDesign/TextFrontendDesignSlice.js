@@ -750,6 +750,33 @@ const TextFrontendDesignSlice = createSlice({
       ].nameAndNumberProductList.filter((product) => product.id !== id);
     },
 
+    // addImageState: (state, action) => {
+    //   const { src, id = nanoid(), side = state.activeSide, isRenderOrNot } = action.payload;
+    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    //   const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
+    //   const canvasComponent = document.querySelector(`#canvas-${side}`); // Simple way, but ideally use refs or context
+    //   const rect = canvasComponent.getBoundingClientRect();
+    //   const centerX = rect.width / 2;
+    //   const centerY = rect.height / 2;
+    //   const newImage = createNewImage(
+    //     { src: src },
+    //     // { src: src + "?auto=enhance&sharp=80&upscale=true" },
+    //     totalElements,
+    //     centerX,
+    //     centerY
+    //   );
+    //   // const newImage = createNewImage(
+    //   //   { src },
+    //   //   state.present[side].images.length
+    //   // );
+    //   if (!state.present[side].images) {
+    //     state.present[side].images = [];
+    //   }
+    //   state.present[side].selectedImageId = newImage.id;
+    //   state.present[side].images.push(newImage);
+    //   state.future[side] = [];
+    //   // state.present[side].setRendering = !state.present[side].setRendering;
+    // },
     addImageState: (state, action) => {
       const { src, id = nanoid(), side = state.activeSide, isRenderOrNot } = action.payload;
       console.log("🟢 [addImageState] Payload:", action.payload);
