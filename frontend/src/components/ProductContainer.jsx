@@ -122,37 +122,62 @@ function ProductContainer() {
       const productNode = data?.result?.products?.edges?.[0]?.node;
       if (!productNode) return;
 
-      // ✅ Group variants by color (unique colors only)
-      const colorMap = {};
-      productNode.variants.edges.forEach(({ node }) => {
-        const colorOption = node.selectedOptions.find(opt => opt.name === "Color");
-        if (!colorOption) return; // skip if no color
+      let colors = [];
 
-        const colorName = colorOption.value;
+      // ✅ Check if product variants have a "Color" option
+      const hasColorOption = productNode.variants.edges.some(({ node }) =>
+        node.selectedOptions.some(opt => opt.name === "Color")
+      );
 
-        if (!colorMap[colorName]) {
-          colorMap[colorName] = {
-            name: colorName,
-            img: node.image?.originalSrc || "",
-            variant: node, // keep first variant for image ref
-            sizes: [],     // collect all sizes of this color
-          };
-        }
+      if (hasColorOption) {
+        // ✅ Group variants by color
+        const colorMap = {};
+        productNode.variants.edges.forEach(({ node }) => {
+          const colorOption = node.selectedOptions.find(opt => opt.name === "Color");
+          if (!colorOption) return;
 
-        // collect sizes under this color
-        const sizeOption = node.selectedOptions.find(opt => opt.name === "Size");
-        if (sizeOption) {
-          colorMap[colorName].sizes.push({
-            size: sizeOption.value,
-            variant: node,
-          });
-        }
-      });
+          const colorName = colorOption.value;
 
-      const colors = Object.values(colorMap);
+          if (!colorMap[colorName]) {
+            colorMap[colorName] = {
+              name: colorName,
+              img: node.image?.originalSrc || "",
+              variant: node, // keep first variant for image ref
+              sizes: [],
+            };
+          }
+
+          const sizeOption = node.selectedOptions.find(opt => opt.name === "Size");
+          if (sizeOption) {
+            colorMap[colorName].sizes.push({
+              size: sizeOption.value,
+              variant: node,
+            });
+          }
+        });
+
+        colors = Object.values(colorMap);
+      } else {
+        // ✅ No "Color" option → treat all variants as one "Default" color
+        colors = [
+          {
+            name: "Default",
+            img:
+              productNode.variants.edges[0]?.node?.image?.originalSrc ||
+              productNode.images?.edges?.[0]?.node?.originalSrc ||
+              "",
+            variant: productNode.variants.edges[0]?.node,
+            sizes: productNode.variants.edges.map(({ node }) => ({
+              size: node.selectedOptions.find(opt => opt.name === "Size")?.value,
+              variant: node,
+            })),
+          },
+        ];
+      }
+
       if (colors.length === 0) return;
 
-      // Process colors (same logic as before)
+      // ✅ Process colors for swatch + variant images
       const updatedColors = colors.map(color => {
         let swatchImg = "";
         let variantImg = "";
@@ -181,7 +206,7 @@ function ProductContainer() {
           }
         }
 
-        // fallback
+        // fallback if no metafield images
         const fallbackImage =
           color.img ||
           variant?.image?.originalSrc ||
@@ -194,7 +219,7 @@ function ProductContainer() {
         return { ...color, swatchImg, variantImg };
       });
 
-      // Pick first color as selected
+      // ✅ Pick first color as default selection
       const firstColor = updatedColors[0];
       const initialProductWithColor = {
         id: productNode.id,
