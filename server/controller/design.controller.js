@@ -312,7 +312,7 @@ try {
 
 exports.productById = async (req, res) => {
   try {
-    console.log("dsfgfdsg")
+    
     const { productId } = req.body; // or req.body.productId if you prefer
 
     if (!productId) {
