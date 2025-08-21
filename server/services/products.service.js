@@ -285,6 +285,7 @@ export async function getProductsList(limit = 5, cursor = null) {
                           quantity
                         }
                         location {
+                            id
                           name
                         }
                       }
@@ -399,6 +400,7 @@ export async function getProductsByCollectionId(limit, collectionId, cursor) {
                           quantity
                         }
                         location {
+                          id
                           name
                         }
                       }
@@ -599,6 +601,7 @@ export async function searchProducts({ q, limit, cursor, collectionId }) {
                             quantity
                           }
                           location {
+                            id
                             name
                           }
                         }

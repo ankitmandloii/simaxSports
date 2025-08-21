@@ -114,15 +114,15 @@ const initialState = {
       // addName: false,
 
       // 🆕 Design settings for Name & Number (front)
-      nameAndNumberDesignState: {
-        id: "front",
-        name: "NAME",
-        number: "00",
-        fontColor: "#000000",
-        fontFamily: "Oswald",
-        fontSize: "large",
-        position: getStaringCenterPostion(),
-      },
+      // nameAndNumberDesignState: {
+      //   id: "front",
+      //   name: "NAME",
+      //   number: "00",
+      //   fontColor: "#000000",
+      //   fontFamily: "Oswald",
+      //   fontSize: "large",
+      //   position: getStaringCenterPostion(),
+      // },
 
       // 🆕 Product list for Name & Number (front)
       nameAndNumberProductList: [
@@ -143,15 +143,15 @@ const initialState = {
       },
 
       // 🆕 Design settings for Name & Number (back)
-      nameAndNumberDesignState: {
-        id: "back",
-        name: "NAME",
-        number: "00",
-        fontColor: "#000000",
-        fontFamily: "Oswald",
-        fontSize: "large",
-        position: getStaringCenterPostion(),
-      },
+      // nameAndNumberDesignState: {
+      //   id: "back",
+      //   name: "NAME",
+      //   number: "00",
+      //   fontColor: "#000000",
+      //   fontFamily: "Oswald",
+      //   fontSize: "large",
+      //   position: getStaringCenterPostion(),
+      // },
       // 🆕 Product list for Name & Number (back)
       nameAndNumberProductList: [
         // productId: [{ colorVariant, size, name, number }]
@@ -195,7 +195,22 @@ const initialState = {
   addNumber: false,
   addName: false,
   sleeveDesign: false,
-  activeNameAndNumberPrintSide: "back"
+  nameAndNumberDesignState: {
+    id: "front",
+    name: "NAME",
+    number: "00",
+    fontColor: "#000000",
+    fontFamily: "Oswald",
+    fontSize: "large",
+    position: getStaringCenterPostion(),
+  },
+  activeNameAndNumberPrintSide: "back",
+  imageChangeBuffer: {
+    front: {},
+    back: {},
+    leftSleeve: {},
+    rightSleeve: {},
+  }
 };
 
 const TextFrontendDesignSlice = createSlice({
@@ -207,13 +222,17 @@ const TextFrontendDesignSlice = createSlice({
       state.activeSide = action.payload;
     },
     setactiveNameAndNumberPrintSide: (state, action) => {
-      state.activeNameAndNumberPrintSide = action.payload;
+      const side = state.activeSide;
+      // console.log("NAMEandnumber", action.payload)
+      state.activeNameAndNumberPrintSide = action.payload
+      state.present[side].setRendering = !state.present[side].setRendering;
+      // console.log("slicenumber", state.activeNameAndNumberPrintSide)
     },
 
     // Add a new text object
     // addTextState: (state, action) => {
     //   const { value, id, side = state.activeSide } = action.payload;
-    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
     //   const newText = createNewText(
     //     { value, id },
     //     state.present[side].texts.length
@@ -327,7 +346,7 @@ const TextFrontendDesignSlice = createSlice({
     // Delete a text object
     // deleteTextState: (state, action) => {
     //   const side = state.activeSide;
-    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
     //   state.present[side].texts = state.present[side].texts.filter(
     //     (t) => t.id !== action.payload
     //   );
@@ -404,17 +423,51 @@ const TextFrontendDesignSlice = createSlice({
       state.present[side].setRendering = !state.present[side].setRendering;
     },
     // ----------- Undo / Redo per side ------------
+    // undo: (state) => {
+    //   const side = state.activeSide;
+    //   console.log("↩️ [undo] Triggered for side:", side);
+
+    //   if (state.past[side].length === 0) {
+    //     console.warn("⚠️ [undo] No past state to revert to");
+    //     return;
+    //   }
+
+    //   const previous = state.past[side].pop();
+    //   console.log("⏪ [undo] Reverting to previous state snapshot");
+
+    //   state.future[side].unshift(JSON.parse(JSON.stringify(state.present[side])));
+    //   state.present[side] = previous;
+
+    //   state.present[side].setRendering = !state.present[side].setRendering;
+    //   console.log("🎨 [undo] setRendering toggled ->", state.present[side].setRendering);
+    // },
     undo: (state) => {
       const side = state.activeSide;
       if (state.past[side].length === 0) return;
-      const previous = state.past[side].pop();
+      console.log("past state", (JSON.parse(JSON.stringify(state.past[side]))));
+
+      console.log("↩️ [undo] Triggered for side:", side);
+
+      // Take snapshot of current state → push to future
       state.future[side].unshift(
         JSON.parse(JSON.stringify(state.present[side]))
       );
+
+      // Restore last snapshot from past
+      const previous = state.past[side].pop();
       state.present[side] = previous;
 
-      state.present[side].setRendering = !state.present[side].setRendering;
+      // ❌ REMOVE this line (causes infinite toggling)
+      // state.present[side].setRendering = !state.present[side].setRendering;
+
+      // ✅ Instead, explicitly force a re-render by flipping a new "version" counter
+      if (!state.present[side].renderVersion) {
+        state.present[side].renderVersion = 0;
+      }
+      state.present[side].renderVersion++;
+      console.log("🎨 [undo] Restored snapshot, renderVersion =", state.present[side].renderVersion);
     },
+
 
     redo: (state) => {
       const side = state.activeSide;
@@ -554,8 +607,8 @@ const TextFrontendDesignSlice = createSlice({
       const side = "back";
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
-      if (state.present[side]?.nameAndNumberDesignState) {
-        Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
+      if (state?.nameAndNumberDesignState) {
+        Object.assign(state?.nameAndNumberDesignState, changes);
       }
       state.present[side].setRendering = nanoid();
       state.future[side] = [];
@@ -585,7 +638,7 @@ const TextFrontendDesignSlice = createSlice({
     //   } = action.payload;
 
     //   // Save to undo history
-    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
     //   const list = state.present[side]?.nameAndNumberProductList;
     //   if (!list) return;
@@ -697,50 +750,144 @@ const TextFrontendDesignSlice = createSlice({
       ].nameAndNumberProductList.filter((product) => product.id !== id);
     },
 
+    // addImageState: (state, action) => {
+    //   const { src, id = nanoid(), side = state.activeSide, isRenderOrNot } = action.payload;
+    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    //   const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
+    //   const canvasComponent = document.querySelector(`#canvas-${side}`); // Simple way, but ideally use refs or context
+    //   const rect = canvasComponent.getBoundingClientRect();
+    //   const centerX = rect.width / 2;
+    //   const centerY = rect.height / 2;
+    //   const newImage = createNewImage(
+    //     { src: src },
+    //     // { src: src + "?auto=enhance&sharp=80&upscale=true" },
+    //     totalElements,
+    //     centerX,
+    //     centerY
+    //   );
+    //   // const newImage = createNewImage(
+    //   //   { src },
+    //   //   state.present[side].images.length
+    //   // );
+    //   if (!state.present[side].images) {
+    //     state.present[side].images = [];
+    //   }
+    //   state.present[side].selectedImageId = newImage.id;
+    //   state.present[side].images.push(newImage);
+    //   state.future[side] = [];
+    //   // state.present[side].setRendering = !state.present[side].setRendering;
+    // },
     addImageState: (state, action) => {
       const { src, id = nanoid(), side = state.activeSide, isRenderOrNot } = action.payload;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+      console.log("🟢 [addImageState] Payload:", action.payload);
+      // console.log()
+      // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+      console.log("📦 [addImageState] Snapshot pushed to past");
+      console.log("📦 [addImageState] Before push → past[side]:", JSON.parse(JSON.stringify(state.past[side])));
+      console.log("🖼️ [addImageState] Snapshot about to push:", JSON.parse(JSON.stringify(state.present[side])));
+
+      // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+      console.log("✅ [addImageState] After push → past[side]:", state.past[side]);
+      const snapshot = JSON.stringify(state.present[side]);
+      const last = JSON.stringify(state.past[side][state.past[side].length - 1]);
+
+      if (snapshot !== last) {
+        state.past[side].push(JSON.parse(snapshot));
+      }
+
+
+
       const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
-      const canvasComponent = document.querySelector(`#canvas-${side}`); // Simple way, but ideally use refs or context
+      const canvasComponent = document.querySelector(`#canvas-${side}`);
       const rect = canvasComponent.getBoundingClientRect();
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
+
       const newImage = createNewImage(
         { src: src },
-        // { src: src + "?auto=enhance&sharp=80&upscale=true" },
         totalElements,
         centerX,
         centerY
       );
-      // const newImage = createNewImage(
-      //   { src },
-      //   state.present[side].images.length
-      // );
+
       if (!state.present[side].images) {
         state.present[side].images = [];
       }
+
       state.present[side].selectedImageId = newImage.id;
       state.present[side].images.push(newImage);
+      console.log("🖼️ [addImageState] New image added:", newImage);
+
       state.future[side] = [];
-      // state.present[side].setRendering = !state.present[side].setRendering;
+      console.log("🔄 [addImageState] Future state reset");
     },
 
+    // ---neww
     updateImageState: (state, action) => {
-      const {
-        id,
-        changes,
-        side = state.activeSide,
-        isRenderOrNot,
-      } = action.payload;
-      // console.log("id", id, "changes........................", changes);
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      const image = state.present[side]?.images?.find((img) => img.id === id);
-      if (image && !image.locked) Object.assign(image, changes);
-      if (isRenderOrNot) {
-        state.present[side].setRendering = !state.present[side].setRendering;
+      const { id, changes, side = state.activeSide, isRenderOrNot } = action.payload;
+      const image = state.present[side]?.images?.find(img => img.id === id);
+      if (!image || image.locked) return;
+
+      console.log("changes..", changes);
+
+      if (changes?.loading) {
+        console.log("we are storing present data to past when laoding true ", JSON.parse(JSON.stringify(state.present[side])))
+        state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       }
-      state.future[side] = [];
+      // Buffer changes until operation is done
+
+      if (!state.imageChangeBuffer[side][id]) {
+        state.imageChangeBuffer[side][id] = [];
+      }
+      state.imageChangeBuffer[side][id].push(changes);
+
+      // Apply changes immediately so UI updates
+      Object.assign(image, changes);
+
+      // ✅ Only commit snapshot when loading:false
+      if (changes.loading === false) {
+        const combined = state.imageChangeBuffer[side][id].reduce(
+          (acc, curr) => ({ ...acc, ...curr, loading: false }),
+          {}
+        );
+        // Save history
+        console.log("we are storing present data to past when laoding false ", JSON.parse(JSON.stringify(state.present[side])))
+        state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+        Object.assign(image, combined);
+
+        // cleanup
+        delete state.imageChangeBuffer[side][id];
+        state.future[side] = [];
+      }
+
+      // skip undo history if rendering-only
+      if (isRenderOrNot) {
+        if (!state.present[side].renderVersion) state.present[side].renderVersion = 0;
+        state.present[side].renderVersion++;
+      }
     },
+
+
+
+
+
+    // updateImageState: (state, action) => {
+    //   const {
+    //     id,
+    //     changes,
+    //     side = state.activeSide,
+    //     isRenderOrNot,
+    //   } = action.payload;
+    //   // console.log("id", id, "changes........................", changes);
+    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    //   const image = state.present[side]?.images?.find((img) => img.id === id);
+    //   if (image && !image.locked) Object.assign(image, changes);
+    //   if (isRenderOrNot) {
+    //     state.present[side].setRendering = !state.present[side].setRendering;
+    //   }
+    //   state.future[side] = [];
+    // },
     // duplicateImageState: (state, action) => {
     //   const side = state.activeSide;
     //   const idToDuplicate = action.payload;
@@ -762,7 +909,7 @@ const TextFrontendDesignSlice = createSlice({
     //   }
 
 
-    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
     //   const newPosition = {
     //     x: imageToDuplicate.position.x + 20,
@@ -788,11 +935,13 @@ const TextFrontendDesignSlice = createSlice({
 
     // deleteeee reducers
     deleteTextState: (state, action) => {
+      console.log("deletee dispatch")
       const side = state.activeSide;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-
       const deletedText = state.present[side].texts.find(t => t.id === action.payload);
       if (!deletedText) return;
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+
       const deletedLayerIndex = deletedText?.layerIndex || 0;
 
       // Remove the text
@@ -827,10 +976,11 @@ const TextFrontendDesignSlice = createSlice({
 
     deleteImageState: (state, action) => {
       const side = state.activeSide;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
       const deletedImage = state.present[side].images.find(i => i.id === action.payload);
       if (!deletedImage) return;
+      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
       const deletedLayerIndex = deletedImage?.layerIndex || 0;
 
       state.present[side].images = state.present[side].images.filter(
@@ -864,7 +1014,7 @@ const TextFrontendDesignSlice = createSlice({
 
     // deleteImageState: (state, action) => {
     //   const side = state.activeSide;
-    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
     //   state.present[side].images = state.present[side].images.filter(
     //     (img) => img.id !== action.payload
     //   );

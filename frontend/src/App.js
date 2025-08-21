@@ -19,9 +19,9 @@ import BottomBar from "./components/bottomBar/BottomBar";
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import LoadingScreen from "./components/loadingComponent/LoadingScreen";
 import NotFound from "./pages/NotFound/NotFound";
+import { enableMapSet } from "immer";
 
-
-
+enableMapSet();
 function App() {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const location = useLocation();

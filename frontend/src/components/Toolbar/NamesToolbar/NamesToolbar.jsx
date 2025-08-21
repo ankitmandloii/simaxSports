@@ -26,7 +26,7 @@ const NamesToolbar = () => {
   //   })
   // );
   const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice)
-  const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide]?.nameAndNumberDesignState);
+  const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice?.nameAndNumberDesignState);
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
 
   const dispatch = useDispatch();
@@ -40,7 +40,7 @@ const NamesToolbar = () => {
   const [activeColor, setActiveColor] = useState(nameAndNumberDesign?.fontColor);
 
   const showAddnamesPopupHandler = () => {
-    console.log("--------------------nameeee")
+    // console.log("--------------------nameeee")
     if (!selectedProducts || selectedProducts.length === 0) {
       toast.info("Please Add Product First");
       navigate("/design/product");
@@ -56,7 +56,7 @@ const NamesToolbar = () => {
   const sideHandler = (value) => {
     // console.log("---------value", value)
     dispatch(setActiveSide(value));
-    dispatch(setactiveNameAndNumberPrintSide(value));
+    dispatch(setactiveNameAndNumberPrintSide(value, activeSide));
 
   };
 

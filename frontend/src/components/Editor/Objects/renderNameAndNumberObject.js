@@ -20,7 +20,7 @@ const renderNameAndNumber = (
   // proudctType,
   activeNameAndNumberPrintSide
 ) => {
-  console.log("productCategory.......", productCategory)
+  // console.log("productCategory.......", productCategory)
 
   const canvas = fabricCanvasRef.current;
   if (!canvas || !nameAndNumberDesignState) {
