@@ -303,3 +303,29 @@ try {
      console.log(`Some Error Occured ${err}`)
   }
 };
+
+
+
+
+
+
+
+exports.productById = async (req, res) => {
+  try {
+    console.log("dsfgfdsg")
+    const { productId } = req.body; // or req.body.productId if you prefer
+
+    if (!productId) {
+      return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.MISSING_REQUIRED_FIELDS || 'productId is required');
+    }
+
+    const result = await services.getProductByIdAsList(productId);
+    if (!result) {
+      return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.DATA_NOT_FOUND);
+    }
+
+    return sendResponse(res, statusCode.OK, true, SuccessMessage.DATA_FETCHED, result);
+  } catch (error) {
+    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+  }
+};

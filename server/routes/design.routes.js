@@ -12,4 +12,8 @@ router.get('/get-designfrontEnd', controllers.getDesignsFromFrontEnd);
 router.delete('/delete-designfrontEnd/:designId', controllers.deleteDesignsFromFrontEnd);
 router.get("/get-AllOrderedDesignfrontEnd", controllers.getAllOrderedDesigns);
 
+
+
+// will be in product routes
+router.post("/productById", controllers.productById);
 module.exports = router;
