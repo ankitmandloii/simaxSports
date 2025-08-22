@@ -124,7 +124,7 @@ exports.saveDesignsFromFrontEnd = async (req, res) => {
 };
 
 
-exports.getDesignsFromFrontEnd = async (req, res) => {
+exports.getDesignsFromFrontEndByEmail = async (req, res) => {
   try {
     const { ownerEmail } = req.query;
     console.log("ownerEmail", ownerEmail)
@@ -136,6 +136,26 @@ exports.getDesignsFromFrontEnd = async (req, res) => {
     console.log(`Some Error Occured ${err}`)
   }
 };
+
+
+exports.getDesignsFromFrontEndById = async (req, res) => {
+  try {
+    const { designId } = req.query;
+
+    const doc = await UserDesigns.findOne(
+      { "designs._id": designId },
+      { "designs.$": 1, ownerEmail: 1 } // only return the matched design
+    ).lean();
+
+    return res.status(200).json({
+      userDesigns: doc || { ownerEmail: "", designs: [] }
+    });
+  } catch (err) {
+    console.log(`Some Error Occured ${err}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 
 // exports.getAllOrderedDesigns = async (req, res) => {
 //   const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
