@@ -6,7 +6,6 @@ const router = express.Router();
 
 
 
-router.post('/webhooks/order-creation', controllers.orderCreationWEbHooks);
 router.post('/signup',customerValidation.customerRegister, controllers.signUp);
 router.post('/login',customerValidation.login ,controllers.login);
 router.post('/admin-change-password',customerValidation.verifyToken, controllers.adminChangePassword);
