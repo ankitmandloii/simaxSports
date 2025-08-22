@@ -666,6 +666,8 @@ import AddToCartPopup from "../../components/PopupComponent/AddToCartPopup/AddTo
 import { apiConnecter } from "../../components/utils/apiConnector";
 import BlankProductWarning from "./BlankProductWarning";
 import SaveDesignModal from "./SaveDesignModal";
+import RetrieveSavedDesignsModal from "./RetrieveSavedDesignsModal";
+import EmailSendingModal from "./EmailSendingModal";
 const dummyItems = [
   { name: "Jerzees NuBlend® Fleece Sweatshirt", color: "Royal", sizes: { S: 8, YS: 9 }, image: "https://simaxdesigns.imgix.net/uploads/1753094331891_front-design.png" },
   { name: "Jerzees NuBlend® Fleece Sweatshirt", color: "Royal", sizes: { S: 8, YS: 9 }, image: "https://simaxdesigns.imgix.net/uploads/1753094331891_front-design.png" },
@@ -684,7 +686,9 @@ const Review = () => {
   const designState = useSelector((state) => state.TextFrontendDesignSlice);
   const { present, DesignNotes } = designState;
   const BASE_URL = process.env.REACT_APP_BASE_URL || "https://simax-sports-x93p.vercel.app/api/";
-
+  const [retrieveLoader, setRetrieveLoader] = useState(false);
+  const [saveDesignLoader, setSaveDesignLoader] = useState(false);
+  const [emailSendingLoader, setEmailSendingLoader] = useState(false);
   const designPayload = {
     ownerEmail: "testuser@example33.com",
     design: {
@@ -1101,11 +1105,32 @@ const Review = () => {
 
     // return shouldShow;
   };
+  useEffect(() => {
+    setRetrieveLoader(true);
+    setTimeout(() => {
+      setRetrieveLoader(false);
+      setSaveDesignLoader(true);
+    }, 5000);
+    setTimeout(() => {
 
+      setEmailSendingLoader(true)
+      setSaveDesignLoader(false);
+      setTimeout(() => {  
+        setEmailSendingLoader(false)
+      }, 4000);
+    }, 10000);
+
+  }, [])
 
   return (
-    <div className={styles.container}>
-      <SaveDesignModal></SaveDesignModal>
+    <div className={styles.container}>{
+      retrieveLoader &&
+      <RetrieveSavedDesignsModal onClose={() => { setRetrieveLoader(false) }}></RetrieveSavedDesignsModal>}
+      {saveDesignLoader && <SaveDesignModal onClose={() => { setSaveDesignLoader(false) }}></SaveDesignModal>}
+      {
+        emailSendingLoader &&
+        <EmailSendingModal onClose={() => setEmailSendingLoader(false)}> </EmailSendingModal>
+      }
       <div className={styles.header}>
         <div className='toolbar-main-heading'>
           <h5 className='Toolbar-badge'>Review Your Order</h5>

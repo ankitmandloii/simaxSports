@@ -1,170 +1,136 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { CrossIcon } from "../../components/iconsSvg/CustomIcon";
+import React, { useState } from 'react';
+import styles from './SaveDesignModal.module.css'; // use same CSS conventions
 
-const SaveDesignModal = ({ open, onClose, designName, userEmail }) => {
-    const [saveOption, setSaveOption] = useState("update");
-    const [sendEmail, setSendEmail] = useState(true);
-    const [loading, setLoading] = useState(false);
+export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName }) {
+    const [selectedOption, setSelectedOption] = useState('update');
+    const [designName, setDesignName] = useState(defaultDesignName || '');
+    const [emailUpdates, setEmailUpdates] = useState(true);
 
-    const handleContinue = async () => {
-        setLoading(true);
+    const handleSubmit = () => {
+        if (selectedOption === 'new' && designName.trim() === '') return;
 
-        try {
-            const payload = {
-                action: saveOption,
-                email: userEmail,
-                sendEmail,
-                designName,
-            };
+        const payload = {
+            type: selectedOption,
+            name: selectedOption === 'new' ? designName.trim() : defaultDesignName,
+            emailUpdates,
+        };
 
-            // Replace with your actual API endpoint
-            // const response = await axios.post("/api/save-design", payload);
-
-            // console.log("API Response:", response.data);
-            onClose(); // Close modal on success
-        } catch (err) {
-            console.error("Error saving design:", err);
-        } finally {
-            setLoading(false);
-        }
+        onSubmit(payload); // call the API or parent handler
     };
 
-    if (!open) return null;
-
     return (
-        <div style={styles.overlay}>
-            <div style={styles.modal}>
-                <button style={styles.closeBtn} onClick={onClose}><CrossIcon /></button>
-                <h3 style={styles.header}>SAVE AND ADD TO CART</h3>
-
-                <p style={styles.title}>Save changes to <strong>"{designName}"</strong></p>
-                <p style={styles.subText}>
+        <div className={styles.overlay}>
+            <div className={styles.popup}>
+                <div className={styles.header}>
+                    <div className={styles.headerTitle}>SAVE AND ADD TO CART</div>
+                    <button className={styles.closeButton} onClick={onClose}>x</button>
+                </div>
+                <h2 className={styles.subTitle}>Save changes to "{defaultDesignName}"</h2>
+                <p className={styles.subText}>
                     We found an existing design with the same name and email address.
                 </p>
 
-                <div style={styles.radioGroup}>
-                    <label style={styles.radioOption}>
+                {/* <div className={styles.optionBox}>
+                    <label style={{ display: 'block', marginBottom: '10px' }}>
                         <input
                             type="radio"
-                            name="saveOption"
+                            name="option"
                             value="update"
-                            checked={saveOption === "update"}
-                            onChange={() => setSaveOption("update")}
-                        />
-                        <strong> Update Design</strong>
-                    </label>
-                    {saveOption === "update" && (
-                        <label style={styles.checkboxOption}>
+                            checked={selectedOption === 'update'}
+                            onChange={() => setSelectedOption('update')}
+                        />{' '}
+                        <strong>Update Design</strong>
+                    {selectedOption === 'update' && (
+                        <label style={{ display: 'block', marginBottom: '20px', marginLeft: '25px' }}>
                             <input
                                 type="checkbox"
-                                checked={sendEmail}
-                                onChange={() => setSendEmail(!sendEmail)}
-                            />
+                                checked={emailUpdates}
+                                onChange={() => setEmailUpdates(!emailUpdates)}
+                            />{' '}
                             Email me my updated design
                         </label>
                     )}
+                    </label>
 
-                    <label style={styles.radioOption}>
+                    <label style={{ display: 'block', marginBottom: '20px' }}>
                         <input
                             type="radio"
-                            name="saveOption"
+                            name="option"
                             value="new"
-                            checked={saveOption === "new"}
-                            onChange={() => setSaveOption("new")}
-                        />
-                        <strong> Save as New</strong>
+                            checked={selectedOption === 'new'}
+                            onChange={() => setSelectedOption('new')}
+                        />{' '}
+                        <strong>Save as New</strong>
                     </label>
+
+                    {selectedOption === 'new' && (
+                        <input
+                            className={styles.input}
+                            placeholder="Enter new design name"
+                            value={designName}
+                            onChange={(e) => setDesignName(e.target.value)}
+                        />
+                    )}
+                </div> */}
+                <div className={styles.optionBox}>
+                    {/* Update Design Option */}
+                    <label className={styles.radioOption}>
+                        <input
+                            type="radio"
+                            name="option"
+                            value="update"
+                            checked={selectedOption === 'update'}
+                            onChange={() => setSelectedOption('update')}
+                        />
+                        <span><strong>Update Design</strong></span>
+                    </label>
+
+                    {selectedOption === 'update' && (
+                        <div className={styles.subOption}>
+                            <label className={styles.checkboxLabel}>
+                                <input
+                                    type="checkbox"
+                                    checked={emailUpdates}
+                                    onChange={() => setEmailUpdates(!emailUpdates)}
+                                />
+                                <span>Email me my updated design</span>
+                            </label>
+                        </div>
+                    )}
+
+                    {/* Save as New Option */}
+                    <label className={styles.radioOption}>
+                        <input
+                            type="radio"
+                            name="option"
+                            value="new"
+                            checked={selectedOption === 'new'}
+                            onChange={() => setSelectedOption('new')}
+                        />
+                        <span><strong>Save as New</strong></span>
+                    </label>
+
+                    {selectedOption === 'new' && (
+                        <div className={styles.subOption}>
+                            <input
+                                className={styles.input}
+                                placeholder="Enter new design name"
+                                value={designName}
+                                onChange={(e) => setDesignName(e.target.value)}
+                            />
+                        </div>
+                    )}
                 </div>
 
+
                 <button
-                    onClick={handleContinue}
-                    style={styles.continueBtn}
-                    disabled={loading}
+                    className={styles.saveButton}
+                    onClick={handleSubmit}
+                    disabled={selectedOption === 'new' && designName.trim() === ''}
                 >
-                    {loading ? "Processing..." : "Continue"}
+                    Continue
                 </button>
             </div>
         </div>
     );
-};
-
-const styles = {
-    overlay: {
-        position: "fixed",
-        top: 0,
-        left: 0,
-        height: "100vh",
-        width: "100vw",
-        background: "rgba(0,0,0,0.4)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1000,
-    },
-    modal: {
-        background: "#fff",
-        borderRadius: 8,
-        padding: "24px 32px",
-        width: 480,
-        position: "relative",
-        boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-        fontFamily: "Arial, sans-serif",
-    },
-    closeBtn: {
-        position: "absolute",
-        top: 12,
-        right: 16,
-        background: "none",
-        border: "none",
-        fontSize: 24,
-        cursor: "pointer",
-    },
-    header: {
-        color: "#FF4D00",
-        fontWeight: "bold",
-        textTransform: "uppercase",
-        fontSize: 16,
-        marginBottom: 16,
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: "bold",
-    },
-    subText: {
-        marginBottom: 20,
-        color: "#333",
-    },
-    radioGroup: {
-        marginBottom: 24,
-        display: "flex",
-        flexDirection: "column",
-        gap: 10,
-    },
-    radioOption: {
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-    },
-    checkboxOption: {
-        marginLeft: 24,
-        fontSize: 14,
-        color: "#333",
-        display: "flex",
-        alignItems: "center",
-        gap: 6,
-    },
-    continueBtn: {
-        background: "#FF4D00",
-        color: "#fff",
-        border: "none",
-        padding: "12px 20px",
-        fontSize: 16,
-        fontWeight: "bold",
-        borderRadius: 6,
-        cursor: "pointer",
-        width: "100%",
-    },
-};
-
-export default SaveDesignModal;
+}

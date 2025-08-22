@@ -1,0 +1,172 @@
+:root {
+    --blue-color: #005bff;
+    --blue-color-light: #2166e7;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup {
+    background: white;
+    width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 0px 10px 10px 10px;
+}
+
+.header {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--blue-color);
+    /* letter-spacing: 1px; */
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #ddd;
+    justify-content: space-between;
+
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--blue-color);
+    margin-bottom: 10px;
+}
+
+.subTitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.subText {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.optionBox {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    border: 1px solid var(--blue-color-light);
+    box-shadow: 0 2px 8px rgba(0, 91, 255, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.radioOption {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+.radioOption input[type="radio"] {
+    margin-right: 10px;
+    accent-color: var(--blue-color);
+}
+
+.subOption {
+    margin-left: 28px;
+    margin-bottom: 15px;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #444;
+}
+
+.checkboxLabel input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: var(--blue-color);
+}
+
+.input {
+    margin-top: 8px;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border 0.3s ease;
+}
+
+.input:focus {
+    border-color: var(--blue-color);
+    box-shadow: 0 0 0 2px rgba(0, 91, 255, 0.1);
+}
+
+.input {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-top: 5px;
+}
+
+.saveButton {
+    background-color: var(--blue-color);
+    color: white;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.saveButton:hover:not(:disabled) {
+    background-color: var(--blue-color-light);
+}
+
+.saveButton:disabled {
+    background-color: var(--blue-color);
+    cursor: not-allowed;
+}
+
+.closeButton {
+    position: absolute;
+    top: 14px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+    color: #000;
+}
+
+.closeButton:hover {
+    color: #333;
+}
