@@ -101,6 +101,7 @@ exports.orderPaymentDoneForOrderWEbHooks = async (req, res) => {
         const emailData = buildEmailData(orderData)
         await this.sendEmailtoAdminWhileOrdered(emailData)
         res.status(200).send('OK');
+        
     } catch (err) {
         console.error('Error processing webhook:', err.message);
         res.status(500).send('Internal Server Error');
