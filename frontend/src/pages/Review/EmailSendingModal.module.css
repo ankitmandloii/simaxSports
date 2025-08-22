@@ -1,0 +1,101 @@
+    :root {
+        --modal-bg: #ffffff;
+        --primary-color: #005bff;
+        --text-color: #333;
+    }
+
+    /* :root {
+        --blue-color: #005bff;
+        --blue-color-light: #2166e7;
+    } */
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.35);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+    }
+
+    .modal {
+        width: 400px;
+        background-color: var(--modal-bg);
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        animation: scaleIn 0.3s ease-in-out;
+    }
+
+    @keyframes scaleIn {
+        from {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .header {
+        padding: 16px;
+        font-weight: bold;
+        font-size: 16px;
+        color: var(--primary-color);
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .closeBtn {
+        background: transparent;
+        border: none;
+        font-size: 24px;
+        color: #aaa;
+        cursor: pointer;
+    }
+
+    .body {
+        padding: 40px 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mailIcon {
+        width: 80px;
+        margin-bottom: 20px;
+        transition: transform 0.3s;
+    }
+
+    .animate {
+        animation: pulse 1.4s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    .statusText {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-color);
+        line-height: 1.5;
+    }

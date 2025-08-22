@@ -1,0 +1,38 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.envelope {
+    animation: bounce 1.5s ease-in-out infinite;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.flap {
+    transform-origin: 50% 100%;
+    animation: flapAnim 1.5s ease-in-out infinite;
+}
+
+@keyframes flapAnim {
+
+    0%,
+    100% {
+        transform: rotateX(0deg);
+    }
+
+    50% {
+        transform: rotateX(35deg);
+    }
+}
