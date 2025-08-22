@@ -1,14 +1,14 @@
-const nodemailer = require('nodemailer'); 
-const emailConfig =  require('../config/email.js');
+const nodemailer = require('nodemailer');
+const emailConfig = require('../config/email.js');
 const emailTemplates = require('../utils/emailTemplate.js');
 
 
-exports.sendEmailDesign = async (email, frontSrc, backSrc, designName) => {
+exports.sendEmailDesign = async (email, companyEmail, frontSrc, backSrc, designname, phoneNumber, edit_design_link, add_to_cart_link, unsubscribe_link) => {
   try {
     const transporter = nodemailer.createTransport(emailConfig);
-     
 
-    let mailOptions = emailTemplates.sendEmailTamplate(email, frontSrc,backSrc, designName);
+
+    let mailOptions = emailTemplates.sendEmailTamplate(email, companyEmail, frontSrc, backSrc, designname, phoneNumber, edit_design_link, add_to_cart_link, unsubscribe_link);
 
 
     const info = await transporter.sendMail(mailOptions);
@@ -32,7 +32,7 @@ function toShopifyProductGID(id) {
 }
 
 
-exports.getProductByIdAsList = async (productId) =>{
+exports.getProductByIdAsList = async (productId) => {
   const SHOPIFY_API_URL = `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`;
   const gid = toShopifyProductGID(productId);
 
