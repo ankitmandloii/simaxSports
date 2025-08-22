@@ -1,12 +1,18 @@
 import React, { useState } from "react";
 import styles from "./AddToCartPopup.module.css";
 
-const AddToCartPopup = ({ onSave, onClose }) => {
-    const [designName, setDesignName] = useState("");
+const AddToCartPopup = ({ onSave, onClose, defaultDesignName }) => {
+    // const [designName, setDesignName] = useState("");
+    const [designName, setDesignName] = useState(defaultDesignName || '');
 
     const handleSave = () => {
+        const payload = {
+
+            name: designName,
+
+        };
         if (designName.trim() && designName.length <= 25) {
-            onSave(designName);
+            onSave(payload);
         }
     };
 
@@ -34,7 +40,7 @@ const AddToCartPopup = ({ onSave, onClose }) => {
                     value={designName}
                     onChange={(e) =>
                         setDesignName(
-                            e.target.value.replace(/[^a-zA-Z0-9-]/g, "")
+                            e.target.value
                         )
                     }
                     maxLength={25}
