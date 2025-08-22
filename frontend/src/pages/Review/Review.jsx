@@ -17,7 +17,7 @@ import RetrieveSavedDesignsModal from "./RetrieveSavedDesignsModal";
 import EmailSendingModal from "./EmailSendingModal";
 import { restoreEditDesigns } from "../../redux/FrontendDesign/TextFrontendDesignSlice";
 import SaveDesignPopup from "../../components/PopupComponent/SaveDesignPopup/SaveDesignPopup";
-const designId = "68a850c54d94107688e652ba";
+const designId = "";
 const customerEmail = "testuser@example33.com"; // Unencoded email for apiConnecter
 const randomDiscount = () => Math.floor(Math.random() * 21) + 15; // 15% to 35%
 
@@ -37,10 +37,11 @@ const Review = () => {
   const designState = useSelector((state) => state.TextFrontendDesignSlice);
   const { present, DesignNotes } = designState;
 
+
   const designPayload = {
-    ownerEmail: "testuser@example33.com",
+    ownerEmail: "ankitmandloi@itgeeks.com",
     design: {
-      DesignName: "Demo T-Shirt 55555",
+      DesignName: "",
       present: {
         front: {
           texts: present.front.texts.map((text) => ({
@@ -226,7 +227,10 @@ const Review = () => {
 
       const responseData = response.data;
       console.log("Design saved successfully:", responseData);
-      setdesignStateDb(responseData)
+      setdesignStateDb(responseData);
+      const designs = responseData.userDesigns?.designs;
+      console.log(design);
+      setCurrentDesing(designs[designs.length - 1]);
       return responseData;
     } catch (error) {
       console.error("Error saving design:", error);
@@ -397,7 +401,7 @@ const Review = () => {
           color: varianttitle.title.split("/")[0].trim(),
           price: variantData?.price,
           sku: variantData?.sku,
-          "designId": "1525225",
+          "designId": currentDesign?._id,
           quantity: Number(varianttitle.inventory_quantity),
           "vendor": "Addidas test",
           "custom": true,
@@ -525,7 +529,7 @@ const Review = () => {
       // api call for email send
       try {
         const emailPayload = {
-          email: "vaishaliverma@itgeeks.com",
+          email: "ankitmandloi@itgeeks.com",
           companyEmail: "service@simaxsports.com",
           frontSrc: cloudinaryResponse?.files?.[0] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786256753_download_4.png",
           backSrc: cloudinaryResponse?.files?.[1] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786306809_download_5.png",
@@ -571,7 +575,7 @@ const Review = () => {
       design.rightSleeve.texts.length === 0;
     // console.log("design.back.nameAndNumberProductList.length", design.back.nameAndNumberProductList)
     const isNameOrNumberEnabled = addName || addNumber;
-    const isProductListEmpty = design.back.nameAndNumberProductList.every(
+    const isProductListEmpty = design?.back?.nameAndNumberProductList?.every(
       (item) => item.selections.length == 0
     );
     if (isNameOrNumberEnabled && isProductListEmpty && allImagesAndTextsEmpty) return true;
@@ -684,7 +688,7 @@ const Review = () => {
         ) : (
           <AddToCartPopup
             onSave={handleSaveDesign}
-            defaultDesignName="Demo T-Shirt 55555"
+            defaultDesignName=""
             onClose={() => setSaveDesignLoader(false)}
           />
         ))}
@@ -794,7 +798,7 @@ const Review = () => {
       )}
       <div className={styles.review}>
         <img
-          src="https://www.ninjaprinthouse.com/design/images/chelsea.png"
+          src="https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755870746123_img-xdbtymq29jbjr5pt7xymstyn.png"
           alt="Reviewer"
         />
         <div>

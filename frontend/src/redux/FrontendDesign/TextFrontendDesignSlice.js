@@ -593,9 +593,9 @@ const TextFrontendDesignSlice = createSlice({
         }
       }
       state.addNumber = action.payload;
-      // if (state.present[side]?.nameAndNumberDesignState) {
-      //   Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
-      // }
+      if (state.present[side]?.nameAndNumberDesignState) {
+        Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
+      }
       state.present[side].addNumber = action.payload;
       state.present[side].setRendering = !state.present[side].setRendering;
 
@@ -616,9 +616,9 @@ const TextFrontendDesignSlice = createSlice({
         }
       }
       // state.addNumber = action.payload;
-      // if (state.present[side]?.nameAndNumberDesignState) {
-      //   Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
-      // }
+      if (state?.nameAndNumberDesignState) {
+        Object.assign(state?.nameAndNumberDesignState, changes);
+      }
       state.addName = action.payload;
       state.present[side].setRendering = !state.present[side].setRendering;
     },

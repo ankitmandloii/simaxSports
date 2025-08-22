@@ -2494,7 +2494,20 @@ const MainDesignTool = ({
   }, [selectedTextId, isRender,])
 
 
-
+  function getLeft(canvasRef) {
+    const canvasElement = canvasRef.current;
+    const rect = canvasElement.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    return `${centerX}px`;
+  }
+  // function getTop(canvasRef) {
+  //   const canvasElement = canvasRef.current;
+  //   const rect = canvasElement.getBoundingClientRect();
+  //   const centerX = rect.width / 2;
+  //   const centerY = rect.height / 2;
+  //   return `${centerY}px`;
+  // }
 
 
   return (
@@ -2505,7 +2518,7 @@ const MainDesignTool = ({
       {!hasClicked && !addName && !addNumber &&
         imageContaintObject?.length == 0 &&
         textContaintObject?.length == 0 && (
-          <div className={style.buttonsroute}>
+          <div className={style.buttonsroute} >
             <button
               onMouseEnter={() => handleHover("/design/addText")}
               onMouseLeave={handleLeave}
