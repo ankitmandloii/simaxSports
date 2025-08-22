@@ -10,15 +10,22 @@ const { dbConnection } = require('./config/db');
 // const { initSocket } = require('./socket'); // adjust path
 const helmet = require('helmet');
 const multer = require('multer');
-// const { startScheduler } = require("./scheduler/cronJob.js");
+const { startScheduler } = require("./scheduler/cronJob.js");
 const { ConnectCloadinary } = require('./config/cloudinary.js');
+const cookieParser  =require("cookie-parser");
+const { verifyShopifyWebhook } = require('./schema/customerValidation.js');
+const { orderPaymentDoneForOrderWEbHooks } = require('./controller/customer.controller.js');
 
 
 ConnectCloadinary();
 
+app.post('/order-payment',express.raw({ type: 'application/json' }), verifyShopifyWebhook,orderPaymentDoneForOrderWEbHooks);
+
+
 
 // Setup middlewares
 app.use(helmet());
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors({
