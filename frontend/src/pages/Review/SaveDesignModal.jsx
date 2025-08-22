@@ -137,9 +137,10 @@
 import React, { useState } from 'react';
 import styles from './SaveDesignModal.module.css';
 
-export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName, designId }) {
+export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName, designId, currentDesign }) {
+    console.log(currentDesign, "currentDesign");
     const [selectedOption, setSelectedOption] = useState('update');
-    const [designName, setDesignName] = useState(defaultDesignName || '');
+    const [designName, setDesignName] = useState(currentDesign[0].DesignName || '');
     const [emailUpdates, setEmailUpdates] = useState(true);
 
     const handleSubmit = () => {
@@ -162,7 +163,7 @@ export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName, 
                     <div className={styles.headerTitle}>SAVE AND ADD TO CART</div>
                     <button className={styles.closeButton} onClick={onClose}>×</button>
                 </div>
-                <h2 className={styles.subTitle}>Save changes to "{defaultDesignName}"</h2>
+                <h2 className={styles.subTitle}>Save changes to "{designName}"</h2>
                 <p className={styles.subText}>
                     We found an existing design with the same name and email address.
                 </p>
@@ -180,7 +181,7 @@ export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName, 
                         <span><strong>Update Design</strong></span>
                     </label>
 
-                    {selectedOption === 'update' && (
+                    {/* {selectedOption === 'update' && (
                         <div className={styles.subOption}>
                             <label className={styles.checkboxLabel}>
                                 <input
@@ -191,7 +192,7 @@ export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName, 
                                 <span>Email me my updated design</span>
                             </label>
                         </div>
-                    )}
+                    )} */}
 
                     {/* Save as New Option */}
                     <label className={styles.radioOption}>

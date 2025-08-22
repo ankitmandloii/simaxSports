@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate, useParams } from "react-router-dom";
 import Layout from "./components/Layout";
 import Review from "./pages/Review/Review";
 import ProductToolbar from "./components/Toolbar/ProductToolbar/ProductToolbar";
@@ -21,6 +21,7 @@ import LoadingScreen from "./components/loadingComponent/LoadingScreen";
 import NotFound from "./pages/NotFound/NotFound";
 import { enableMapSet } from "immer";
 import usePersistQueryParams from "./components/CommonComponent/Customhook";
+import { apiConnecter } from "./components/utils/apiConnector";
 
 enableMapSet();
 function App() {
@@ -32,6 +33,7 @@ function App() {
 
   const [continueEditPopup, setContinueEditPopup] = useState(false);
   const [willRenderContinue, setWillRenderContinue] = useState(false);
+  const initialState = useSelector((state) => state.TextFrontendDesignSlice);
 
   const isQuantityPage = location.pathname === "/quantity";
   const reduxState = useSelector((state) => state);
@@ -271,6 +273,54 @@ function App() {
     }, 5000);
   }, [dispatch]);
 
+  function restorePresentFromData(incomingPresent) {
+    const sides = ["front", "back", "leftSleeve", "rightSleeve"];
+
+    const restored = {};
+
+    sides.forEach(side => {
+      restored[side] = {
+        selectedTextId: null,
+        selectedImageId: null,
+        loadingState: {
+          loading: false,
+          position: null
+        },
+        texts: incomingPresent?.[side]?.texts || [],
+        images: incomingPresent?.[side]?.images || [],
+        setRendering: false,
+        nameAndNumberProductList: [],
+      };
+    });
+
+    return restored;
+  }
+
+  // const location = useLocation();
+
+  function editDesignHandler() {
+    try {
+      const searchParams = new URLSearchParams(location.search);
+      const designId = searchParams.get("designId");
+      console.log(designId, "designId");
+      if (designId) {
+
+      }
+      // const response = apiConnecter("")
+
+
+    }
+    catch (e) {
+      console.log("error while fetching desing", e)
+    }
+    // const restoredState = {
+    //   ...initialState,
+    //   present: restorePresentFromData(apiData.present),
+    //   DesignNotes: apiData.DesignNotes || initialState.DesignNotes,
+    // };
+
+  }
+  editDesignHandler();
   // Check if saved state should trigger continue edit popup
   useEffect(() => {
     if (!willRenderContinue && rawProducts.length > 0) {

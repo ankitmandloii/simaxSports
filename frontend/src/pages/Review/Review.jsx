@@ -1,592 +1,3 @@
-
-// // ninjaaa flowwww
-// import React, { useState, useEffect } from "react";
-// import styles from "./Review.module.css";
-// import { LuArrowLeft, LuArrowRight } from "react-icons/lu";
-// import { RxCross2 } from "react-icons/rx";
-// import { FaTshirt } from "react-icons/fa";
-// import { BiTargetLock } from "react-icons/bi";
-// import { IoIosColorPalette } from "react-icons/io";
-// import { useNavigate } from "react-router-dom";
-// import { useSelector } from "react-redux";
-// import { generateDesigns } from "../../components/Editor/utils/helper";
-// import { toast } from "react-toastify";
-// import AddToCartPopup from "../../components/PopupComponent/AddToCartPopup/AddToCartPopup";
-// // const randomDiscount = () => Math.floor(Math.random() * 21) + 15;
-// import { apiConnecter } from "../../components/utils/apiConnector";
-// import BlankProductWarning from "./BlankProductWarning";
-// import SaveDesignModal from "./SaveDesignModal";
-// import RetrieveSavedDesignsModal from "./RetrieveSavedDesignsModal";
-// import EmailSendingModal from "./EmailSendingModal";
-// import SaveDesignPopup from "../../components/PopupComponent/SaveDesignPopup/SaveDesignPopup";
-// const dummyItems = [
-//   { name: "Jerzees NuBlend® Fleece Sweatshirt", color: "Royal", sizes: { S: 8, YS: 9 }, image: "https://simaxdesigns.imgix.net/uploads/1753094331891_front-design.png" },
-//   { name: "Jerzees NuBlend® Fleece Sweatshirt", color: "Royal", sizes: { S: 8, YS: 9 }, image: "https://simaxdesigns.imgix.net/uploads/1753094331891_front-design.png" },
-//   { name: "Jerzees NuBlend® Fleece Sweatshirt", color: "Royal", sizes: { S: 8, YS: 9 }, image: "https://simaxdesigns.imgix.net/uploads/1753094331891_front-design.png" },
-// ];
-// // const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
-// const designId = '68a6ba4b6b2c9f3a161435dd';
-// const customerEmail = 'testuser%40example.com';
-// const randomDiscount = () => Math.floor(Math.random() * 21) + 15; // 15% to 35%
-
-// const Review = () => {
-//   const [discount, setDiscount] = useState(0);
-//   // const [loading, setLoading] = useState(false);
-//   const [showPopup, setShowPopup] = useState(false);
-//   const navigate = useNavigate();
-//   const productState = useSelector((state) => state.productSelection.products);
-//   const designState = useSelector((state) => state.TextFrontendDesignSlice);
-//   const { present, DesignNotes } = designState;
-//   const BASE_URL = process.env.REACT_APP_BASE_URL || "https://simax-sports-x93p.vercel.app/api/";
-//   const [retrieveLoader, setRetrieveLoader] = useState(false);
-//   const [saveDesignLoader, setSaveDesignLoader] = useState(false);
-//   const [emailSendingLoader, setEmailSendingLoader] = useState(false);
-//   const designPayload = {
-//     ownerEmail: "testuser@example33.com",
-//     design: {
-//       DesignName: "Demo T-Shirt 55555",
-//       present: {
-//         front: {
-//           texts: present.front.texts.map((text) => ({
-//             id: text.id,
-//             layerIndex: text.layerIndex,
-//             position: text.position,
-//             content: text.content,
-//             fontWeight: text.fontWeight,
-//             fontStyle: text.fontStyle,
-//             fontFamily: text.fontFamily,
-//             textColor: text.textColor,
-//           })),
-//           images: present.front.images.map((image) => ({
-//             id: image.id,
-//             layerIndex: image.layerIndex,
-//             position: image.position,
-//             src: image.src,
-//           })),
-//         },
-//         back: {
-//           texts: present.back.texts.map((text) => ({
-//             id: text.id,
-//             layerIndex: text.layerIndex,
-//             position: text.position,
-//             content: text.content,
-//             fontWeight: text.fontWeight,
-//             fontStyle: text.fontStyle,
-//             fontFamily: text.fontFamily,
-//             textColor: text.textColor,
-//           })),
-//           images: present.back.images.map((image) => ({
-//             id: image.id,
-//             layerIndex: image.layerIndex,
-//             position: image.position,
-//             src: image.src,
-//           })),
-//         },
-//         leftSleeve: {
-//           texts: present.leftSleeve.texts.map((text) => ({
-//             id: text.id,
-//             layerIndex: text.layerIndex,
-//             position: text.position,
-//             content: text.content,
-//             fontWeight: text.fontWeight,
-//             fontStyle: text.fontStyle,
-//             fontFamily: text.fontFamily,
-//             textColor: text.textColor,
-//           })),
-//           images: present.leftSleeve.images.map((image) => ({
-//             id: image.id,
-//             layerIndex: image.layerIndex,
-//             position: image.position,
-//             src: image.src,
-//           })),
-//         },
-//         rightSleeve: {
-//           texts: present.rightSleeve.texts.map((text) => ({
-//             id: text.id,
-//             layerIndex: text.layerIndex,
-//             position: text.position,
-//             content: text.content,
-//             fontWeight: text.fontWeight,
-//             fontStyle: text.fontStyle,
-//             fontFamily: text.fontFamily,
-//             textColor: text.textColor,
-//           })),
-//           images: present.rightSleeve.images.map((image) => ({
-//             id: image.id,
-//             layerIndex: image.layerIndex,
-//             position: image.position,
-//             src: image.src,
-//           })),
-//         },
-//       },
-//       FinalImages: [],
-//       DesignNotes: {
-//         FrontDesignNotes: DesignNotes.FrontDesignNotes || "",
-//         BackDesignNotes: DesignNotes.BackDesignNotes || "",
-//         ExtraInfo: DesignNotes.ExtraInfo || "",
-//       },
-//       status: "draft",
-//       version: 1,
-//     },
-//   };
-//   const design = useSelector((state) => state.TextFrontendDesignSlice.present);
-//   const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice);
-//   const [loading, setLoading] = useState(false)
-//   // console.log("desing....", design)
-//   // console.log("productState.....", productState)
-
-//   async function uploadBlobData(blobDataArray) {
-//     try {
-//       const formData = new FormData();
-//       blobDataArray = blobDataArray.slice(0, 6);
-//       // Append each blob as a file to the FormData
-//       blobDataArray.forEach((blob, index) => {
-//         formData.append(`image_${index}`, blob, `image_${index}.png`);
-//       });
-
-//       const apiUrl = `${process.env.REACT_APP_BASE_URL}imageOperation/fileBlobDataUploadToCloudinary`;
-
-//       const response = await fetch(apiUrl, {
-//         method: 'POST',
-//         body: formData,
-//       });
-
-//       if (!response.ok) {
-//         throw new Error('Failed to upload images');
-//       }
-
-//       const responseData = await response.json();
-//       console.log('Response from backend:', responseData);
-//       localStorage.setItem("data", JSON.stringify(responseData));
-//       return responseData;
-//     } catch (e) {
-//       console.error("Error uploading blob data:", e);
-//       throw e;
-//     }
-//   }
-
-//   async function saveDesignFunction(payload) {
-//     try {
-//       const response = await fetch(`${BASE_URL}design/save-designfrontEnd`, {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify(payload),
-//       });
-
-//       if (!response.ok) {
-//         throw new Error(`Failed to save design: ${response.statusText}`);
-//       }
-
-//       const responseData = await response.json();
-//       console.log("Design saved successfully:", responseData);
-//       return responseData;
-//     } catch (error) {
-//       console.error("Error saving design:", error);
-//       throw error;
-//     }
-//   }
-
-//   const reviewItems = Object.entries(productState).map(([id, product]) => {
-//     console.log("product udner entries", product)
-//     const sizes = Object.entries(product.selections).reduce((acc, [size, qty]) => {
-//       if (qty > 0) acc[size] = qty;
-//       return acc;
-//     }, {});
-//     console.log("productstate ", product);
-
-//     return {
-//       name: product?.name,
-//       color: product?.color,
-//       sizes,
-//       image: product?.imgurl,
-//       variantId: product?.variantId,
-//       allImages: [product?.allImages?.[0], product?.allImages?.[1], product?.allImages?.[2], product?.allImages?.[2]],
-//       allVariants: product?.allVariants,
-//       price: product?.price,
-//       sku: product?.sku,
-//       inventory_quantity: product?.inventory_quantity,
-//     };
-//   });
-
-//   console.log("reviewItems", reviewItems);
-
-//   useEffect(() => {
-//     setDiscount(randomDiscount());
-//   }, []);
-
-//   const totalItems = reviewItems.reduce((acc, item) => acc + Object.values(item.sizes).reduce((a, b) => a + b, 0), 0);
-//   const originalPrice = 30.36;
-//   const discountedPrice = (originalPrice * (1 - discount / 100)).toFixed(2);
-//   const totalPrice = (totalItems * discountedPrice).toFixed(2);
-//   const printAreaCount = useSelector((state) => {
-//     const present = state.TextFrontendDesignSlice.present;
-//     const areas = ["front", "back", "leftSleeve", "rightSleeve"];
-//     let count = areas.reduce((count, area) => {
-//       const hasContent = present[area].texts.length + present[area].images.length;
-//       return hasContent + count;
-//     }, 0);
-//     if ((design.back.nameAndNumberProductList.some((item) => item.selections.length != 0)) && (addName || addNumber)) {
-//       count++;
-//     }
-
-//     return count;
-
-//   });
-//   let colorCount = () => {
-//     // const allFrontImagesElement = design.front.images;
-//     // const allBackImagesElement = design.back.images;
-//     // const allLeftImagesElement = design.leftSleeve.images;
-//     // const allRightImagesElement = design.rightSleeve.images;
-//     const allTexts = [
-//       ...(design.front.texts || []),
-//       ...(design.back.texts || []),
-//       ...(design.leftSleeve.texts || []),
-//       ...(design.rightSleeve.texts || [])
-//     ];
-//     console.log(allTexts)
-
-//     const colorSet = new Set();
-
-//     allTexts.forEach(text => {
-//       if (text.textColor) {
-//         colorSet.add(text.textColor);
-//       }
-//     });
-//     console.log(colorSet)
-
-//     return colorSet.size; // if you want the list
-//   };
-
-//   const goBack = () => {
-//     navigate("/quantity");
-//   };
-
-//   const [url, setUrl] = useState("");
-//   const [backgroundImage, setBackgroundImage] = useState("");
-//   const [activeSide, setActiveSide] = useState("");
-
-//   function base64toBlob(base64String, contentType = 'image/png') {
-//     if (!base64String) return;
-//     const base64WithoutPrefix = base64String.replace(/^data:image\/(png|jpeg|gif|webp|svg\+xml);base64,/, '');
-//     const binaryString = atob(base64WithoutPrefix);
-//     const len = binaryString.length;
-//     const bytes = new Uint8Array(len);
-//     for (let i = 0; i < len; i++) {
-//       bytes[i] = binaryString.charCodeAt(i);
-//     }
-//     return new Blob([bytes], { type: contentType });
-//   }
-
-//   function makeVariantDataForShopify(reviewItems, CloudinaryImages) {
-//     // // console.log("makeVariantDataForShopify", );
-//     // CloudinaryImages = JSON.parse(localStorage.getItem("data")).files;
-//     const splitIntoPairs = (arr) => {
-//       const result = [];
-//       for (let i = 0; i < arr.length; i += 2) {
-//         result.push(arr.slice(i, i + 2));
-//       }
-//       return result;
-//     };
-//     const ShopifyData = [];
-
-//     const groupedImages = splitIntoPairs(CloudinaryImages.files);
-//     console.log("CloudinaryImages", CloudinaryImages);
-//     const data = reviewItems.forEach((product, index) => {
-//       const allVariants = product.allVariants;
-//       const obj = {
-//         "product_id": product?.variantId,
-//         "option1": "S",
-//         "option2": product?.color,
-//         "price": product?.price,
-//         "sku": "B665D8502",
-//         "inventory_quantity": product?.inventory_quantity,
-//         "image_urls": ["https://simaxdesigns.imgix.net/uploads/1753094129600_front-design.png"]
-//       }
-//       const sizeskey = Object.entries(product?.sizes);
-//       const color = product?.color;
-//       const variantTitles = sizeskey.map(([size, count]) => {
-//         return { title: `${color} / ${size}`, inventory_quantity: count };
-//       })
-//       // console.log(variantTitles, "variantTitles");
-
-//       const data = variantTitles.map((varianttitle) => {
-//         const variantData = allVariants.find((v) => v.title == varianttitle.title);
-//         console.log(variantData, "variantdata");
-//         const newData = {
-//           product_id: "7449547407494",
-//           // product_id: variantData?.variantId.split("/").reverse()[0] || variantData?.id.split("/").reverse()[0],
-//           option2: varianttitle.title.split("/")[1],
-//           option1: varianttitle.title.split("/")[0],
-//           price: variantData?.price,
-//           sku: variantData?.sku,
-//           image_urls: groupedImages[index], // we have to change 0 index image front
-//           inventory_quantity: Number(varianttitle.inventory_quantity),
-//           // inventory_quantity: variantData?.inventoryItem?.inventoryLevels?.edges?.[0]?.node?.quantities?.[0]?.quantity
-//           // locationId: "70287655046"
-//         }
-//         ShopifyData.push(newData);
-//         return newData;
-//       })
-//       return data;
-//       // console.log("next");
-
-//     })
-//     console.log("data.....", ShopifyData);
-//     addVariantsToStaticProduct(ShopifyData);
-//   }
-
-
-//   async function addVariantsToStaticProduct(variants) {
-//     try {
-//       setLoading(true);
-//       console.log(variants, "variants...... ")
-//       const response = await fetch(`${process.env.REACT_APP_BASE_URL}products/addVariantsOnStaticProduct`, {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify(variants)
-//       });
-
-//       if (!response.ok) {
-//         throw new Error(`HTTP error! status: ${response.status}`);
-//       }
-
-//       const data = await response.json();
-//       console.log('Success:', data);
-//       setLoading(false);
-//       return data;
-//     } catch (error) {
-//       setLoading(false);
-//       console.error('Error adding variants:', error);
-//     }
-//   }
-
-//   const cartHandler = () => {
-//     setShowPopup(true);
-//   };
-
-//   const handleSaveDesign = async (designName) => {
-//     setLoading(true);
-//     setShowPopup(false);
-//     try {
-//       designPayload.design.DesignName = designName;
-
-//       const allFrontImagesElement = present.front.images;
-//       const allBackImagesElement = present.back.images;
-//       const allLeftImagesElement = present.leftSleeve.images;
-//       const allRightImagesElement = present.rightSleeve.images;
-
-//       const allFrontTextElement = present.front.texts;
-//       const allBackTextElement = present.back.texts;
-//       const allLeftTextElement = present.leftSleeve.texts;
-//       const allRightTextElement = present.rightSleeve.texts;
-
-//       const designPromises = reviewItems.map(async (item, index) => {
-//         const frontBackground = item.allImages[0];
-//         const backBackground = item.allImages[1];
-//         const leftBackground = item.allImages[2];
-
-//         const frontDesignImages = await generateDesigns(
-//           [frontBackground],
-//           allFrontTextElement,
-//           allFrontImagesElement
-//         );
-
-//         const backDesignImages = await generateDesigns(
-//           [backBackground],
-//           allBackTextElement,
-//           allBackImagesElement
-//         );
-
-//         return {
-//           front: frontDesignImages[0],
-//           back: backDesignImages[0],
-//         };
-//       });
-
-//       const results = await Promise.all(designPromises);
-//       console.log('All Generated Designs:', results);
-
-//       const blobData = results.reduce((arr, item) => {
-//         arr.push(base64toBlob(item.front, 'image/png'));
-//         arr.push(base64toBlob(item.back, 'image/png'));
-//         return arr;
-//       }, []);
-
-//       console.log("blobData:", blobData);
-//       const cloudinaryResponse = await uploadBlobData(blobData);
-//       console.log("Cloudinary Response:", cloudinaryResponse);
-
-//       designPayload.design.FinalImages = cloudinaryResponse?.files?.map((url) => url) || [];
-//       await saveDesignFunction(designPayload);
-
-//       const variantData = makeVariantDataForShopify(reviewItems, cloudinaryResponse);
-//       toast.success("Design saved and variants prepared successfully!");
-//     } catch (error) {
-//       console.error("Error in cartHandler:", error);
-//       toast.error("Failed to save design or prepare variants.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const shouldShowBlankProductWarning = (design) => {
-
-
-//     const allImagesAndTextsEmpty =
-//       design.front.images.length === 0 &&
-//       design.back.images.length === 0 &&
-//       design.leftSleeve.images.length === 0 &&
-//       design.rightSleeve.images.length === 0 &&
-//       design.front.texts.length === 0 &&
-//       design.back.texts.length === 0 &&
-//       design.leftSleeve.texts.length === 0 &&
-//       design.rightSleeve.texts.length === 0;
-//     console.log("design.back.nameAndNumberProductList.length", design.back.nameAndNumberProductList)
-//     const isNameOrNumberEnabled = addName || addNumber;
-//     const isProductListEmpty = design.back.nameAndNumberProductList.every((item) => item.selections.length == 0);
-//     if (isNameOrNumberEnabled && isProductListEmpty && allImagesAndTextsEmpty) return true;
-//     if (isNameOrNumberEnabled && !isProductListEmpty) return false;
-//     // if(isNameOrNumberEnabled && )
-
-//     // ✅ Return true only if user enabled name or number, but added nothing
-//     return allImagesAndTextsEmpty;
-
-//     // return shouldShow;
-//   };
-//   useEffect(() => {
-//     setRetrieveLoader(true);
-//     setTimeout(() => {
-//       setRetrieveLoader(false);
-//       setSaveDesignLoader(true);
-//     }, 5000);
-//     setTimeout(() => {
-
-//       setEmailSendingLoader(true)
-//       setSaveDesignLoader(false);
-//       setTimeout(() => {
-//         setEmailSendingLoader(false)
-//       }, 4000);
-//     }, 10000);
-
-//   }, [])
-
-//   return (
-//     <div className={styles.container}>{
-//       retrieveLoader &&
-//       <RetrieveSavedDesignsModal onClose={() => { setRetrieveLoader(false) }}></RetrieveSavedDesignsModal>}
-//       {saveDesignLoader && <SaveDesignModal onClose={() => { setSaveDesignLoader(false) }}></SaveDesignModal>}
-//       {/* if(designExist){
-//          <SaveDesignModal onClose={() => { setSaveDesignLoader(false) }}></SaveDesignModal>
-//       }
-//       else{
-//         <SaveDesignPopup/>
-//       } */}
-//       {
-//         emailSendingLoader &&
-//         <EmailSendingModal onClose={() => setEmailSendingLoader(false)}> </EmailSendingModal>
-//       }
-//       <div className={styles.header}>
-//         <div className='toolbar-main-heading'>
-//           <h5 className='Toolbar-badge'>Review Your Order</h5>
-//         </div>
-//         <div className={styles.titleRow}>
-//           <div className={styles.arrow} onClick={goBack}><LuArrowLeft /></div>
-//           <h3>Your Products & Pricing</h3>
-//           <div className={styles.close} onClick={() => navigate("/design/product")}>
-//             <RxCross2 />
-//           </div>
-//         </div>
-//         <hr />
-//       </div>
-//       {
-//         shouldShowBlankProductWarning(design) ?
-//           <BlankProductWarning></BlankProductWarning> :
-//           loading ? <>   {true && (
-//             <div className={"loaderWrapper"}>
-//               <div className={"loader"}></div>
-//               <p style={{ textAlign: "center" }}>Loading.....</p>
-//             </div>
-//           )}</> :
-//             <>
-//               <div className={styles.priceInfo}>
-//                 <p>
-//                   <span className={styles.strike}>${originalPrice}</span>
-//                   <span className={styles.discounted}> ${discountedPrice} each</span>
-//                 </p>
-//                 <p>
-//                   <span className={styles.strikeSmall}>${(originalPrice * totalItems).toFixed(2)}</span>
-//                   <span className={`${styles.total}`}> <span className={styles.dollarText}>${totalPrice}</span> total with {discount}% off Bulk Discount</span>
-
-
-//                 </p>
-//                 <div className={styles.metaInfo}>
-//                   <div><FaTshirt /> {totalItems} items</div>
-//                   <div><BiTargetLock /> {printAreaCount} print area</div>
-//                   <div><IoIosColorPalette /> {colorCount()} colors</div>
-//                   {/* <div>✅ 100% Satisfaction Guarantee</div> */}
-//                 </div></div>
-
-//               <p className={styles.bulkDeal}>
-//                 <b>Buy More & Save:</b> 21 items for<span className={styles.dollarText}>$17.95</span>  ea. <span>|</span> 25 items for <span className={styles.dollarText}>$16.983</span> ea.
-//               </p>
-
-//               <div className={styles.summaryBlock}>
-//                 <p className={styles.summaryTitle}>Summary <span>({totalItems} items)</span></p>
-//                 {reviewItems.map((item, idx) => (
-//                   <div key={idx} className={styles.summaryItem}>
-//                     <img src={item.image} alt={item.name} />
-//                     <div className={styles.itemDetails}>
-//                       <div className={styles.itemHeader}>
-//                         <p className={styles.itemName}>{item.name}</p>
-//                         <p className={styles.itemPrice}>${discountedPrice} <span>each</span></p>
-//                       </div>
-//                       <p className={styles.itemSubtitle}>{item.color} | {totalItems} Items</p>
-//                       <div className={styles.sizes}>
-//                         {Object.entries(item.sizes).map(([size, count]) => (
-//                           <button key={size}>{size}-{count}</button>
-//                         ))}
-//                         <span className={styles.edit} onClick={goBack}>Edit sizes</span>
-//                       </div>
-//                     </div>
-//                   </div>
-//                 ))}
-//               </div>
-
-//               <div className={styles.extraFees}>
-//                 <p>Collegiate License <span>$39.44</span></p>
-//               </div>
-
-//               <button className={styles.addToCart} onClick={cartHandler}>ADD TO CART <LuArrowRight></LuArrowRight></button></>
-//       }
-//       {/* <p className={styles.payment}>or 4 interest free payments of ~${(totalPrice / 4).toFixed(2)} with</p>
-//       <div className={styles.paymentIcons}>
-//         <span>afterpay</span><span>Kl arna.</span><span>sezzle</span><span>affirm</span>
-//       </div> */}
-
-//       <div className={styles.review}>
-//         <img src="https://www.ninjaprinthouse.com/design/images/chelsea.png" alt="Reviewer" />
-//         <div>
-//           <blockquote>
-//             "This company is amazing! Shipping is super fast and they are competitively priced. We will absolutely use them again."
-//           </blockquote>
-//           <p><strong>Chelsea E.</strong> Ordered 35 pieces</p>
-//         </div>
-//       </div>
-
-//       {showPopup && <AddToCartPopup onSave={handleSaveDesign} onClose={() => setShowPopup(false)} />}
-//       <div class="canvas-wrapper" style={{ position: "relative", top: 5, display: "none" }} >
-//         <canvas id="canvas-export" style={{ display: "none" }} />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Review;
-// vvapi
 import React, { useState, useEffect } from "react";
 import styles from "./Review.module.css";
 import { LuArrowLeft, LuArrowRight } from "react-icons/lu";
@@ -594,8 +5,8 @@ import { RxCross2 } from "react-icons/rx";
 import { FaTshirt } from "react-icons/fa";
 import { BiTargetLock } from "react-icons/bi";
 import { IoIosColorPalette } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { generateDesigns } from "../../components/Editor/utils/helper";
 import { toast } from "react-toastify";
 import AddToCartPopup from "../../components/PopupComponent/AddToCartPopup/AddToCartPopup";
@@ -604,10 +15,10 @@ import BlankProductWarning from "./BlankProductWarning";
 import SaveDesignModal from "./SaveDesignModal";
 import RetrieveSavedDesignsModal from "./RetrieveSavedDesignsModal";
 import EmailSendingModal from "./EmailSendingModal";
+import { restoreEditDesigns } from "../../redux/FrontendDesign/TextFrontendDesignSlice";
 import SaveDesignPopup from "../../components/PopupComponent/SaveDesignPopup/SaveDesignPopup";
-
-const designId = "68a6ba4b6b2c9f3a161435dd";
-const customerEmail = "testuser@example.com"; // Unencoded email for apiConnecter
+const designId = "68a850c54d94107688e652ba";
+const customerEmail = "testuser@example33.com"; // Unencoded email for apiConnecter
 const randomDiscount = () => Math.floor(Math.random() * 21) + 15; // 15% to 35%
 
 const Review = () => {
@@ -618,7 +29,10 @@ const Review = () => {
   const [emailSendingLoader, setEmailSendingLoader] = useState(false);
   const [designExists, setDesignExists] = useState(false);
   const [isFetchingDesign, setIsFetchingDesign] = useState(false);
+  const [designStateDb, setdesignStateDb] = useState();
+  const [currentDesign, setCurrentDesing] = useState();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const productState = useSelector((state) => state.productSelection.products);
   const designState = useSelector((state) => state.TextFrontendDesignSlice);
   const { present, DesignNotes } = designState;
@@ -644,6 +58,7 @@ const Review = () => {
             layerIndex: image.layerIndex,
             position: image.position,
             src: image.src,
+            base64CanvasImage: image.src,
           })),
         },
         back: {
@@ -662,6 +77,8 @@ const Review = () => {
             layerIndex: image.layerIndex,
             position: image.position,
             src: image.src,
+            base64CanvasImage: image.src,
+
           })),
         },
         leftSleeve: {
@@ -680,6 +97,7 @@ const Review = () => {
             layerIndex: image.layerIndex,
             position: image.position,
             src: image.src,
+            base64CanvasImage: image.src,
           })),
         },
         rightSleeve: {
@@ -698,6 +116,7 @@ const Review = () => {
             layerIndex: image.layerIndex,
             position: image.position,
             src: image.src,
+            base64CanvasImage: image.src,
           })),
         },
       },
@@ -738,7 +157,9 @@ const Review = () => {
       const designFound = data.userDesigns?.designs?.some(
         (design) => design._id === designId
       );
+      const design = data.userDesigns?.designs?.filter((d) => d._id == designId);
       setDesignExists(designFound);
+      setCurrentDesing(design)
     } catch (error) {
       console.error("Error fetching design:", error);
       toast.error("Failed to fetch design.");
@@ -805,6 +226,7 @@ const Review = () => {
 
       const responseData = response.data;
       console.log("Design saved successfully:", responseData);
+      setdesignStateDb(responseData)
       return responseData;
     } catch (error) {
       console.error("Error saving design:", error);
@@ -834,15 +256,12 @@ const Review = () => {
   // --
 
   const reviewItems = Object.entries(productState).map(([id, product]) => {
-    console.log("product under entries", product);
-    const sizes = Object.entries(product.selections).reduce(
-      (acc, [size, qty]) => {
-        if (qty > 0) acc[size] = qty;
-        return acc;
-      },
-      {}
-    );
-    console.log("productstate ", product);
+    // console.log("product udner entries", product)
+    const sizes = Object.entries(product.selections).reduce((acc, [size, qty]) => {
+      if (qty > 0) acc[size] = qty;
+      return acc;
+    }, {});
+    // console.log("productstate ", product);
 
     return {
       name: product?.name,
@@ -863,7 +282,7 @@ const Review = () => {
     };
   });
 
-  console.log("reviewItems", reviewItems);
+  // console.log("reviewItems", reviewItems);
 
   useEffect(() => {
     setDiscount(randomDiscount());
@@ -902,7 +321,7 @@ const Review = () => {
       ...(design.leftSleeve.texts || []),
       ...(design.rightSleeve.texts || []),
     ];
-    console.log(allTexts);
+    // console.log(allTexts)
 
     const colorSet = new Set();
     allTexts.forEach((text) => {
@@ -910,8 +329,9 @@ const Review = () => {
         colorSet.add(text.textColor);
       }
     });
-    console.log(colorSet);
-    return colorSet.size;
+    // console.log(colorSet)
+
+    return colorSet.size; // if you want the list
   };
 
   const goBack = () => {
@@ -972,13 +392,22 @@ const Review = () => {
         const variantData = allVariants.find((v) => v.title == varianttitle.title);
         console.log(variantData, "variantdata");
         const newData = {
-          product_id: "7449547407494",
-          option2: varianttitle.title.split("/")[1],
-          option1: varianttitle.title.split("/")[0],
+          variant_id: variantData.id.split("/").reverse()[0],
+          size: varianttitle.title.split("/")[1].trim(),
+          color: varianttitle.title.split("/")[0].trim(),
           price: variantData?.price,
           sku: variantData?.sku,
-          image_urls: groupedImages[index],
-          inventory_quantity: Number(varianttitle.inventory_quantity),
+          "designId": "1525225",
+          quantity: Number(varianttitle.inventory_quantity),
+          "vendor": "Addidas test",
+          "custom": true,
+          "design": {
+            "front": groupedImages[index][0],
+            "back": groupedImages[index][1],
+            "left": groupedImages[index][1],
+            "right": groupedImages[index][1]
+          },
+          "PreviewImageUrl": groupedImages[index][0],
         };
         ShopifyData.push(newData);
         return newData;
@@ -986,27 +415,43 @@ const Review = () => {
       return data;
     });
     console.log("data.....", ShopifyData);
-    addVariantsToStaticProduct(ShopifyData);
+    createDraftOrderforCheckout(ShopifyData);
   }
-
-  async function addVariantsToStaticProduct(variants) {
+  // setEmailSendingLoader(false);
+  async function createDraftOrderforCheckout(variants) {
     try {
-      setLoading(true);
-      console.log(variants, "variants...... ");
-      const response = await apiConnecter(
-        "POST",
-        "products/addVariantsOnStaticProduct",
-        variants
-      );
+      // setLoading(true);
+      setEmailSendingLoader(true); // <-- If this loader is relevant here
 
-      const data = response.data;
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}products/createDraftOrderforCheckout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(variants)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       console.log("Success:", data);
-      setLoading(false);
+
+      if (data?.checkoutUrl) {
+        window.location.href = data?.checkoutUrl
+        // window.open(data.checkoutUrl, '_blank');
+      } else {
+        throw new Error("No checkout URL returned");
+      }
+
       return data;
     } catch (error) {
-      setLoading(false);
       console.error("Error adding variants:", error);
       toast.error("Failed to add variants.");
+    } finally {
+      // setLoading(false);
+      // setEmailSendingLoader(false); // <-- Only if applicable
     }
   }
 
@@ -1098,7 +543,7 @@ const Review = () => {
       } finally {
         setEmailSendingLoader(false);
       }
-      // const variantData = makeVariantDataForShopify(reviewItems, cloudinaryResponse);
+      const variantData = makeVariantDataForShopify(reviewItems, cloudinaryResponse);
       // toast.success("Design saved and variants prepared successfully!");
 
       // Show EmailSendingModal if emailUpdates is true
@@ -1124,7 +569,7 @@ const Review = () => {
       design.back.texts.length === 0 &&
       design.leftSleeve.texts.length === 0 &&
       design.rightSleeve.texts.length === 0;
-    console.log("design.back.nameAndNumberProductList.length", design.back.nameAndNumberProductList);
+    // console.log("design.back.nameAndNumberProductList.length", design.back.nameAndNumberProductList)
     const isNameOrNumberEnabled = addName || addNumber;
     const isProductListEmpty = design.back.nameAndNumberProductList.every(
       (item) => item.selections.length == 0
@@ -1132,7 +577,91 @@ const Review = () => {
     if (isNameOrNumberEnabled && isProductListEmpty && allImagesAndTextsEmpty) return true;
     if (isNameOrNumberEnabled && !isProductListEmpty) return false;
     return allImagesAndTextsEmpty;
+
+    // return shouldShow;
   };
+  // useEffect(() => {
+  //   setRetrieveLoader(true);
+  //   setTimeout(() => {
+  //     setRetrieveLoader(false);
+  //     setSaveDesignLoader(true);
+  //   }, 5000);
+  //   setTimeout(() => {
+
+  //     setEmailSendingLoader(true)
+  //     setSaveDesignLoader(false);
+  //     setTimeout(() => {
+  //       setEmailSendingLoader(false)
+  //     }, 4000);
+  //   }, 10000);
+
+  // }, [])
+
+  function restorePresentFromData(incomingPresent, src) {
+    const sides = ["front", "back", "leftSleeve", "rightSleeve"];
+    const restored = {};
+
+    sides.forEach(side => {
+      const originalImages = incomingPresent?.[side]?.images || [];
+
+      const enhancedImages = originalImages.map(image => ({
+        ...image,
+        base64CanvasImage: image.src  // Add base64 image string to each image
+      }));
+
+      restored[side] = {
+        selectedTextId: null,
+        selectedImageId: null,
+        loadingState: {
+          loading: false,
+          position: null
+        },
+        texts: incomingPresent?.[side]?.texts || [],
+        images: enhancedImages,
+        setRendering: false,
+        nameAndNumberProductList: [],
+      };
+    });
+
+    return restored;
+  }
+
+
+  const location = useLocation();
+
+  function editDesignHandler() {
+    try {
+      // const searchParams = new URLSearchParams(location.search);
+      // const designId = searchParams.get("designId");
+      const designId = "test"
+      console.log(designStateDb);
+
+      const matchedDesigns = designStateDb.userDesigns.designs.filter(
+        (d) => d.DesignName == "test2"
+      );
+
+      if (matchedDesigns.length === 0) {
+        console.error("Design not found for id:", designId);
+      } else {
+        const apiData = matchedDesigns[0]; // get the first match
+
+        const restoredState = {
+          // ...initialState,
+          present: restorePresentFromData(apiData.present),
+          // DesignNotes: apiData.DesignNotes || initialState.DesignNotes,
+        };
+        console.log(restorePresentFromData(apiData.present));
+        dispatch(restoreEditDesigns(restorePresentFromData(apiData.present)))
+
+        console.log(restoredState);
+      }
+
+    }
+    catch (e) {
+      console.log("error while fetching desing", e)
+    }
+
+  }
 
   return (
     <div className={styles.container}>
@@ -1150,6 +679,7 @@ const Review = () => {
             onSubmit={handleSaveDesign}
             defaultDesignName="Demo T-Shirt 55555"
             designId={designId}
+            currentDesign={currentDesign}
           />
         ) : (
           <AddToCartPopup
@@ -1276,6 +806,10 @@ const Review = () => {
             <strong>Chelsea E.</strong> Ordered 35 pieces
           </p>
         </div>
+        {/* <button onClick={(e) => {
+
+          editDesignHandler(e.target.value)
+        }} style={{ color: "red", fontSize: 20 }}>getUrlDesign</button> */}
       </div>
 
       {showPopup && (

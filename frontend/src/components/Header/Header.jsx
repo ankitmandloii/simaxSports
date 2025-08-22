@@ -15,7 +15,7 @@ const Header = () => {
   const designRoutes = ['/design/product', '/design/addArt', '/design/uploadArt', '/design/addNames', '/design/addText', '/design/addImage'];
   const isDesktopOrLaptop = useMediaQuery({ query: '(max-width: 750px)' })
 
-  return (
+  return (  
     <header className={style.appHeader}>
       <div className={style.leftSection}>
         <Link to="/design/product">
@@ -47,10 +47,10 @@ const Header = () => {
       </div>
 
       <div className={style.rightSection}>
-        <button className={style.headerBtn}>
+        {/* <button className={style.headerBtn}>
           <CartIcon />
           <p>Cart</p>
-        </button>
+        </button> */}
         <button className={style.headerBtn}>
           <UserIcon />
           <p>Login</p>

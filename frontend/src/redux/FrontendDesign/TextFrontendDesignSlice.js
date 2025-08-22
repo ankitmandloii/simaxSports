@@ -1366,6 +1366,11 @@ const TextFrontendDesignSlice = createSlice({
         state.DesignNotes[key] = value;
       }
     },
+    restoreEditDesigns: (state, action) => {
+      state.present = action.payload;
+    }
+
+
 
 
   },
@@ -1407,7 +1412,8 @@ export const {
   copyElementToSide,
   selectedImageIdState,
   setactiveNameAndNumberPrintSide,
-  toggleLoading
+  toggleLoading,
+  restoreEditDesigns
 } = TextFrontendDesignSlice.actions;
 
 // ✅ Export Selectors

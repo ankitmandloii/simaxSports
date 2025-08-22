@@ -601,15 +601,15 @@ const AddImageToolbar = () => {
 
   const hasMounted = useRef(false); // ✅ move to top level
 
-  // useEffect(() => {
-  //   console.log("hasmounted", hasMounted)
-  //   if (!hasMounted.current) {
-  //     hasMounted.current = true;
-  //     return; // ⛔ skip on first render
-  //   }
-  //   console.log("remove background is calling");
-  //   removeBackgroundHandler(); // ✅ run on subsequent changes only
-  // }, [img?.removeBgImagebtn]);
+  useEffect(() => {
+    console.log("hasmounted", hasMounted)
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return; // ⛔ skip on first render
+    }
+    console.log("remove background is calling");
+    removeBackgroundHandler(); // ✅ run on subsequent changes only
+  }, [img?.removeBgImagebtn]);
 
   function removeBackgroundHandler(e) {
     // update local state
@@ -1133,7 +1133,10 @@ const AddImageToolbar = () => {
       replaceBackgroundColor: "var(--black-color)",
       invertColor: false,
       singleColor: "#ffffff",
-      editColor: false
+      editColor: false,
+      src: previewUrl.split("?")[0],
+      selectedFilter: "Normal",
+      base64CanvasImage: previewUrl.split("?")[0],
     };
     fetchPalette();
 
@@ -1154,14 +1157,15 @@ const AddImageToolbar = () => {
     // const removeBgKey = 'bg-remove=true';
     // const cropKey = 'trim=color';
     // const enhanceKey = 'auto=enhance&sharp=80&upscale=true';
-    if (previewUrl?.split("?")?.length > 1) {
-      applyTransform('', true, false);
-      dispatch(updateImageState({ id: selectedImageId, changes }));
-    }
-    else {
-      changes.src = previewUrl.split("?")[0];
-      dispatch(updateImageState({ id: selectedImageId, changes }));
-    }
+    // if (previewUrl?.split("?")?.length > 1) {
+    //   applyTransform('', true, false);
+    //   dispatch(updateImageState({ id: selectedImageId, changes }));
+    // }
+    // else {
+    //   changes.src = previewUrl.split("?")[0];
+    //   console.log(changes.src);
+    // }
+    dispatch(updateImageState({ id: selectedImageId, changes }));
     setResetDefault(true);
     // handleImage(img.src.split("?")[0], "#ffffff");
     // setSelectedFilter("Normal")
