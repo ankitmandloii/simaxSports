@@ -575,7 +575,7 @@ const Review = () => {
       design.rightSleeve.texts.length === 0;
     // console.log("design.back.nameAndNumberProductList.length", design.back.nameAndNumberProductList)
     const isNameOrNumberEnabled = addName || addNumber;
-    const isProductListEmpty = design.back.nameAndNumberProductList.every(
+    const isProductListEmpty = design?.back?.nameAndNumberProductList?.every(
       (item) => item.selections.length == 0
     );
     if (isNameOrNumberEnabled && isProductListEmpty && allImagesAndTextsEmpty) return true;
