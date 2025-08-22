@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import logo from '../images/simax-design-logo.png'
 import { CartIcon, UserIcon } from '../iconsSvg/CustomIcon';
 import style from './Header.module.css'
@@ -8,12 +8,18 @@ import { BsXLg } from 'react-icons/bs';
 
 const Header = () => {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
+  // const CustomerLogin = searchParams.get("customerEmail");
+  const [CustomerLogin, setCustomerLogin] = useState('');
   // Extract current path without query params
   const currentPath = location.pathname;
   // Group of routes that map to "DESIGN"
   const designRoutes = ['/design/product', '/design/addArt', '/design/uploadArt', '/design/addNames', '/design/addText', '/design/addImage'];
   const isDesktopOrLaptop = useMediaQuery({ query: '(max-width: 750px)' })
+  useEffect(() => {
+    setCustomerLogin(searchParams.get("customerEmail"));
+  }, [CustomerLogin])
 
   return (
     <header className={style.appHeader}>
@@ -53,7 +59,7 @@ const Header = () => {
         </button>
         <button className={style.headerBtn}>
           <UserIcon />
-          <p>Login</p>
+          {CustomerLogin ? <p className={style.loginName}>{CustomerLogin}</p> : <p>Login</p>}
         </button>
         {
           isDesktopOrLaptop && (
