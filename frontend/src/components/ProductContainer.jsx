@@ -844,12 +844,13 @@ function ProductContainer() {
 
 
   useEffect(() => {
+    console.log("---fetchh")
     const productId = searchParams.get("pId");
     const variantId = searchParams.get("variantid");
-    console.log("---------variantId", variantId)
+    // console.log("---------variantId", variantId)
     if (!productId) return;
     fetchProductById(productId, variantId);
-  }, [searchParams, dispatch]);
+  }, []);
 
 
 
