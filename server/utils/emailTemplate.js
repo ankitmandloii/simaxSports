@@ -100,19 +100,30 @@ function renderHtml(d) {
         }<br>${esc(a.city || '')}, ${esc(a.province || '')} ${esc(a.zip || '')}<br>${esc(a.country || '')}`
       : '—';
 
-  const items =
+  const itemRows =
     d.items.length === 0
-      ? '<tr><td colspan="5" style="padding:8px;border:1px solid #eee;">No items</td></tr>'
+      ? '<tr><td colspan="7" style="padding:8px;border:1px solid #eee;">No items</td></tr>'
       : d.items
-          .map(
-            (li) => `<tr>
-  <td style="padding:8px;border:1px solid #eee;">${esc(li.title || '')}</td>
+          .map((li) => {
+            const preview = li.preview_image
+              ? `<img src="${esc(li.preview_image)}" alt="Preview" style="height:48px;width:48px;object-fit:cover;border-radius:4px;" />`
+              : '—';
+
+            const imagesList = (li.design_images || [])
+              .map(di => `<a href="${esc(di.url)}" style="margin-right:8px;text-decoration:none;color:#0b5fff;">${esc(di.label || 'Design')}</a>`)
+              .join('');
+
+            return `
+<tr>
+  <td style="padding:8px;border:1px solid #eee;">${preview}</td>
+  <td style="padding:8px;border:1px solid #eee;">${esc(li.title || '')}<div style="color:#999;font-size:12px;">ID: ${esc(li.line_item_id || '')}</div></td>
   <td style="padding:8px;border:1px solid #eee;">${esc(li.sku || '')}</td>
-  <td style="padding:8px;border:1px solid #eee;text-align:right;">${esc(li.quantity)}</td>
+  <td style="padding:8px;border:1px solid #eee;text-align:center;">${esc(li.quantity)}</td>
   <td style="padding:8px;border:1px solid #eee;text-align:right;">${esc(li.unit_price)} ${esc(d.totals.currency)}</td>
   <td style="padding:8px;border:1px solid #eee;text-align:right;">${esc(li.line_total)} ${esc(d.totals.currency)}</td>
-</tr>`
-          )
+  <td style="padding:8px;border:1px solid #eee;">${esc(li.design_id || '—')}${imagesList ? `<div style="margin-top:6px;">${imagesList}</div>` : ''}</td>
+</tr>`;
+          })
           .join('');
 
   return `<!doctype html><html><body style="font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;line-height:1.45;">
@@ -122,11 +133,7 @@ function renderHtml(d) {
   <table style="border-collapse:collapse;margin-bottom:14px;">
     <tr><td style="padding:6px 8px;color:#555;">Order</td><td style="padding:6px 8px;"><b>${esc(d.order.name || String(d.order.order_number || d.order.id || ''))}</b></td></tr>
     <tr><td style="padding:6px 8px;color:#555;">Created</td><td style="padding:6px 8px;">${esc(d.order.created_at || '—')}</td></tr>
-    ${
-      d.order.cancelled_at
-        ? `<tr><td style="padding:6px 8px;color:#b00020;">Cancelled</td><td style="padding:6px 8px;color:#b00020;">${esc(d.order.cancelled_at)} (${esc(d.order.cancel_reason || 'reason not provided')})</td></tr>`
-        : ''
-    }
+    ${d.order.cancelled_at ? `<tr><td style="padding:6px 8px;color:#b00020;">Cancelled</td><td style="padding:6px 8px;color:#b00020;">${esc(d.order.cancelled_at)} (${esc(d.order.cancel_reason || 'reason not provided')})</td></tr>` : ''}
     <tr><td style="padding:6px 8px;color:#555;">Financial</td><td style="padding:6px 8px;">${esc(d.order.financial_status || '—')}</td></tr>
     <tr><td style="padding:6px 8px;color:#555;">Fulfillment</td><td style="padding:6px 8px;">${esc(d.order.fulfillment_status || '—')}</td></tr>
     <tr><td style="padding:6px 8px;color:#555;">Customer</td><td style="padding:6px 8px;">${esc(d.customer?.name || '—')} &lt;${esc(d.customer?.email || '—')}&gt;</td></tr>
@@ -136,14 +143,16 @@ function renderHtml(d) {
   <table style="border-collapse:collapse;width:100%;margin-bottom:14px;">
     <thead>
       <tr>
-        <th align="left" style="padding:8px;border:1px solid #eee;background:#fafafa;">Item</th>
-        <th align="left" style="padding:8px;border:1px solid #eee;background:#fafafa;">SKU</th>
-        <th align="right" style="padding:8px;border:1px solid #eee;background:#fafafa;">Qty</th>
+        <th align="left"  style="padding:8px;border:1px solid #eee;background:#fafafa;">Preview</th>
+        <th align="left"  style="padding:8px;border:1px solid #eee;background:#fafafa;">Item</th>
+        <th align="left"  style="padding:8px;border:1px solid #eee;background:#fafafa;">SKU</th>
+        <th align="center"style="padding:8px;border:1px solid #eee;background:#fafafa;">Qty</th>
         <th align="right" style="padding:8px;border:1px solid #eee;background:#fafafa;">Price</th>
         <th align="right" style="padding:8px;border:1px solid #eee;background:#fafafa;">Line Total</th>
+        <th align="left"  style="padding:8px;border:1px solid #eee;background:#fafafa;">Design</th>
       </tr>
     </thead>
-    <tbody>${items}</tbody>
+    <tbody>${itemRows}</tbody>
   </table>
 
   <table style="border-collapse:collapse;margin-bottom:14px;">
@@ -181,6 +190,11 @@ function renderText(d) {
   lines.push(`Items:`);
   for (const li of d.items) {
     lines.push(`  - ${li.title} (SKU ${li.sku || '—'}) x${li.quantity} @ ${li.unit_price} = ${li.line_total} ${d.totals.currency}`);
+    if (li.design_id)   lines.push(`      Design ID: ${li.design_id}`);
+    if (li.preview_image) lines.push(`      Preview: ${li.preview_image}`);
+    for (const di of (li.design_images || [])) {
+      lines.push(`      ${di.label || 'Design'}: ${di.url}`);
+    }
   }
   if (d.order.order_status_url) lines.push(`Order status URL: ${d.order.order_status_url}`);
   return lines.join('\n');
