@@ -205,7 +205,8 @@ const cloudinaryUpload = multer({
 const testUpload = multer({ storage: multer.memoryStorage() });
 
 // router.post("/convertToPng", upload.single('image'), controllers.convertToPng); // Accept both single and multiple files
-router.post("/upload", upload.array('images', 5), controllers.fileUpload); // Accept both single and multiple files
+router.post("/upload", upload.array('images', 5), controllers.fileUploadForImgixUrl); // Accept both single and multiple files
+router.post("/uploadForS3Url", upload.array('images', 5), controllers.fileUploadForS3Url); // Accept both single and multiple files
 router.delete("/delete", controllers.fileDelete);
 // router.post("/image/list",controllers.getImageGalleryList)
 router.post("/editImageByAi",uploadforSingleEditImage.array('image', 1),controllers.editImageByAi);
