@@ -559,12 +559,17 @@ h3 {
   background: #f9f9f9;
   border-radius: 8px;
   display: flex;
+  margin-bottom: 2rem;
 
   /* flex-direction: column; */
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   /* text-align: center; */
+}
+
+.closeBtn {
+  cursor: pointer;
 }
 
 .review img {

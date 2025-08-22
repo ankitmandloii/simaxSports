@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { CrossIcon } from "../../components/iconsSvg/CustomIcon";
 
 const SaveDesignModal = ({ open, onClose, designName, userEmail }) => {
     const [saveOption, setSaveOption] = useState("update");
@@ -34,7 +35,7 @@ const SaveDesignModal = ({ open, onClose, designName, userEmail }) => {
     return (
         <div style={styles.overlay}>
             <div style={styles.modal}>
-                <button style={styles.closeBtn} onClick={onClose}>×</button>
+                <button style={styles.closeBtn} onClick={onClose}><CrossIcon /></button>
                 <h3 style={styles.header}>SAVE AND ADD TO CART</h3>
 
                 <p style={styles.title}>Save changes to <strong>"{designName}"</strong></p>

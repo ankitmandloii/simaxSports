@@ -206,6 +206,7 @@ function ProductContainer() {
         selectedImage: firstColor.variantImg,
         imgurl: firstColor.variantImg,
       };
+      console.log("initialProductWithColor", initialProductWithColor);
 
       dispatch(setSelectedProducts([initialProductWithColor]));
       dispatch(setActiveProduct(initialProductWithColor));

@@ -115,6 +115,7 @@ const QuantityToolbar = () => {
       });
       const id = product.id.split("/").reverse()[0];
       const sizes = getSizeOptions(product)
+      console.log("sizes,.......", sizes)
       const mainProduct = {
         name: product.name || product.title,
         id: id,
@@ -190,6 +191,7 @@ const QuantityToolbar = () => {
         const sizeOption = variant?.selectedOptions?.find((opt) => opt.name === 'Size');
 
         const inventoryQty = variant?.inventoryItem?.inventoryLevels?.edges?.[0]?.node?.quantities?.[0]?.quantity || 0;
+        console.log(sizeOption, "sizeOption");
         console.log("inventoryQty", inventoryQty)
 
         if (sizeOption && inventoryQty > 0) {
@@ -202,6 +204,8 @@ const QuantityToolbar = () => {
 
         return [];
       });
+
+      console.log(sizeVariantPairs, "sizeVariantPairs")
 
       // Remove duplicate sizes (only keep the first available one)
       return Array.from(new Map(sizeVariantPairs.map(item => [item.size, item])).values());
@@ -216,10 +220,14 @@ const QuantityToolbar = () => {
   };
 
   const getAvailableSizesAndQuantity = (product) => {
+    console.log(product, "....product ")
     if (product.sizes && product.sizes.length > 0) {
+      console.log(product.sizes.map(item => item), "m.............");
+
       return product.sizes.map(item => item);
     }
-    return product.name?.toLowerCase().includes('women') ? womenSizes : adultSizes;
+    // return product.name?.toLowerCase().includes('women') ? womenSizes : adultSizes;
+    return [];
   };
 
   const getTotalQuantityForProduct = (product) => {
