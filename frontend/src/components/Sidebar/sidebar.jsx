@@ -16,7 +16,7 @@ import { setHoveredRoute } from "../../redux/ProductSlice/HoverSlice";
 const AdminSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const location = useLocation();
   // const hoveredRoute = useSelector((state) => state.hover.hoveredRoute); // ✅
   // const hoveredRoute=useSelector((state)=>state?.hover.hoveredRoute)
@@ -31,10 +31,10 @@ const AdminSidebar = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-// ---
-useEffect(() => {
-  dispatch(setHoveredRoute(null)); // Reset hoveredRoute on route change
-}, [location.pathname, dispatch]);
+  // ---
+  useEffect(() => {
+    dispatch(setHoveredRoute(null)); // Reset hoveredRoute on route change
+  }, [location.pathname, dispatch]);
   const toggleSidebar = () => {
     if (window.innerWidth > 1024) {
       setCollapsed((prev) => !prev);
@@ -81,7 +81,7 @@ useEffect(() => {
         className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""} ${mobileOpen ? styles.show : ""}`}
       >
         <nav className={styles.sidebarMenu}>
-          {menuItems.map((item) => {
+          {/* {menuItems.map((item) => {
             const isActive =
               (item.path.startsWith("/design/product") &&
                 (location.pathname === "/" || location.pathname === "/design/product")) ||
@@ -120,7 +120,44 @@ useEffect(() => {
                 )}
               </Link>
             );
+          })} */}
+          {menuItems.map((item) => {
+            const isActive =
+              (item.path.startsWith("/design/product") &&
+                (location.pathname === "/" || location.pathname === "/design/product")) ||
+              location.pathname === item.path;
+
+            const isHovered = hoveredRoute === item.path;
+
+            // 🔹 Get current persisted query string
+            const query = location.search;
+
+            return (
+              <Link
+                key={item.path}
+                to={`${item.path}${query}`}   // ✅ append params here
+                className={`${styles.sidebarLink} ${isActive ? styles.active : isHovered ? styles.hovered : ""}`}
+                onClick={() => {
+                  setMobileOpen(false);
+                  dispatch(setHoveredRoute(null)); // Clear hover on click
+                }}
+              >
+                <span
+                  className={`${styles.sidebarIcon} ${item.path === "/design/addArt" ? styles.sidebariconAddArt : ""
+                    }`}
+                >
+                  {item.icon}
+                </span>
+                {item.path === "/design/addArt" && (
+                  <span className={styles.spannAi}>AI</span>
+                )}
+                {!collapsed && (
+                  <span className={styles.sidebarLabel}>{item.label}</span>
+                )}
+              </Link>
+            );
           })}
+
         </nav>
       </div>
     </div>

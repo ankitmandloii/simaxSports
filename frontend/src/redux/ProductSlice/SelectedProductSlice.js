@@ -8,6 +8,7 @@ const selectedProductSlice = createSlice({
   },
   reducers: {
     setSelectedProducts(state, action) {
+      console.log("------------reduxselectmain", action.payload)
       state.selectedProducts = action.payload;
     },
     addProduct(state, action) {

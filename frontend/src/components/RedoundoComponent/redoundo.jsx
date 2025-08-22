@@ -65,7 +65,7 @@ function RedoundoComponent() {
       {/* <button onClick={() => setShow(true)}>Edit AI</button> */}
       {startOverPopup && <StartOverConfirmationPopup onCancel={closeStartOverPopup} />}
       {/* {show && <EditWithAipopup onClose={() => setShow(false)} />} */}
-      {/* {show && <ShareDesignPopup />} */}
+      {/* {show && <ShareDesignPopup onClose={() => setShow(false)} />} */}
 
 
 

@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { requestExport } from '../../redux/CanvasExportDesign/canvasExportSlice.js';
 import MobileFAB from '../MobileFab/MobileFab.jsx';
 import { RiShareForwardLine } from "react-icons/ri";
+import ShareDesignPopup from '../PopupComponent/ShareDesignPopup/ShareDesignPopup.jsx';
 const Footer = () => {
   const [savedesignpopup, setSavedesignPopup] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -73,7 +74,8 @@ const Footer = () => {
 
       {/* Show Save Design Popup */}
       {savedesignpopup && (
-        <SaveDesignPopup setSavedesignPopupHandler={setSavedesignPopupHandler} />
+        // <SaveDesignPopup setSavedesignPopupHandler={setSavedesignPopupHandler} />
+        <ShareDesignPopup setSavedesignPopupHandler={setSavedesignPopupHandler} />
       )}
     </>
   );

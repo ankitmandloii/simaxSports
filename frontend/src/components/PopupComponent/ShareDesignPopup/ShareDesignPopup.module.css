@@ -19,13 +19,17 @@
     justify-content: space-between;
     border-bottom: 1px solid #cccfd6;
     background-color: #f9fafc;
-    padding: 20px;
+    padding: 15px;
     align-items: center;
+}
+
+.modalHeader span {
+    cursor: pointer;
 }
 
 .modalHeader h3 {
     color: var(--blue-color);
-    margin-bottom: none !important;
+    margin-bottom: 0 !important;
 }
 
 .content {
@@ -155,4 +159,69 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+
+/* form */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+form div {
+    display: flex;
+    flex-direction: column;
+}
+
+form label {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+form input,
+form textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+form textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.sendButton {
+    padding: 12px;
+    background-color: var(--blue-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+}
+
+.sendButton:hover {
+    box-shadow: 0 2px 8px 0 var(--blue-color);
+}
+
+.backButton {
+    padding: 12px;
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    margin-top: 10px;
+
+}
+
+.backButton:hover {
+    box-shadow: 0 2px 8px 0 var(--blue-color);
+
+
 }

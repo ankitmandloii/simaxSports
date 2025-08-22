@@ -26,7 +26,7 @@ import {
   updateNameAndNumberDesignState,
   updateTextState,
 } from "../../redux/FrontendDesign/TextFrontendDesignSlice";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import LayerModal from "../CommonComponent/layerComponent/layerComponent";
 import CurvedText from "../fabric/fabric.TextCurved"; // Adjust path if needed
 import syncMirrorCanvas from "./core/syncMirrorCanvas";
@@ -101,6 +101,10 @@ const MainDesignTool = ({
   // **********************************************************************************************************************************************************
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isQuantityPage = location.pathname === "/quantity" || location.pathname === '/review';
+  console.log("---------------------checkqty", isQuantityPage)
+
 
   // **********************************************************************************************************************************************************
   //                                                                                    USE MEMO AREA
@@ -2542,7 +2546,7 @@ const MainDesignTool = ({
           </div>
         )}
 
-      {(hasClicked || addName || addNumber || imageContaintObject.length > 0 || textContaintObject.length > 0) && (
+      {/* {(hasClicked || addName || addNumber || imageContaintObject.length > 0 || textContaintObject.length > 0 || !isQuantityPage) && (
         <div className={style.notesroute}>
           <button
             // onMouseEnter={() => handleHover("/design/addNotes")}
@@ -2553,7 +2557,18 @@ const MainDesignTool = ({
             <span className={style.icon}><CgNotes /></span> Add Notes
           </button>
         </div>
+      )} */}
+      {!isQuantityPage && (hasClicked || addName || addNumber || imageContaintObject.length > 0 || textContaintObject.length > 0) && (
+        <div className={style.notesroute}>
+          <button
+            onClick={() => setShowNotes(true)}
+            className={style.canvaButton}
+          >
+            <span className={style.icon}><CgNotes /></span> Add Notes
+          </button>
+        </div>
       )}
+
       <LayerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
