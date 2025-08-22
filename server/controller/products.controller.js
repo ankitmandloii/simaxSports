@@ -592,6 +592,7 @@ exports.createDraftOrderforCheckout = async (req, res) => {
         add("Design Right", it.design.right);
       }
       add("Preview Image", it.PreviewImageUrl || it.previewImageUrl);
+      add("Design ID", it.designId || it.design_id);
       return attrs;
     };
 

@@ -279,6 +279,7 @@ exports.getOrderList = async () => {
               sku
               originalUnitPriceSet { shopMoney { amount currencyCode } }
               discountedTotalSet { shopMoney { amount currencyCode } }
+              customAttributes { key value }   
               variant {
                 id
                 title
@@ -297,32 +298,8 @@ exports.getOrderList = async () => {
           }
         }
 
-        shippingAddress {
-          name
-          firstName
-          lastName
-          company
-          address1
-          address2
-          city
-          province
-          country
-          zip
-          phone
-        }
-        billingAddress {
-          name
-          firstName
-          lastName
-          company
-          address1
-          address2
-          city
-          province
-          country
-          zip
-          phone
-        }
+        shippingAddress { name firstName lastName company address1 address2 city province country zip phone }
+        billingAddress  { name firstName lastName company address1 address2 city province country zip phone }
 
         fulfillments {
           createdAt
@@ -346,21 +323,10 @@ exports.getOrderList = async () => {
         }
 
         shippingLines(first: 10) {
-          edges {
-            node {
-              title
-              price
-            }
-          }
+          edges { node { title price } }
         }
 
-        customer {
-          id
-          firstName
-          lastName
-          email
-          phone
-        }
+        customer { id firstName lastName email phone }
       }
     }
   }
