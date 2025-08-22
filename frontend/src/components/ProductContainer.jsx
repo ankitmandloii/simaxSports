@@ -470,6 +470,186 @@ function ProductContainer() {
   //   }
   // };
   // final
+  // const fetchProductById = async (productId, variantId) => {
+  //   try {
+  //     const res = await fetch(`${BASE_URL}design/productById`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ productId }),
+  //     });
+
+  //     if (!res.ok) throw new Error("Failed to fetch product");
+  //     const data = await res.json();
+  //     console.log("----data", data);
+
+  //     const productNode = data?.result?.products?.edges?.[0]?.node;
+  //     if (!productNode) return;
+
+  //     let colors = [];
+
+  //     // ✅ Check if product variants have a "Color" option
+  //     const hasColorOption = productNode.variants.edges.some(({ node }) =>
+  //       node.selectedOptions.some((opt) => opt.name === "Color")
+  //     );
+
+  //     if (hasColorOption) {
+  //       const colorMap = {};
+  //       productNode.variants.edges.forEach(({ node }) => {
+  //         const colorOption = node.selectedOptions.find(
+  //           (opt) => opt.name === "Color"
+  //         );
+  //         if (!colorOption) return;
+
+  //         const colorName = colorOption.value;
+
+  //         if (!colorMap[colorName]) {
+  //           colorMap[colorName] = {
+  //             name: colorName,
+  //             img: node.image?.originalSrc || "",
+  //             variant: node,
+  //             sizes: [],
+  //             allVariants: [], // will overwrite later
+  //           };
+  //         }
+
+  //         const sizeOption = node.selectedOptions.find(
+  //           (opt) => opt.name === "Size"
+  //         );
+
+  //         if (sizeOption) {
+  //           colorMap[colorName].sizes.push({
+  //             size: sizeOption.value,
+  //             variant: node,
+  //           });
+  //         }
+
+  //         colorMap[colorName].allVariants.push(node);
+  //       });
+
+  //       colors = Object.values(colorMap);
+
+  //       // ✅ overwrite with ALL product variants for every color
+  //       const allVariants = productNode.variants.edges.map(({ node }) => node);
+  //       colors = colors.map((c) => ({
+  //         ...c,
+  //         allVariants: [...allVariants],
+  //       }));
+  //     } else {
+  //       colors = [
+  //         {
+  //           name: "Default",
+  //           img:
+  //             productNode.variants.edges[0]?.node?.image?.originalSrc ||
+  //             productNode.images?.edges?.[0]?.node?.originalSrc ||
+  //             "",
+  //           variant: productNode.variants.edges[0]?.node,
+  //           sizes: productNode.variants.edges.map(({ node }) => ({
+  //             size: node.selectedOptions.find((opt) => opt.name === "Size")
+  //               ?.value,
+  //             variant: node,
+  //           })),
+  //           allVariants: productNode.variants.edges.map(({ node }) => node), // already all
+  //         },
+  //       ];
+  //     }
+
+  //     if (colors.length === 0) return;
+
+  //     // ✅ Process colors for swatch + variant images
+  //     const updatedColors = colors.map((color) => {
+  //       let swatchImg = "";
+  //       let variantImg = "";
+  //       let selectedImage = "";
+
+  //       const variant = color?.variant;
+  //       const variantImagesMetafield = variant?.metafields?.edges?.find(
+  //         (edge) =>
+  //           edge.node.key === "variant_images" &&
+  //           edge.node.namespace === "custom"
+  //       );
+
+  //       if (variantImagesMetafield?.node?.value) {
+  //         try {
+  //           const parsedImages = JSON.parse(variantImagesMetafield.node.value);
+  //           if (Array.isArray(parsedImages)) {
+  //             const colorKey =
+  //               color.name?.toLowerCase().replace(/\s+/g, "") || "";
+  //             swatchImg =
+  //               parsedImages.find((img) =>
+  //                 img.toLowerCase().includes(colorKey)
+  //               ) ||
+  //               parsedImages[3] ||
+  //               parsedImages[0] ||
+  //               "";
+  //             variantImg = parsedImages[0] || color.img || "";
+  //             selectedImage = variantImg;
+  //           }
+  //         } catch (error) {
+  //           console.warn("Failed to parse variant_images metafield:", error);
+  //         }
+  //       }
+
+  //       const fallbackImage =
+  //         color.img ||
+  //         variant?.image?.originalSrc ||
+  //         productNode.images?.edges?.[0]?.node?.originalSrc ||
+  //         "";
+  //       swatchImg = swatchImg || fallbackImage;
+  //       variantImg = variantImg || fallbackImage;
+  //       selectedImage = selectedImage || fallbackImage;
+
+  //       return { ...color, swatchImg, variantImg, selectedImage };
+  //     });
+
+  //     // ✅ If variantId provided → find that variant
+  //     let selectedColor = updatedColors[0];
+  //     let selectedImage = selectedColor.variantImg;
+
+  //     if (variantId) {
+  //       const normalizedVariantId = variantId.startsWith("gid://")
+  //         ? variantId
+  //         : `gid://shopify/ProductVariant/${variantId}`;
+
+  //       const matchingColor = updatedColors.find((c) =>
+  //         c.allVariants.some((v) => v.id === normalizedVariantId)
+  //       );
+  //       console.log("-------matcjing", matchingColor)
+
+  //       if (matchingColor) {
+  //         selectedColor = matchingColor;
+  //         const matchedVariant =
+  //           matchingColor.allVariants.find((v) => v.id === variantId) ||
+  //           matchingColor.variant;
+
+  //         selectedImage =
+  //           matchedVariant?.image?.originalSrc || matchingColor.variantImg;
+  //       }
+  //     }
+
+  //     // ✅ Build final product object
+  //     const allVariants = productNode.variants.edges.map(({ node }) => node);
+
+  //     const initialProductWithColor = {
+  //       id: productNode.id,
+  //       name: productNode.title,
+  //       tags: productNode.tags,
+  //       images: productNode.images.edges.map((edge) => edge.node),
+  //       colors: updatedColors,
+  //       selectedColor,
+  //       selectedImage,
+  //       imgurl: selectedImage,
+  //       allVariants, // ✅ ensure product-level allVariants exists (like index 1)
+  //     };
+
+  //     console.log("initialProductWithColor", initialProductWithColor);
+
+  //     dispatch(setSelectedProducts([initialProductWithColor]));
+  //     dispatch(setActiveProduct(initialProductWithColor));
+  //   } catch (err) {
+  //     console.error("Error fetching product:", err);
+  //   }
+  // };
+
   const fetchProductById = async (productId, variantId) => {
     try {
       const res = await fetch(`${BASE_URL}design/productById`, {
@@ -508,14 +688,13 @@ function ProductContainer() {
               img: node.image?.originalSrc || "",
               variant: node,
               sizes: [],
-              allVariants: [], // will overwrite later
+              allVariants: [], // will overwrite later with ALL
             };
           }
 
           const sizeOption = node.selectedOptions.find(
             (opt) => opt.name === "Size"
           );
-
           if (sizeOption) {
             colorMap[colorName].sizes.push({
               size: sizeOption.value,
@@ -523,12 +702,12 @@ function ProductContainer() {
             });
           }
 
-          colorMap[colorName].allVariants.push(node);
+          colorMap[colorName].allVariants.push(node); // temporary
         });
 
         colors = Object.values(colorMap);
 
-        // ✅ overwrite with ALL product variants for every color
+        // ✅ Overwrite allVariants with ALL product variants (Option 1)
         const allVariants = productNode.variants.edges.map(({ node }) => node);
         colors = colors.map((c) => ({
           ...c,
@@ -544,8 +723,7 @@ function ProductContainer() {
               "",
             variant: productNode.variants.edges[0]?.node,
             sizes: productNode.variants.edges.map(({ node }) => ({
-              size: node.selectedOptions.find((opt) => opt.name === "Size")
-                ?.value,
+              size: node.selectedOptions.find((opt) => opt.name === "Size")?.value,
               variant: node,
             })),
             allVariants: productNode.variants.edges.map(({ node }) => node), // already all
@@ -572,8 +750,7 @@ function ProductContainer() {
           try {
             const parsedImages = JSON.parse(variantImagesMetafield.node.value);
             if (Array.isArray(parsedImages)) {
-              const colorKey =
-                color.name?.toLowerCase().replace(/\s+/g, "") || "";
+              const colorKey = color.name?.toLowerCase().replace(/\s+/g, "") || "";
               swatchImg =
                 parsedImages.find((img) =>
                   img.toLowerCase().includes(colorKey)
@@ -601,7 +778,7 @@ function ProductContainer() {
         return { ...color, swatchImg, variantImg, selectedImage };
       });
 
-      // ✅ If variantId provided → find that variant
+      // ✅ If variantId provided → find that exact variant + its color
       let selectedColor = updatedColors[0];
       let selectedImage = selectedColor.variantImg;
 
@@ -610,18 +787,30 @@ function ProductContainer() {
           ? variantId
           : `gid://shopify/ProductVariant/${variantId}`;
 
-        const matchingColor = updatedColors.find((c) =>
-          c.allVariants.some((v) => v.id === normalizedVariantId)
-        );
+        const allVariants = productNode.variants.edges.map(({ node }) => node);
+        const variantNode = allVariants.find((v) => v.id === normalizedVariantId);
 
-        if (matchingColor) {
-          selectedColor = matchingColor;
-          const matchedVariant =
-            matchingColor.allVariants.find((v) => v.id === variantId) ||
-            matchingColor.variant;
+        if (variantNode) {
+          // Find the color for this variant
+          const colorOption = variantNode.selectedOptions.find(
+            (opt) => opt.name === "Color"
+          );
+          if (colorOption) {
+            const matchingColor = updatedColors.find(
+              (c) => c.name === colorOption.value
+            );
+            if (matchingColor) {
+              selectedColor = matchingColor;
+              selectedImage =
+                variantNode.image?.originalSrc || matchingColor.variantImg;
 
-          selectedImage =
-            matchedVariant?.image?.originalSrc || matchingColor.variantImg;
+              // ✅ override selectedColor.variant with the actual variant node
+              selectedColor = {
+                ...matchingColor,
+                variant: variantNode,
+              };
+            }
+          }
         }
       }
 
@@ -637,7 +826,7 @@ function ProductContainer() {
         selectedColor,
         selectedImage,
         imgurl: selectedImage,
-        allVariants, // ✅ ensure product-level allVariants exists (like index 1)
+        allVariants, // ✅ global all variants at product-level
       };
 
       console.log("initialProductWithColor", initialProductWithColor);
@@ -654,10 +843,10 @@ function ProductContainer() {
 
 
 
-
   useEffect(() => {
     const productId = searchParams.get("pId");
     const variantId = searchParams.get("variantid");
+    console.log("---------variantId", variantId)
     if (!productId) return;
     fetchProductById(productId, variantId);
   }, [searchParams, dispatch]);
