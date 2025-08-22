@@ -27,6 +27,10 @@
   margin-right: 5px;
 }
 
+.loginName {
+  color: var(--blue-color);
+}
+
 .navSpanNumberActive {
   color: var(--blue-color);
 }

@@ -9,20 +9,78 @@ import {
   BlockStack,
   SkeletonBodyText,
   SkeletonDisplayText,
-  Modal,
-  EmptyState
+  EmptyState,
 } from '@shopify/polaris';
-
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
+function moneyFromSet(set) {
+  const amt = set?.shopMoney?.amount ?? '';
+  const cur = set?.shopMoney?.currencyCode ?? '';
+  return amt !== '' && cur ? `${cur} ${amt}` : '';
+}
+
+function getAttr(node, key) {
+  return node?.customAttributes?.find((a) => a?.key === key)?.value ?? '';
+}
+
+function itemsSummary(order) {
+  const edges = order?.lineItems?.edges ?? [];
+  if (!edges.length) return '';
+  return edges
+    .map((e) => {
+      const n = e?.node;
+      if (!n) return '';
+      const qty =
+        typeof n.quantity === 'number' && !Number.isNaN(n.quantity)
+          ? ` x${n.quantity}`
+          : '';
+      return `${n.title ?? 'Item'}${qty}`;
+    })
+    .filter(Boolean)
+    .join(', ');
+}
+
+function designIdsSummary(order) {
+  const edges = order?.lineItems?.edges ?? [];
+  const ids = edges
+    .map((e) => getAttr(e?.node, 'Design ID'))
+    .filter(Boolean);
+  return ids.join(', ');
+}
+
+function shippingLineSummary(order) {
+  const slNode = order?.shippingLines?.edges?.[0]?.node;
+  if (!slNode) return '';
+  const title = slNode.title ?? '';
+  const priceStr = slNode.price ?? '';
+  const currency = order?.currencyCode ?? '';
+  const price = priceStr !== '' ? `${currency} ${priceStr}` : '';
+  return [title, price].filter(Boolean).join(' ');
+}
+
+/** First available image for the order:
+ *  1) Line item "Preview Image" custom attribute
+ *  2) Variant product featuredImage.url
+ */
+function firstOrderImage(order) {
+  const edges = order?.lineItems?.edges ?? [];
+  for (const e of edges) {
+    const n = e?.node;
+    if (!n) continue;
+    const fromAttr = getAttr(n, 'Preview Image');
+    if (fromAttr) return fromAttr;
+    const fromFeatured = n?.variant?.product?.featuredImage?.url;
+    if (fromFeatured) return fromFeatured;
+  }
+  return '';
+}
 
 export default function OrderList() {
-  const [allProducts, setAllProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [rows, setRows] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState(null);
   const perPage = 10;
 
   useEffect(() => {
@@ -30,18 +88,15 @@ export default function OrderList() {
     fetch(`${BASE_URL}customer/order-list`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      // body: JSON.stringify({ limit: perPage, cursor }),
     })
-      .then(res => res.json())
-      .then(data => {
-        if (data?.orders?.edges?.length === 0) {
-          setAllProducts([]); // Empty list will be handled below
-        } else {
-          setAllProducts(data.orders.edges.map(edge => edge.node)); // Assuming data shape
-        }
+      .then((res) => res.json())
+      .then((data) => {
+        const edges = data?.result?.data?.orders?.edges ?? [];
+        const list = edges.map((e) => e?.node).filter(Boolean);
+        setOrders(list);
         setLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('API fetch failed:', error);
         setLoading(false);
       });
@@ -49,25 +104,49 @@ export default function OrderList() {
 
   useEffect(() => {
     const startIndex = (page - 1) * perPage;
-    const paginatedData = allProducts?.slice(startIndex, startIndex + perPage);
+    const paginated = orders.slice(startIndex, startIndex + perPage);
 
-    const formatted = paginatedData.map(product => [
-      product.id.toString(),
-      product.title,
-      `$${product.price}`,
-      product.category,
-      <img src={product.image} alt="product" style={{ height: '40px', objectFit: 'contain', cursor: 'pointer' }} onClick={() => setSelectedImage(product.image)} />,
-    ]);
+    const formatted = paginated.map((order) => {
+      const id = order?.id ?? '';
+      const name = order?.name ?? '';
+      const email = order?.email ?? '';
+      const createdAt = order?.createdAt ? new Date(order.createdAt).toLocaleString() : '';
+      const total = moneyFromSet(order?.totalPriceSet);
+      const items = itemsSummary(order);
+      const shipping = shippingLineSummary(order);
+      const designIds = designIdsSummary(order);
+      const imgUrl = firstOrderImage(order);
+
+      const imgCell = imgUrl ? (
+        <img
+          src={imgUrl}
+          alt="Order item"
+          style={{ height: 40, width: 40, objectFit: 'cover', borderRadius: 4 }}
+        />
+      ) : '';
+
+      return [
+        imgCell,     // Image
+        id,          // Order ID (GID)
+        name,        // Name (e.g. #1009)
+        email,       // Email
+        createdAt,   // Created At
+        total,       // Total
+        items,       // Items
+        designIds,   // Design IDs
+        shipping,    // Shipping
+      ];
+    });
+
     setRows(formatted);
-  }, [allProducts, page]);
+  }, [orders, page]);
 
-  const totalPages = Math.ceil(allProducts.length / perPage);
+  const totalPages = Math.max(1, Math.ceil(orders.length / perPage));
 
   return (
     <Page fullWidth title="Order List" subtitle="Manage your Orders from here.">
       <Card sectioned>
         {loading ? (
-          // 🔄 Skeleton UI instead of spinner
           <BlockStack gap="300">
             <SkeletonDisplayText size="medium" />
             <SkeletonBodyText lines={12} />
@@ -75,14 +154,9 @@ export default function OrderList() {
               <SkeletonBodyText lines={1} />
             </InlineStack>
           </BlockStack>
-        ) : allProducts.length === 0 ? (
+        ) : orders.length === 0 ? (
           <EmptyState
             heading="No orders yet.."
-            // action={{content: 'Add transfer'}}
-            // secondaryAction={{
-            //   content: 'Learn more',
-            //   url: 'https://help.shopify.com',
-            // }}
             image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
           >
             <p>Track and receive your incoming Orders from customers.</p>
@@ -91,41 +165,53 @@ export default function OrderList() {
           <>
             <div style={{ overflowX: 'auto', maxHeight: '600px' }}>
               <DataTable
-                columnContentTypes={['text', 'text', 'text', 'text', 'text']}
-                headings={['ID', 'Title', 'Price', 'Category', 'Image']}
+                columnContentTypes={[
+                  'text', // Image cell (node)
+                  'text',
+                  'text',
+                  'text',
+                  'text',
+                  'text',
+                  'text',
+                  'text',
+                  'text',
+                ]}
+                headings={[
+                  'Image',
+                  'Order ID (GID)',
+                  'Name',
+                  'Email',
+                  'Created At',
+                  'Total',
+                  'Items',
+                  'Design IDs',
+                  'Shipping',
+                ]}
                 rows={rows}
                 footerContent={`${page}`}
               />
             </div>
 
-            <InlineStack align="center" gap="400" wrap={false} style={{ marginTop: '1rem' }}>
-              <Button disabled={page === 1} onClick={() => setPage(page - 1)}>Previous</Button>
+            <InlineStack
+              align="center"
+              gap="400"
+              wrap={false}
+              style={{ marginTop: '1rem' }}
+            >
+              <Button disabled={page === 1} onClick={() => setPage(page - 1)}>
+                Previous
+              </Button>
               <Text variant="bodyMd">{`Page ${page} of ${totalPages}`}</Text>
-              <Button disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+              <Button
+                disabled={page === totalPages}
+                onClick={() => setPage(page + 1)}
+              >
+                Next
+              </Button>
             </InlineStack>
           </>
         )}
-
-        {selectedImage && (
-          <Modal
-            open={true}
-            onClose={() => setSelectedImage(null)}
-            title="Product Image"
-            large
-          >
-            <Modal.Section>
-              <div style={{ textAlign: 'center' }}>
-                <img
-                  src={selectedImage}
-                  alt="Product"
-                  style={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain' }}
-                />
-              </div>
-            </Modal.Section>
-          </Modal>
-        )}
       </Card>
     </Page>
-
   );
 }

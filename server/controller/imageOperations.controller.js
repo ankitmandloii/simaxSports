@@ -80,7 +80,7 @@ const sanitizeFilenameFunction = (name) => {
 };
 
 
-exports.fileUpload = async (req, res) => {
+exports.fileUploadForImgixUrl = async (req, res) => {
     try {
         const files = req.files?.length ? req.files : req.file ? [req.file] : [];
 
@@ -123,6 +123,48 @@ exports.fileUpload = async (req, res) => {
     }
 };
 
+exports.fileUploadForS3Url = async (req, res) => {
+    try {
+        const files = req.files?.length ? req.files : req.file ? [req.file] : [];
+
+        if (files.length === 0) {
+            return res.status(400).json({ message: "No file(s) uploaded" });
+        }
+
+      
+
+        const uploadedUrls = [];
+
+        for (const file of files) {
+            const sanitizedName = sanitizeFilenameFunction(file.originalname);
+            const fileKey = `uploads/${Date.now()}_${sanitizedName}`;
+            const uploadParams = {
+                Bucket: process.env.S3_BUCKET,
+                Key: fileKey,
+                Body: file.buffer,
+                ContentType: file.mimetype,
+            };
+
+            const uploadCommand = new PutObjectCommand(uploadParams);
+            await s3Client.send(uploadCommand);
+            const fileUrlFromS3Direct = `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
+            // const fileUrlFromImgixDirect = `https://${process.env.IMGIX_DOMAIN}/${fileKey}`;
+            uploadedUrls.push({
+                name: file.originalname,
+                url: fileUrlFromS3Direct
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            uploaded: uploadedUrls.length,
+            files: uploadedUrls
+        });
+    } catch (err) {
+        console.error("Upload error:", err);
+        res.status(500).json({ message: "File upload failed", error: err.message });
+    }
+};
 
 
 

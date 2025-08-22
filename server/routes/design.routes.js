@@ -8,7 +8,8 @@ router.get('/admin-get-settings', controllers.getSettings)
 
 ///////////////////////FrontEnd-userDesign APi's//////////////////////////////////////////////
 router.post('/save-designfrontEnd', controllers.saveDesignsFromFrontEnd);
-router.get('/get-designfrontEnd', controllers.getDesignsFromFrontEnd);
+router.get('/get-designfrontEnd', controllers.getDesignsFromFrontEndByEmail);
+router.get('/getDesignsFromFrontEndById', controllers.getDesignsFromFrontEndById);
 router.delete('/delete-designfrontEnd/:designId', controllers.deleteDesignsFromFrontEnd);
 router.get("/get-AllOrderedDesignfrontEnd", controllers.getAllOrderedDesigns);
 

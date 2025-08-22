@@ -11,34 +11,6 @@ const { dbConnection } = require("../config/db.js");
 const Location = require('../model/locationSchema.js')
 // const client = require('../utils/redisClient.js');
 
-// function verifyShopifyWebhook(req, res, buf) {
-//   const hmac = req.get('X-Shopify-Hmac-Sha256');
-//   const generatedHmac = crypto
-//     .createHmac('sha256', SHOPIFY_SECRET)
-//     .update(buf, 'utf8')
-//     .digest('base64');
-
-//   if (generatedHmac !== hmac) {
-//     throw new Error('Webhook verification failed');
-//   }
-// }
-
-
-exports.orderCreationWEbHooks = async (req, res) => {
-  try {
-    verifyShopifyWebhook(req, res, req.body);
-    const orderData = JSON.parse(req.body);
-    console.log('Order webhook data:', orderData);
-
-    // TODO: Process orderData (save to DB, update status, etc.)
-
-    res.status(200).send('OK');
-  } catch (err) {
-    console.error('Webhook error:', err.message);
-    res.status(401).send('Unauthorized');
-  }
-};
-
 exports.signUp = async (req, res) => {
   try {
 

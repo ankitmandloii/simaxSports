@@ -17,7 +17,7 @@ const ImageSchema = new Schema(
     angle:  { type: Number, default: 0 },
     flipX:  { type: Boolean, default: false },
     flipY:  { type: Boolean, default: false },
-
+    base64canvasImage: { type: String},
     thresholdValue: { type: Number, default: 144 },
     replaceBackgroundColor: { type: String, default: '#000000' },
     replaceBgParamValue: { type: String, default: 'bg-remove=true&bg=AABB22' },

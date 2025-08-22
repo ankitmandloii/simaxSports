@@ -250,58 +250,88 @@ exports.getOrderList = async () => {
   const S_STORE = process.env.SHOPIFY_STORE_URL;
   const A_TOKEN = process.env.SHOPIFY_API_KEY;
 
-  const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/2025-04/graphql.json`;
+  const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`;
   //will implement for Pagination
-  const query = `
-    {
-      orders(first: 10, reverse: true) {
-        edges {
-          node {
-            id
-            name
-            email
-            createdAt
-            totalPriceSet {
-              shopMoney {
-                amount
-                currencyCode
-              }
-            }
-            lineItems(first: 10) {
-              edges {
-                node {
+  const query = `{
+  orders(first: 10, reverse: true) {
+    edges {
+      node {
+        id
+        name
+        email
+        createdAt
+        cancelledAt
+        cancelReason
+        currencyCode
+
+        subtotalPriceSet { shopMoney { amount currencyCode } }
+        totalPriceSet { shopMoney { amount currencyCode } }
+        totalShippingPriceSet { shopMoney { amount currencyCode } }
+        totalTaxSet { shopMoney { amount currencyCode } }
+        totalRefundedSet { shopMoney { amount currencyCode } }
+
+        lineItems(first: 20) {
+          edges {
+            node {
+              id
+              title
+              quantity
+              sku
+              originalUnitPriceSet { shopMoney { amount currencyCode } }
+              discountedTotalSet { shopMoney { amount currencyCode } }
+              customAttributes { key value }   
+              variant {
+                id
+                title
+                sku
+                product {
+                  id
+                  handle
                   title
-                  quantity
-                  sku
-                  originalUnitPriceSet {
-                    shopMoney {
-                      amount
-                      currencyCode
-                    }
-                  }
+                  vendor
+                  productType
+                  tags
+                  featuredImage { url altText width height }
                 }
-              }
-            }
-            shippingAddress {
-              name
-              address1
-              address2
-              city
-              zip
-              province
-              country
-            }
-            fulfillments {
-                trackingInfo {
-                number
-                url
               }
             }
           }
         }
+
+        shippingAddress { name firstName lastName company address1 address2 city province country zip phone }
+        billingAddress  { name firstName lastName company address1 address2 city province country zip phone }
+
+        fulfillments {
+          createdAt
+          status
+          trackingInfo { company number url }
+        }
+
+        discountApplications(first: 10) {
+          edges {
+            node {
+              allocationMethod
+              targetSelection
+              targetType
+              value {
+                __typename
+                ... on MoneyV2 { amount currencyCode }
+                ... on PricingPercentageValue { percentage }
+              }
+            }
+          }
+        }
+
+        shippingLines(first: 10) {
+          edges { node { title price } }
+        }
+
+        customer { id firstName lastName email phone }
       }
     }
-  `;
+  }
+}
+`;
 
   try {
     const response = await fetch(SHOPIFY_API_URL, {
@@ -332,11 +362,11 @@ exports.getOrderList = async () => {
 //     "query": `mutation orderCancel($orderId: ID!, $reason: OrderCancelReason!, $refund: Boolean!, $restock: Boolean!) {
 //       orderCancel(orderId: $orderId, reason: $reason, refund: $refund, restock: $restock) {
 //         job {
-//           id 
+//           id
 //           done
 //         }
 //         orderCancelUserErrors {
-//          field 
+//          field
 //          message
 //         }
 //         userErrors {

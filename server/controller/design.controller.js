@@ -10,59 +10,57 @@ const { default: mongoose } = require("mongoose");
 
 
 exports.sendEmailDesign = async (req, res) => {
-    try {
-        console.log("sendEmailDesign");
-        const email = req.body.email;
-        const frontSrc = req.body.frontSrc;
-        const backSrc = req.body.backSrc;
-        const designName = req.body.designName;
-        if (!email) {
-            return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.EMAIL_REQUIRED);
-        }
-        const EmailSendSuccess = await services.sendEmailDesign(email, frontSrc, backSrc, designName);
-        if (!EmailSendSuccess) {
-            return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.ERROR_SENDING_MAIL);
-        }
-        return sendResponse(res, statusCode.OK, true, SuccessMessage.EMAIL_SEND_SUCCESS, EmailSendSuccess);
-    } catch (error) {
-        console.log(error)
-        return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+  try {
+    console.log("sendEmailDesign ");
+
+    const { email, companyEmail, frontSrc, backSrc, designname, phoneNumber, edit_design_link, add_to_cart_link, unsubscribe_link } = req.body;
+    if (!email) {
+      return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.EMAIL_REQUIRED);
     }
+    const EmailSendSuccess = await services.sendEmailDesign(email, companyEmail, frontSrc, backSrc, designname, phoneNumber, edit_design_link, add_to_cart_link, unsubscribe_link);
+    if (!EmailSendSuccess) {
+      return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.ERROR_SENDING_MAIL);
+    }
+    return sendResponse(res, statusCode.OK, true, SuccessMessage.EMAIL_SEND_SUCCESS, EmailSendSuccess);
+  } catch (error) {
+    console.log(error)
+    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+  }
 };
 
 
 exports.saveSettings = async (req, res) => {
-    try {
+  try {
 
-        const existing = await AdminSettings.findOne();
-        if (existing) {
-            await AdminSettings.updateOne({}, { $set: req.body });
-            emitSettingUpdate(req.body);
+    const existing = await AdminSettings.findOne();
+    if (existing) {
+      await AdminSettings.updateOne({}, { $set: req.body });
+      emitSettingUpdate(req.body);
 
-            return sendResponse(res, statusCode.OK, true, "Settings updated");
-        } else {
-            await AdminSettings.create(req.body);
-            emitSettingUpdate(req.body);
-            return sendResponse(res, statusCode.OK, true, "Settings created");
+      return sendResponse(res, statusCode.OK, true, "Settings updated");
+    } else {
+      await AdminSettings.create(req.body);
+      emitSettingUpdate(req.body);
+      return sendResponse(res, statusCode.OK, true, "Settings created");
 
-        }
-    } catch (error) {
-        console.log(error)
-        return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
     }
+  } catch (error) {
+    console.log(error)
+    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+  }
 };
 
 
 exports.getSettings = async (req, res) => {
-    try {
-        const settings = await AdminSettings.findOne();
+  try {
+    const settings = await AdminSettings.findOne();
 
-        return sendResponse(res, statusCode.OK, true, SuccessMessage.DATA_FETCHED, settings || {});
+    return sendResponse(res, statusCode.OK, true, SuccessMessage.DATA_FETCHED, settings || {});
 
-    } catch (error) {
-        console.log(error)
-        return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
-    }
+  } catch (error) {
+    console.log(error)
+    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+  }
 };
 
 
@@ -77,7 +75,7 @@ function ensureEmail(email) {
 }
 
 exports.saveDesignsFromFrontEnd = async (req, res) => {
-   try {
+  try {
     const { ownerEmail, design, designId } = req.body;
     ensureEmail(ownerEmail);
 
@@ -121,23 +119,43 @@ exports.saveDesignsFromFrontEnd = async (req, res) => {
 
     return res.status(201).json({ message: 'Created', userDesigns: result });
   } catch (err) {
-   console.log(`Some Error Occured ${err}`)
+    console.log(`Some Error Occured ${err}`)
   }
 };
 
 
-exports.getDesignsFromFrontEnd = async (req, res) => {
-try {
+exports.getDesignsFromFrontEndByEmail = async (req, res) => {
+  try {
     const { ownerEmail } = req.query;
-    console.log("ownerEmail",ownerEmail)
+    console.log("ownerEmail", ownerEmail)
     ensureEmail(ownerEmail);
 
     const doc = await UserDesigns.findOne({ ownerEmail }).lean();
     return res.status(200).json({ userDesigns: doc || { ownerEmail, designs: [] } });
   } catch (err) {
-     console.log(`Some Error Occured ${err}`)
+    console.log(`Some Error Occured ${err}`)
   }
 };
+
+
+exports.getDesignsFromFrontEndById = async (req, res) => {
+  try {
+    const { designId } = req.query;
+
+    const doc = await UserDesigns.findOne(
+      { "designs._id": designId },
+      { "designs.$": 1, ownerEmail: 1 } // only return the matched design
+    ).lean();
+
+    return res.status(200).json({
+      userDesigns: doc || { ownerEmail: "", designs: [] }
+    });
+  } catch (err) {
+    console.log(`Some Error Occured ${err}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 
 // exports.getAllOrderedDesigns = async (req, res) => {
 //   const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
@@ -283,7 +301,7 @@ exports.getAllOrderedDesigns = async (req, res) => {
 };
 
 exports.deleteDesignsFromFrontEnd = async (req, res) => {
-try {
+  try {
     const { ownerEmail } = req.body; // or from auth token/session
     const { designId } = req.params;
     ensureEmail(ownerEmail);
@@ -300,7 +318,7 @@ try {
 
     return res.status(200).json({ message: 'Deleted', userDesigns: result });
   } catch (err) {
-     console.log(`Some Error Occured ${err}`)
+    console.log(`Some Error Occured ${err}`)
   }
 };
 
@@ -312,7 +330,7 @@ try {
 
 exports.productById = async (req, res) => {
   try {
-    
+
     const { productId } = req.body; // or req.body.productId if you prefer
 
     if (!productId) {
