@@ -421,7 +421,7 @@ const Review = () => {
   async function createDraftOrderforCheckout(variants) {
     try {
       // setLoading(true);
-      setEmailSendingLoader(true); // <-- If this loader is relevant here
+      // setEmailSendingLoader(true); // <-- If this loader is relevant here
 
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}products/createDraftOrderforCheckout`, {
         method: 'POST',
@@ -451,7 +451,7 @@ const Review = () => {
       toast.error("Failed to add variants.");
     } finally {
       // setLoading(false);
-      // setEmailSendingLoader(false); // <-- Only if applicable
+      setEmailSendingLoader(false); // <-- Only if applicable
     }
   }
 
@@ -541,7 +541,7 @@ const Review = () => {
         console.error("Email sending failed:", emailError);
         toast.error("Failed to send email.");
       } finally {
-        setEmailSendingLoader(false);
+        // setEmailSendingLoader(false);
       }
       const variantData = makeVariantDataForShopify(reviewItems, cloudinaryResponse);
       // toast.success("Design saved and variants prepared successfully!");
