@@ -93,7 +93,8 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
     // Handle Generate Background
     const handleGenerate = async () => {
         if (!prompt) {
-            alert('Please enter a prompt first');
+            toast.warn("Please enter a prompt first");
+            // alert('Please enter a prompt first');
             return;
         }
 

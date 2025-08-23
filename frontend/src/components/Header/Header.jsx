@@ -21,10 +21,10 @@ const Header = () => {
     setCustomerLogin(searchParams.get("customerEmail"));
   }, [CustomerLogin])
 
-  return (  
+  return (
     <header className={style.appHeader}>
       <div className={style.leftSection}>
-        <Link to="/design/product">
+        <Link to="https://simaxdesigns.com">
           <img src={logo} alt="SIMAX" className={style.logo} />
         </Link>
 

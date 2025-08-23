@@ -273,6 +273,12 @@ const AddImageToolbar = () => {
 
   function replaceBgHandler(imageSrc) {
     console.log("--------------------replace call", imageSrc)
+    // const changes = {
+    //   scaleX: 1,
+    //   removeBg: false,
+    //   cropAndTrim: false,
+    //   superResolution: false,
+    // };
     globalDispatch("src", imageSrc);
     handleImage(imageSrc, singleColor, selectedFilter, invertColor, editColor);
   }
@@ -1601,7 +1607,7 @@ const AddImageToolbar = () => {
 
 
                   <div className={styles.toolbarBoxFontValueSetInnerContainer} onClick={() => setreplaceBgwithAi(false)}>
-                    <div className={styles.toolbarBoxFontValueSetInnerActionheading} >Replace Background With AI<span className={styles.aiBadge}>AI</span></div>
+                    <div className={styles.toolbarBoxFontValueSetInnerActionheading} >AI Image Editor<span className={styles.aiBadge}>AI</span></div>
                     <span className={styles.rightarrow}><FaChevronRight /></span>
 
                     {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleBGReplaceColorPopup}>
