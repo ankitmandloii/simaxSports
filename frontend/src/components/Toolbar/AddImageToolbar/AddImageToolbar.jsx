@@ -607,15 +607,15 @@ const AddImageToolbar = () => {
 
   const hasMounted = useRef(false); // ✅ move to top level
 
-  useEffect(() => {
-    console.log("hasmounted", hasMounted)
-    if (!hasMounted.current) {
-      hasMounted.current = true;
-      return; // ⛔ skip on first render
-    }
-    console.log("remove background is calling");
-    removeBackgroundHandler(); // ✅ run on subsequent changes only
-  }, [img?.removeBgImagebtn]);
+  // useEffect(() => {
+  //   console.log("hasmounted", hasMounted)
+  //   if (!hasMounted.current) {
+  //     hasMounted.current = true;
+  //     return; // ⛔ skip on first render
+  //   }
+  //   console.log("remove background is calling");
+  //   removeBackgroundHandler(); // ✅ run on subsequent changes only
+  // }, [img?.removeBgImagebtn]);
 
   function removeBackgroundHandler(e) {
     // update local state

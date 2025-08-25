@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './DesignNotesPopup.module.css';
 import { setDesignNotes } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
+import { CrossIcon } from '../../iconsSvg/CustomIcon';
 
 const DesignNotesPopup = ({ handleClose }) => {
     const dispatch = useDispatch();
@@ -43,46 +44,50 @@ const DesignNotesPopup = ({ handleClose }) => {
         <div className="modal-overlay">
             <div className={styles.popup}>
                 <div className={styles.header}>
-                    <h3>DESIGN NOTES</h3>
-                    <button onClick={handleClosee} className={styles.closeButton}>×</button>
+                    <h3 className={styles.title}>Design Notes</h3>
+                    <button onClick={handleClosee} className={styles.close}><CrossIcon /></button>
                 </div>
-                <p className={styles.description}>
-                    Leave a note for our design specialist. We review every note after you place your order.
-                </p>
+                <div className={styles.content}>
 
-                <div className={styles.formGroup}>
-                    <label>Front Design</label>
-                    <textarea
-                        name="frontDesign"
-                        value={formData.frontDesign}
-                        onChange={handleChange}
-                        className={styles.textarea}
-                    />
+
+                    <p className={styles.description}>
+                        Leave a note for our design specialist. We review every note after you place your order.
+                    </p>
+
+                    <div className={styles.formGroup}>
+                        <label>Front Design</label>
+                        <textarea
+                            name="frontDesign"
+                            value={formData.frontDesign}
+                            onChange={handleChange}
+                            className={styles.textarea}
+                        />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                        <label>Back Design</label>
+                        <textarea
+                            name="backDesign"
+                            value={formData.backDesign}
+                            onChange={handleChange}
+                            className={styles.textarea}
+                        />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                        <label>Extra Info</label>
+                        <textarea
+                            name="extraInfo"
+                            value={formData.extraInfo}
+                            onChange={handleChange}
+                            className={styles.textarea}
+                        />
+                    </div>
+
+                    <button onClick={handleSave} className={styles.saveButton}>
+                        Save Notes
+                    </button>
                 </div>
-
-                <div className={styles.formGroup}>
-                    <label>Back Design</label>
-                    <textarea
-                        name="backDesign"
-                        value={formData.backDesign}
-                        onChange={handleChange}
-                        className={styles.textarea}
-                    />
-                </div>
-
-                <div className={styles.formGroup}>
-                    <label>Extra Info</label>
-                    <textarea
-                        name="extraInfo"
-                        value={formData.extraInfo}
-                        onChange={handleChange}
-                        className={styles.textarea}
-                    />
-                </div>
-
-                <button onClick={handleSave} className={styles.saveButton}>
-                    Save Notes
-                </button>
             </div>
         </div>
     );

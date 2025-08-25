@@ -115,7 +115,7 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler }) => {
         <div className="modal-overlay">
             <div className={styles.popup}>
                 <div className={styles.modalHeader}>
-                    <h3>Share your Design</h3>
+                    <h3>Share Your Design</h3>
                     <span onClick={setSavedesignPopupHandler}><CrossIcon /></span>
                 </div>
                 <div className={styles.content}>
@@ -156,7 +156,7 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler }) => {
                             </>
                         ) : (
                             <>
-                                <h2 className={styles.title}>Share your design</h2>
+                                <h2 className={styles.title}>Share Your Design</h2>
                                 <p className={styles.description}>Your design "kik" has been saved and emailed to you.</p>
                                 <p className={styles.description}>Copy your design link below and share with others.</p>
                                 <div className={styles.linkContainer}>

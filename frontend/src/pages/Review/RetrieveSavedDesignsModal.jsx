@@ -52,6 +52,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import styles from "./RetrieveSavedDesignsModal.module.css";
+import { CrossIcon } from "../../components/iconsSvg/CustomIcon";
 
 const RetrieveSavedDesignsModal = ({
     onClose = () => { },
@@ -95,7 +96,7 @@ const RetrieveSavedDesignsModal = ({
                     <span className={styles.title}>SAVE AND ADD TO CART</span>
                 </div>
                 <button className={styles.close} onClick={onClose}>
-                    ×
+                    <CrossIcon />
                 </button>
 
                 <div className={styles.body}>

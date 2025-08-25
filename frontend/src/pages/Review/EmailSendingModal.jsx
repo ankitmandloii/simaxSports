@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './EmailSendingModal.module.css';
 import Lottie from 'lottie-react';
 import emailAnimation from './emailAnimation.json';
+import { CrossIcon } from '../../components/iconsSvg/CustomIcon';
 
 export default function EmailSendingModal({ onClose, isLoading }) {
     // if (!isOpen) return null;
@@ -10,9 +11,13 @@ export default function EmailSendingModal({ onClose, isLoading }) {
         <div className={styles.overlay}>
             <div className={styles.modal}>
                 <div className={styles.header}>
-                    <span>SAVE AND ADD TO CART</span>
-                    <button onClick={onClose} className={styles.closeBtn}>×</button>
+                    <div className={styles.title}>SAVE AND ADD TO CART</div>
+                    <button className={styles.close} onClick={onClose}>×</button>
                 </div>
+                {/* <div className={styles.header}>
+                    <span>SAVE AND ADD TO CART</span>
+                    <button onClick={onClose} className={styles.closeBtn}><CrossIcon /></button>
+                </div> */}
 
                 <div className={styles.body}>
                     <Lottie

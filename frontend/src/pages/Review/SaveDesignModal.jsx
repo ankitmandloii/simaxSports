@@ -136,6 +136,7 @@
 // }
 import React, { useState } from 'react';
 import styles from './SaveDesignModal.module.css';
+import { CrossIcon } from '../../components/iconsSvg/CustomIcon';
 
 export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName, designId, currentDesign }) {
     console.log(currentDesign, "currentDesign");
@@ -161,7 +162,7 @@ export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName, 
             <div className={styles.popup}>
                 <div className={styles.header}>
                     <div className={styles.headerTitle}>SAVE AND ADD TO CART</div>
-                    <button className={styles.closeButton} onClick={onClose}>×</button>
+                    <button className={styles.closeButton} onClick={onClose}><CrossIcon /></button>
                 </div>
                 <h2 className={styles.subTitle}>Save changes to "{designName}"</h2>
                 <p className={styles.subText}>
@@ -178,7 +179,7 @@ export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName, 
                             checked={selectedOption === 'update'}
                             onChange={() => setSelectedOption('update')}
                         />
-                        <span><strong>Update Design</strong></span>
+                        <span>Update Design</span>
                     </label>
 
                     {/* {selectedOption === 'update' && (
@@ -203,7 +204,7 @@ export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName, 
                             checked={selectedOption === 'new'}
                             onChange={() => setSelectedOption('new')}
                         />
-                        <span><strong>Save as New</strong></span>
+                        <span>Save as New</span>
                     </label>
 
                     {selectedOption === 'new' && (

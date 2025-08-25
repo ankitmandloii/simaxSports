@@ -15,7 +15,7 @@
     background: white;
     max-width: 800px;
     width: 90%;
-    padding: 20px;
+    /* padding: 20px; */
     border-radius: 10px;
     position: relative;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -24,20 +24,67 @@
     overflow-y: auto;
 }
 
-.closeBtn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    cursor: pointer;
+.content {
+    padding: 20px;
 }
 
 .header {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 12px;
+    padding: 16px 24px;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+    background-color: #f9fafc;
+}
+
+.loaderOverlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    /* Match the height of imageWrapperr */
+    width: 100%;
+    /* Match the width of imageWrapperr */
+}
+
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid var(--blue-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.title {
+
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--blue-color);
+}
+
+.close {
+    position: absolute;
+    top: 14px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s ease;
+}
+
+.close:hover {
+    color: #000;
 }
 
 .aiTag {
@@ -71,6 +118,10 @@
     outline: none;
     border-color: #8e44ad;
     background: white;
+}
+
+.textarea::placeholder {
+    opacity: 0.6;
 }
 
 .editButton {
@@ -120,6 +171,33 @@
     display: inline-block;
     padding: 10px;
     /* height: 10rem; */
+}
+
+.imageWrapperr {
+    border: 2px solid transparent;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    /* center image nicely */
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    max-width: 300px;
+    /* set a max width */
+    /* max-height: 200px; */
+    /* set a max height */
+    background: #f9f9f9;
+    margin: 1rem auto;
+}
+
+.imageWrapperr img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    height: auto;
+    /* keeps aspect ratio, no cropping */
+    display: block;
 }
 
 .imageWrapper img {

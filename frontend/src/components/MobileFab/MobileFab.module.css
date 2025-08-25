@@ -26,6 +26,13 @@
   position: fixed;
 }
 
+.disabledWrapper {
+  opacity: 0.5;
+  pointer-events: none;
+  /* background: #000; */
+  /* prevent clicks on whole div */
+}
+
 .fabMain.rotate {
   transform: rotate(45deg);
 }

@@ -17,8 +17,13 @@ import RetrieveSavedDesignsModal from "./RetrieveSavedDesignsModal";
 import EmailSendingModal from "./EmailSendingModal";
 import { restoreEditDesigns } from "../../redux/FrontendDesign/TextFrontendDesignSlice";
 import SaveDesignPopup from "../../components/PopupComponent/SaveDesignPopup/SaveDesignPopup";
+import { fetchDesign, saveDesignFunction, sendEmailDesign, uploadBlobData } from "../../components/utils/GlobalSaveDesignFunctions";
+
 const designId = "";
 const customerEmail = "testuser@example33.com"; // Unencoded email for apiConnecter
+
+// const designId = "68a6ba4b6b2c9f3a161435dd";
+// const customerEmail = "testuser@example.com"; // Unencoded email for apiConnecter
 const randomDiscount = () => Math.floor(Math.random() * 21) + 15; // 15% to 35%
 
 const Review = () => {
@@ -140,38 +145,49 @@ const Review = () => {
   const [loading, setLoading] = useState(false);
 
   // Fetch design to check if it exists
-  const fetchDesign = async () => {
-    try {
-      setIsFetchingDesign(true);
-      const response = await apiConnecter(
-        "GET",
-        "design/get-designfrontEnd",
-        null,
-        null,
-        { ownerEmail: customerEmail }
-      );
+  // const fetchDesign = async () => {
+  //   try {
+  //     setIsFetchingDesign(true);
+  //     const response = await apiConnecter(
+  //       "GET",
+  //       "design/get-designfrontEnd",
+  //       null,
+  //       null,
+  //       { ownerEmail: customerEmail }
+  //     );
 
-      const data = response.data;
-      console.log("Fetched designs:", data);
+  //     const data = response.data;
+  //     console.log("Fetched designs:", data);
 
-      // Check if the design with the given designId exists
+  //     // Check if the design with the given designId exists
+  //     const designFound = data.userDesigns?.designs?.some(
+  //       (design) => design._id === designId
+  //     );
+  //     setDesignExists(designFound);
+  //   } catch (error) {
+  //     console.error("Error fetching design:", error);
+  //     toast.error("Failed to fetch design.");
+  //     setDesignExists(false);
+  //   } finally {
+  //     setIsFetchingDesign(false);
+  //   }
+  // };
+  const AddToCartClick = () => {
+    setRetrieveLoader(true);
+    // fetchDesign();
+    fetchDesign(customerEmail).then((data) => {
       const designFound = data.userDesigns?.designs?.some(
         (design) => design._id === designId
       );
       const design = data.userDesigns?.designs?.filter((d) => d._id == designId);
       setDesignExists(designFound);
       setCurrentDesing(design)
-    } catch (error) {
+    }).catch((error) => {
       console.error("Error fetching design:", error);
       toast.error("Failed to fetch design.");
       setDesignExists(false);
-    } finally {
       setIsFetchingDesign(false);
-    }
-  };
-  const AddToCartClick = () => {
-    setRetrieveLoader(true);
-    fetchDesign();
+    });
   }
 
   // useEffect(() => {
@@ -193,66 +209,66 @@ const Review = () => {
   //   }
   // }, [emailSendingLoader]);
 
-  async function uploadBlobData(blobDataArray) {
-    try {
-      const formData = new FormData();
-      blobDataArray = blobDataArray.slice(0, 6);
-      blobDataArray.forEach((blob, index) => {
-        formData.append(`image_${index}`, blob, `image_${index}.png`);
-      });
+  // async function uploadBlobData(blobDataArray) {
+  //   try {
+  //     const formData = new FormData();
+  //     blobDataArray = blobDataArray.slice(0, 6);
+  //     blobDataArray.forEach((blob, index) => {
+  //       formData.append(`image_${index}`, blob, `image_${index}.png`);
+  //     });
 
-      const response = await apiConnecter(
-        "POST",
-        "imageOperation/fileBlobDataUploadToCloudinary",
-        formData
-      );
+  //     const response = await apiConnecter(
+  //       "POST",
+  //       "imageOperation/fileBlobDataUploadToCloudinary",
+  //       formData
+  //     );
 
-      const responseData = response.data;
-      console.log("Response from backend:", responseData);
-      localStorage.setItem("data", JSON.stringify(responseData));
-      return responseData;
-    } catch (e) {
-      console.error("Error uploading blob data:", e);
-      throw e;
-    }
-  }
+  //     const responseData = response.data;
+  //     console.log("Response from backend:", responseData);
+  //     localStorage.setItem("data", JSON.stringify(responseData));
+  //     return responseData;
+  //   } catch (e) {
+  //     console.error("Error uploading blob data:", e);
+  //     throw e;
+  //   }
+  // }
 
-  async function saveDesignFunction(payload) {
-    try {
-      const response = await apiConnecter(
-        "POST",
-        "design/save-designfrontEnd",
-        payload
-      );
+  // async function saveDesignFunction(payload) {
+  //   try {
+  //     const response = await apiConnecter(
+  //       "POST",
+  //       "design/save-designfrontEnd",
+  //       payload
+  //     );
 
-      const responseData = response.data;
-      console.log("Design saved successfully:", responseData);
-      setdesignStateDb(responseData);
-      const designs = responseData.userDesigns?.designs;
-      console.log(design);
-      setCurrentDesing(designs[designs.length - 1]);
-      return responseData;
-    } catch (error) {
-      console.error("Error saving design:", error);
-      throw error;
-    }
-  }
+  //   const responseData = response.data;
+  //   console.log("Design saved successfully:", responseData);
+  //   setdesignStateDb(responseData);
+  //   const designs = responseData.userDesigns?.designs;
+  //   console.log(design);
+  //   setCurrentDesing(designs[designs.length - 1]);
+  //   return responseData;
+  // } catch (error) {
+  //   console.error("Error saving design:", error);
+  //   throw error;
+  // }
+  //   }
   // mail funstion
-  async function sendEmailDesign(payload) {
-    try {
-      const response = await apiConnecter(
-        "POST",
-        "design/send-email-design",
-        payload
-      );
-      console.log("Email sent successfully:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error sending email:", error);
-      toast.error("Failed to send email.");
-      throw error;
-    }
-  }
+  // async function sendEmailDesign(payload) {
+  //   try {
+  //     const response = await apiConnecter(
+  //       "POST",
+  //       "design/send-email-design",
+  //       payload
+  //     );
+  //     console.log("Email sent successfully:", response.data);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Error sending email:", error);
+  //     toast.error("Failed to send email.");
+  //     throw error;
+  //   }
+  // }
 
 
 

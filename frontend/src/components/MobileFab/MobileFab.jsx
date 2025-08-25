@@ -6,7 +6,8 @@ import { FaArrowLeftLong, FaArrowRightLong } from 'react-icons/fa6';
 import style from './MobileFab.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const MobileFAB = ({ onShare, onSave, onPrice }) => {
+const MobileFAB = ({ onShare, onSave, onPrice, disablePrev }) => {
+  console.log("-----------disablePrev", disablePrev)
   const [open, setOpen] = useState(false);
   const fabRef = useRef(null);
   const navigate = useNavigate();
@@ -67,12 +68,25 @@ const MobileFAB = ({ onShare, onSave, onPrice }) => {
             <FaArrowRightLong />
           </button>
         </div>
-        <div className={style.fabTooltipWrapper}>
+        {/* <div className={style.fabTooltipWrapper}>
           <span className={style.fabTooltip}>Prev Step</span>
-          <button className={style.fabButton} onClick={onPrevious}>
+          <button className={style.fabButton} onClick={onPrevious} disabled={disablePrev} >
+            <FaArrowLeftLong />
+          </button>
+        </div> */}
+        <div
+          className={`${style.fabTooltipWrapper} ${disablePrev ? style.disabledWrapper : ""}`}
+        >
+          <span className={style.fabTooltip}>Prev Step</span>
+          <button
+            className={style.fabButton}
+            onClick={onPrevious}
+            disabled={disablePrev}
+          >
             <FaArrowLeftLong />
           </button>
         </div>
+
       </div>
 
       {/* Main FAB Button */}
