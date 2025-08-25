@@ -98,6 +98,8 @@ const MainDesignTool = ({
   const [productCategory, setProductCategory] = useState(getProductType(activeProductTitle))
   const [showNotes, setShowNotes] = useState(false);
   const [openAieditorPopup, setOpenAieditorPopup] = useState(false);
+
+  // console.log(openAieditorPopup);
   // **********************************************************************************************************************************************************
   //                                                                                    USE DISPTACHS AREA
   // **********************************************************************************************************************************************************
@@ -360,6 +362,9 @@ const MainDesignTool = ({
       setOpenAieditorPopup
     )
   }
+  // useEffect(() => {
+
+  // }, [openAieditorPopup])
 
   const loadFont = (fontName) => {
     return new Promise((resolve) => {
@@ -2468,7 +2473,15 @@ const MainDesignTool = ({
     loadAndRender();
   }, [isRender, addName, addNumber, nameAndNumberDesignState, activeSide]);
 
-
+  useEffect(() => {
+    // const buttonId = `canvas-${id}-ai`;
+    // if(!buttonId) return
+    // buttonId?.addEventListener("click", (event) => {
+    //   setOpenAieditorPopup(!openAieditorPopup);
+    //   // console.log("clicked ai btn",openAieditorPopup);
+    //   // event.stopPropagation();
+    // })
+  }, [])
 
 
   // **********************************************************************************************************************************************************
@@ -2517,6 +2530,7 @@ const MainDesignTool = ({
 
   return (
     <div class="canvas-wrapper" style={{ position: "relative", top: 5 }} >
+
 
 
       <canvas ref={canvasRef} id={`canvas-${id}`} />
@@ -2593,10 +2607,11 @@ const MainDesignTool = ({
         onLayerAction={handleLayerAction}
         fabricCanvas={fabricCanvasRef.current}
       />
-      {showNotes && <DesignNotesPopup handleClose={handleClose} />}
       {openAieditorPopup && <EditWithAipopup onClose={() => {
         setOpenAieditorPopup(false);
       }}></EditWithAipopup>}
+      {showNotes && <DesignNotesPopup handleClose={handleClose} />}
+
       {/* <div class="tenor-gif-embed" data-postid="6449096453315144907" data-share-method="host" data-aspect-ratio="0.991667" data-width="100%" style={{ zIndex: 9999999, position: "absolute", top: "50%", left: "50%" }}>
         <a href="https://tenor.com/view/loading-gif-6449096453315144907">Loading Sticker</a>from <a href="https://tenor.com/search/loading-stickers"
         >Loading Stickers</a></div> */}

@@ -607,15 +607,15 @@ const AddImageToolbar = () => {
 
   const hasMounted = useRef(false); // ✅ move to top level
 
-  useEffect(() => {
-    console.log("hasmounted", hasMounted)
-    if (!hasMounted.current) {
-      hasMounted.current = true;
-      return; // ⛔ skip on first render
-    }
-    console.log("remove background is calling");
-    removeBackgroundHandler(); // ✅ run on subsequent changes only
-  }, [img?.removeBgImagebtn]);
+  // useEffect(() => {
+  //   console.log("hasmounted", hasMounted)
+  //   if (!hasMounted.current) {
+  //     hasMounted.current = true;
+  //     return; // ⛔ skip on first render
+  //   }
+  //   console.log("remove background is calling");
+  //   removeBackgroundHandler(); // ✅ run on subsequent changes only
+  // }, [img?.removeBgImagebtn]);
 
   function removeBackgroundHandler(e) {
     // update local state
@@ -1603,14 +1603,14 @@ const AddImageToolbar = () => {
                       <span className={styles.slider}></span>
                     </label>
                   </div>
-                  <hr />
+                  {!removeBackground && < hr />}
 
+                  {
+                    !removeBackground && <div className={styles.toolbarBoxFontValueSetInnerContainer} onClick={() => setreplaceBgwithAi(false)}>
+                      <div className={styles.toolbarBoxFontValueSetInnerActionheading} >AI Image Editor<span className={styles.aiBadge}>AI</span></div>
+                      <span className={styles.rightarrow}><FaChevronRight /></span>
 
-                  <div className={styles.toolbarBoxFontValueSetInnerContainer} onClick={() => setreplaceBgwithAi(false)}>
-                    <div className={styles.toolbarBoxFontValueSetInnerActionheading} >AI Image Editor<span className={styles.aiBadge}>AI</span></div>
-                    <span className={styles.rightarrow}><FaChevronRight /></span>
-
-                    {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleBGReplaceColorPopup}>
+                      {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleBGReplaceColorPopup}>
                   <SpanColorBox color={bgColor} />
                   {bgColorPopup && (
                     <ReplaceBackgroundColorPicker
@@ -1625,9 +1625,9 @@ const AddImageToolbar = () => {
 
 
 
-                    {/* </div> */}
-                  </div>
-
+                      {/* </div> */}
+                    </div>
+                  }
                   <hr />
 
                   <div className={styles.toolbarBoxFontValueSetInnerContainer}>
