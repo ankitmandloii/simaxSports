@@ -107,7 +107,7 @@ const MainDesignTool = ({
   const navigate = useNavigate();
   const location = useLocation();
   const isQuantityPage = location.pathname === "/quantity" || location.pathname === '/review';
-  console.log("---------------------checkqty", isQuantityPage)
+  // console.log("---------------------checkqty", isQuantityPage)
 
 
   // **********************************************************************************************************************************************************
