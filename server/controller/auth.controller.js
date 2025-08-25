@@ -651,7 +651,7 @@ exports.calculatePrice = async (req, res) => {
 
     // 1) Build base breakdown first (to get total qty)
     const baseBreakdown = items.map(it => {
-      const unitPrice = typeof it.unitPrice === "number" ? it.unitPrice : CATALOG[it.sku];
+      const unitPrice = typeof it.unitPrice === "number" ? it.unitPrice : "";
       if (typeof unitPrice !== "number") {
         throw new Error(`Missing unitPrice for sku ${it.sku}`);
       }
