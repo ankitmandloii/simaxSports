@@ -16,7 +16,9 @@ const renderAllImageObjects = (
   activeSide,
   handleScale,
   bringPopup,
-  productCategory
+  productCategory,
+  openAieditorPopup,
+  setOpenAieditorPopup
 ) => {
   // console.log("imageContaintObject", imageContaintObject);
   // console.log("productCategory.......", productCategory)
@@ -77,7 +79,7 @@ const renderAllImageObjects = (
       fontFamily: "sans-serif",
       fontSize: "10px",
       maxWidth: "95vw",
-      flexWrap: "wrap",
+      // flexWrap: "wrap",
     });
 
     const textSpan1 = document.createElement("span");
@@ -218,6 +220,203 @@ const renderAllImageObjects = (
 
     container.appendChild(label);
     container.appendChild(toggleWrapper);
+    canvasElement.parentElement.appendChild(container);
+
+    // Initial position below image
+    const center = fabricImage.getCenterPoint();
+    const imageBottom = center.y + fabricImage.getScaledHeight() / 2;
+    const imageLeft = center.x;
+    const OFFSET = 40;
+
+    container.style.top = `${imageBottom + OFFSET}px`;
+    container.style.left = `${imageLeft}px`;
+
+    // console.warn("button created and done");
+  }
+  function createAiEdtiorButton(fabricImage, canvasId, callback, removeBg) {
+    // console.log("button data ", fabricImage, canvasId, callback, removeBg);
+    const id = fabricImage.id;
+    const buttonId = `canvas-${id}-ai`;
+    const canvasElement = document.getElementById(canvasId);
+    if (!canvasElement) return;
+
+    // Check if toggle already exists
+    let container = document.getElementById(buttonId);
+    if (container) {
+      // console.log("container already exist so updating them");
+      const center = fabricImage.getCenterPoint();
+      const imageBottom = center.y + (fabricImage.getScaledHeight() / 2);
+      const imageLeft = center.x;
+      const OFFSET = 70;
+      container.style.top = `${imageBottom + OFFSET}px`;
+      container.style.left = `${imageLeft}px`;
+      container.style.display = "none";
+      return;
+    }
+
+    // Create the toggle
+    container = document.createElement("div");
+    container.id = buttonId;
+    Object.assign(container.style, {
+      position: "absolute",
+      zIndex: "99",
+      transform: "translate(-50%, 0)",
+      // display: "none",
+      alignItems: "center",
+      gap: "6px",
+      cursor: "pointer",
+      padding: "4px 10px",
+      borderRadius: "9999px",
+      backgroundColor: "white",
+      boxShadow: "0 0 4px rgba(0,0,0,0.1)",
+      fontFamily: "sans-serif",
+      fontSize: "10px",
+      maxWidth: "95vw",
+      // flexWrap: "wrap",
+    });
+
+    const textSpan1 = document.createElement("span");
+    textSpan1.textContent = "Image";
+    textSpan1.style.fontWeight = "500";
+
+    const aiBadge = document.createElement("span");
+    aiBadge.textContent = "AI";
+    Object.assign(aiBadge.style, {
+      fontSize: "10px",
+      padding: "1px 5px",
+      borderRadius: "4px",
+      backgroundImage: "linear-gradient(to right, #6C6CFF, #9CF8F8)",
+      color: "white",
+      fontWeight: "600",
+    });
+
+    const textSpan2 = document.createElement("span");
+    textSpan2.textContent = "Editor";
+    textSpan2.style.fontWeight = "500";
+
+    const label = document.createElement("div");
+    label.style.display = "flex";
+    label.style.alignItems = "center";
+    label.style.gap = "3px";
+    label.appendChild(aiBadge);
+    label.appendChild(textSpan1);
+    label.appendChild(textSpan2);
+
+    const toggleWrapper = document.createElement("label");
+    // Object.assign(toggleWrapper.style, {
+    //   position: "relative",
+    //   display: "inline-block",
+    //   width: "34px",
+    //   height: "18px",
+    //   cursor: "pointer",
+    //   flexShrink: "0",
+    // });
+
+    // const checkbox = document.createElement("input");
+    // checkbox.type = "checkbox";
+    // checkbox.style.opacity = "0";
+    // checkbox.style.width = "0";
+    // checkbox.style.height = "0";
+
+    // const slider = document.createElement("span");
+    // Object.assign(slider.style, {
+    //   position: "absolute",
+    //   top: "0",
+    //   left: "0",
+    //   right: "0",
+    //   bottom: "0",
+    //   backgroundColor: "#ccc",
+    //   borderRadius: "9999px",
+    //   transition: "0.2s",
+    // });
+
+    // const circle = document.createElement("span");
+    // Object.assign(circle.style, {
+    //   position: "absolute",
+    //   left: "2px",
+    //   top: "2px",
+    //   width: "14px",
+    //   height: "14px",
+    //   backgroundColor: "white",
+    //   borderRadius: "50%",
+    //   transition: "0.2s",
+    //   boxShadow: "0 0 1px rgba(0,0,0,0.2)",
+    // });
+
+    // if (removeBg) {
+    //   // slider.style.backgroundColor = "#3b82f6";
+    //   circle.style.transform = "translateX(16px)";
+    //   checkbox.checked = true;
+    // } else {
+    //   slider.style.backgroundColor = "#ccc";
+    //   circle.style.transform = "translateX(0)";
+    //   checkbox.checked = false;
+    // }
+
+    // checkbox.addEventListener("change", () => {
+    //   const addImageToolbarBgBtn = document.querySelector("#removeBackgroundInput");
+    //   const checked = checkbox.checked;
+    //   slider.style.backgroundColor = checked ? "#3b82f6" : "#ccc";
+    //   circle.style.transform = checked ? "translateX(16px)" : "translateX(0)";
+
+    //   // Get current image source and parameters
+    //   const currentSrc = fabricImage.getSrc();
+    //   const baseSrc = currentSrc.split('?')[0];
+    //   let params = currentSrc.split('?')[1] ? currentSrc.split('?')[1].split('&') : [];
+    //   const hasRemoveBg = params.includes('bg-remove=true');
+
+    //   // Update parameters based on checkbox state
+    //   if (checked && !hasRemoveBg) {
+    //     params.push('bg-remove=true');
+    //   } else if (!checked && hasRemoveBg) {
+    //     params = params.filter(param => param !== 'bg-remove=true');
+    //   }
+
+    //   // Construct new URL
+    //   const newTransform = params.length > 0 ? `?${params.join('&')}` : '';
+    //   const newSrc = `${baseSrc}${newTransform}`;
+
+    //   // Show loading state
+    //   globalDispatch("loading", true, id);
+    //   // globalDispatch("loadingSrc", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s", id);
+
+    //   // Update image source
+    //   fabricImage.setSrc(newSrc, () => {
+    //     canvas.renderAll();
+    //     globalDispatch("loading", false, id);
+    //     // globalDispatch("loadingSrc", null, id);
+    //     // globalDispatch("src", newSrc, id);
+    //     // globalDispatch("base64CanvasImage", newSrc, id);
+    //     // globalDispatch("selectedFilter", "Normal", id);
+    //     globalDispatch("removeBg", checked, id);
+    //     globalDispatch("removeBgImagebtn", checked, id);
+    //     // globalDispatch("removeBgParamValue", checked ? "bg-remove=true" : "", id);
+    //     if (callback) callback(checked, fabricImage);
+    //   }, { crossOrigin: "anonymous" });
+
+    //   // Sync with toolbar checkbox
+    //   const toolbarCheckbox = document.querySelector(`#addImageToolbarBgBtn`);
+    //   console.log(toolbarCheckbox, "toolbarCheckbox");
+    //   if (toolbarCheckbox) {
+    //     toolbarCheckbox.checked = checked;
+    //     const event = new Event('change');
+    //     toolbarCheckbox.dispatchEvent(event);
+    //   }
+    // });
+
+    // slider.classList.add("slider");
+    // circle.classList.add("circle");
+
+    // toggleWrapper.appendChild(checkbox);
+    // toggleWrapper.appendChild(slider);
+    // toggleWrapper.appendChild(circle);
+
+    container.appendChild(label);
+    container.appendChild(toggleWrapper);
+
+    container.addEventListener("click", () => {
+      setOpenAieditorPopup(true);
+    })
     canvasElement.parentElement.appendChild(container);
 
     // Initial position below image
@@ -472,18 +671,25 @@ const renderAllImageObjects = (
           removeAllHtmlControls(canvas);
           function toggleVisibility(visible, locked) {
             // console.log("locked stated", locked)
+
             const toggle = document.getElementById(`canvas-${newImg.id}`);
+            const aiEditorBtn = document.getElementById(`canvas-${newImg.id}-ai`);
             if (locked) {
               toggle.style.display = "none";
+              aiEditorBtn.style.display = "none";
               return;
             }
             if (toggle) {
+              aiEditorBtn.style.display = visible ? "flex" : "none";
               toggle.style.display = visible ? "flex" : "none";
             }
           }
+
           newImg.controls = createControls(bringPopup, dispatch);
 
           const button = document.getElementById(`canvas-${id}`);
+          const aibutton = document.getElementById(`canvas-${id}-ai`);
+
           if (button) {
             const center = newImg.getCenterPoint();
             const imageBottom = center.y + (newImg.getScaledHeight() / 2);
@@ -493,8 +699,21 @@ const renderAllImageObjects = (
             button.style.top = `${imageBottom + OFFSET}px`;
             button.style.left = `${imageLeft}px`;
           }
+          if (aibutton) {
+            const center = newImg.getCenterPoint();
+            const imageBottom = center.y + (newImg.getScaledHeight() / 2);
+            const imageLeft = center.x;
+            const OFFSET = 70;
+
+            aibutton.style.top = `${imageBottom + OFFSET}px`;
+            aibutton.style.left = `${imageLeft}px`;
+          }
 
           createRemoveBackgroundToggle(newImg, `canvas-${activeSide}`, (isChecked, image) => {
+            // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
+          }, removeBg);
+
+          createAiEdtiorButton(newImg, `canvas-${activeSide}`, (isChecked, image) => {
             // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
           }, removeBg);
 
@@ -530,20 +749,25 @@ const renderAllImageObjects = (
           newImg.on("selected", (e) => {
             // console.log(e)
             const toggle = document.getElementById(`canvas-${newImg.id}`);
+            const aibutton = document.getElementById(`canvas-${newImg.id}-ai`);
             // console.log("locked stated", locked)
             if (toggle) {
               if (locked) {
                 toggle.style.display = "none";
+                aibutton.style.display = "none";
               }
               else {
                 toggle.style.display = "flex";
+                aibutton.style.display = "flex";
               }
             }
           });
 
           newImg.on("deselected", () => {
             const toggle = document.getElementById(`canvas-${newImg.id}`);
+            const aibutton = document.getElementById(`canvas-${newImg.id}-ai`);
             if (toggle) toggle.style.display = "none";
+            if (aibutton) aibutton.style.display = "none";
           });
           const image = newImg;
           const DPI = 300; // assumed target print resolution
@@ -586,22 +810,29 @@ const renderAllImageObjects = (
       existingObj.on("selected", (e) => {
         // console.log(e)
         const toggle = document.getElementById(`canvas-${existingObj.id}`);
+        const aibutton = document.getElementById(`canvas-${existingObj.id}-ai`);
         // console.log("locked stated", locked)
         if (toggle) {
           if (locked) {
             toggle.style.display = "none";
+            aibutton.style.display = "none";
           }
           else {
             toggle.style.display = "flex";
+            aibutton.style.display = "flex";
           }
         }
       });
 
       existingObj.on("deselected", () => {
         const toggle = document.getElementById(`canvas-${existingObj.id}`);
+        const aibutton = document.getElementById(`canvas-${id}-ai`);
         if (toggle) toggle.style.display = "none";
+        if (aibutton) aibutton.style.display = "none";
+
       });
       const button = document.getElementById(`canvas-${id}`);
+      const aibutton = document.getElementById(`canvas-${id}-ai`);
       if (button) {
         const center = existingObj.getCenterPoint();
         const imageBottom = center.y + (existingObj.getScaledHeight() / 2);
@@ -609,6 +840,14 @@ const renderAllImageObjects = (
         const OFFSET = 40;
         button.style.top = `${imageBottom + OFFSET}px`;
         button.style.left = `${imageLeft}px`;
+      }
+      if (aibutton) {
+        const center = existingObj.getCenterPoint();
+        const imageBottom = center.y + (existingObj.getScaledHeight() / 2);
+        const imageLeft = center.x;
+        const OFFSET = 70;
+        aibutton.style.top = `${imageBottom + OFFSET}px`;
+        aibutton.style.left = `${imageLeft}px`;
       }
 
       existingObj.setControlsVisibility({
@@ -735,16 +974,22 @@ const renderAllImageObjects = (
             // console.log("locked stated", locked)
 
             const toggle = document.getElementById(`canvas-${img.id}`);
+            const aiEditorBtn = document.getElementById(`canvas-${img.id}-ai`);
             if (locked) {
               toggle.style.display = "none";
+              aiEditorBtn.style.display = "none";
               return;
             }
             if (toggle) {
+              aiEditorBtn.style.display = visible ? "flex" : "none";
               toggle.style.display = visible ? "flex" : "none";
             }
           }
 
           createRemoveBackgroundToggle(img, `canvas-${activeSide}`, (isChecked, image) => {
+            // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
+          }, removeBg);
+          createAiEdtiorButton(img, `canvas-${activeSide}`, (isChecked, image) => {
             // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
           }, removeBg);
 
@@ -772,10 +1017,20 @@ const renderAllImageObjects = (
             const OFFSET = 40;
 
             const button = document.getElementById(`canvas-${img.id}`);
+            const aibutton = document.getElementById(`canvas-${img.id}-ai`);
             if (button) {
               button.style.top = `${imageBottom + OFFSET}px`;
               button.style.left = `${imageLeft}px`;
               button.style.transform = "translate(-50%, 0)";
+            }
+            if (aibutton) {
+              const center = img.getCenterPoint();
+              const imageBottom = center.y + (img.getScaledHeight() / 2);
+              const imageLeft = center.x;
+              const OFFSET = 70;
+              aibutton.style.top = `${imageBottom + OFFSET}px`;
+              aibutton.style.left = `${imageLeft}px`;
+              aibutton.style.transform = "translate(-50%, 0)";
             }
           });
 
@@ -796,20 +1051,25 @@ const renderAllImageObjects = (
           img.on("selected", (e) => {
             // console.log(e)
             const toggle = document.getElementById(`canvas-${img.id}`);
+            const aibutton = document.getElementById(`canvas-${img.id}-ai`);
             console.log("locked stated", e.target.locked)
             if (toggle) {
               if (e.target.locked) {
                 toggle.style.display = "none";
+                aibutton.style.display = "none";
               }
               else {
                 toggle.style.display = "flex";
+                aibutton.style.display = "flex";
               }
             }
           });
 
           img.on("deselected", () => {
             const toggle = document.getElementById(`canvas-${img.id}`);
+            const aiButton = document.getElementById(`canvas-${img.id}-ai`);
             if (toggle) toggle.style.display = "none";
+            if (aiButton) aiButton.style.display = "none";
           });
           canvas.renderAll();
         },

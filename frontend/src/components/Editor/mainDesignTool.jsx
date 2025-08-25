@@ -11,6 +11,8 @@ import renderCurveTextObjects from "./Objects/renderTextObjects";
 import renderAllImageObjects from "./Objects/renderAllImageObjects";
 import renderNameAndNumber from "./Objects/renderNameAndNumberObject";
 import updateBoundaryVisibility from "./core/updateBoundaryVisibility";
+import EditWithAipopup from "../PopupComponent/EditWithAipopup/EditWithAipopup"
+
 import {
   deleteImageState,
   deleteTextState,
@@ -95,7 +97,7 @@ const MainDesignTool = ({
   const [resize, setResize] = useState(0);
   const [productCategory, setProductCategory] = useState(getProductType(activeProductTitle))
   const [showNotes, setShowNotes] = useState(false);
-
+  const [openAieditorPopup, setOpenAieditorPopup] = useState(false);
   // **********************************************************************************************************************************************************
   //                                                                                    USE DISPTACHS AREA
   // **********************************************************************************************************************************************************
@@ -353,7 +355,9 @@ const MainDesignTool = ({
       activeSide,
       handleScale,
       bringPopup,
-      getProductType(activeProductTitle)
+      getProductType(activeProductTitle),
+      openAieditorPopup,
+      setOpenAieditorPopup
     )
   }
 
@@ -2406,23 +2410,24 @@ const MainDesignTool = ({
     // Render text objects
     if (textContaintObject && textContaintObject.length > 0) {
       // renderCurveTextObjects();
-      renderCurveTextObjects(
-        fabricCanvasRef,
-        dispatch,
-        textContaintObject,
-        setActiveObjectType,
-        updateBoundaryVisibility,
-        createControls,
-        syncMirrorCanvasHelper,
-        navigate,
-        fabric,
-        setSelectedTextState,
-        globalDispatch,
-        activeSide,
-        bringPopup,
-        getProductType(activeProductTitle)
+      renderCurveTextObjectsHelper();
+      // renderCurveTextObjectsHelper(
+      //   fabricCanvasRef,
+      //   dispatch,
+      //   textContaintObject,
+      //   setActiveObjectType,
+      //   updateBoundaryVisibility,
+      //   createControls,
+      //   syncMirrorCanvasHelper,
+      //   navigate,
+      //   fabric,
+      //   setSelectedTextState,
+      //   globalDispatch,
+      //   activeSide,
+      //   bringPopup,
+      //   getProductType(activeProductTitle)
 
-      )
+      // )
     }
 
     // Render image objects
@@ -2589,6 +2594,9 @@ const MainDesignTool = ({
         fabricCanvas={fabricCanvasRef.current}
       />
       {showNotes && <DesignNotesPopup handleClose={handleClose} />}
+      {openAieditorPopup && <EditWithAipopup onClose={() => {
+        setOpenAieditorPopup(false);
+      }}></EditWithAipopup>}
       {/* <div class="tenor-gif-embed" data-postid="6449096453315144907" data-share-method="host" data-aspect-ratio="0.991667" data-width="100%" style={{ zIndex: 9999999, position: "absolute", top: "50%", left: "50%" }}>
         <a href="https://tenor.com/view/loading-gif-6449096453315144907">Loading Sticker</a>from <a href="https://tenor.com/search/loading-stickers"
         >Loading Stickers</a></div> */}
