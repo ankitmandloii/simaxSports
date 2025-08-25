@@ -571,46 +571,70 @@ function normalizeTiers(tiers) {
 exports.getDiscountDetails = async (req, res) => {
   try {
     let cfg = await DiscountConfig.findOne({ key: "global" }).lean();
-
     if (!cfg) {
-      // initialize with defaults on first run
-      cfg = await DiscountConfig.create({ key: "global", tiers: DEFAULT_TIERS });
+      cfg = await DiscountConfig.create({
+        key: "global",
+        tiers: DEFAULT_TIERS,
+        sizeSurcharges: { XL: 1, "2XL": 2, "3XL": 3 },   // defaults
+        licenseFeeFlat: 25
+      });
     }
-
-    res.json({ tiers: cfg.tiers });
+    res.json({
+      tiers: cfg.tiers,
+      sizeSurcharges: cfg.sizeSurcharges || {},
+      licenseFeeFlat: cfg.licenseFeeFlat ?? 25
+    });
   } catch (err) {
     console.error("getDiscountDetails error:", err);
-    res.status(500).json({ error: "Failed to fetch discount tiers" });
+    res.status(500).json({ error: "Failed to fetch discount config" });
   }
 };
 
 exports.setDiscountDetails = async (req, res) => {
   try {
-    const tiers = req.body && req.body.tiers;
+    const { tiers, sizeSurcharges, licenseFeeFlat } = req.body || {};
+
     if (!Array.isArray(tiers) || tiers.length === 0) {
       return res.status(400).json({ error: "tiers array required" });
     }
-
     const normalized = normalizeTiers(tiers);
-    if (normalized.length === 0) {
+    if (!normalized.length) {
       return res.status(400).json({ error: "no valid tiers after normalization" });
+    }
+
+    // Optional validation for surcharges/fee
+    if (sizeSurcharges) {
+      for (const [k, v] of Object.entries(sizeSurcharges)) {
+        if (!(Number(v) >= 0)) return res.status(400).json({ error: `Invalid surcharge for ${k}` });
+      }
+    }
+    if (licenseFeeFlat != null && !(Number(licenseFeeFlat) >= 0)) {
+      return res.status(400).json({ error: "licenseFeeFlat must be >= 0" });
     }
 
     const updated = await DiscountConfig.findOneAndUpdate(
       { key: "global" },
-      { $set: { tiers: normalized } },
+      {
+        $set: {
+          tiers: normalized,
+          ...(sizeSurcharges ? { sizeSurcharges } : {}),
+          ...(licenseFeeFlat != null ? { licenseFeeFlat: Number(licenseFeeFlat) } : {})
+        }
+      },
       { new: true, upsert: true }
     ).lean();
 
-    res.json({ ok: true, tiers: updated.tiers });
+    res.json({
+      ok: true,
+      tiers: updated.tiers,
+      sizeSurcharges: updated.sizeSurcharges || {},
+      licenseFeeFlat: updated.licenseFeeFlat ?? 25
+    });
   } catch (err) {
     console.error("setDiscountDetails error:", err);
-    res.status(500).json({ error: "Failed to save discount tiers" });
+    res.status(500).json({ error: "Failed to save discount config" });
   }
 };
-
-
-
 async function getTiers() {
   try {
     const cfg = await DiscountConfig.findOne({ key: "global" }).lean();
@@ -637,66 +661,96 @@ function pickTier(tiers, totalQty) {
   }
   return chosen;
 }
+function toPlainObjectMap(maybeMap) {
+  // handles mongoose Map, plain object, or undefined
+  if (!maybeMap) return {};
+  if (maybeMap instanceof Map) return Object.fromEntries(maybeMap);
+  return { ...maybeMap };
+}
 
 exports.calculatePrice = async (req, res) => {
   try {
-    const items = Array.isArray(req.body.items) ? req.body.items : [];
-    const flags = req.body.flags || {};
+    const items  = Array.isArray(req.body.items) ? req.body.items : [];
+    const flags  = req.body.flags  || {};
     const extras = req.body.extras || {};
 
-    const surcharges = Object.assign({}, DEFAULT_SURCHARGES, extras.sizeSurcharges || {});
-    const licenseFeeFlat = typeof extras.licenseFeeFlat === "number"
+    // 1) Load admin config from DB (surcharges + license fee)
+    let cfg = await DiscountConfig.findOne({ key: "global" }).lean();
+    if (!cfg) {
+      // sensible defaults if the doc doesn't exist yet
+      cfg = {
+        tiers: [],
+        sizeSurcharges: { XL: 1, "2XL": 2, "3XL": 3 },
+        licenseFeeFlat: 25
+      };
+    }
+    const dbSurcharges = toPlainObjectMap(cfg.sizeSurcharges);
+    const dbLicenseFee = Number(cfg.licenseFeeFlat ?? 25);
+
+    // 2) Allow per-request overrides
+    const surcharges = { ...dbSurcharges, ...(extras.sizeSurcharges || {}) };
+    const licenseFeeFlat = (typeof extras.licenseFeeFlat === "number")
       ? extras.licenseFeeFlat
-      : DEFAULT_LICENSE_FEE;
+      : dbLicenseFee;
 
-    // 1) Build base breakdown first (to get total qty)
-    const baseBreakdown = items.map(it => {
-      const unitPrice = typeof it.unitPrice === "number" ? it.unitPrice : "";
-      if (typeof unitPrice !== "number") {
-        throw new Error(`Missing unitPrice for sku ${it.sku}`);
-      }
+    // 3) Build base breakdown first (to get total qty)
+    const baseBreakdown = items
+      .map(it => {
+        // FIX: look up unitPrice properly (either provided or via your catalog)
+        const unitPrice = (typeof it.unitPrice === "number")
+          ? it.unitPrice
+          : (CATALOG && typeof CATALOG[it.sku] === "number" ? CATALOG[it.sku] : NaN);
 
-      const sizes = it.sizes || {};
-      const sizeBreakdown = Object.entries(sizes).map(([size, rawQty]) => {
-        const qty = Math.max(0, Number(rawQty) || 0); // guard: coerce to number, no negatives
-        const surcharge = typeof surcharges[size] === "number" ? surcharges[size] : 0;
-        const baseLine = (unitPrice + surcharge) * qty;
-        return {
-          size,
-          qty,
-          unitPrice,
-          surcharge,
-          lineBeforeDiscount: round(baseLine)
-        };
-      }).filter(r => r.qty > 0); // drop zero-qty rows
+        if (!Number.isFinite(unitPrice)) {
+          throw new Error(`Missing unitPrice for sku ${it.sku}`);
+        }
 
-      const quantity = sizeBreakdown.reduce((s, r) => s + r.qty, 0);
-      const subtotalBefore = round(sizeBreakdown.reduce((s, r) => s + r.lineBeforeDiscount, 0));
-      return { sku: it.sku, name: it.name, unitPrice, quantity, sizeBreakdown, subtotalBefore };
-    }).filter(it => it.quantity > 0); // drop items with no qty
+        const sizes = it.sizes || {};
+        const sizeBreakdown = Object.entries(sizes)
+          .map(([size, rawQty]) => {
+            const qty = Math.max(0, Number(rawQty) || 0);
+            if (!qty) return null;
 
-    // 2) Determine discount rate from total quantity (FROM DB)
+            const surcharge = Number(surcharges[size] ?? 0);
+            const baseLine  = (unitPrice + surcharge) * qty;
+
+            return {
+              size,
+              qty,
+              unitPrice,
+              surcharge,
+              lineBeforeDiscount: round(baseLine)
+            };
+          })
+          .filter(Boolean); // drop zero-qty rows
+
+        const quantity       = sizeBreakdown.reduce((s, r) => s + r.qty, 0);
+        const subtotalBefore = round(sizeBreakdown.reduce((s, r) => s + r.lineBeforeDiscount, 0));
+
+        return { sku: it.sku, name: it.name, unitPrice, quantity, sizeBreakdown, subtotalBefore };
+      })
+      .filter(it => it.quantity > 0); // drop items with no qty
+
+    // 4) Determine discount rate from total quantity (FROM DB tiers)
     const totalQuantity = baseBreakdown.reduce((s, i) => s + i.quantity, 0);
 
-    // 🔽 NEW: read tiers from Mongo and pick highest eligible tier
-    const tiers = await getTiers(); 
-    console.log("tiers",tiers)          // loads { minQty, rate }[] from DB
-    const tier = pickTier(tiers, totalQuantity);
-    const discountRate = tier?.rate || 0;
+    const tiers = await getTiers();              // returns [{minQty, rate}, ...]
+    const tier  = pickTier(tiers, totalQuantity);
+    const discountRate = tier?.rate || 0;        // decimal (e.g., 0.2 = 20%)
 
-    // 3) Apply discount to each size line and compute after-discount totals
+    // 5) Apply discount to each size line and compute after-discount totals
     const itemBreakdown = baseBreakdown.map(it => {
       const sizeBreakdown = it.sizeBreakdown.map(r => {
         const discountedUnitPrice = round((r.unitPrice + r.surcharge) * (1 - discountRate));
-        const lineAfterDiscount = round(discountedUnitPrice * r.qty);
+        const lineAfterDiscount   = round(discountedUnitPrice * r.qty);
         return {
           size: r.size,
           qty: r.qty,
           unitPrice: r.unitPrice,
           surcharge: r.surcharge,
           lineBeforeDiscount: r.lineBeforeDiscount,
-          discountedUnitPrice,     // after-discount unit price
-          lineAfterDiscount        // after-discount line total
+          discountedUnitPrice,
+          lineAfterDiscount
         };
       });
 
@@ -713,16 +767,12 @@ exports.calculatePrice = async (req, res) => {
       };
     });
 
-    // 4) Summary based on before/after
-    const baseSubtotal = round(itemBreakdown.reduce((s, i) => s + i.subtotalBefore, 0));
-    const discountedSubtotal = round(itemBreakdown.reduce((s, i) => s + i.subtotalAfter, 0));
-    const discountAmount = round(baseSubtotal - discountedSubtotal);
-
-    const fees = {
-      licenseFee: flags.collegiateLicense ? licenseFeeFlat : 0
-    };
-
-    const grandTotal = round(discountedSubtotal + fees.licenseFee);
+    // 6) Summary based on before/after
+    const baseSubtotal        = round(itemBreakdown.reduce((s, i) => s + i.subtotalBefore, 0));
+    const discountedSubtotal  = round(itemBreakdown.reduce((s, i) => s + i.subtotalAfter, 0));
+    const discountAmount      = round(baseSubtotal - discountedSubtotal);
+    const fees                = { licenseFee: flags.collegiateLicense ? licenseFeeFlat : 0 };
+    const grandTotal          = round(discountedSubtotal + fees.licenseFee);
 
     res.json({
       summary: {
