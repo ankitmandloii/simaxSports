@@ -18,6 +18,7 @@ import { ToastProvider } from './admin/ToastContext'; // Import the ToastProvide
 import NotFound from './admin/NotFound';
 import ActiveUsers from './admin/ActiveUsers';
 import {Dashboard} from './admin/Dashboard';
+import DiscountUpdate from './admin/DiscountUpdate';
 
 function App() {
   return (
@@ -82,6 +83,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <AdminLayout><ProductDesign /></AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/discountUpdate"
+              element={
+                <ProtectedRoute>
+                  <AdminLayout><DiscountUpdate /></AdminLayout>
                 </ProtectedRoute>
               }
             />
