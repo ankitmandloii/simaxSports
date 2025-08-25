@@ -7,7 +7,28 @@ const router = express.Router();
 
 
 router.post('/signup',customerValidation.customerRegister, controllers.signUp);
-router.post('/login',customerValidation.login ,controllers.login);
+// router.post('/login',customerValidation.login ,controllers.login);
+router.post('/login' ,controllers.logintest);
+router.post('/me' ,controllers.meTest);
+router.post('/signUpTest' ,controllers.signUpTest);
+router.post('/logoutTest' ,controllers.logoutTest);
+
+
+
+
+router.post("/calculatePrice",controllers.calculatePrice);
+router.post("/getDiscountDetails",controllers.getDiscountDetails); //get discount based 
+// example : 
+// 0.05 = 5% discount
+
+// 0.10 = 10% discount
+
+// 0.15 = 15% discount
+
+// 0.005 = 0.5% discount
+router.put("/setDiscountDetails",controllers.setDiscountDetails); //update Descount from admin side
+
+
 router.post('/admin-change-password',customerValidation.verifyToken, controllers.adminChangePassword);
 // router.post('/track-anonymous-user', controllers.trackAnonymousUser)
 // router.get('/get-active-user-count',customerValidation.verifyToken, controllers.getActiveUserCount)
