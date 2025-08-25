@@ -336,7 +336,7 @@ const EditWithAipopup = ({ onClose }) => {
         <div className={styles.overlay}>
             <div className={styles.popup}>
                 <div className={styles.header}>
-                    <div className={styles.title}>EDIT WITH AI</div>
+                    <div className={styles.title}><span className={styles.aiTag}>AI</span> EDIT YOUR IMAGE WITH AI MAGIC</div>
                     <button className={styles.close} onClick={onClose}>
                         <CrossIcon />
                     </button>
@@ -356,6 +356,7 @@ ex. Remove the text on the side of the boat`}
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         rows={4}
+                        autoFocus
                         disabled={loading}
                     />
 

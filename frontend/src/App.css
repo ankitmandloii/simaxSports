@@ -95,6 +95,8 @@ h4 {
   height: 100vh;
   /* margin-top: 5px; */
   overflow-y: hidden;
+  overflow-x: hidden;
+
   background-color: var(--white-color);
   position: relative;
 }

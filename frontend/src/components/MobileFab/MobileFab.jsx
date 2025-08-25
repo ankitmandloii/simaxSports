@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { IoShareSocialOutline, IoPricetagOutline } from 'react-icons/io5';
 import { FiSave } from 'react-icons/fi';
 import { FaPlus } from 'react-icons/fa';
@@ -13,7 +13,9 @@ const MobileFAB = ({ onShare, onSave, onPrice, disablePrev }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const steps = ['/design/product', '/quantity', '/review'];
-  const currentIndex = steps.indexOf(location.pathname);
+  // const currentIndex = steps.indexOf(location.pathname);
+  const currentIndex = useMemo(() => steps.indexOf(location.pathname), [location.pathname, steps]);
+
   // Close FAB when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {

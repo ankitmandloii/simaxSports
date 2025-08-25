@@ -116,16 +116,17 @@
 
 .textarea:focus {
     outline: none;
-    border-color: #8e44ad;
-    background: white;
+    /* border-color: #8e44ad; */
+    /* background: white; */
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
 }
 
 .textarea::placeholder {
-    opacity: 0.6;
+    opacity: 0.3;
 }
 
 .editButton {
-    background: linear-gradient(to right, #8e44ad, #6c5ce7);
+    background: linear-gradient(to right, var(--blue-color), #6c5ce7);
     color: white;
     border: none;
     padding: 10px 14px;

@@ -35,8 +35,8 @@ const Layout = () => {
           </div>
         </div>
       </div>
-       {!isQuantityPage && <Footer /> } 
- 
+      {!(isQuantityPage && isDesktopOrLaptop) && <Footer />}
+
     </>
 
   );
