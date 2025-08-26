@@ -3,7 +3,7 @@ import {
   Icon
 } from '@shopify/polaris';
 import {
-  HomeIcon, ListNumberedIcon, OrderIcon, ProductIcon, SettingsIcon, PersonAddIcon
+  HomeIcon, ListNumberedIcon, OrderIcon, ProductIcon, SettingsIcon, PersonAddIcon, DiscountIcon
 } from '@shopify/polaris-icons';
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -119,7 +119,7 @@ export default function AdminLayout({ children }) {
           },
           {
             label: 'Pricing And Discounts',
-            icon: SettingsIcon,
+            icon: DiscountIcon,
             selected: location.pathname.startsWith('/admin/discountUpdate'),
             onClick: () => navigate('/admin/discountUpdate'),
           },
