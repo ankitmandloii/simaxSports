@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Button } from "@shopify/polaris";
+import { Button, SkeletonPage, Layout, SkeletonBodyText, SkeletonDisplayText, Card } from "@shopify/polaris";
+
 import { DeleteIcon } from "@shopify/polaris-icons";
 
 // ---------- helpers ----------
@@ -199,7 +200,31 @@ export default function PricingSettings() {
     };
   }
 
-  if (loading) return <div>Loading…</div>;
+  if (loading) return (
+      <SkeletonPage primaryAction>
+        <Layout>
+          <Layout.Section>
+            <Card sectioned>
+              <SkeletonDisplayText size="small" />
+              <SkeletonBodyText lines={3} />
+            </Card>
+          </Layout.Section>
+          <Layout.Section>
+            <Card sectioned>
+              <SkeletonDisplayText size="small" />
+              <SkeletonBodyText lines={5} />
+            </Card>
+          </Layout.Section>
+          <Layout.Section>
+            <Card sectioned>
+              <SkeletonDisplayText size="small" />
+              <SkeletonBodyText lines={2} />
+            </Card>
+          </Layout.Section>
+        </Layout>
+      </SkeletonPage>
+    );
+  
 
   return (
     <div style={{ maxWidth: 880, margin: "20px auto", fontFamily: "Inter, system-ui, Arial" }}>
