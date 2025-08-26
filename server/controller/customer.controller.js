@@ -226,21 +226,21 @@ exports.orderPaymentDoneForOrderWEbHooks = async (req, res) => {
     const designIds = mergedExtras.map(x => x.designId).filter(Boolean);
 
     // 2) build email
-    const emailData = buildEmailData(orderData, mergedExtras, {
-      topic: req.get('X-Shopify-Topic') || null,
-      shop_domain: req.get('X-Shopify-Shop-Domain') || null,
-    });
+    // const emailData = buildEmailData(orderData, mergedExtras, {
+    //   topic: req.get('X-Shopify-Topic') || null,
+    //   shop_domain: req.get('X-Shopify-Shop-Domain') || null,
+    // });
 
     // 3) send email first
-    const sent = await this.sendEmailtoAdminWhileOrdered(emailData);
+    // const sent = await this.sendEmailtoAdminWhileOrdered(emailData);
 
     // 4) only if email succeeded, set status="ordered" (status-only update)
-    if (sent) {
+    // if (sent) {
       const summary = await markDesignsOrderedStatusOnly(designIds);
       console.log('Design status updated (ordered):', summary);
-    } else {
-      console.warn('Email failed; skipped design status update');
-    }
+    // } else {
+    //   console.warn('Email failed; skipped design status update');
+    // }
 
     // 5) respond
     res.status(200).send('OK');
