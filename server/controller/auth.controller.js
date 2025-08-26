@@ -867,7 +867,7 @@ exports.calculatePrice = async (req, res) => {
       cfg = {
         tiers: [],
         sizeSurcharges: { XL: 1, "2XL": 2, "3XL": 3 },
-        licenseFeeFlat: 25,
+        licenseFeeFlat: 0,
         printAreaSurcharges: { "1": 0.23, "2": 0.46, "3": 12.68, "4": 18.92 }
       };
     }
