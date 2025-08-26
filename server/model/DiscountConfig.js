@@ -14,7 +14,7 @@ const DiscountConfigSchema = new mongoose.Schema(
     key: { type: String, required: true, unique: true, index: true }, // e.g. "global"
     tiers: { type: [TierSchema], required: true, default: [] },
     sizeSurcharges: { type: Map, of: Number, default: {} }, // {"XL":1,"2XL":2,"3XL":3}
-    licenseFeeFlat: { type: Number, default: 25 },
+    licenseFeeFlat: { type: Number, default: 0 },
     printAreaSurcharges: { type: Map, of: Number, default: {} }
   },
   { timestamps: true }
