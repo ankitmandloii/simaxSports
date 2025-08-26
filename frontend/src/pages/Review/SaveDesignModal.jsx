@@ -138,10 +138,10 @@ import React, { useState } from 'react';
 import styles from './SaveDesignModal.module.css';
 import { CrossIcon } from '../../components/iconsSvg/CustomIcon';
 
-export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName, designId, currentDesign }) {
+export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName, designId, currentDesign = [] }) {
     console.log(currentDesign, "currentDesign");
     const [selectedOption, setSelectedOption] = useState('update');
-    const [designName, setDesignName] = useState(currentDesign[0].DesignName || '');
+    const [designName, setDesignName] = useState(currentDesign[0]?.DesignName || '');
     const [emailUpdates, setEmailUpdates] = useState(true);
 
     const handleSubmit = () => {
