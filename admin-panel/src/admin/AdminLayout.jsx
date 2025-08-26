@@ -118,7 +118,7 @@ export default function AdminLayout({ children }) {
             onClick: () => navigate('/admin/activeUsers'),
           },
           {
-            label: 'Discount Update',
+            label: 'Pricing And Discounts',
             icon: SettingsIcon,
             selected: location.pathname.startsWith('/admin/discountUpdate'),
             onClick: () => navigate('/admin/discountUpdate'),
