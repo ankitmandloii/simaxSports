@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Button } from "@shopify/polaris";
 import { DeleteIcon } from "@shopify/polaris-icons";
+import { InfoIcon } from "@shopify/polaris-icons";
 
 function toPercent(rateDecimal) {
   return rateDecimal != null ? Math.round(rateDecimal * 100 * 100) / 100 : 0;
@@ -268,9 +269,9 @@ export default function DiscountUpdate() {
 
       {/* NEW: Print-Area Surcharges */}
       <section style={{ marginTop: 24 }}>
-        <h3>Print-Area Surcharges ($ per unit)</h3>
+        <h3>Print-Area Surcharges ($ whole unit)</h3>
         <p style={{ fontSize: "0.7rem", color: "#555", marginTop: 4 }}>
-          Per-unit add-on for number of print areas (applied before discount). Only keys 1..4 are supported.
+          whole-unit add-on for number of print areas (applied before discount). Only keys 1..4 are supported.
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
           {["1","2","3","4"].map(k => (
@@ -341,7 +342,7 @@ export default function DiscountUpdate() {
                 boxShadow: "0 10px 30px rgba(0,0,0,0.15)"
               }}
             >
-              <h4 id="confirm-title" style={{ margin: 0 }}>Confirm Save</h4>
+              <h4 id="confirm-title" style={{ margin: 0 }}> <InfoIcon width="20px" style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Confirm Save</h4>
               <p id="confirm-desc" style={{ marginTop: 8 }}>
                 Are you sure you want to save these settings?
                 <br />
@@ -355,6 +356,7 @@ export default function DiscountUpdate() {
                   disabled={saving}
                   aria-busy={saving ? "true" : "false"}
                 >
+                    
                   {saving ? "Saving…" : "Yes, Save"}
                 </Button>
                 <Button tone="critical" onClick={() => setConfirmOpen(false)} disabled={saving}>
