@@ -302,7 +302,7 @@ function App() {
     try {
       const searchParams = new URLSearchParams(location.search);
       const designId = searchParams.get("designId");
-      console.log(designId, "designId");
+      // console.log(designId, "designId");
       if (designId) {
 
       }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from "./AddToCartPopup.module.css";
 import { CrossIcon } from "../../iconsSvg/CustomIcon";
+import { useLocation } from "react-router-dom";
 
 const AddToCartPopup = ({ onSave, onClose, defaultDesignName }) => {
     // const [designName, setDesignName] = useState("");
@@ -16,6 +17,9 @@ const AddToCartPopup = ({ onSave, onClose, defaultDesignName }) => {
             onSave(payload);
         }
     };
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const customerEmail = searchParams.get("customerEmail");
 
     return (
         <div className={styles.overlay}>
@@ -36,7 +40,7 @@ const AddToCartPopup = ({ onSave, onClose, defaultDesignName }) => {
                         Name and save your design to proceed to checkout.
                     </p>
                     <p className={styles.loggedIn}>
-                        Logged in as vaishaliverma@itgeeks.com
+                        Logged in as {customerEmail}
                     </p>
 
                     <input

@@ -14,7 +14,9 @@ const initialState = {
     //     XL: 0
     //   }
     // }
-  }
+  },
+  CollegiateLicense: false
+
 };
 
 const productSelectionSlice = createSlice({
@@ -71,6 +73,9 @@ const productSelectionSlice = createSlice({
           state.products[productId].selections[size] = 0;
         });
       }
+    },
+    setCollegiateLicense(state, action) {
+      state.CollegiateLicense = action.payload;
     }
   }
 });
@@ -81,7 +86,8 @@ export const {
   incrementSize,
   decrementSize,
   removeProduct,
-  resetSelections
+  resetSelections,
+  setCollegiateLicense
 } = productSelectionSlice.actions;
 
 export default productSelectionSlice.reducer;

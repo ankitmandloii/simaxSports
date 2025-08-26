@@ -98,7 +98,7 @@ export default function PricingSettings() {
       if (String(k).trim() === "") return "Size key cannot be empty";
       if (!(Number(v) >= 0)) return `Invalid size surcharge for ${k}`;
     }
-    for (const key of ["1","2","3","4"]) {
+    for (const key of ["1", "2", "3", "4"]) {
       if (!(Number(printAreas[key]) >= 0)) return `Invalid print-area surcharge for ${key}`;
     }
     if (!(Number(licenseFee) >= 0)) return "License fee must be ≥ 0";
@@ -153,7 +153,7 @@ export default function PricingSettings() {
     if (!confirmOpen) return;
     const onKeyDown = (e) => {
       if (e.key === "Escape") { e.preventDefault(); setConfirmOpen(false); }
-      if (e.key === "Enter")  { e.preventDefault(); handleConfirmYes(); }
+      if (e.key === "Enter") { e.preventDefault(); handleConfirmYes(); }
     };
     window.addEventListener("keydown", onKeyDown);
     const t = setTimeout(() => confirmYesBtnRef.current?.focus(), 0);
@@ -164,7 +164,7 @@ export default function PricingSettings() {
   // ---------- LEARN + TESTER ----------
   function pickLocalTier(tiersDec, qty) {
     let chosen = { minQty: 1, rate: 0 };
-    for (const t of tiersDec.sort((a,b)=>a.minQty-b.minQty)) {
+    for (const t of tiersDec.sort((a, b) => a.minQty - b.minQty)) {
       if (qty >= t.minQty) chosen = t;
     }
     return chosen;
@@ -201,30 +201,30 @@ export default function PricingSettings() {
   }
 
   if (loading) return (
-      <SkeletonPage primaryAction>
-        <Layout>
-          <Layout.Section>
-            <Card sectioned>
-              <SkeletonDisplayText size="small" />
-              <SkeletonBodyText lines={3} />
-            </Card>
-          </Layout.Section>
-          <Layout.Section>
-            <Card sectioned>
-              <SkeletonDisplayText size="small" />
-              <SkeletonBodyText lines={5} />
-            </Card>
-          </Layout.Section>
-          <Layout.Section>
-            <Card sectioned>
-              <SkeletonDisplayText size="small" />
-              <SkeletonBodyText lines={2} />
-            </Card>
-          </Layout.Section>
-        </Layout>
-      </SkeletonPage>
-    );
-  
+    <SkeletonPage primaryAction>
+      <Layout>
+        <Layout.Section>
+          <Card sectioned>
+            <SkeletonDisplayText size="small" />
+            <SkeletonBodyText lines={3} />
+          </Card>
+        </Layout.Section>
+        <Layout.Section>
+          <Card sectioned>
+            <SkeletonDisplayText size="small" />
+            <SkeletonBodyText lines={5} />
+          </Card>
+        </Layout.Section>
+        <Layout.Section>
+          <Card sectioned>
+            <SkeletonDisplayText size="small" />
+            <SkeletonBodyText lines={2} />
+          </Card>
+        </Layout.Section>
+      </Layout>
+    </SkeletonPage>
+  );
+
 
   return (
     <div style={{ maxWidth: 880, margin: "20px auto", fontFamily: "Inter, system-ui, Arial" }}>
@@ -254,26 +254,26 @@ export default function PricingSettings() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 }}>
                 <div>
                   <label style={{ fontSize: 12 }}>Unit price</label>
-                  <input type="number" value={testUnit} min={0} step="0.01" onChange={e=>setTestUnit(Number(e.target.value))}/>
+                  <input type="number" value={testUnit} min={0} step="0.01" onChange={e => setTestUnit(Number(e.target.value))} />
                 </div>
                 <div>
                   <label style={{ fontSize: 12 }}>Qty</label>
-                  <input type="number" value={testQty} min={1} onChange={e=>setTestQty(Number(e.target.value))}/>
+                  <input type="number" value={testQty} min={1} onChange={e => setTestQty(Number(e.target.value))} />
                 </div>
                 <div>
                   <label style={{ fontSize: 12 }}>Size</label>
-                  <select value={testSize} onChange={e=>setTestSize(e.target.value)}>
+                  <select value={testSize} onChange={e => setTestSize(e.target.value)}>
                     {Object.keys(surcharges).map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
                   <label style={{ fontSize: 12 }}>Print areas (1–4)</label>
-                  <select value={testAreas} onChange={e=>setTestAreas(Number(e.target.value))}>
-                    {[1,2,3,4].map(n => <option key={n} value={n}>{n}</option>)}
+                  <select value={testAreas} onChange={e => setTestAreas(Number(e.target.value))}>
+                    {[1, 2, 3, 4].map(n => <option key={n} value={n}>{n}</option>)}
                   </select>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, paddingTop: 18 }}>
-                  <input id="lic" type="checkbox" checked={testLicense} onChange={e=>setTestLicense(e.target.checked)}/>
+                  <input id="lic" type="checkbox" checked={testLicense} onChange={e => setTestLicense(e.target.checked)} />
                   <label htmlFor="lic" style={{ fontSize: 12 }}>Collegiate license</label>
                 </div>
               </div>
@@ -291,9 +291,9 @@ export default function PricingSettings() {
                     {!!r.ladder.length && (
                       <div style={{ marginTop: 8 }}>
                         Buy more & save:&nbsp;
-                        {r.ladder.map((x,i) => (
+                        {r.ladder.map((x, i) => (
                           <span key={x.threshold} style={{ marginRight: 10 }}>
-                            {x.threshold} items for <b>${x.eachAtTier.toFixed(2)}</b> ea{ i < r.ladder.length-1 ? " | " : "" }
+                            {x.threshold} items for <b>${x.eachAtTier.toFixed(2)}</b> ea{i < r.ladder.length - 1 ? " | " : ""}
                           </span>
                         ))}
                       </div>
@@ -319,11 +319,11 @@ export default function PricingSettings() {
               <tr key={idx}>
                 <td>
                   <input type="number" min={1} value={row.minQty}
-                         onChange={e => updateRow(idx, "minQty", e.target.value)} />
+                    onChange={e => updateRow(idx, "minQty", e.target.value)} />
                 </td>
                 <td>
                   <input type="number" min={0} max={100} step="0.01" value={row.ratePercent}
-                         onChange={e => updateRow(idx, "ratePercent", e.target.value)} />
+                    onChange={e => updateRow(idx, "ratePercent", e.target.value)} />
                 </td>
                 <td><Button tone="critical" icon={DeleteIcon} onClick={() => removeRow(idx)} /></td>
               </tr>
@@ -349,10 +349,10 @@ export default function PricingSettings() {
                   copy[newKey] = v;
                   return copy;
                 });
-              }} style={{ width: 80 }}/>
+              }} style={{ width: 80 }} />
               <input type="number" step="0.01" min={0} value={val}
-                     onChange={e => setSurcharges(prev => ({ ...prev, [size]: Number(e.target.value) }))}
-                     style={{ width: 90 }}/>
+                onChange={e => setSurcharges(prev => ({ ...prev, [size]: Number(e.target.value) }))}
+                style={{ width: 90 }} />
             </div>
           ))}
         </div>
@@ -366,12 +366,12 @@ export default function PricingSettings() {
           Flat fee per item line (not per unit). Keys 1..4 only.
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
-          {["1","2","3","4"].map(k => (
+          {["1", "2", "3", "4"].map(k => (
             <div key={k} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <input value={k} disabled style={{ width: 80, background: "#f3f3f3" }}/>
+              <input value={k} disabled style={{ width: 80, background: "#f3f3f3" }} />
               <input type="number" step="0.01" min={0} value={printAreas[k]}
-                     onChange={e => setPrintAreas(prev => ({ ...prev, [k]: Number(e.target.value) }))}
-                     style={{ width: 90 }}/>
+                onChange={e => setPrintAreas(prev => ({ ...prev, [k]: Number(e.target.value) }))}
+                style={{ width: 90 }} />
             </div>
           ))}
         </div>
@@ -395,13 +395,13 @@ export default function PricingSettings() {
         {confirmOpen && (
           <>
             <div onClick={() => !saving && setConfirmOpen(false)}
-                 style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", zIndex: 1000 }}/>
+              style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", zIndex: 1000 }} />
             <div role="dialog" aria-modal="true"
-                 style={{
-                   position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-                   background: "#fff", border: "1px solid #ddd", borderRadius: 12, padding: 16,
-                   minWidth: 320, zIndex: 1001, boxShadow: "0 10px 30px rgba(0,0,0,0.15)"
-                 }}>
+              style={{
+                position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+                background: "#fff", border: "1px solid #ddd", borderRadius: 12, padding: 16,
+                minWidth: 320, zIndex: 1001, boxShadow: "0 10px 30px rgba(0,0,0,0.15)"
+              }}>
               <h4 style={{ margin: 0 }}>Confirm Save</h4>
               <p style={{ marginTop: 8 }}>
                 Save these pricing settings? Changes will apply immediately to discount calculations.

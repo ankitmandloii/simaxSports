@@ -15,11 +15,11 @@ root.render(
   <BrowserRouter>
     <Provider store={store}>
 
-      <StrictMode>
-        <GoogleOAuthProvider clientId={process.env.REACT_APP_CLIENT_ID}>
-          <App />
-        </GoogleOAuthProvider>
-      </StrictMode>
+      {/* <StrictMode> */}
+      <GoogleOAuthProvider clientId={process.env.REACT_APP_CLIENT_ID}>
+        <App />
+      </GoogleOAuthProvider>
+      {/* </StrictMode> */}
     </Provider>
   </BrowserRouter>
 

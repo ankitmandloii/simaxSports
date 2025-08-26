@@ -386,7 +386,7 @@ import { generateDesigns } from '../Editor/utils/helper.js';
 import { toast } from "react-toastify";
 
 const designId = "68ac04b142c7030c7b74e6d6";
-const customerEmail = "testuser@example.com";
+// const customerEmail = "testuser@example.com";
 
 const Footer = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1200);
@@ -394,19 +394,21 @@ const Footer = () => {
   const [isFetchingDesign, setIsFetchingDesign] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeModal, setActiveModal] = useState(null); // "retrieve", "save", "addToCart", "email", "share"
-
+  const [lastDesign, setLastDesign] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   const { present, DesignNotes } = useSelector((state) => state.TextFrontendDesignSlice);
   const productState = useSelector((state) => state.productSelection.products);
   const isProductPage = location.pathname === "/design/product";
-
+  const searchParams = new URLSearchParams(location.search);
+  const customerEmail = searchParams.get("customerEmail");
   const designPayload = {
     ownerEmail: customerEmail,
     design: {
-      DesignName: "Demo T-Shirt 55555",
+      DesignName: "Enter design name",
       present: { /* mapping logic unchanged */
         front: {
           texts: present.front.texts.map((t) => ({ ...t })),
@@ -451,6 +453,9 @@ const Footer = () => {
     sku: product?.sku,
     inventory_quantity: product?.inventory_quantity,
   }));
+  useEffect(() => {
+
+  }, [lastDesign])
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 1200);
@@ -497,6 +502,7 @@ const Footer = () => {
   }
 
   const handleSaveDesign = async (payload) => {
+    console.log("payload", payload)
     setLoading(true);
     setActiveModal("email");
 
@@ -523,12 +529,18 @@ const Footer = () => {
 
       const cloudinaryResponse = await uploadBlobData(blobData);
       designPayload.design.FinalImages = cloudinaryResponse?.files || [];
-      await saveDesignFunction(designPayload);
+      const responseData = await saveDesignFunction(designPayload);
+      const design = responseData.userDesigns.designs;
+      const lastDesing = design[design.length - 1];
+      setLastDesign(lastDesing);
+      setDesignExists(lastDesing);
+      console.log("lastDesing", lastDesing);
+      console.log("lastDesing id ", lastDesing._id);
 
       try {
         const emailPayload = {
-          email: "vaishaliverma@itgeeks.com",
-          companyEmail: "service@simaxsports.com",
+          email: customerEmail,
+          companyEmail: "",
           frontSrc: cloudinaryResponse?.files?.[0] || "",
           backSrc: cloudinaryResponse?.files?.[1] || "",
           designname: payload.name,
@@ -538,7 +550,7 @@ const Footer = () => {
           unsubscribe_link: "#",
         };
         await sendEmailDesign(emailPayload);
-        toast.success("Email sent successfully!");
+        // toast.success("Email sent successfully!");
         setActiveModal("share");
       } catch (err) {
         toast.error("Failed to send email.");
@@ -579,7 +591,7 @@ const Footer = () => {
         <EmailSendingModal onClose={() => setActiveModal(null)} />
       )}
       {activeModal === "share" && (
-        <ShareDesignPopup setSavedesignPopupHandler={() => setActiveModal(null)} />
+        <ShareDesignPopup setSavedesignPopupHandler={() => setActiveModal(null)} lastDesign={lastDesign} />
       )}
 
       {!isMobile && !sleevedesignn && (

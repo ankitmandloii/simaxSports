@@ -37,15 +37,21 @@ const Review = () => {
   const [designStateDb, setdesignStateDb] = useState();
   const [currentDesign, setCurrentDesing] = useState();
   const [discountData, setDiscountData] = useState();
+  const [extraInformation, setExtraInformation] = useState([]);
+  const CollegiateLicense = useSelector((state) => state.productSelection.CollegiateLicense);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+
+  const location = useLocation();
   const productState = useSelector((state) => state.productSelection.products);
   const designState = useSelector((state) => state.TextFrontendDesignSlice);
   const { present, DesignNotes } = designState;
 
-
+  const searchParams = new URLSearchParams(location.search);
+  const customerEmail = searchParams.get("customerEmail");
   const designPayload = {
-    ownerEmail: "ankitmandloi@itgeeks.com",
+    ownerEmail: customerEmail,
     design: {
       DesignName: "",
       present: {
@@ -321,7 +327,7 @@ const Review = () => {
     const present = state.TextFrontendDesignSlice.present;
     const areas = ["front", "back", "leftSleeve", "rightSleeve"];
     let count = areas.reduce((count, area) => {
-      const hasContent = present[area].texts.length + present[area].images.length;
+      const hasContent = Boolean(present[area].texts.length) || Boolean(present[area].images.length)
       return hasContent + count;
     }, 0);
     if (
@@ -416,7 +422,7 @@ const Review = () => {
           variant_id: variantData.id.split("/").reverse()[0],
           size: varianttitle.title.split("/")[1].trim(),
           color: varianttitle.title.split("/")[0].trim(),
-          price: variantData?.price,
+          price: discountData?.summary?.eachAfterDiscount,
           sku: variantData?.sku,
           "designId": currentDesign?._id,
           quantity: Number(varianttitle.inventory_quantity),
@@ -438,6 +444,16 @@ const Review = () => {
     console.log("data.....", ShopifyData);
     createDraftOrderforCheckout(ShopifyData);
   }
+
+  function getIncreasedData(data, value) {
+    console.log("increase by value ", value);
+
+    const cloned = JSON.parse(JSON.stringify(data)); // Deep clone
+    const q = cloned.items[0]?.sizes?.S || 0;
+    cloned.items[0].sizes.S = parseInt(q + value); // Fixed key case
+    return cloned;
+  }
+
 
   function makeVariantDataForDiscound(reviewItems) {
 
@@ -461,12 +477,14 @@ const Review = () => {
 
         const newData = {
           unitPrice: Number.parseFloat(variantData?.price),
+          printAreas: printAreaCount,
           sku: variantData?.sku,
           name: variantData?.title,
           // quantity: Number(varianttitle.inventory_quantity),
           "sizes": {
             [size]: Number(varianttitle.inventory_quantity)
           },
+
         };
         discountData.push(newData);
         return newData;
@@ -475,11 +493,18 @@ const Review = () => {
     });
     const dataForDiscountCheck = {
       items: discountData, flags: {
-        "collegiateLicense": false
+        "collegiateLicense": CollegiateLicense
       }
     }
     console.log("data.....", dataForDiscountCheck);
+    console.log("totalItems", totalItems)
+    if (totalItems == 0) return;
     calculatePriceAndDiscount(dataForDiscountCheck);
+    const increasedData = getIncreasedData(dataForDiscountCheck, (totalItems * 0.7));
+    calculatePriceAndDiscount2(increasedData);
+    const increasedData2 = getIncreasedData(dataForDiscountCheck, (totalItems * 1.5));
+    calculatePriceAndDiscount2(increasedData2);
+
   }
   useEffect(() => {
     makeVariantDataForDiscound(reviewItems);
@@ -488,7 +513,7 @@ const Review = () => {
   async function createDraftOrderforCheckout(variants) {
     try {
       // setLoading(true);
-      setEmailSendingLoader(true); // <-- If this loader is relevant here
+      // setEmailSendingLoader(true); // <-- If this loader is relevant here
 
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}products/createDraftOrderforCheckout`, {
         method: 'POST',
@@ -554,12 +579,48 @@ const Review = () => {
     }
   }
 
+  async function calculatePriceAndDiscount2(varints) {
+    try {
+      setLoading(true);
+      // setEmailSendingLoader(true); // <-- If this loader is relevant here
+
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}auth/calculatePrice`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(varints)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      // setDiscountData(data);
+      const grandTotal = data.summary.grandTotal;
+      const totalQuantity = data.summary.totalQuantity
+      const eachPerUnit = parseFloat(grandTotal / totalQuantity).toFixed(2)
+      if (extraInformation.length < 2) {
+        setExtraInformation((prev) => [...prev, { totalQuantity, eachPerUnit }])
+      }
+      console.log(extraInformation, "extraInformation");
+      console.log("Success and get Discount for futere:", data);
+      // return data;
+    } catch (error) {
+      console.error("Error adding variants:", error);
+      toast.error("Failed to add variants.");
+    } finally {
+      setLoading(false);
+      // setEmailSendingLoader(false); // <-- Only if applicable
+    }
+  }
   const cartHandler = () => {
     setShowPopup(true);
   };
 
   const handleSaveDesign = async (payload) => {
-    setLoading(true);
+    // setLoading(true);
     setShowPopup(false);
     setSaveDesignLoader(false);
     setEmailSendingLoader(true);// Close SaveDesignModal/SaveDesignPopup
@@ -623,8 +684,9 @@ const Review = () => {
       await saveDesignFunction(designPayload);
       // api call for email send
       try {
+
         const emailPayload = {
-          email: "ankitmandloi@itgeeks.com",
+          email: customerEmail,
           companyEmail: "service@simaxsports.com",
           frontSrc: cloudinaryResponse?.files?.[0] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786256753_download_4.png",
           backSrc: cloudinaryResponse?.files?.[1] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786306809_download_5.png",
@@ -634,8 +696,9 @@ const Review = () => {
           add_to_cart_link: "#",
           unsubscribe_link: "#",
         };
+        console.log("emailPayload",emailPayload)
         await sendEmailDesign(emailPayload);
-        toast.success("Email sent successfully!");
+        // toast.success("Email sent successfully!");
       } catch (emailError) {
         console.error("Email sending failed:", emailError);
         toast.error("Failed to send email.");
@@ -654,7 +717,7 @@ const Review = () => {
       console.error("Error in handleSaveDesign:", error);
       toast.error("Failed to save design or prepare variants.");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -726,8 +789,6 @@ const Review = () => {
   }
 
 
-  const location = useLocation();
-
   function editDesignHandler() {
     try {
       // const searchParams = new URLSearchParams(location.search);
@@ -765,7 +826,14 @@ const Review = () => {
   return (
     <>
       {
-        loading ? <div>loading.....</div> : <>
+        loading ? <>
+
+          <div className={styles.loaderWrapper}>
+            <div className={styles.loader}></div>
+            <p>calculating price...</p>
+          </div>
+
+        </> : <>
           <div className={styles.container}>
             {retrieveLoader && (
               <RetrieveSavedDesignsModal
@@ -815,8 +883,8 @@ const Review = () => {
                 <div className={styles.priceInfo}>
                   {discountData?.summary?.discountTier?.percent > 0 && <>
                     < p >
-                      <span className={styles.strike}>${discountData?.summary?.eachBeforeDicount}</span>
-                      <span className={styles.discounted}> ${discountData?.summary?.eachAfterDicount} each</span>
+                      <span className={styles.strike}>${discountData?.summary?.eachBeforeDiscount}</span>
+                      <span className={styles.discounted}> ${discountData?.summary?.eachAfterDiscount} each</span>
                     </p>
                     <p>
                       <span className={styles.strikeSmall}>
@@ -842,14 +910,14 @@ const Review = () => {
                 </div>
                 <p className={styles.bulkDeal}>
                   <b>Buy More & Save:</b>{" "}
-                  {discountData?.summary?.ladder.map((item, index) => {
+                  {extraInformation?.map((item, index) => {
                     const unitPrice = 5.59;
                     const discountedPrice = (unitPrice * (1 - item.rate)).toFixed(2);
                     return (
                       <span key={index}>
-                        {item.threshold} items for{" "}
-                        <span className={styles.dollarText}>${discountedPrice}</span> ea.
-                        {index !== discountData?.summary?.ladder.length - 1 && <span> | </span>}
+                        {item.totalQuantity} items for{" "}
+                        <span className={styles.dollarText}>${item.eachPerUnit}</span>ea.
+                        {index !== extraInformation.length - 1 && <span> | </span>}
                       </span>
                     );
                   })}
@@ -860,14 +928,14 @@ const Review = () => {
                   <p className={styles.summaryTitle}>
                     Summary <span>({totalItems} items)</span>
                   </p>
-                  {reviewItems.map((item, idx) => (
+                  {reviewItems?.map((item, idx) => (
                     <div key={idx} className={styles.summaryItem}>
                       <img src={item.image} alt={item.name} />
                       <div className={styles.itemDetails}>
                         <div className={styles.itemHeader}>
                           <p className={styles.itemName}>{item.name}</p>
                           <p className={styles.itemPrice}>
-                            ${discountData?.summary?.eachAfterDicount} <span>each</span>
+                            ${discountData?.summary?.eachAfterDiscount} <span>each</span>
                           </p>
                         </div>
                         <p className={styles.itemSubtitle}>
@@ -887,12 +955,12 @@ const Review = () => {
                     </div>
                   ))}
                 </div>
-
-                <div className={styles.extraFees}>
+                {CollegiateLicense && <div className={styles.extraFees}>
                   <p>
-                    Collegiate License <span>$39.44</span>
+                    Collegiate License <span>${discountData?.summary?.fees?.licenseFee || 0}</span>
                   </p>
                 </div>
+                }
 
                 {/* <button className={styles.addToCart} onClick={cartHandler}>
             ADD TO CART <LuArrowRight />

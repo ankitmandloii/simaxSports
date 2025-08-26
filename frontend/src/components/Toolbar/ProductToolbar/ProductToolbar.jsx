@@ -25,7 +25,7 @@ const ProductToolbar = () => {
   const dispatch = useDispatch();
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  console.log("---selectedsProduct", selectedProducts);
+  // console.log("---selectedsProduct", selectedProducts);
 
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
   // console.log("---activeProduct", activeProduct);
@@ -59,8 +59,8 @@ const ProductToolbar = () => {
     setAddProduct(true);
   };
   useEffect(() => {
-    console.log('Active Product from useSelector (after render):', activeProduct);
-    console.log('Active Product Color:', activeProduct?.selectedColor?.name);
+    // console.log('Active Product from useSelector (after render):', activeProduct);
+    // console.log('Active Product Color:', activeProduct?.selectedColor?.name);
   }, [activeProduct]);
   // Handle product selection and update/add it to Redux store
   const handleProductSelect = (product, selectedColor = null) => {
@@ -102,7 +102,7 @@ const ProductToolbar = () => {
 
   const handleDeleteProduct = (indexToDelete, id) => {
     // Remove product at index
-    console.log("id.................", id);
+    // console.log("id.................", id);
     let Productid = id.split("/");
     dispatch(removeProduct(Productid[Productid.length - 1]));
     const updated = [...selectedProducts];
@@ -162,7 +162,7 @@ const ProductToolbar = () => {
   const getNextActiveProduct = (products, targetIndex, colorIndex) => {
     if (products.length === 0) return null;
 
-    console.log("data.............", products, targetIndex, colorIndex);
+    // console.log("data.............", products, targetIndex, colorIndex);
     const safeIndex = Math.min(targetIndex, products.length - 1);
     const colorIndexSafe = colorIndex ?? 0;
     const current = products[safeIndex];
@@ -172,7 +172,7 @@ const ProductToolbar = () => {
       ? addedColors[0]
       : current.selectedColor;
 
-    console.log("color index", colorIndex);
+    // console.log("color index", colorIndex);
 
     const clickedColor = colorIndexSafe === 0
       ? current.selectedColor
@@ -196,7 +196,7 @@ const ProductToolbar = () => {
       allVariants: originalProduct.allVariants || [],
     };
 
-    console.log("originalProduct id ", originalProduct);
+    // console.log("originalProduct id ", originalProduct);
 
     if (colorIndex === 0) {
       // Deleting main color
@@ -255,7 +255,7 @@ const ProductToolbar = () => {
     }
 
     setActiveThumbnail({ productIndex: null, colorIndex: null });
-    console.log("---selectedProduct", selectedProducts);
+    // console.log("---selectedProduct", selectedProducts);
   };
 
   const { list: rawProducts, loading, error } = useSelector(
@@ -264,7 +264,7 @@ const ProductToolbar = () => {
 
   // Debug effect to track active product changes
   useEffect(() => {
-    console.log("Active Product Updated:", activeProduct);
+    // console.log("Active Product Updated:", activeProduct);
   }, [activeProduct]);
 
   function testing(text) {
@@ -507,8 +507,8 @@ const ProductToolbar = () => {
                                   imgurl: newColor.img || current.imgurl
                                 };
 
-                                console.log('Dispatching updates...');
-                                console.log('New active product:', newActiveProduct);
+                                // console.log('Dispatching updates...');
+                                // console.log('New active product:', newActiveProduct);
 
                                 // Dispatch separately to ensure each triggers updates
                                 dispatch(setSelectedProductsAction(updated));

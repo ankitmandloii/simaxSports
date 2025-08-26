@@ -85,14 +85,19 @@ import { TfiEmail } from "react-icons/tfi";
 import { FaFacebookSquare } from "react-icons/fa";
 import { FaTwitter } from "react-icons/fa";
 import { FaPinterest } from "react-icons/fa";
+import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-const ShareDesignPopup = ({ setSavedesignPopupHandler }) => {
+const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign }) => {
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [isEmailFormOpen, setIsEmailFormOpen] = useState(false);
+    const location = useLocation();
+    console.log(lastDesign, "lastDesing in share designpopup")
+    const shareUrl = window.location.href + "&designId=" + lastDesign?._id;
 
     const handleCopy = () => {
-        navigator.clipboard.writeText('https://www.ninjaprinthouse.com/design/?design=MTEyMzkxODk=&i');
-        alert('Link copied to clipboard!');
+        navigator.clipboard.writeText(shareUrl);
+        toast.success("copied")
     };
 
     const handlePreview = () => {
@@ -162,7 +167,7 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler }) => {
                                 <div className={styles.linkContainer}>
                                     <input
                                         type="text"
-                                        value="https://www.ninjaprinthouse.com/design/?design=MTEyMzkxODk=&i"
+                                        value={shareUrl}
                                         readOnly
                                         className={styles.linkInput}
                                     />

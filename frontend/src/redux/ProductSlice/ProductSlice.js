@@ -51,7 +51,7 @@ export const fetchProducts = createAsyncThunk(
       // });
       const products = edges.map(({ node }) => {
         const variants = node.variants.edges.map((v) => v.node);
-        console.log("allvariants", variants);
+        // console.log("allvariants", variants);
         const productID = node.id;
 
         // Collect all product images

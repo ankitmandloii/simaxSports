@@ -224,10 +224,10 @@ const EditWithAipopup = ({ onClose }) => {
         if (img?.src) {
             setOriginalImg(img.src);
         } else {
-            console.warn("No image source found for selectedImageId:", selectedImageId);
-            toast.warn("No image selected. Please select an image.");
+            // console.warn("No image source found for selectedImageId:", selectedImageId);
+            // toast.warn("No image selected. Please select an image.");
         }
-    }, [img, selectedImageId]);
+    }, [selectedImageId]);
 
     // Handle Generate Image
     const handleEditClick = async () => {
@@ -236,6 +236,7 @@ const EditWithAipopup = ({ onClose }) => {
             return;
         }
         if (!originalImg) {
+
             toast.warn("No image selected. Please select an image.");
             return;
         }
