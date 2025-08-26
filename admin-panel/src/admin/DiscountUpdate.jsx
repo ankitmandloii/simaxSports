@@ -274,7 +274,7 @@ export default function DiscountUpdate() {
           whole-unit add-on for number of print areas (applied before discount). Only keys 1..4 are supported.
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
-          {["1","2","3","4"].map(k => (
+          {["1", "2", "3", "4"].map(k => (
             <div key={k} style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <input value={k} disabled style={{ width: 80, background: "#f3f3f3" }} />
               <input
@@ -345,8 +345,11 @@ export default function DiscountUpdate() {
               <h4 id="confirm-title" style={{ margin: 0 }}> <InfoIcon width="20px" style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Confirm Save</h4>
               <p id="confirm-desc" style={{ marginTop: 8 }}>
                 Are you sure you want to save these settings?
+
                 <br />
-                It will directly reflect in the app discounts.
+                These changes will be applied directly to the app's discount settings.
+
+
               </p>
               <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 12 }}>
                 <Button
@@ -356,7 +359,7 @@ export default function DiscountUpdate() {
                   disabled={saving}
                   aria-busy={saving ? "true" : "false"}
                 >
-                    
+
                   {saving ? "Saving…" : "Yes, Save"}
                 </Button>
                 <Button tone="critical" onClick={() => setConfirmOpen(false)} disabled={saving}>
