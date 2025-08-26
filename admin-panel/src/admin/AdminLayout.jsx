@@ -208,7 +208,7 @@ export default function AdminLayout({ children }) {
           }}
         >
           <Text variant="bodySm" as="p">
-            © 2025 SimaxSports. All rights reserved.
+            © 2025 SimaxDesign. All rights reserved.
           </Text>
         </footer>
       </Frame>
