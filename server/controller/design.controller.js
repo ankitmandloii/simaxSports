@@ -300,6 +300,120 @@ exports.getAllOrderedDesigns = async (req, res) => {
   }
 };
 
+exports.getAllDesigns = async (req, res) => {
+  // --- paging
+  const page  = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 50, 1), 200);
+  const skip  = (page - 1) * limit;
+
+  // --- filters
+  const q       = (req.query.q || '').trim();            // search name/email
+  const statusQ = (req.query.status || '').trim();       // e.g. "ordered,in-progress" or "all"
+  const fromStr = (req.query.from || '').trim();         // ISO date
+  const toStr   = (req.query.to || '').trim();           // ISO date
+
+  // --- sorting (default: updatedAt desc, fallback to createdAt desc)
+  // Accepts "-updatedAt" / "updatedAt" / "-createdAt" / "createdAt"
+  const sortParam = (req.query.sort || '-updatedAt').trim();
+  const sortField = sortParam.replace(/^-/, '');
+  const sortDir   = sortParam.startsWith('-') ? -1 : 1;
+  const sort = {};
+  if (['updatedAt', 'createdAt'].includes(sortField)) {
+    sort[sortField] = sortDir;
+  } else {
+    sort['updatedAt'] = -1; // safe default
+  }
+
+  try {
+    const pipeline = [
+      // Pull designs array and keep ownerEmail; handle missing arrays safely
+      { $project: { ownerEmail: 1, designs: { $ifNull: ['$designs', []] } } },
+      { $unwind: '$designs' },
+
+      // Flatten each design + inject ownerEmail at top level
+      {
+        $replaceRoot: {
+          newRoot: { $mergeObjects: ['$designs', { ownerEmail: '$ownerEmail' }] }
+        }
+      },
+    ];
+
+    // --- status filter
+    if (statusQ && statusQ.toLowerCase() !== 'all') {
+      const statusList = statusQ
+        .split(',')
+        .map(s => s.trim().toLowerCase())
+        .filter(Boolean);
+      if (statusList.length) {
+        pipeline.push({ $match: { status: { $in: statusList } } });
+      }
+    }
+
+    // --- search (DesignName or ownerEmail)
+    if (q) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { DesignName: { $regex: q, $options: 'i' } },
+            { ownerEmail: { $regex: q, $options: 'i' } },
+          ],
+        },
+      });
+    }
+
+    // --- date range (by createdAt)
+    const dateMatch = {};
+    if (fromStr) {
+      const d = new Date(fromStr);
+      if (!isNaN(d)) dateMatch.$gte = d;
+    }
+    if (toStr) {
+      // include entire end-day if user passed a date without time
+      const d = new Date(toStr);
+      if (!isNaN(d)) {
+        // if time is 00:00, bump to end of day
+        if (d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0) {
+          d.setHours(23, 59, 59, 999);
+        }
+        dateMatch.$lte = d;
+      }
+    }
+    if (Object.keys(dateMatch).length) {
+      pipeline.push({ $match: { createdAt: dateMatch } });
+    }
+
+    // --- sort/paginate + total count
+    pipeline.push(
+      { $sort: sort },
+      {
+        $facet: {
+          data: [{ $skip: skip }, { $limit: limit }],
+          meta: [{ $count: 'total' }],
+        },
+      }
+    );
+
+    const [agg = { data: [], meta: [] }] = await UserDesigns.aggregate(pipeline).allowDiskUse(true);
+
+    const designs = agg.data || [];
+    const total   = (agg.meta && agg.meta[0] && agg.meta[0].total) ? agg.meta[0].total : 0;
+    const totalPages = total ? Math.ceil(total / limit) : 0;
+
+    return res.status(200).json({
+      ok: true,
+      data: { designs, page, limit, total, totalPages },
+    });
+  } catch (err) {
+    console.error('getAllDesigns error:', err);
+    return res.status(500).json({
+      ok: false,
+      error: 'INTERNAL_ERROR',
+      message: 'Failed to fetch designs.',
+    });
+  }
+};
+
+
 exports.deleteDesignsFromFrontEnd = async (req, res) => {
   try {
     const { ownerEmail } = req.body; // or from auth token/session
