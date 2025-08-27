@@ -355,8 +355,8 @@ export default function GeneralSettings() {
             <Icon source={CameraIcon} tone="base" />
           </Box>
           <BlockStack gap="400">
-            <Text variant="headingLg" as="h2">Add Art Settings</Text>
-            <Text tone="subdued">Enable/disable personalized ADD ART options.</Text>
+            <Text variant="headingLg" as="h2">Generate Art Settings</Text>
+            <Text tone="subdued">Enable/disable personalized Generate Art options.</Text>
             <Divider />
             <Box paddingBlock="300">
               <BlockStack gap="200">

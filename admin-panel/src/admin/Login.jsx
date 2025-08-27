@@ -150,11 +150,11 @@ export default function Login() {
                                 Welcome to the Admin Dashboard
                             </Text>
                             <Text variant="bodyMd" as="p" color="subdued">
-                                Access the Simax Apparel Admin Panel to manage products, designs, and store operations. Please log in to continue.
+                                Access the Simax Design Admin Panel to manage products, designs, and store operations. Please log in to continue.
                             </Text>
                             <Box paddingBlockStart="400">
                                 <Text variant="bodySm" as="p" color="subdued">
-                                    www.simaxapparel.com
+                                    www.simaxdesign.com
                                 </Text>
                             </Box>
                         </div>

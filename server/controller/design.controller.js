@@ -53,50 +53,10 @@ exports.saveSettings = async (req, res) => {
 
 exports.getSettings = async (req, res) => {
   try {
-    const doc = await AdminSettings.findOne().lean();
-    const settings = doc || {};
+    const settings = await AdminSettings.findOne();
 
-    // List the sections you want to evaluate
-    const sectionKeys = [
-      'settingsForTextSection',
-      'settingsforAddNamesAndNumbers',
-      'settingsforAddArtSection',
-      'uploadSettings',
-      'artworkEditorSettings',
-      'otherSettings',
-    ];
+    return sendResponse(res, statusCode.OK, true, SuccessMessage.DATA_FETCHED, settings || {});
 
-    // Helper: compute disabled/enabled from boolean values only
-    const computeFlags = (sectionObj) => {
-      if (!sectionObj || typeof sectionObj !== 'object') {
-        return { disabled: true, enabled: false };
-      }
-      const boolValues = Object.values(sectionObj).filter(v => typeof v === 'boolean');
-      if (boolValues.length === 0) {
-        // If no boolean fields, treat as disabled
-        return { disabled: true, enabled: false };
-      }
-      const anyTrue = boolValues.some(Boolean);
-      return { disabled: !anyTrue, enabled: anyTrue };
-    };
-
-    // Add flags to each section
-    sectionKeys.forEach((key) => {
-      if (settings[key] && typeof settings[key] === 'object') {
-        const { disabled, enabled } = computeFlags(settings[key]);
-        // write inside each section
-        settings[key].disabled = disabled;
-        settings[key].enabled = enabled;
-      }
-    });
-
-    return sendResponse(
-      res,
-      statusCode.OK,
-      true,
-      SuccessMessage.DATA_FETCHED,
-      settings
-    );
   } catch (error) {
     console.log(error)
     return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
