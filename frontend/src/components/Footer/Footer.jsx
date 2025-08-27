@@ -543,10 +543,16 @@ const Footer = () => {
     fetchDesign(customerEmail)
       .then((data) => {
         const designs = data.userDesigns?.designs || [];
+        console.log("desings", designs)
         setUserDesigns(designs);
-        const designFound = designs?.some((design) => design._id === designId);
+        const designFound = designs?.find((design) => design._id === designId);
+
+        // setLastDesign(designs[designs.length - 1]);
         setDesignExists(designFound);
         setIsFetchingDesign(false);
+        setLastDesign(designFound)
+
+        console.log('designFound', designFound)
 
         if (actionType === 'share' && designFound) {
           setActiveModal("share");
@@ -583,14 +589,17 @@ const Footer = () => {
 
     console.log("payload", payload)
     setLoading(true);
-    const nameExists = userDesigns.some(
-      (design) => design.DesignName === payload.name && design._id !== payload.designId
-    );
+    if (payload?.name) {
 
-    if (nameExists) {
-      toast.error("A design with this name already exists. Please choose a different name.");
-      setLoading(false);
-      return;
+      const nameExists = userDesigns.some(
+        (design) => design.DesignName === payload.name && design._id !== payload.designId
+      );
+
+      if (nameExists) {
+        toast.error("A design with this name already exists. Please choose a different name.");
+        setLoading(false);
+        return;
+      }
     }
     // setActiveModal("retrieve");
 
@@ -626,6 +635,7 @@ const Footer = () => {
       const responseData = await saveDesignFunction(designPayload);
       const design = responseData.userDesigns.designs;
       const lastDesing = design[design.length - 1];
+      console.log("lastDesing", lastDesing);
       setLastDesign(lastDesing);
       setDesignExists(lastDesing);
       setUserDesigns([...design]);
@@ -665,6 +675,9 @@ const Footer = () => {
       setLoading(false);
     }
   };
+  // useState(() => {
+
+  // }, [lastDesign])
 
   return (
     <>
@@ -693,8 +706,8 @@ const Footer = () => {
       {activeModal === "email" && (
         <EmailSendingModal onClose={() => setActiveModal(null)} />
       )}
-      {activeModal === "share" && (
-        <ShareDesignPopup setSavedesignPopupHandler={() => setActiveModal(null)} lastDesign={lastDesign} />
+      {lastDesign && activeModal === "share" && (
+        <ShareDesignPopup setSavedesignPopupHandler={() => setActiveModal(null)} lastDesign={lastDesign} navigate={navigate} />
       )}
 
       {!isMobile && !sleevedesignn && (
