@@ -9,10 +9,10 @@ const router = express.Router();
 router.post('/signup',customerValidation.customerRegister, controllers.signUp);
 router.post('/login',customerValidation.login ,controllers.login); //currntly use in admin
 
-router.post('/login' ,controllers.logintest);
-router.post('/me' ,controllers.meTest);
-router.post('/signUpTest' ,controllers.signUpTest);
-router.post('/logoutTest' ,controllers.logoutTest);
+router.post('/loginShopify' ,controllers.logintest);
+router.post('/userDataAfterShopifyLogin' ,controllers.meTest);
+router.post('/signUpShopify' ,controllers.signUpTest);
+router.post('/logoutShopify' ,controllers.logoutTest);
 
 
 
