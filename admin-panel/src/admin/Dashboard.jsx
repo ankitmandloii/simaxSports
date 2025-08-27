@@ -492,7 +492,7 @@ import {
 
 export function Dashboard() {
   // New absolute endpoint per your curl example
-  const DESIGNS_URL = "http://localhost:8080/api/design/getAllDesigns";
+  const DESIGNS_URL = `${process.env.REACT_APP_BASE_URL}design/getAllDesigns`;
 
   const [userDesigns, setUserDesigns] = useState([]);
   const [loading, setLoading] = useState(true);
