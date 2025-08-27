@@ -26,13 +26,26 @@ export function Dashboard() {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const [userDesigns, setUserDesigns] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [deleteDlg, setDeleteDlg] = useState({ open: false, id: null, email: '', name: '' });
+  const [deleting, setDeleting] = useState(false);
   const [selectedDesign, setSelectedDesign] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0); // 0: front, 1: back, 2: left, 3: right
   const [galleryIndex, setGalleryIndex] = useState(0);
 
   const { showToast } = useToast();
+
+
+  async function reloadDesigns() {
+  try {
+    const res = await fetch(`${BASE_URL}design/get-AllOrderedDesignfrontEnd`);
+    const data = await res.json();
+    setUserDesigns(data?.data?.designs ?? []);
+  } catch (e) {
+    // non-fatal
+  }
+}
+
 
   useEffect(() => {
     (async () => {
@@ -64,34 +77,62 @@ export function Dashboard() {
   const statusTone = (status) =>
     (status || "").toLowerCase().includes("ordered") ? "success" : "info";
 
+  async function confirmDelete() {
+    if (!deleteDlg.id) return;
+
+    const { id, email } = deleteDlg;
+    try {
+      setDeleting(true);
+      const res = await fetch(`${BASE_URL}design/delete-designfrontEnd/${id}`, {
+         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ownerEmail: email }),
+      });
+
+      if (res.ok) {
+         setUserDesigns(prev => prev.filter(d => d._id !== id));
+        showToast({ content: 'Design deleted successfully!', error: false });
+         setDeleteDlg({ open: false, id: null, email: '', name: '' });
+        // Optional: hard refresh from server to be 100% in sync
+      await reloadDesigns();
+      } else {
+        showToast({ content: 'Failed to delete design', error: true });
+      }
+    } catch (e) {
+      showToast({ content: 'Error deleting design', error: true });
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   if (loading) {
-  return (
-    <SkeletonPage title="Dashboard" primaryAction>
-      <Layout>
-        <Layout.Section>
-          <Card sectioned>
-            <Box padding="400">
-              <SkeletonDisplayText size="medium" />
-              <SkeletonBodyText lines={2} />
-            </Box>
-          </Card>
-          <Card sectioned>
-            <Box padding="400">
-              <SkeletonDisplayText size="small" />
-              <SkeletonBodyText lines={3} />
-            </Box>
-          </Card>
-          <Card sectioned>
-            <Box padding="400">
-              <SkeletonDisplayText size="small" />
-              <SkeletonBodyText lines={3} />
-            </Box>
-          </Card>
-        </Layout.Section>
-      </Layout>
-    </SkeletonPage>
-  );
-}
+    return (
+      <SkeletonPage title="Dashboard" primaryAction>
+        <Layout>
+          <Layout.Section>
+            <Card sectioned>
+              <Box padding="400">
+                <SkeletonDisplayText size="medium" />
+                <SkeletonBodyText lines={2} />
+              </Box>
+            </Card>
+            <Card sectioned>
+              <Box padding="400">
+                <SkeletonDisplayText size="small" />
+                <SkeletonBodyText lines={3} />
+              </Box>
+            </Card>
+            <Card sectioned>
+              <Box padding="400">
+                <SkeletonDisplayText size="small" />
+                <SkeletonBodyText lines={3} />
+              </Box>
+            </Card>
+          </Layout.Section>
+        </Layout>
+      </SkeletonPage>
+    );
+  }
 
   return (
     <Page fullWidth title="Dashboard" subtitle="Manage your designs here.">
@@ -121,6 +162,7 @@ export function Dashboard() {
                 // </LegacyCard>
               ) : (
                 <ResourceList
+                  idForItem={(item) => item._id}
                   items={userDesigns}
                   renderItem={(item) => {
                     const {
@@ -164,7 +206,14 @@ export function Dashboard() {
                             <Button onClick={() => handleViewDesign(item)} primary>
                               View details
                             </Button>
-                            <Button  destructive onClick={() => handleDelete(_id, ownerEmail)}>
+                            <Button destructive onClick={() =>
+                              setDeleteDlg({
+                                open: true,
+                                id: _id,
+                                email: ownerEmail,
+                                name: DesignName || 'this design',
+                              })
+                            }>
                               Delete
                             </Button>
                           </div>
@@ -291,6 +340,30 @@ export function Dashboard() {
               </div>
             </div>
           )}
+        </Modal.Section>
+      </Modal>
+      <Modal
+        open={deleteDlg.open}
+        onClose={() => setDeleteDlg(s => ({ ...s, open: false }))}
+        title={`Delete "${deleteDlg.name}"?`}
+        primaryAction={{
+          content: 'Yes, Delete',
+          destructive: true,
+          onAction: confirmDelete,
+          loading: deleting,
+        }}
+        secondaryActions={[
+          {
+            content: 'No',
+            onAction: () => setDeleteDlg(s => ({ ...s, open: false })),
+            disabled: deleting,
+          },
+        ]}
+      >
+        <Modal.Section>
+          <Text>
+            This action cannot be undone. The design will be permanently removed.
+          </Text>
         </Modal.Section>
       </Modal>
     </Page>
