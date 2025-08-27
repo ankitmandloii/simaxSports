@@ -300,7 +300,7 @@ exports.getAllOrderedDesigns = async (req, res) => {
   }
 };
 
-exports.getAllDesigns = async (req, res) => {
+exports.getAllDesigns  = async (req, res) => {
   // --- paging
   const page  = Math.max(parseInt(req.query.page, 10) || 1, 1);
   const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 50, 1), 200);
