@@ -88,7 +88,7 @@ import { FaPinterest } from "react-icons/fa";
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign }) => {
+const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign ,navigate}) => {
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [isEmailFormOpen, setIsEmailFormOpen] = useState(false);
     const location = useLocation();
@@ -162,7 +162,7 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign }) => {
                         ) : (
                             <>
                                 <h2 className={styles.title}>Share Your Design</h2>
-                                <p className={styles.description}>Your design "kik" has been saved and emailed to you.</p>
+                                <p className={styles.description}>Your design <b> {lastDesign?.DesignName}</b> has been saved and emailed to you.</p>
                                 <p className={styles.description}>Copy your design link below and share with others.</p>
                                 <div className={styles.linkContainer}>
                                     <input
@@ -175,7 +175,7 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign }) => {
                                         Copy
                                     </button>
                                 </div>
-                                <div className={styles.shareOptions}>
+                                {/* <div className={styles.shareOptions}>
                                     <div className={styles.shareItem} onClick={handleEmailClick}>
                                         <span className={styles.shareIcon}><TfiEmail /></span>
                                         <span className={styles.shareLabel}>Email</span>
@@ -192,8 +192,8 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign }) => {
                                         <span className={styles.shareIcon}><FaPinterest /></span>
                                         <span className={styles.shareLabel}>Pin</span>
                                     </div>
-                                </div>
-                                <button className={styles.continueButton}>Continue to Pricing</button>
+                                </div> */}
+                                <button className={styles.continueButton} onClick={() => navigate("quantity")}>Continue to Pricing</button>
                             </>
                         )}
                     </div>
