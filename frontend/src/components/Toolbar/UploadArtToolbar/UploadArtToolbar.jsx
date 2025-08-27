@@ -499,7 +499,7 @@ import googleDrive from "../../images/googleDrive.png";
 import useDrivePicker from "react-google-drive-picker";
 import DropboxPicker from "../../CommonComponent/DropboxPicker";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addImageState } from "../../../redux/FrontendDesign/TextFrontendDesignSlice";
 import style from './UploadArtToolbar.module.css';
 import axios from "axios";
@@ -522,6 +522,8 @@ const UploadArtToolbar = () => {
   const dispatch = useDispatch();
   const [googleAccessToken, setGoogleAccessToken] = useState(null);
   const [shouldOpenPicker, setShouldOpenPicker] = useState(false);
+  const { data: settings, loading } = useSelector((state) => state.settingsReducer);
+  const settingsForUploadSection = settings?.uploadSettings || {};
 
   // NEW: Drag overlay state
   const [isDragging, setIsDragging] = useState(false);
@@ -758,20 +760,23 @@ const UploadArtToolbar = () => {
             </button>
           </div>
           <div className={style.uploadBtnFlexContainer}>
-            <div
-              className={style.uploadOptionBtn}
-              onClick={() => {
-                if (!googleAccessToken) {
-                  setShouldOpenPicker(true);
-                  loginToGoogle();
-                } else {
-                  handleOpenGoogleDrivePicker();
-                }
-              }}
-            >
-              <img src={googleDrive} alt="Google Drive" />
-              <p>USE GOOGLE DRIVE</p>
-            </div>
+            {settingsForUploadSection?.enableGoogleDrive && (
+              <div
+                className={style.uploadOptionBtn}
+                onClick={() => {
+                  if (!googleAccessToken) {
+                    setShouldOpenPicker(true);
+                    loginToGoogle();
+                  } else {
+                    handleOpenGoogleDrivePicker();
+                  }
+                }}
+              >
+                <img src={googleDrive} alt="Google Drive" />
+                <p>USE GOOGLE DRIVE</p>
+              </div>
+            )}
+
 
             <DropboxPicker
               onFilesSelected={async (files) => {
@@ -795,10 +800,16 @@ const UploadArtToolbar = () => {
                 }
               }}
             >
-              <div className={style.uploadOptionBtn}>
-                <img src={dropBox} alt="Dropbox" />
-                <p>USE DROPBOX</p>
-              </div>
+              {
+                settingsForUploadSection?.enableDropbox && (
+                  <div className={style.uploadOptionBtn}>
+                    <img src={dropBox} alt="Dropbox" />
+                    <p>USE DROPBOX</p>
+                  </div>
+                )
+
+              }
+
             </DropboxPicker>
           </div>
 
