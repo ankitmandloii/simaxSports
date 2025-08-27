@@ -22,6 +22,7 @@ import NotFound from "./pages/NotFound/NotFound";
 import { enableMapSet } from "immer";
 import usePersistQueryParams from "./components/CommonComponent/Customhook";
 import { apiConnecter } from "./components/utils/apiConnector";
+import { fetchSettings } from "./redux/SettingsSlice/SettingsSlice";
 
 enableMapSet();
 function App() {
@@ -38,6 +39,7 @@ function App() {
   const isQuantityPage = location.pathname === "/quantity";
   const reduxState = useSelector((state) => state);
   const { list: rawProducts } = useSelector((state) => state.products);
+
 
   // Track Anonymous Users
   useEffect(() => {
@@ -270,6 +272,8 @@ function App() {
   useEffect(() => {
     setTimeout(() => {
       dispatch(fetchProducts());
+      dispatch(fetchSettings());
+
     }, 5000);
   }, [dispatch]);
 

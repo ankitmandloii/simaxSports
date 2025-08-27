@@ -385,7 +385,7 @@ import { fetchDesign, uploadBlobData, saveDesignFunction, sendEmailDesign } from
 import { generateDesigns } from '../Editor/utils/helper.js';
 import { toast } from "react-toastify";
 
-const designId = "68ac04b142c7030c7b74e6d6";
+// const designId = "68ae9e7a3e658d88aa45852a";
 // const customerEmail = "testuser@example.com";
 
 const Footer = () => {
@@ -398,6 +398,7 @@ const Footer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const [userDesigns, setUserDesigns] = useState([]);
 
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   const { present, DesignNotes } = useSelector((state) => state.TextFrontendDesignSlice);
@@ -405,6 +406,8 @@ const Footer = () => {
   const isProductPage = location.pathname === "/design/product";
   const searchParams = new URLSearchParams(location.search);
   const customerEmail = searchParams.get("customerEmail");
+  const designId = searchParams.get("designId");
+  console.log("=======ddd", designId)
   const designPayload = {
     ownerEmail: customerEmail,
     design: {
@@ -466,23 +469,31 @@ const Footer = () => {
   const setNavigate = () => navigate('/quantity');
 
   const handleDesignAction = (actionType) => {
-    setActiveModal("retrieve");
+    console.log("------------click")
     setIsFetchingDesign(true);
     dispatch(requestExport());
 
     fetchDesign(customerEmail)
       .then((data) => {
-        const designFound = data.userDesigns?.designs?.some((design) => design._id === designId);
+        const designs = data.userDesigns?.designs || [];
+        setUserDesigns(designs);
+        const designFound = designs?.some((design) => design._id === designId);
         setDesignExists(designFound);
         setIsFetchingDesign(false);
 
         if (actionType === 'share' && designFound) {
           setActiveModal("share");
-        } else if (actionType === 'save') {
+        }
+        // } else if (actionType === 'save') {
+        //   setActiveModal(designFound ? "save" : "addToCart");
+        // }
+        else {
           setActiveModal(designFound ? "save" : "addToCart");
         }
+
       })
       .catch(() => {
+        setUserDesigns([]);
         setDesignExists(false);
         setIsFetchingDesign(false);
         if (actionType === 'save') setActiveModal("addToCart");
@@ -502,9 +513,22 @@ const Footer = () => {
   }
 
   const handleSaveDesign = async (payload) => {
+
     console.log("payload", payload)
     setLoading(true);
+    const nameExists = userDesigns.some(
+      (design) => design.DesignName === payload.name && design._id !== payload.designId
+    );
+
+    if (nameExists) {
+      toast.error("A design with this name already exists. Please choose a different name.");
+      setLoading(false);
+      return;
+    }
+    setActiveModal("retrieve");
+
     setActiveModal("email");
+
 
     try {
       designPayload.design.DesignName = payload.name;
@@ -519,6 +543,8 @@ const Footer = () => {
         const backDesignImages = await generateDesigns([item.allImages[1]], present.back.texts, present.back.images);
         return { front: frontDesignImages[0], back: backDesignImages[0] };
       });
+      console.log("----------designpromiese", designPromises)
+
 
       const results = await Promise.all(designPromises);
       const blobData = results.reduce((arr, item) => {
@@ -528,12 +554,14 @@ const Footer = () => {
       }, []);
 
       const cloudinaryResponse = await uploadBlobData(blobData);
+      console.log("---------cloudinaryResponse", cloudinaryResponse)
       designPayload.design.FinalImages = cloudinaryResponse?.files || [];
       const responseData = await saveDesignFunction(designPayload);
       const design = responseData.userDesigns.designs;
       const lastDesing = design[design.length - 1];
       setLastDesign(lastDesing);
       setDesignExists(lastDesing);
+      setUserDesigns([...design]);
       console.log("lastDesing", lastDesing);
       console.log("lastDesing id ", lastDesing._id);
 
@@ -576,14 +604,14 @@ const Footer = () => {
         <SaveDesignModal
           onClose={() => setActiveModal(null)}
           onSubmit={handleSaveDesign}
-          defaultDesignName="Demo T-Shirt 55555"
+          defaultDesignName=""
           designId={designId}
         />
       )}
       {activeModal === "addToCart" && (
         <AddToCartPopup
           onSave={handleSaveDesign}
-          defaultDesignName="Demo T-Shirt 55555"
+          defaultDesignName=""
           onClose={() => setActiveModal(null)}
         />
       )}

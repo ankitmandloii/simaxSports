@@ -21,6 +21,8 @@ const AdminSidebar = () => {
   // const hoveredRoute = useSelector((state) => state.hover.hoveredRoute); // ✅
   // const hoveredRoute=useSelector((state)=>state?.hover.hoveredRoute)
   const hoveredRoute = useSelector((state) => state.hoverReducer.hoveredRoute);
+  const { data: settings, loading } = useSelector((state) => state.settingsReducer);
+
 
   useEffect(() => {
     const handleResize = () => {
