@@ -27,7 +27,7 @@ router.post("/getDiscountDetails",controllers.getDiscountDetails); //get discoun
 // 0.15 = 15% discount
 
 // 0.005 = 0.5% discount
-router.put("/setDiscountDetails",controllers.setDiscountDetails); //update Descount from admin side
+router.put("/setDiscountDetails",customerValidation.verifyToken,controllers.setDiscountDetails); //update Descount from admin side
 
 
 router.post('/admin-change-password',customerValidation.verifyToken, controllers.adminChangePassword);

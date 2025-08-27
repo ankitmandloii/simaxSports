@@ -41,7 +41,7 @@ export default function PricingSettings() {
   const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:8080/api";
   const GET_TIERS_URL = joinUrl(BASE_URL, "/auth/getDiscountDetails");
   const PUT_TIERS_URL = joinUrl(BASE_URL, "/auth/setDiscountDetails");
-  const headers = { "Content-Type": "application/json" };
+
 
   // -------- load settings --------
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function PricingSettings() {
         setLoading(true);
         setError(""); setOkMsg("");
 
-        const res = await fetch(GET_TIERS_URL, { method: "POST", headers, body: JSON.stringify({}) });
+        const res = await fetch(GET_TIERS_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to load");
 
@@ -117,9 +117,13 @@ export default function PricingSettings() {
         .map(r => ({ minQty: Number(r.minQty), rate: toDecimal(Number(r.ratePercent)) }))
         .sort((a, b) => a.minQty - b.minQty);
 
+      const token = localStorage.getItem('admin-token');
       const res = await fetch(PUT_TIERS_URL, {
         method: "PUT",
-        headers,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
           tiers: apiTiers,
           sizeSurcharges: surcharges,
