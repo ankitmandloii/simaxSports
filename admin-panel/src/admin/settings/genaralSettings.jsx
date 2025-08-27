@@ -8,6 +8,7 @@ import {
   BlockStack,
   Divider,
   Icon,
+  Modal
 } from '@shopify/polaris';
 
 import { useEffect, useState } from 'react';
@@ -22,7 +23,7 @@ import {
   CameraIcon,
   PageUpIcon,
   ButtonIcon,
-  InventoryUpdatedIcon
+  InventoryUpdatedIcon,
 } from '@shopify/polaris-icons';
 
 
@@ -33,6 +34,8 @@ export default function GeneralSettings() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [loadingDataForGet, setLoadingDataForGet] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingSettings, setPendingSettings] = useState(null);
 
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -229,44 +232,98 @@ export default function GeneralSettings() {
     }
   }
 
-  const handleSaveAllSettings = async () => {
+  // const handleSaveAllSettings = async () => {
 
 
-    const settings = {
-      settingsForTextSection: settingsForTextSection,
-      settingsforAddNamesAndNumbers: settingsforAddNamesAndNumbers,
-      settingsforAddArtSection: settingsforAddArtSection,
-      uploadSettings: uploadSettings,
-      artworkEditorSettings: artworkEditorSettings,
-      otherSettings: otherSettings
-    }
+  //   const settings = {
+  //     settingsForTextSection: settingsForTextSection,
+  //     settingsforAddNamesAndNumbers: settingsforAddNamesAndNumbers,
+  //     settingsforAddArtSection: settingsforAddArtSection,
+  //     uploadSettings: uploadSettings,
+  //     artworkEditorSettings: artworkEditorSettings,
+  //     otherSettings: otherSettings
+  //   }
+  //   const valid = checkIfAnyTrueExists(settings);
+  //   if (!valid) {
+
+  //     showToast({ content: "You have to enable something", error: true });
+  //     return;
+
+  //   }
+
+
+  //   try {
+  //     setLoading(true);
+
+  //     dispatch(setAllSettings(settings));
+
+
+  //     const res = await fetch(`${BASE_URL}design/admin-savesettings`, {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(settings),
+  //     });
+
+  //     if (res.ok) {
+  //        showToast({
+  //               content: 'Settings Updated!',
+  //               icon: <Icon source={InventoryUpdatedIcon} tone="success" />
+  //           });
+
+  //     } else {
+  //       showToast({ content: "Failed to save settings", error: true });
+  //     }
+  //   } catch (error) {
+  //     showToast({ content: "Error saving settings", error: true });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+
+  // };
+
+  function collectAllSettings() {
+    return {
+      settingsForTextSection,
+      settingsforAddNamesAndNumbers,
+      settingsforAddArtSection,
+      uploadSettings,
+      artworkEditorSettings,
+      otherSettings,
+    };
+  }
+
+  const openConfirmSave = () => {
+    const settings = collectAllSettings();
     const valid = checkIfAnyTrueExists(settings);
     if (!valid) {
-
       showToast({ content: "You have to enable something", error: true });
       return;
-
     }
+    setPendingSettings(settings);     // store what we plan to save
+    setConfirmOpen(true);             // open confirm dialog
+  };
 
+  const handleSaveAllSettings = async () => {
+    if (!pendingSettings) {           // safety
+      setConfirmOpen(false);
+      return;
+    }
 
     try {
       setLoading(true);
-
-      dispatch(setAllSettings(settings));
-
+      dispatch(setAllSettings(pendingSettings));
 
       const res = await fetch(`${BASE_URL}design/admin-savesettings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings),
+        body: JSON.stringify(pendingSettings),
       });
 
       if (res.ok) {
-         showToast({
-                content: 'Settings Updated!',
-                icon: <Icon source={InventoryUpdatedIcon} tone="success" />
-            });
-       
+        showToast({
+          content: 'Settings Updated!',
+          icon: <Icon source={InventoryUpdatedIcon} tone="success" />,
+        });
       } else {
         showToast({ content: "Failed to save settings", error: true });
       }
@@ -274,8 +331,9 @@ export default function GeneralSettings() {
       showToast({ content: "Error saving settings", error: true });
     } finally {
       setLoading(false);
+      setConfirmOpen(false);
+      setPendingSettings(null);
     }
-
   };
 
   return loadingDataForGet ? <SettingsSkeleton /> : (
@@ -383,7 +441,7 @@ export default function GeneralSettings() {
         {/* ARTWORK EDITOR SETTINGS */}
 
         <Card sectioned>
-            <Box style={{ width: '16px', height: '16px' }}>
+          <Box style={{ width: '16px', height: '16px' }}>
             <Icon source={PageUpIcon} tone="base" />
           </Box>
           <BlockStack gap="400">
@@ -415,7 +473,7 @@ export default function GeneralSettings() {
 
         {/* IMAGE UPLOAD SETTINGS */}
         <Card sectioned>
-           <Box style={{ width: '16px', height: '16px' }}>
+          <Box style={{ width: '16px', height: '16px' }}>
             <Icon source={PageUpIcon} tone="base" />
           </Box>
           <BlockStack gap="400">
@@ -445,7 +503,7 @@ export default function GeneralSettings() {
 
         {        /* Other SETTINGS  */}
         <Card sectioned>
-           <Box style={{ width: '16px', height: '16px' }}>
+          <Box style={{ width: '16px', height: '16px' }}>
             <Icon source={ButtonIcon} tone="base" />
           </Box>
           <BlockStack gap="400">
@@ -473,7 +531,7 @@ export default function GeneralSettings() {
         </Card>
         <Box padding="1000">
           <InlineStack  >
-            <Button variant="primary" size="large" onClick={handleSaveAllSettings} loading={loading}>
+            <Button variant="primary" size="large" onClick={openConfirmSave} loading={loading}>
               Save Settings
             </Button>
           </InlineStack>
@@ -484,8 +542,30 @@ export default function GeneralSettings() {
 
 
 
-
+      <Modal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Save settings?"
+        primaryAction={{
+          content: 'Yes, Save',
+          onAction: handleSaveAllSettings,
+          loading,
+        }}
+        secondaryActions={[
+          {
+            content: 'No',
+            onAction: () => setConfirmOpen(false),
+          },
+        ]}
+      >
+        <Modal.Section>
+          <Text>
+            Are you sure you want to save the current settings? This will be applied to your App's experience.
+          </Text>
+        </Modal.Section>
+      </Modal>
 
     </Page>
+
   );
 }
