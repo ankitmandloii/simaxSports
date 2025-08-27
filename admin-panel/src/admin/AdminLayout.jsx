@@ -106,7 +106,7 @@ export default function AdminLayout({ children }) {
           //   onClick: () => navigate('/admin/product-list'),
           // },
           {
-            label: 'Order List',
+            label: 'Orders',
             icon: OrderIcon,
             selected: location.pathname === '/admin/orders',
             onClick: () => navigate('/admin/orders'),

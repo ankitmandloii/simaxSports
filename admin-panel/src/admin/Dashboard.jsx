@@ -17,6 +17,9 @@ import {
   Box,
   LegacyCard,
   EmptyState,
+  SkeletonBodyText,
+  SkeletonDisplayText,
+  SkeletonPage,
 } from "@shopify/polaris";
 
 export function Dashboard() {
@@ -62,8 +65,33 @@ export function Dashboard() {
     (status || "").toLowerCase().includes("ordered") ? "success" : "info";
 
   if (loading) {
-    return <Page fullWidth title="Dashboard" subtitle="Loading… Please wait" />;
-  }
+  return (
+    <SkeletonPage title="Dashboard" primaryAction>
+      <Layout>
+        <Layout.Section>
+          <Card sectioned>
+            <Box padding="400">
+              <SkeletonDisplayText size="medium" />
+              <SkeletonBodyText lines={2} />
+            </Box>
+          </Card>
+          <Card sectioned>
+            <Box padding="400">
+              <SkeletonDisplayText size="small" />
+              <SkeletonBodyText lines={3} />
+            </Box>
+          </Card>
+          <Card sectioned>
+            <Box padding="400">
+              <SkeletonDisplayText size="small" />
+              <SkeletonBodyText lines={3} />
+            </Box>
+          </Card>
+        </Layout.Section>
+      </Layout>
+    </SkeletonPage>
+  );
+}
 
   return (
     <Page fullWidth title="Dashboard" subtitle="Manage your designs here.">
