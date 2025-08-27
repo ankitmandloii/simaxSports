@@ -23,7 +23,8 @@ import {
 
 export function Dashboard() {
   // New absolute endpoint per your curl example
-  const DESIGNS_URL = `${process.env.REACT_APP_BASE_URL}design/getAllDesigns`;
+   const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const DESIGNS_URL = `${BASE_URL}design/getAllDesigns`;
 
   const [userDesigns, setUserDesigns] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,7 +65,7 @@ export function Dashboard() {
         setUserDesigns(data?.data?.designs ?? []);
       } catch (e) {
         console.error(e);
-        showToast({ content: "Failed to load designs", error: true });
+        // showToast({ content: "Failed to load designs", error: true });
       } finally {
         setLoading(false);
       }
