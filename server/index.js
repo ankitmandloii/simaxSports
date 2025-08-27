@@ -12,14 +12,16 @@ const helmet = require('helmet');
 const multer = require('multer');
 const { startScheduler } = require("./scheduler/cronJob.js");
 const { ConnectCloadinary } = require('./config/cloudinary.js');
-const cookieParser  =require("cookie-parser");
+const cookieParser = require("cookie-parser");
 const { verifyShopifyWebhook } = require('./schema/customerValidation.js');
 const { orderPaymentDoneForOrderWEbHooks } = require('./controller/customer.controller.js');
+const cron = require("node-cron");
+const { runCleanupNow } = require("./utils/cleanDesigns.js")
 
 
 ConnectCloadinary();
 
-app.post('/order-payment',express.raw({ type: 'application/json' }), verifyShopifyWebhook,orderPaymentDoneForOrderWEbHooks);
+app.post('/order-payment', express.raw({ type: 'application/json' }), verifyShopifyWebhook, orderPaymentDoneForOrderWEbHooks);
 
 
 
@@ -43,6 +45,13 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Routes
 app.use("/api", routes);
+
+
+//delete old design which have more then 30 days
+cron.schedule('0 2 * * *', async () => {
+  console.log('[Cron] Running daily cleanup...');
+  await runCleanupNow({ days: 30 });
+});
 
 // startScheduler(); // start scheduled sync for product S&S to Shopify
 
