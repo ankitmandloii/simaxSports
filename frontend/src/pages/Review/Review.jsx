@@ -50,6 +50,7 @@ const Review = () => {
 
   const searchParams = new URLSearchParams(location.search);
   const customerEmail = searchParams.get("customerEmail");
+  const designId = searchParams.get("designId");
   const designPayload = {
     ownerEmail: customerEmail,
     design: {
@@ -151,34 +152,6 @@ const Review = () => {
   );
   const [loading, setLoading] = useState(false);
 
-  // Fetch design to check if it exists
-  // const fetchDesign = async () => {
-  //   try {
-  //     setIsFetchingDesign(true);
-  //     const response = await apiConnecter(
-  //       "GET",
-  //       "design/get-designfrontEnd",
-  //       null,
-  //       null,
-  //       { ownerEmail: customerEmail }
-  //     );
-
-  //     const data = response.data;
-  //     console.log("Fetched designs:", data);
-
-  //     // Check if the design with the given designId exists
-  //     const designFound = data.userDesigns?.designs?.some(
-  //       (design) => design._id === designId
-  //     );
-  //     setDesignExists(designFound);
-  //   } catch (error) {
-  //     console.error("Error fetching design:", error);
-  //     toast.error("Failed to fetch design.");
-  //     setDesignExists(false);
-  //   } finally {
-  //     setIsFetchingDesign(false);
-  //   }
-  // };
   const AddToCartClick = () => {
     setRetrieveLoader(true);
     // fetchDesign();
@@ -197,10 +170,7 @@ const Review = () => {
     });
   }
 
-  // useEffect(() => {
-  //   setRetrieveLoader(true);
-  //   fetchDesign();
-  // }, []);
+
 
   useEffect(() => {
     if (!isFetchingDesign && retrieveLoader) {
@@ -209,73 +179,6 @@ const Review = () => {
     }
   }, [isFetchingDesign, retrieveLoader]);
 
-  // useEffect(() => {
-  //   if (emailSendingLoader) {
-  //     const timer = setTimeout(() => setEmailSendingLoader(false), 4000);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [emailSendingLoader]);
-
-  // async function uploadBlobData(blobDataArray) {
-  //   try {
-  //     const formData = new FormData();
-  //     blobDataArray = blobDataArray.slice(0, 6);
-  //     blobDataArray.forEach((blob, index) => {
-  //       formData.append(`image_${index}`, blob, `image_${index}.png`);
-  //     });
-
-  //     const response = await apiConnecter(
-  //       "POST",
-  //       "imageOperation/fileBlobDataUploadToCloudinary",
-  //       formData
-  //     );
-
-  //     const responseData = response.data;
-  //     console.log("Response from backend:", responseData);
-  //     localStorage.setItem("data", JSON.stringify(responseData));
-  //     return responseData;
-  //   } catch (e) {
-  //     console.error("Error uploading blob data:", e);
-  //     throw e;
-  //   }
-  // }
-
-  // async function saveDesignFunction(payload) {
-  //   try {
-  //     const response = await apiConnecter(
-  //       "POST",
-  //       "design/save-designfrontEnd",
-  //       payload
-  //     );
-
-  //   const responseData = response.data;
-  //   console.log("Design saved successfully:", responseData);
-  //   setdesignStateDb(responseData);
-  //   const designs = responseData.userDesigns?.designs;
-  //   console.log(design);
-  //   setCurrentDesing(designs[designs.length - 1]);
-  //   return responseData;
-  // } catch (error) {
-  //   console.error("Error saving design:", error);
-  //   throw error;
-  // }
-  //   }
-  // mail funstion
-  // async function sendEmailDesign(payload) {
-  //   try {
-  //     const response = await apiConnecter(
-  //       "POST",
-  //       "design/send-email-design",
-  //       payload
-  //     );
-  //     console.log("Email sent successfully:", response.data);
-  //     return response.data;
-  //   } catch (error) {
-  //     console.error("Error sending email:", error);
-  //     toast.error("Failed to send email.");
-  //     throw error;
-  //   }
-  // }
 
 
 
@@ -384,7 +287,7 @@ const Review = () => {
     return new Blob([bytes], { type: contentType });
   }
 
-  function makeVariantDataForShopify(reviewItems, CloudinaryImages) {
+  async function makeVariantDataForShopify(reviewItems, CloudinaryImages) {
     const splitIntoPairs = (arr) => {
       const result = [];
       for (let i = 0; i < arr.length; i += 2) {
@@ -392,58 +295,59 @@ const Review = () => {
       }
       return result;
     };
-    const ShopifyData = [];
 
+    const ShopifyData = [];
     const groupedImages = splitIntoPairs(CloudinaryImages.files);
     console.log("CloudinaryImages", CloudinaryImages);
-    const data = reviewItems.forEach((product, index) => {
+
+    // Loop through products
+    for (let index = 0; index < reviewItems.length; index++) {
+      const product = reviewItems[index];
       const allVariants = product.allVariants;
-      const obj = {
-        product_id: product?.variantId,
-        option1: "S",
-        option2: product?.color,
-        price: product?.price,
-        sku: "B665D8502",
-        inventory_quantity: product?.inventory_quantity,
-        image_urls: [
-          "https://simaxdesigns.imgix.net/uploads/1753094129600_front-design.png",
-        ],
-      };
+
       const sizeskey = Object.entries(product?.sizes);
       const color = product?.color;
+
       const variantTitles = sizeskey.map(([size, count]) => {
         return { title: `${color} / ${size}`, inventory_quantity: count };
       });
 
-      const data = variantTitles.map((varianttitle) => {
-        const variantData = allVariants.find((v) => v.title == varianttitle.title);
+      for (const varianttitle of variantTitles) {
+        const variantData = allVariants.find(
+          (v) => v.title === varianttitle.title
+        );
         console.log(variantData, "variantdata");
+
         const newData = {
           variant_id: variantData.id.split("/").reverse()[0],
           size: varianttitle.title.split("/")[1].trim(),
           color: varianttitle.title.split("/")[0].trim(),
           price: discountData?.summary?.eachAfterDiscount,
           sku: variantData?.sku,
-          "designId": currentDesign?._id,
+          designId: currentDesign?._id,
           quantity: Number(varianttitle.inventory_quantity),
-          "vendor": "Addidas test",
-          "custom": true,
-          "design": {
-            "front": groupedImages[index][0],
-            "back": groupedImages[index][1],
-            "left": groupedImages[index][1],
-            "right": groupedImages[index][1]
+          vendor: "Addidas test",
+          custom: true,
+          design: {
+            front: groupedImages[index][0],
+            back: groupedImages[index][1],
+            left: groupedImages[index][1],
+            right: groupedImages[index][1],
           },
-          "PreviewImageUrl": groupedImages[index][0],
+          PreviewImageUrl: groupedImages[index][0],
         };
+
         ShopifyData.push(newData);
-        return newData;
-      });
-      return data;
-    });
-    console.log("data.....", ShopifyData);
-    createDraftOrderforCheckout(ShopifyData);
+      }
+    }
+
+    console.log("Final Shopify Data:", ShopifyData);
+
+    // ✅ Await the async call
+    const response = await createDraftOrderforCheckout(ShopifyData);
+    return response;
   }
+
 
   function getIncreasedData(data, value) {
     console.log("increase by value ", value);
@@ -530,12 +434,12 @@ const Review = () => {
       const data = await response.json();
       console.log("Success:", data);
 
-      if (data?.checkoutUrl) {
-        window.location.href = data?.checkoutUrl
-        // window.open(data.checkoutUrl, '_blank');
-      } else {
-        throw new Error("No checkout URL returned");
-      }
+      // if (data?.checkoutUrl) {
+      //   window.location.href = data?.checkoutUrl
+      //   // window.open(data.checkoutUrl, '_blank');
+      // } else {
+      //   throw new Error("No checkout URL returned");
+      // }
 
       return data;
     } catch (error) {
@@ -681,7 +585,19 @@ const Review = () => {
 
       designPayload.design.FinalImages = cloudinaryResponse?.files?.map((url) => url) || [];
       // Calling save design api
-      await saveDesignFunction(designPayload);
+      const userDesigns = await saveDesignFunction(designPayload);
+      const design = userDesigns.userDesigns.designs;
+      const lastDesing = design[design.length - 1];
+      if (!designId) {
+        console.log('adding desing id to the url', designId);
+        searchParams.set("designId", lastDesing._id);
+        navigate({
+          pathname: location.pathname,
+          search: searchParams.toString(),
+        }, { replace: true });
+      }
+      const checkoutData = await makeVariantDataForShopify(reviewItems, cloudinaryResponse);
+      console.log("checkoutData", checkoutData)
       // api call for email send
       try {
 
@@ -690,14 +606,21 @@ const Review = () => {
           companyEmail: "service@simaxsports.com",
           frontSrc: cloudinaryResponse?.files?.[0] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786256753_download_4.png",
           backSrc: cloudinaryResponse?.files?.[1] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786306809_download_5.png",
-          designname: "Email Test",
-          phoneNumber: "1234567890",
-          edit_design_link: "#",
-          add_to_cart_link: "#",
+          designname: lastDesing?.DesignName,
+          phoneNumber: "",
+          edit_design_link: window.location.href,
+          add_to_cart_link: checkoutData.checkoutUrl,
           unsubscribe_link: "#",
         };
-        console.log("emailPayload",emailPayload)
+        console.log("emailPayload", emailPayload)
         await sendEmailDesign(emailPayload);
+        if (checkoutData?.checkoutUrl) {
+          window.location.href = checkoutData?.checkoutUrl
+          // window.open(data.checkoutUrl, '_blank');
+        } else {
+          throw new Error("No checkout URL returned");
+        }
+
         // toast.success("Email sent successfully!");
       } catch (emailError) {
         console.error("Email sending failed:", emailError);
@@ -705,7 +628,7 @@ const Review = () => {
       } finally {
         // setEmailSendingLoader(false);
       }
-      const variantData = makeVariantDataForShopify(reviewItems, cloudinaryResponse);
+
       // toast.success("Design saved and variants prepared successfully!");
 
       // Show EmailSendingModal if emailUpdates is true
@@ -793,11 +716,11 @@ const Review = () => {
     try {
       // const searchParams = new URLSearchParams(location.search);
       // const designId = searchParams.get("designId");
-      const designId = "test"
+
       console.log(designStateDb);
 
       const matchedDesigns = designStateDb.userDesigns.designs.filter(
-        (d) => d.DesignName == "test2"
+        (d) => d._id == designId
       );
 
       if (matchedDesigns.length === 0) {

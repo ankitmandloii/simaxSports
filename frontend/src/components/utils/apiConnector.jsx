@@ -12,6 +12,6 @@ export const apiConnecter = (method, url, bodyData, headers, params) => {
         url: `${Base_Url}${url}`,
         data: bodyData ? bodyData : null,
         headers: headers ? headers : null,
-        params: params ? params : null,
+        params: params ? params : null, 
     });
 }

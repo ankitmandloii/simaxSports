@@ -23,6 +23,7 @@ import { enableMapSet } from "immer";
 import usePersistQueryParams from "./components/CommonComponent/Customhook";
 import { apiConnecter } from "./components/utils/apiConnector";
 import { fetchSettings } from "./redux/SettingsSlice/SettingsSlice";
+import { restoreEditDesigns } from "./redux/FrontendDesign/TextFrontendDesignSlice";
 
 enableMapSet();
 function App() {
@@ -277,12 +278,18 @@ function App() {
     }, 5000);
   }, [dispatch]);
 
-  function restorePresentFromData(incomingPresent) {
+  function restorePresentFromData(incomingPresent, src) {
     const sides = ["front", "back", "leftSleeve", "rightSleeve"];
-
     const restored = {};
 
     sides.forEach(side => {
+      const originalImages = incomingPresent?.[side]?.images || [];
+
+      const enhancedImages = originalImages.map(image => ({
+        ...image,
+        base64CanvasImage: image.src  // Add base64 image string to each image
+      }));
+
       restored[side] = {
         selectedTextId: null,
         selectedImageId: null,
@@ -291,7 +298,7 @@ function App() {
           position: null
         },
         texts: incomingPresent?.[side]?.texts || [],
-        images: incomingPresent?.[side]?.images || [],
+        images: enhancedImages,
         setRendering: false,
         nameAndNumberProductList: [],
       };
@@ -300,31 +307,44 @@ function App() {
     return restored;
   }
 
-  // const location = useLocation();
 
-  function editDesignHandler() {
+
+  async function editDesignHandler() {
     try {
       const searchParams = new URLSearchParams(location.search);
       const designId = searchParams.get("designId");
-      // console.log(designId, "designId");
-      if (designId) {
+      if (!designId) return;
 
+      // console.log(designStateDb);
+      const response = await apiConnecter("get", "design/getDesignsFromFrontEndById", "", "", { designId });
+      console.log(response);
+
+      const matchedDesigns = response.data.userDesigns.designs;
+
+      if (matchedDesigns.length === 0) {
+        console.error("Design not found for id:", designId);
+      } else {
+        const apiData = matchedDesigns[0]; // get the first match
+
+        const restoredState = {
+          // ...initialState,
+          present: restorePresentFromData(apiData.present),
+          DesignNotes: apiData.DesignNotes || initialState.DesignNotes,
+        };
+        console.log(restorePresentFromData(apiData.present));
+        dispatch(restoreEditDesigns(restorePresentFromData(apiData.present)))
+
+        console.log(restoredState);
       }
-      // const response = apiConnecter("")
-
 
     }
     catch (e) {
       console.log("error while fetching desing", e)
     }
-    // const restoredState = {
-    //   ...initialState,
-    //   present: restorePresentFromData(apiData.present),
-    //   DesignNotes: apiData.DesignNotes || initialState.DesignNotes,
-    // };
 
   }
-  editDesignHandler();
+
+
   // Check if saved state should trigger continue edit popup
   useEffect(() => {
     if (!willRenderContinue && rawProducts.length > 0) {
@@ -350,6 +370,7 @@ function App() {
         setContinueEditPopup(true);
       }
     }
+    // editDesignHandler();
   }, [rawProducts, willRenderContinue]);
 
   const handleContinuePopup = () => {
