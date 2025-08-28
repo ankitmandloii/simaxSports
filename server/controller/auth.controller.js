@@ -11,6 +11,8 @@ const { dbConnection } = require("../config/db.js");
 const Location = require('../model/locationSchema.js')
 const jwt = require('jsonwebtoken');
 const DiscountConfig = require("../model/DiscountConfig.js");
+const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
+const crypto = require('crypto');
 // const client = require('../utils/redisClient.js');
 
 exports.signUp = async (req, res) => {
@@ -62,7 +64,19 @@ exports.signUp = async (req, res) => {
 //     }
 // };
 
+const OTP_TTL_SECONDS = 5 * 60; // 5 minutes
+const TEMP_TOKEN_TTL_SECONDS = 10 * 60; // 10 minutes
 
+const otpStore = new Map();
+
+function generateOtp() {
+  // 6-digit numeric
+  return ('' + Math.floor(100000 + Math.random() * 900000));
+}
+
+function hashOtp(otp) {
+  return crypto.createHash('sha256').update(otp).digest('hex');
+}
 
 
 exports.login = async (req, res) => {
@@ -81,15 +95,153 @@ exports.login = async (req, res) => {
 
 
     const loginResult = await services.passwordCompareForLogin(user, password);
-
     if (!loginResult) {
       return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.WRONG_EMAIL_OR_PASSWORD);
     }
 
-    return sendResponse(res, statusCode.OK, true, SuccessMessage.LOGIN_SUCCESS, loginResult);
+
+    // 2) Generate & send OTP
+    const otp = generateOtp();
+    console.log("otp", otp)
+    const record = {
+      hash: hashOtp(otp),
+      expiresAt: Date.now() + OTP_TTL_SECONDS * 1000,
+      attempts: 0,
+    };
+    otpStore.set(email, record);
+    const send = await services.sendEmailForOtpverification(email, otp);
+    if (!send) {
+      return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, "Error in email send For OTP");
+    }
+
+    // 3) Create a short-lived temp token (only for OTP verification)
+    const tempToken = jwt.sign(
+      { email, purpose: 'otp', role, exp: Math.floor(Date.now() / 1000) + TEMP_TOKEN_TTL_SECONDS },
+      SECRET_KEY
+    );
+
+    // 4) Tell client to go to OTP page
+    return res.status(200).json({
+      success: true,
+      message: 'Password accepted. OTP sent to email.',
+      result: { requiresOtp: true, tempToken, email }
+    });
 
   } catch (error) {
-    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, `${error.message}`);
+  }
+};
+
+
+
+exports.verifyOtp = async (req, res) => {
+  try {
+    const auth = req.headers.authorization || '';
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+    if (!token) return res.status(401).json({ success: false, message: 'No temp token' });
+
+    // verify temp token
+    let decoded;
+    try {
+      decoded = jwt.verify(token, SECRET_KEY);
+    } catch {
+      return res.status(403).json({ success: false, message: 'Invalid or expired session. Please login again.' });
+    }
+    if (decoded.purpose !== 'otp') {
+      return res.status(403).json({ success: false, message: 'Invalid token purpose' });
+    }
+
+    const { email: emailFromToken, role } = decoded;
+    const { email, otp } = req.body;
+    if (!email || !otp || email !== emailFromToken) {
+      return res.status(400).json({ success: false, message: 'Invalid request' });
+    }
+
+    const record = otpStore.get(email);
+    if (!record) return res.status(400).json({ success: false, message: 'No OTP pending for this email' });
+    if (Date.now() > record.expiresAt) {
+      otpStore.delete(email);
+      return res.status(400).json({ success: false, message: 'OTP expired. Please login again.' });
+    }
+    if (record.attempts >= 5) {
+      otpStore.delete(email);
+      return res.status(429).json({ success: false, message: 'Too many attempts. Please login again.' });
+    }
+
+    record.attempts += 1;
+    if (hashOtp(otp) !== record.hash) {
+      return res.status(401).json({ success: false, message: 'Incorrect OTP' });
+    }
+
+    // OTP is correct -> clean up and issue real app token
+    otpStore.delete(email);
+
+    const user = await services.findUserForLogin(email); // or include user id/role in temp token
+    const appTokenPayload = { id: user._id, email: user.email, role: role || user.role, tokenVersion: user.tokenVersion };
+    const appToken = jwt.sign(appTokenPayload, SECRET_KEY, { expiresIn: '7d' });
+
+    return res.status(200).json({
+      success: true,
+      message: 'OTP verified',
+      result: { token: appToken }
+    });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+
+exports.resendOtp = async (req, res) => {
+  try {
+    const auth = req.headers.authorization || '';
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+    if (!token) return res.status(401).json({ success: false, message: 'No temp token' });
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, SECRET_KEY);
+    } catch {
+      return res.status(403).json({ success: false, message: 'Invalid or expired session.' });
+    }
+    if (decoded.purpose !== 'otp') return res.status(403).json({ success: false, message: 'Invalid token purpose' });
+
+    const { email } = req.body;
+    if (!email || email !== decoded.email) return res.status(400).json({ success: false, message: 'Invalid request' });
+
+    const otp = generateOtp();
+    otpStore.set(email, {
+      hash: hashOtp(otp),
+      expiresAt: Date.now() + OTP_TTL_SECONDS * 1000,
+      attempts: 0,
+    });
+    await sendOtpEmail(email, otp);
+
+    // Optional: rotate temp token on resend
+    const newTemp = jwt.sign(
+      { email, purpose: 'otp', role: decoded.role, exp: Math.floor(Date.now() / 1000) + TEMP_TOKEN_TTL_SECONDS },
+      SECRET_KEY
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'OTP resent',
+      result: { tempToken: newTemp }
+    });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+
+exports.logoutAll = async (req, res) => {
+  try {
+    await services.incrementTokenVersion(req.user.id);
+    return res.json({ success: true, message: 'Logged out from all devices.' });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 };
 
@@ -851,8 +1003,8 @@ function toPlainObjectMap(maybeMap) {
 
 exports.calculatePrice = async (req, res) => {
   try {
-    const items  = Array.isArray(req.body.items) ? req.body.items : [];
-    const flags  = req.body.flags  || {};
+    const items = Array.isArray(req.body.items) ? req.body.items : [];
+    const flags = req.body.flags || {};
     const extras = req.body.extras || {};
 
     const toPlainObjectMap = (m) => {
@@ -872,13 +1024,13 @@ exports.calculatePrice = async (req, res) => {
       };
     }
 
-    const dbSurcharges        = toPlainObjectMap(cfg.sizeSurcharges);
-    const dbLicenseFee        = Number(cfg.licenseFeeFlat ?? 0);
-    const printAreaFromDB     = toPlainObjectMap(cfg.printAreaSurcharges);
+    const dbSurcharges = toPlainObjectMap(cfg.sizeSurcharges);
+    const dbLicenseFee = Number(cfg.licenseFeeFlat ?? 0);
+    const printAreaFromDB = toPlainObjectMap(cfg.printAreaSurcharges);
 
-    const surcharges      = { ...dbSurcharges, ...(extras.sizeSurcharges || {}) };
-    const licenseFeeFlat  = (typeof extras.licenseFeeFlat === "number") ? extras.licenseFeeFlat : dbLicenseFee;
-    const printAreaMap    = { ...printAreaFromDB, ...(extras.printAreaSurcharges || {}) };
+    const surcharges = { ...dbSurcharges, ...(extras.sizeSurcharges || {}) };
+    const licenseFeeFlat = (typeof extras.licenseFeeFlat === "number") ? extras.licenseFeeFlat : dbLicenseFee;
+    const printAreaMap = { ...printAreaFromDB, ...(extras.printAreaSurcharges || {}) };
 
     // --- Choose how to apply print-area fee ---
     // mode 'perItem' (default): add once per item line
@@ -924,12 +1076,12 @@ exports.calculatePrice = async (req, res) => {
           unitPrice,
           surcharge: sizeSurcharge,
           // keep for transparency, but not included in per-unit math:
-          printAreaInfo: { printAreas, itemPrintAreaFee }, 
+          printAreaInfo: { printAreas, itemPrintAreaFee },
           lineBeforeDiscount: round(baseLine)
         };
       }).filter(Boolean);
 
-      const quantity       = sizeBreakdown.reduce((s, r) => s + r.qty, 0);
+      const quantity = sizeBreakdown.reduce((s, r) => s + r.qty, 0);
       const subtotalBefore = round(sizeBreakdown.reduce((s, r) => s + r.lineBeforeDiscount, 0));
 
       return { sku: it.sku, name: it.name, unitPrice, quantity, sizeBreakdown, subtotalBefore, itemPrintAreaFee };
@@ -949,7 +1101,7 @@ exports.calculatePrice = async (req, res) => {
     // 3) Discount tier
     const totalQuantity = baseBreakdown.reduce((s, i) => s + i.quantity, 0);
     const tiers = await getTiers();
-    const tier  = pickTier(tiers, totalQuantity);
+    const tier = pickTier(tiers, totalQuantity);
     const discountRate = tier?.rate || 0;
 
     // Future tiers
@@ -967,7 +1119,7 @@ exports.calculatePrice = async (req, res) => {
       const sizeBreakdown = it.sizeBreakdown.map(r => {
         const effectiveBefore = r.unitPrice + r.surcharge; // ← no print-area here
         const discountedUnitPrice = round(effectiveBefore * (1 - discountRate));
-        const lineAfterDiscount   = round(discountedUnitPrice * r.qty);
+        const lineAfterDiscount = round(discountedUnitPrice * r.qty);
 
         const futureUnitPrices = futureTiers.map(ft => {
           const unitAtTier = round(effectiveBefore * (1 - ft.rate));
@@ -1007,9 +1159,9 @@ exports.calculatePrice = async (req, res) => {
     });
 
     // 5) Summary
-    const baseSubtotal       = round(itemBreakdown.reduce((s, i) => s + i.subtotalBefore, 0));
+    const baseSubtotal = round(itemBreakdown.reduce((s, i) => s + i.subtotalBefore, 0));
     const discountedSubtotal = round(itemBreakdown.reduce((s, i) => s + i.subtotalAfter, 0));
-    const discountAmount     = round(baseSubtotal - discountedSubtotal);
+    const discountAmount = round(baseSubtotal - discountedSubtotal);
 
     const fees = {
       licenseFee: flags.collegiateLicense ? licenseFeeFlat : 0,
@@ -1019,7 +1171,7 @@ exports.calculatePrice = async (req, res) => {
     const grandTotal = round(discountedSubtotal + fees.licenseFee + fees.printAreaFee);
 
     const eachBeforeDiscount = totalQuantity > 0 ? round(baseSubtotal / totalQuantity) : 0;
-    const eachAfterDiscount  = totalQuantity > 0 ? round(grandTotal   / totalQuantity) : 0;
+    const eachAfterDiscount = totalQuantity > 0 ? round(grandTotal / totalQuantity) : 0;
 
     res.json({
       summary: {

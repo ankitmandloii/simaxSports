@@ -8,6 +8,10 @@ const router = express.Router();
 
 router.post('/signup',customerValidation.customerRegister, controllers.signUp);
 router.post('/login',customerValidation.login ,controllers.login); //currntly use in admin
+router.post('/verify-otp',controllers.verifyOtp); //currntly use in admin
+router.post('/resend-otp',controllers.resendOtp); //currntly use in admin
+router.post('/logout-all',customerValidation.verifyToken,controllers.logoutAll); //currntly use in admin
+
 
 router.post('/loginShopify' ,controllers.logintest);
 router.post('/userDataAfterShopifyLogin' ,controllers.meTest);
