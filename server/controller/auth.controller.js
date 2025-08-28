@@ -246,6 +246,11 @@ exports.logoutAll = async (req, res) => {
 };
 
 
+exports.validate = async (req, res) => {
+    return res.status(200).json({ success: true, message: 'Token is valid' });
+};
+
+
 exports.adminChangePassword = async (req, res) => {
   try {
 
