@@ -26,19 +26,56 @@ export default function AdminLayout({ children }) {
 
   const toggleUserMenu = () => setIsUserMenuOpen(!isUserMenuOpen);
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-  const handleSignOut = () => {
-    showToast({
-      content: 'Signing out...',
-      duration: 1000,
-      icon: <Icon source={ExitIcon} tone="success" />
-    });
-    setTimeout(() => {
+  // at top of AdminLayout
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
+
+  // ...
+
+  const handleSignOut = async () => {
+    try {
+      showToast({ content: 'Signing out…' });
+
+      const token = localStorage.getItem('admin-token');
+
+      // Call server to invalidate ALL sessions by bumping tokenVersion
+      if (token) {
+        await fetch(`${BASE_URL}auth/logout-all`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }).catch(() => { }); // even if it fails, proceed with local cleanup
+      }
+    } finally {
+      // Client-side cleanup (do this regardless of server response)
       localStorage.removeItem('admin-token');
+      sessionStorage.removeItem('otp-temp-token');  // if you used OTP step
+      sessionStorage.removeItem('pending-email');   // if you stored email for OTP
 
       navigate('/admin/login');
-    }, 2000);
+    }
+  };
 
 
+  const logoutThisDevice = async () => {
+    try {
+      const token = localStorage.getItem('admin-token');
+      if (token) {
+        await fetch(`${BASE_URL}auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }).catch(() => { });
+      }
+    } finally {
+      localStorage.removeItem('admin-token');
+      sessionStorage.removeItem('otp-temp-token');
+      sessionStorage.removeItem('pending-email');
+      navigate('/admin/login');
+    }
   };
 
 
@@ -47,11 +84,8 @@ export default function AdminLayout({ children }) {
       actions={[
         {
           items: [
-            {
-              icon: ExitIcon,
-              content: 'Sign out',
-              onAction: handleSignOut,
-            },
+            { icon: ExitIcon, content: 'Sign out (this device)', onAction: logoutThisDevice },
+            { icon: ExitIcon, content: 'Sign out of all devices', onAction: handleSignOut },
           ],
         },
       ]}

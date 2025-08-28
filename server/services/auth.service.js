@@ -2,6 +2,9 @@ const User = require("../model/userSchema");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
+const emailConfig = require('../config/email.js');
+const emailTemplates = require("../utils/emailTemplate.js");
+const nodemailer = require('nodemailer');
 
 
 
@@ -135,6 +138,12 @@ exports.passwordCompareForLogin = async (user, password) => {
 };
 
 
+exports.incrementTokenVersion = async (userId) => {
+  const user = await User.findById(userId); // or Sequelize equivalent
+  user.tokenVersion += 1;
+  await user.save();
+};
+
 exports.signUp = async (userName, email, phoneNumber, password,role) => {
   try {
     const saltRounds = 10;
@@ -155,3 +164,24 @@ exports.signUp = async (userName, email, phoneNumber, password,role) => {
     return false;
   }
 };
+
+
+
+
+exports.sendEmailForOtpverification = async (email, otp) => {
+  try {
+    const transporter = nodemailer.createTransport(emailConfig);
+
+    let mailOptions = emailTemplates.otpEmailTemplate(email, otp);
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`Email sent for Verification OTP: ${info.response}`);
+    return true;
+  }
+  catch (e) {
+    console.error(
+      `Error in email send For OTP: ${e}`,
+    );
+    return false;
+  }
+}

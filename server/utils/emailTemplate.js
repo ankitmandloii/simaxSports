@@ -214,3 +214,60 @@ exports.sendEmailToAdminWhileOrderTemplate = (emailData) => {
     text,
   };
 };
+
+
+
+
+
+////////////////////////////////////////////OTP EMAIL TAMPLATE//////////////////////////////////////
+// src/utils/emailTemplates.js (or similar)
+
+exports.otpEmailTemplate = (email, otpCode) => {
+  const data = {
+    from: process.env.SMTP_USER,
+    to: `${email}`,
+    subject: `Your SimaxDesign OTP Code`,
+    html: `
+  <body style="margin:0; padding:0; font-family: Arial, sans-serif; background-color:#f9f9f9;">
+    <table width="600" align="center" cellpadding="0" cellspacing="0" border="0" 
+           style="border-collapse: collapse; background-color:#ffffff; border-radius:8px; overflow:hidden;">
+      
+      <!-- Logo -->
+      <tr>
+        <td style="padding:20px; text-align:center; background:#f2f2f2;">
+          <img src="https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755783418078_image_4.png" 
+               alt="SimaxDesign Logo" 
+               style="width:140px; display:block; margin:0 auto;">
+        </td>
+      </tr>
+
+      <!-- OTP Section -->
+      <tr>
+        <td style="padding:40px; text-align:center; color:#333;">
+          <h2 style="margin:0 0 20px; font-size:22px; font-weight:600; color:#222;">
+            Your One-Time Password (OTP)
+          </h2>
+          <p style="font-size:16px; margin:0 0 30px; color:#555;">
+            Please use the following OTP to complete your login. 
+            This code will expire in <b>5 minutes</b>.
+          </p>
+          <div style="font-size:32px; font-weight:bold; letter-spacing:6px; color:#005bff; margin:20px 0;">
+            ${otpCode}
+          </div>
+        </td>
+      </tr>
+
+      <!-- Footer -->
+      <tr>
+        <td style="padding:20px; text-align:center; font-size:12px; color:#999; background:#f2f2f2;">
+          <p style="margin:0;">If you didn’t request this, you can safely ignore this email.</p>
+          <p style="margin:5px 0 0;">© ${new Date().getFullYear()} SimaxDesign</p>
+        </td>
+      </tr>
+    </table>
+  </body>
+`,
+  };
+
+  return data;
+};

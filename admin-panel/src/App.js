@@ -19,6 +19,7 @@ import NotFound from './admin/NotFound';
 import ActiveUsers from './admin/ActiveUsers';
 import {Dashboard} from './admin/Dashboard';
 import DiscountUpdate from './admin/DiscountUpdate';
+import VerifyOtp from './admin/VerifyOtp';
 
 function App() {
   return (
@@ -28,7 +29,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/admin/login" element={<Login />} />
-
+            <Route path="/admin/verify-otp" element={<VerifyOtp />} />
             {/* Admin Pages with shared layout */}
             <Route
               path="/admin/dashboard"
