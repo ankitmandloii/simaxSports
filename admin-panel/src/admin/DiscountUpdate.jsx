@@ -1,7 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Button, SkeletonPage, Layout, SkeletonBodyText, SkeletonDisplayText, Card } from "@shopify/polaris";
-
+import {
+  Button,
+  SkeletonPage,
+  Layout,
+  SkeletonBodyText,
+  SkeletonDisplayText,
+  Card,
+} from "@shopify/polaris";
 import { DeleteIcon } from "@shopify/polaris-icons";
+import "./DiscountUpdate.css"; // ⟵ add this line
 
 // ---------- helpers ----------
 const toPercent = (d) => (d != null ? Math.round(d * 100 * 100) / 100 : 0);
@@ -20,7 +27,7 @@ function joinUrl(base, path) {
   return `${b}${p}`;
 }
 
-export default function PricingSettings() {
+export default function DiscountUpdate() {
   // -------- server-backed state --------
   const [tiers, setTiers] = useState([{ minQty: 1, ratePercent: 0 }]);
   const [surcharges, setSurcharges] = useState({ XL: 1, "2XL": 2, "3XL": 3 });
@@ -42,7 +49,6 @@ export default function PricingSettings() {
   const GET_TIERS_URL = joinUrl(BASE_URL, "/auth/getDiscountDetails");
   const PUT_TIERS_URL = joinUrl(BASE_URL, "/auth/setDiscountDetails");
 
-
   // -------- load settings --------
   useEffect(() => {
     (async () => {
@@ -50,13 +56,17 @@ export default function PricingSettings() {
         setLoading(true);
         setError(""); setOkMsg("");
 
-        const res = await fetch(GET_TIERS_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
+        const res = await fetch(GET_TIERS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to load");
 
         const uiTiers = (data.tiers || []).map(t => ({
           minQty: Number(t.minQty),
-          ratePercent: toPercent(Number(t.rate))
+          ratePercent: toPercent(Number(t.rate)),
         }));
         setTiers(uiTiers.length ? uiTiers : [{ minQty: 1, ratePercent: 0 }]);
         setSurcharges(data.sizeSurcharges || { XL: 1, "2XL": 2, "3XL": 3 });
@@ -67,7 +77,7 @@ export default function PricingSettings() {
           "1": Number(pa["1"] ?? 0.23),
           "2": Number(pa["2"] ?? 0.46),
           "3": Number(pa["3"] ?? 12.68),
-          "4": Number(pa["4"] ?? 18.92)
+          "4": Number(pa["4"] ?? 18.92),
         });
       } catch (e) {
         setError(e.message || "Failed to load settings");
@@ -117,12 +127,12 @@ export default function PricingSettings() {
         .map(r => ({ minQty: Number(r.minQty), rate: toDecimal(Number(r.ratePercent)) }))
         .sort((a, b) => a.minQty - b.minQty);
 
-      const token = localStorage.getItem('admin-token');
+      const token = localStorage.getItem("admin-token");
       const res = await fetch(PUT_TIERS_URL, {
         method: "PUT",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          "Content-Type": "application/json"
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           tiers: apiTiers,
@@ -132,9 +142,9 @@ export default function PricingSettings() {
             "1": Number(printAreas["1"] ?? 0),
             "2": Number(printAreas["2"] ?? 0),
             "3": Number(printAreas["3"] ?? 0),
-            "4": Number(printAreas["4"] ?? 0)
-          }
-        })
+            "4": Number(printAreas["4"] ?? 0),
+          },
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to save");
@@ -199,45 +209,135 @@ export default function PricingSettings() {
       tier, eachBefore, eachAfter, subtotalBefore, discountedSubtotal,
       licenseFee: licenseAdd, printAreaFee: paFee, grand,
       ladder: futureLocalTiers(tiersDec, Number(testQty || 0)).map(ft => ({
-        ...ft, eachAtTier: Math.round((unitBefore * (1 - ft.rate)) * 100) / 100
-      }))
+        ...ft, eachAtTier: Math.round((unitBefore * (1 - ft.rate)) * 100) / 100,
+      })),
     };
   }
 
-  if (loading) return (
-    <SkeletonPage primaryAction>
-      <Layout>
-        <Layout.Section>
-          <Card sectioned>
-            <SkeletonDisplayText size="small" />
-            <SkeletonBodyText lines={3} />
-          </Card>
-        </Layout.Section>
-        <Layout.Section>
-          <Card sectioned>
-            <SkeletonDisplayText size="small" />
-            <SkeletonBodyText lines={5} />
-          </Card>
-        </Layout.Section>
-        <Layout.Section>
-          <Card sectioned>
-            <SkeletonDisplayText size="small" />
-            <SkeletonBodyText lines={2} />
-          </Card>
-        </Layout.Section>
-      </Layout>
-    </SkeletonPage>
+if (loading) {
+  return (
+    <div className="pricing__container">
+      {/* Page title */}
+      <div className="skel skel-title" />
+
+      {/* How it works + sandbox */}
+      <section style={{ marginTop: 16, padding: 16, border: "1px solid #e5e5e5", borderRadius: 12, background: "#fafafa" }}>
+        <div className="skel skel-line" style={{ width: 260 }} />
+        <div style={{ marginTop: 12, lineHeight: 1.5 }}>
+          <div className="skel skel-line" style={{ width: "90%", marginBottom: 6 }} />
+          <div className="skel skel-line" style={{ width: "80%", marginBottom: 6 }} />
+          <div className="skel skel-line" style={{ width: "70%", marginBottom: 6 }} />
+        </div>
+
+        {/* sandbox grid (same grid-5 as live) */}
+        <div className="grid-5" style={{ marginTop: 16 }}>
+          {[...Array(5)].map((_, i) => (
+            <div key={i} style={{ minWidth: 0 }}>
+              <div className="skel skel-line" style={{ width: 90, marginBottom: 8 }} />
+              <div className="skel skel-input" />
+            </div>
+          ))}
+        </div>
+
+        {/* sandbox results */}
+        <div style={{ marginTop: 12 }}>
+          <div className="skel skel-line" style={{ width: "60%", marginBottom: 6 }} />
+          <div className="skel skel-line" style={{ width: "65%", marginBottom: 6 }} />
+          <div className="skel skel-line" style={{ width: "55%", marginBottom: 6 }} />
+          <div className="skel skel-line" style={{ width: "50%", marginBottom: 6 }} />
+        </div>
+      </section>
+
+      {/* Discount Tiers */}
+      <section style={{ marginTop: 16 }}>
+        <div className="skel skel-line" style={{ width: 180, marginBottom: 8 }} />
+        <div className="skel skel-line" style={{ width: 260, height: 10, marginBottom: 12, borderRadius: 4 }} />
+
+        <div className="table-wrap">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 60px", gap: 12 }}>
+            {/* Header mimic */}
+            <div className="skel skel-line" style={{ width: "80%", height: 12 }} />
+            <div className="skel skel-line" style={{ width: "80%", height: 12 }} />
+            <div className="skel skel-line" style={{ width: 40, height: 12, justifySelf: "end" }} />
+            {/* 3 rows */}
+            {[...Array(3)].map((_, i) => (
+              <React.Fragment key={i}>
+                <div className="skel skel-input" />
+                <div className="skel skel-input" />
+                <div className="skel skel-btn" style={{ justifySelf: "end", width: 36 }} />
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+
+        <div className="skel skel-btn" style={{ marginTop: 10, width: 110 }} />
+      </section>
+
+      {/* Size Surcharges */}
+      <section style={{ marginTop: 24 }}>
+        <div className="skel skel-line" style={{ width: 210, marginBottom: 8 }} />
+        <div className="skel skel-line" style={{ width: 280, height: 10, marginBottom: 12, borderRadius: 4 }} />
+
+        <div className="grid-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", minWidth: 0 }}>
+              <div className="skel skel-input" style={{ width: "100%" }} />
+              <div className="skel skel-input" style={{ width: "100%" }} />
+            </div>
+          ))}
+        </div>
+
+        <div className="skel skel-btn" style={{ marginTop: 10, width: 110 }} />
+      </section>
+
+      {/* Print-Area Surcharges */}
+      <section style={{ marginTop: 24 }}>
+        <div className="skel skel-line" style={{ width: 270, marginBottom: 8 }} />
+        <div className="skel skel-line" style={{ width: 320, height: 10, marginBottom: 12, borderRadius: 4 }} />
+
+        <div className="grid-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", minWidth: 0 }}>
+              <div className="skel skel-input" style={{ width: "100%" }} />
+              <div className="skel skel-input" style={{ width: "100%" }} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* License fee */}
+      <section style={{ marginTop: 24 }}>
+        <div className="skel skel-line" style={{ width: 220, marginBottom: 8 }} />
+        <div className="skel skel-input" style={{ maxWidth: 220 }} />
+      </section>
+
+      {/* Actions */}
+      <div style={{ marginTop: 24 }}>
+        <div className="skel skel-btn" style={{ width: 150 }} />
+      </div>
+    </div>
   );
+}
 
 
   return (
-    <div style={{ maxWidth: 880, margin: "20px auto", fontFamily: "Inter, system-ui, Arial" }}>
+    <div className="pricing__container">
       <h2>Pricing Settings (Admin)</h2>
 
       {/* How it works + tester */}
-      <section style={{ marginTop: 16, padding: 16, border: "1px solid #e5e5e5", borderRadius: 12, background: "#fafafa" }}>
+      <section
+        style={{
+          marginTop: 16,
+          padding: 16,
+          border: "1px solid #e5e5e5",
+          borderRadius: 12,
+          background: "#fafafa",
+        }}
+      >
         <details>
-          <summary style={{ cursor: "pointer", fontWeight: 600 }}>How pricing works (for admins)</summary>
+          <summary style={{ cursor: "pointer", fontWeight: 600 }}>
+            How pricing works (for admins)
+          </summary>
           <div style={{ marginTop: 12, lineHeight: 1.5, fontSize: 14 }}>
             <ol style={{ paddingLeft: 18 }}>
               <li><b>Base unit</b> = product price + <i>size surcharge</i>.</li>
@@ -253,31 +353,71 @@ export default function PricingSettings() {
             </ul>
 
             {/* sandbox */}
-            <div style={{ marginTop: 16, padding: 12, border: "1px dashed #ddd", borderRadius: 10, background: "#fff" }}>
+            <div
+              style={{
+                marginTop: 16,
+                padding: 12,
+                border: "1px dashed #ddd",
+                borderRadius: 10,
+                background: "#fff",
+              }}
+            >
               <div style={{ fontWeight: 600, marginBottom: 8 }}>Try it (sandbox)</div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 }}>
-                <div>
+
+              {/* responsive grid (5→2 cols on mobile) */}
+              <div className="grid-5" style={{ marginTop: 8 }}>
+                <div style={{ minWidth: 0 }}>
                   <label style={{ fontSize: 12 }}>Unit price</label>
-                  <input type="number" value={testUnit} min={0} step="0.01" onChange={e => setTestUnit(Number(e.target.value))} />
+                  <input
+                    type="number"
+                    value={testUnit}
+                    min={0}
+                    step="0.01"
+                    onChange={e => setTestUnit(Number(e.target.value))}
+                    style={{ width: "100%" }}
+                  />
                 </div>
-                <div>
+                <div style={{ minWidth: 0 }}>
                   <label style={{ fontSize: 12 }}>Qty</label>
-                  <input type="number" value={testQty} min={1} onChange={e => setTestQty(Number(e.target.value))} />
+                  <input
+                    type="number"
+                    value={testQty}
+                    min={1}
+                    onChange={e => setTestQty(Number(e.target.value))}
+                    style={{ width: "100%" }}
+                  />
                 </div>
-                <div>
+                <div style={{ minWidth: 0 }}>
                   <label style={{ fontSize: 12 }}>Size</label>
-                  <select value={testSize} onChange={e => setTestSize(e.target.value)}>
-                    {Object.keys(surcharges).map(s => <option key={s} value={s}>{s}</option>)}
+                  <select
+                    value={testSize}
+                    onChange={e => setTestSize(e.target.value)}
+                    style={{ width: "100%" }}
+                  >
+                    {Object.keys(surcharges).map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
                   </select>
                 </div>
-                <div>
+                <div style={{ minWidth: 0 }}>
                   <label style={{ fontSize: 12 }}>Print areas (1–4)</label>
-                  <select value={testAreas} onChange={e => setTestAreas(Number(e.target.value))}>
-                    {[1, 2, 3, 4].map(n => <option key={n} value={n}>{n}</option>)}
+                  <select
+                    value={testAreas}
+                    onChange={e => setTestAreas(Number(e.target.value))}
+                    style={{ width: "100%" }}
+                  >
+                    {[1, 2, 3, 4].map(n => (
+                      <option key={n} value={n}>{n}</option>
+                    ))}
                   </select>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, paddingTop: 18 }}>
-                  <input id="lic" type="checkbox" checked={testLicense} onChange={e => setTestLicense(e.target.checked)} />
+                <div style={{ display: "flex", alignItems: "center", gap: 6, paddingTop: 18, minWidth: 0 }}>
+                  <input
+                    id="lic"
+                    type="checkbox"
+                    checked={testLicense}
+                    onChange={e => setTestLicense(e.target.checked)}
+                  />
                   <label htmlFor="lic" style={{ fontSize: 12 }}>Collegiate license</label>
                 </div>
               </div>
@@ -287,17 +427,24 @@ export default function PricingSettings() {
                 return (
                   <div style={{ marginTop: 10, fontSize: 14 }}>
                     <div>Tier hit: <b>{r.tier.minQty}+ @ {pct(r.tier.rate)}%</b> off</div>
-                    <div>Each (before): <b>${r.eachBefore.toFixed(2)}</b>, Each (after): <b>${r.eachAfter.toFixed(2)}</b></div>
+                    <div>
+                      Each (before): <b>${r.eachBefore.toFixed(2)}</b>, Each (after):{" "}
+                      <b>${r.eachAfter.toFixed(2)}</b>
+                    </div>
                     <div>Subtotal before: <b>${r.subtotalBefore.toFixed(2)}</b></div>
                     <div>Discounted subtotal: <b>${r.discountedSubtotal.toFixed(2)}</b></div>
-                    <div>Flat fees → Print-area: <b>${r.printAreaFee.toFixed(2)}</b>{r.licenseFee ? ` + License: $${r.licenseFee.toFixed(2)}` : ""}</div>
+                    <div>
+                      Flat fees → Print-area: <b>${r.printAreaFee.toFixed(2)}</b>
+                      {r.licenseFee ? ` + License: $${r.licenseFee.toFixed(2)}` : ""}
+                    </div>
                     <div>Grand total: <b>${r.grand.toFixed(2)}</b></div>
                     {!!r.ladder.length && (
                       <div style={{ marginTop: 8 }}>
                         Buy more & save:&nbsp;
                         {r.ladder.map((x, i) => (
                           <span key={x.threshold} style={{ marginRight: 10 }}>
-                            {x.threshold} items for <b>${x.eachAtTier.toFixed(2)}</b> ea{i < r.ladder.length - 1 ? " | " : ""}
+                            {x.threshold} items for <b>${x.eachAtTier.toFixed(2)}</b> ea
+                            {i < r.ladder.length - 1 ? " | " : ""}
                           </span>
                         ))}
                       </div>
@@ -313,54 +460,93 @@ export default function PricingSettings() {
       {/* Tiers */}
       <section style={{ marginTop: 16 }}>
         <h3>Discount Tiers</h3>
-        <p style={{ fontSize: "0.7rem", color: "#555", marginTop: 4 }}>Quantity-based discount (%)</p>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr><th align="left">Min Qty</th><th align="left">Discount (%)</th><th /></tr>
-          </thead>
-          <tbody>
-            {tiers.map((row, idx) => (
-              <tr key={idx}>
-                <td>
-                  <input type="number" min={1} value={row.minQty}
-                    onChange={e => updateRow(idx, "minQty", e.target.value)} />
-                </td>
-                <td>
-                  <input type="number" min={0} max={100} step="0.01" value={row.ratePercent}
-                    onChange={e => updateRow(idx, "ratePercent", e.target.value)} />
-                </td>
-                <td><Button tone="critical" icon={DeleteIcon} onClick={() => removeRow(idx)} /></td>
+        <p style={{ fontSize: "0.7rem", color: "#555", marginTop: 4 }}>
+          Quantity-based discount (%)
+        </p>
+
+        {/* wrap table so only it can overflow horizontally */}
+        <div className="table-wrap" style={{ marginTop: 8 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                <th align="left">Min Qty</th>
+                <th align="left">Discount (%)</th>
+                <th />
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {tiers.map((row, idx) => (
+                <tr key={idx}>
+                  <td style={{ maxWidth: 160 }}>
+                    <input
+                      type="number"
+                      min={1}
+                      value={row.minQty}
+                      onChange={e => updateRow(idx, "minQty", e.target.value)}
+                      style={{ width: "100%" }}
+                    />
+                  </td>
+                  <td style={{ maxWidth: 180 }}>
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      step="0.01"
+                      value={row.ratePercent}
+                      onChange={e => updateRow(idx, "ratePercent", e.target.value)}
+                      style={{ width: "100%" }}
+                    />
+                  </td>
+                  <td style={{ width: 1, whiteSpace: "nowrap" }}>
+                    <Button tone="critical" icon={DeleteIcon} onClick={() => removeRow(idx)} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
         <Button style={{ marginTop: 8 }} onClick={addRow}>+ Add Tier</Button>
       </section>
 
       {/* Size Surcharges */}
       <section style={{ marginTop: 24 }}>
         <h3>Size Surcharges ($)</h3>
-        <p style={{ fontSize: "0.7rem", color: "#555", marginTop: 4 }}>Per-size add-on (before discount).</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+        <p style={{ fontSize: "0.7rem", color: "#555", marginTop: 4 }}>
+          Per-size add-on (before discount).
+        </p>
+        {/* responsive grid (4→2 cols on mobile) */}
+        <div className="grid-4" style={{ marginTop: 8 }}>
           {Object.entries(surcharges).map(([size, val]) => (
-            <div key={size} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <input value={size} onChange={e => {
-                const newKey = e.target.value;
-                setSurcharges(prev => {
-                  const copy = { ...prev };
-                  const v = copy[size];
-                  delete copy[size];
-                  copy[newKey] = v;
-                  return copy;
-                });
-              }} style={{ width: 80 }} />
-              <input type="number" step="0.01" min={0} value={val}
+            <div key={size} style={{ display: "flex", gap: 8, alignItems: "center", minWidth: 0 }}>
+              <input
+                value={size}
+                onChange={e => {
+                  const newKey = e.target.value;
+                  setSurcharges(prev => {
+                    const copy = { ...prev };
+                    const v = copy[size];
+                    delete copy[size];
+                    copy[newKey] = v;
+                    return copy;
+                  });
+                }}
+                style={{ width: "100%" }}
+              />
+              <input
+                type="number"
+                step="0.01"
+                min={0}
+                value={val}
                 onChange={e => setSurcharges(prev => ({ ...prev, [size]: Number(e.target.value) }))}
-                style={{ width: 90 }} />
+                style={{ width: "100%" }}
+              />
             </div>
           ))}
         </div>
-        <Button style={{ marginTop: 8 }} onClick={() => setSurcharges(prev => ({ ...prev, "": 0 }))}>+ Add Size</Button>
+        <Button style={{ marginTop: 8 }} onClick={() => setSurcharges(prev => ({ ...prev, "": 0 }))}>
+          + Add Size
+        </Button>
       </section>
 
       {/* Print-Area flat fees */}
@@ -369,13 +555,18 @@ export default function PricingSettings() {
         <p style={{ fontSize: "0.7rem", color: "#555", marginTop: 4 }}>
           Flat fee per item line (not per unit). Keys 1..4 only.
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+        <div className="grid-4" style={{ marginTop: 8 }}>
           {["1", "2", "3", "4"].map(k => (
-            <div key={k} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <input value={k} disabled style={{ width: 80, background: "#f3f3f3" }} />
-              <input type="number" step="0.01" min={0} value={printAreas[k]}
+            <div key={k} style={{ display: "flex", gap: 8, alignItems: "center", minWidth: 0 }}>
+              <input value={k} disabled style={{ width: "100%", background: "#f3f3f3" }} />
+              <input
+                type="number"
+                step="0.01"
+                min={0}
+                value={printAreas[k]}
                 onChange={e => setPrintAreas(prev => ({ ...prev, [k]: Number(e.target.value) }))}
-                style={{ width: 90 }} />
+                style={{ width: "100%" }}
+              />
             </div>
           ))}
         </div>
@@ -384,37 +575,61 @@ export default function PricingSettings() {
       {/* License fee */}
       <section style={{ marginTop: 24 }}>
         <h3>Default License Fee ($)</h3>
-        <p style={{ fontSize: "0.7rem", color: "#555", marginTop: 4 }}>Applied only when enabled in a quote.</p>
-        <input type="number" step="0.01" min={0} value={licenseFee} onChange={e => setLicenseFee(e.target.value)} />
+        <p style={{ fontSize: "0.7rem", color: "#555", marginTop: 4 }}>
+          Applied only when enabled in a quote.
+        </p>
+        <input
+          type="number"
+          step="0.01"
+          min={0}
+          value={licenseFee}
+          onChange={e => setLicenseFee(e.target.value)}
+          style={{ width: "100%", maxWidth: 220 }}
+        />
       </section>
 
       {/* Actions + confirm */}
       <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 12 }}>
         <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-          <Button onClick={onClickSave} disabled={saving}>{saving ? "Saving…" : "Save Settings"}</Button>
+          <Button onClick={onClickSave} disabled={saving}>
+            {saving ? "Saving…" : "Save Settings"}
+          </Button>
           {error && <span style={{ color: "crimson" }}>{error}</span>}
           {okMsg && <span style={{ color: "green" }}>{okMsg}</span>}
         </div>
 
         {confirmOpen && (
           <>
-            <div onClick={() => !saving && setConfirmOpen(false)}
-              style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", zIndex: 1000 }} />
-            <div role="dialog" aria-modal="true"
+            <div
+              onClick={() => !saving && setConfirmOpen(false)}
+              style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", zIndex: 1000 }}
+            />
+            <div
+              role="dialog"
+              aria-modal="true"
+              className="confirm-modal"
               style={{
-                position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-                background: "#fff", border: "1px solid #ddd", borderRadius: 12, padding: 16,
-                minWidth: 320, zIndex: 1001, boxShadow: "0 10px 30px rgba(0,0,0,0.15)"
-              }}>
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                background: "#fff",
+                border: "1px solid #ddd",
+                borderRadius: 12,
+                padding: 16,
+                zIndex: 1001,
+                boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+              }}
+            >
               <h4 style={{ margin: 0 }}>Confirm Save</h4>
               <p style={{ marginTop: 8 }}>
                 Save these pricing settings? Changes will apply immediately to discount calculations.
               </p>
               <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 12 }}>
-                <Button tone="success" ref={confirmYesBtnRef} onClick={handleConfirmYes} disabled={saving}>
+                <Button ref={confirmYesBtnRef} onClick={handleConfirmYes} disabled={saving}>
                   {saving ? "Saving…" : "Yes, Save"}
                 </Button>
-                <Button tone="critical" onClick={() => setConfirmOpen(false)} disabled={saving}>
+                <Button onClick={() => setConfirmOpen(false)} disabled={saving}>
                   No, Cancel
                 </Button>
               </div>

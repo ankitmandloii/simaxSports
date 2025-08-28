@@ -1,0 +1,45 @@
+/* guardrail: never let the page overflow horizontally */
+html, body, #root { max-width: 100%; overflow-x: hidden; }
+
+/* page wrapper */
+.pricing__container { max-width: 880px; margin: 20px auto; padding: 0 12px; }
+
+/* grids */
+.grid-5, .grid-4 { display: grid; gap: 8px; }
+.grid-5 { grid-template-columns: repeat(5, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* let children shrink */
+.grid-5 > *, .grid-4 > * { min-width: 0; }
+
+/* responsive tweaks for mobile */
+@media (max-width: 640px) {
+  .grid-5 { grid-template-columns: 1fr 1fr; }   /* from 5 cols → 2 cols */
+  .grid-4 { grid-template-columns: 1fr 1fr; }   /* from 4 cols → 2 cols */
+  .table-wrap { overflow-x: auto; }             /* contain wide tables */
+}
+
+/* safer modal width on small screens */
+.confirm-modal {
+  width: min(92vw, 480px);
+  max-width: 92vw;
+}
+
+
+/* Existing layout rules from before…  */
+
+/* Skeleton shimmer */
+.skel {
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%);
+  background-size: 400% 100%;
+  animation: skel 1.4s ease infinite;
+  border-radius: 8px;
+}
+@keyframes skel { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+
+.skel-line { height: 14px; }
+.skel-title { height: 26px; width: 240px; }
+.skel-input { height: 36px; }
+.skel-btn { height: 36px; width: 140px; }
+
+/* Keep the responsive grid + overflow fixes you already added */
