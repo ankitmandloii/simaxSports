@@ -2520,20 +2520,20 @@ const MainDesignTool = ({
 
 
   function getLeft(canvasRef) {
-    const canvasElement = canvasRef.current;
-    const rect = canvasElement.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
+    const canvasElement = canvasRef?.current;
+    const rect = canvasElement?.getBoundingClientRect();
+    const centerX = rect?.width / 2.5;
+    const centerY = rect?.height / 4;
     return `${centerX}px`;
   }
-  // function getTop(canvasRef) {
-  //   const canvasElement = canvasRef.current;
-  //   const rect = canvasElement.getBoundingClientRect();
-  //   const centerX = rect.width / 2;
-  //   const centerY = rect.height / 2;
-  //   return `${centerY}px`;
-  // }
-
+  function getTop(canvasRef) {
+    const canvasElement = canvasRef?.current;
+    const rect = canvasElement?.getBoundingClientRect();
+    const centerX = rect?.width / 3;
+    const centerY = rect?.height / 3;
+    return `${centerY}px`;
+  }
+  console.log("first", hasClicked, "s", addName, "s", addNumber, "s", imageContaintObject, "s", textContaintObject)
 
   return (
     <div class="canvas-wrapper" style={{ position: "relative", top: 5 }} >
@@ -2544,7 +2544,7 @@ const MainDesignTool = ({
       {!hasClicked && !addName && !addNumber &&
         imageContaintObject?.length == 0 &&
         textContaintObject?.length == 0 && (
-          <div className={style.buttonsroute} >
+          <div className={style.buttonsroute} style={{ position: 'absolute', top: getTop(canvasRef), left: getLeft(canvasRef) }} >
             <button
               onMouseEnter={() => handleHover("/design/addText")}
               onMouseLeave={handleLeave}
@@ -2631,5 +2631,10 @@ const MainDesignTool = ({
 
     </div>
   );
+
+
+
 };
+
+
 export default MainDesignTool;

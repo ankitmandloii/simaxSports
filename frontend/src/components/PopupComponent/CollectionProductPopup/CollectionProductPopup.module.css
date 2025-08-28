@@ -191,6 +191,7 @@
 .popupActions {
   margin: auto;
 }
+
 .disabled {
   pointer-events: none;
   opacity: 0.5;
@@ -244,7 +245,8 @@
 @media (max-width: 767px) {
   .productListCollection {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
+    /* grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); */
     gap: 1rem;
   }
 

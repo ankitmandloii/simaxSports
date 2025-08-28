@@ -261,7 +261,7 @@ import ColorWheel from '../../images/color-wheel1.png';
 import ColorSwatchPlaceholder from '../../CommonComponent/ColorSwatchPlaceholder.jsx/ColorSwatchPlaceholder';
 
 const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoading: setParentLoading, setCollectionLoading }) => {
-  console.log("=----collectionId",collectionId)
+  console.log("=----collectionId", collectionId)
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const popupRef = useRef(null);
   const selectedProducts = useSelector((state) => state?.selectedProducts?.selectedProducts);
@@ -275,15 +275,15 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
   const [cursor, setCursor] = useState('');
   const [hasNextPage, setHasNextPage] = useState(false);
   const [loading, setLoading] = useState(false);
-    const [swatchLoaded, setSwatchLoaded] = useState(true);
-  
-  console.log("------------loadingggg",loading)
+  const [swatchLoaded, setSwatchLoaded] = useState(true);
+
+  console.log("------------loadingggg", loading)
 
 
   // const collectionId = 'gid://shopify/Collection/289328496774';
-  console.log("-------------collections",collections)
+  console.log("-------------collections", collections)
   const defaultCollectionId = collections.length > 0 ? collections[0].id : null;
-  console.log("-------------defaultCollectionId",defaultCollectionId)
+  console.log("-------------defaultCollectionId", defaultCollectionId)
 
   const effectiveCollectionId = collectionId || defaultCollectionId;
   const numericId = effectiveCollectionId?.split('/').pop();
@@ -303,17 +303,17 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
   //   fetchProducts();
   // }, [collectionId,numericId]);
   useEffect(() => {
-  resetState(); // Clear immediately
-  setLoading(true);
-  setCollectionLoading(true)
-   // Trigger loader immediately
-  fetchProducts(false);
-}, [collectionId, numericId]);
-useEffect(() => {
-  if (setParentLoading) {
-    setParentLoading(loading);
-  }
-}, [loading, setParentLoading]);
+    resetState(); // Clear immediately
+    setLoading(true);
+    setCollectionLoading(true)
+    // Trigger loader immediately
+    fetchProducts(false);
+  }, [collectionId, numericId]);
+  useEffect(() => {
+    if (setParentLoading) {
+      setParentLoading(loading);
+    }
+  }, [loading, setParentLoading]);
 
 
   const resetState = () => {
@@ -329,7 +329,7 @@ useEffect(() => {
 
   const fetchProducts = useCallback(async (isLoadMore = false) => {
     setLoading(true)
-    console.log("---numericId",numericId)
+    console.log("---numericId", numericId)
     if (!effectiveCollectionId) return;
     // setLoading(true);
     try {
@@ -341,7 +341,7 @@ useEffect(() => {
 
       const data = await res.json();
       setLoading(false);
-      console.log("-----CollectionData",data)
+      console.log("-----CollectionData", data)
       const edges = data?.result?.node?.products?.edges || [];
       const pageInfo = data?.result?.node?.products?.pageInfo;
 
@@ -359,17 +359,17 @@ useEffect(() => {
           );
 
           let customImage = '';
-           let swatchImage = '';
+          let swatchImage = '';
           if (metafield) {
             try {
               const parsed = JSON.parse(metafield.node.value);
               if (Array.isArray(parsed) && parsed[0]?.src) {
                 customImage = parsed[0].src;
               }
-               if (Array.isArray(parsed)) {
+              if (Array.isArray(parsed)) {
                 const colorNameLower = color?.toLowerCase().replace(/\s+/g, '');
-                swatchImage = parsed.find(img => 
-                  img.includes('38307_fm') || 
+                swatchImage = parsed.find(img =>
+                  img.includes('38307_fm') ||
                   img.toLowerCase().includes(colorNameLower)
                 ) || parsed[3] || parsed[0] || '';
               }
@@ -381,7 +381,7 @@ useEffect(() => {
           if (color && !colorMap[color]) {
             colorMap[color] = {
               name: color,
-                            swatchImg: swatchImage || variant.image?.originalSrc || '',
+              swatchImg: swatchImage || variant.image?.originalSrc || '',
               img: customImage || variant.image?.originalSrc || '',
               variant,
             };
@@ -443,8 +443,8 @@ useEffect(() => {
   const handleImageLoad = (productId) => {
     setImageLoaded((prev) => ({ ...prev, [productId]: true }));
   };
-// ---
- const getSwatchImage = (product, color) => {
+  // ---
+  const getSwatchImage = (product, color) => {
     const variant = product.allVariants.find((variant) =>
       variant.selectedOptions.some((opt) => opt.name === 'Color' && opt.value === color)
     );
@@ -458,8 +458,8 @@ useEffect(() => {
         console.log("---------parseddffffffffffff", parsed);
         if (Array.isArray(parsed)) {
           const colorNameLower = color.toLowerCase().replace(/\s+/g, '');
-          swatchImage = parsed.find(img => 
-            img.includes('38307_fm') || 
+          swatchImage = parsed.find(img =>
+            img.includes('38307_fm') ||
             img.toLowerCase().includes(colorNameLower)
           ) || parsed[3] || parsed[0] || swatchImage;
         }
@@ -476,40 +476,40 @@ useEffect(() => {
       //  const variantImage = colorObj?.variantImg || getVariantImageByColor(product, color);
       const image = colorObj?.img || getVariantImageByColor(product, color);
       const isSelected = selectedColorByProduct[product.id]?.name === color;
-       const swatchImage = colorObj?.swatchImg || getSwatchImage(product, color);
+      const swatchImage = colorObj?.swatchImg || getSwatchImage(product, color);
       return (
         <>
-         {!swatchLoaded ? <ColorSwatchPlaceholder size={30} /> :  <img
-                  key={`${product.id}-${color}-${idx}`}
-                  src={swatchImage}
-                  alt={color}
-                  title={color}
-                  className={`color-swatch ${isSelected ? 'selected' : ''}`}
-                  style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: '20%',
-                    cursor: 'pointer',
-                    margin: 3,
-                    display: 'inline-block',
-                    border: isSelected ? '2px solid black' : '1px solid gray',
-                    objectFit: 'cover'
-                  }}
-                  onMouseEnter={() => {
-                    if (!selectedColorByProduct[product.id]?.name) {
-                      setHoverImage((prev) => ({ ...prev, [product.id]: image }));
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    if (!selectedColorByProduct[product.id]?.name) {
-                      setHoverImage((prev) => ({ ...prev, [product.id]: '' }));
-                    }
-                  }}
-                  onClick={(e) => handleColorClick(e, product, color)}
-                   onLoad={() => setSwatchLoaded(true)}
-                />
-                } </>
-        
+          {!swatchLoaded ? <ColorSwatchPlaceholder size={30} /> : <img
+            key={`${product.id}-${color}-${idx}`}
+            src={swatchImage}
+            alt={color}
+            title={color}
+            className={`color-swatch ${isSelected ? 'selected' : ''}`}
+            // style={{
+            //   width: 30,
+            //   height: 30,
+            //   borderRadius: '20%',
+            //   cursor: 'pointer',
+            //   margin: 3,
+            //   display: 'inline-block',
+            //   border: isSelected ? '2px solid black' : '1px solid gray',
+            //   objectFit: 'cover'
+            // }}
+            onMouseEnter={() => {
+              if (!selectedColorByProduct[product.id]?.name) {
+                setHoverImage((prev) => ({ ...prev, [product.id]: image }));
+              }
+            }}
+            onMouseLeave={() => {
+              if (!selectedColorByProduct[product.id]?.name) {
+                setHoverImage((prev) => ({ ...prev, [product.id]: '' }));
+              }
+            }}
+            onClick={(e) => handleColorClick(e, product, color)}
+            onLoad={() => setSwatchLoaded(true)}
+          />
+          } </>
+
       );
     });
 
@@ -538,13 +538,13 @@ useEffect(() => {
 
   return (
     <div className={style.productPanel}>
-       {!effectiveCollectionId ? (
-      <div className="loader" />
-    ) : loading && products.length === 0 ? (
-      <div className="loader" />
-    ) : products.length === 0 ? (
-      <p>No products found.</p>
-    ) : (
+      {!effectiveCollectionId ? (
+        <div className="loader" />
+      ) : loading && products.length === 0 ? (
+        <div className="loader" />
+      ) : products.length === 0 ? (
+        <p>No products found.</p>
+      ) : (
         <>
           <div className={style.productListCollection}>
             {products.map((product) => {

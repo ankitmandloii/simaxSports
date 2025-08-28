@@ -9,10 +9,12 @@
   margin: auto;
 
 }
-.bearImg{
-    height: 12rem;
+
+.bearImg {
+  height: 12rem;
 }
- .overlay {
+
+.overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -62,7 +64,7 @@
   padding-bottom: 4px;
 
 }
- 
+
 .prompt-box {
 
   border: 2px solid var(--blue-color);
@@ -80,32 +82,40 @@
   margin-bottom: 12px;
 
 }
- 
+
 .prompt-style {
-  color: #ff8c42; /* Sunset orange */
+  color: #ff8c42;
+  /* Sunset orange */
   font-weight: bold;
-  background-color: rgba(255, 140, 66, 0.15); /* Warm sandy tint */
+  background-color: rgba(255, 140, 66, 0.15);
+  /* Warm sandy tint */
   padding: 2px 4px;
   border-radius: 4px;
 }
 
 .prompt-subject {
-  color:#ffffff; /* Dark chocolate brown */
-  background-color: var(--blue-color) ;/* Light mocha tint */
+  color: #ffffff;
+  /* Dark chocolate brown */
+  background-color: var(--blue-color);
+  /* Light mocha tint */
   padding: 2px 4px;
   border-radius: 4px;
 }
 
 .prompt-background {
-  color: var(--blue-color); /* Deep cyan */
-  background-color: rgba(112, 127, 127, 0.12); /* Pale aqua tint */
+  color: var(--blue-color);
+  /* Deep cyan */
+  background-color: rgba(112, 127, 127, 0.12);
+  /* Pale aqua tint */
   padding: 2px 4px;
   border-radius: 4px;
 }
 
 .prompt-text {
-  color: #556b2f; /* Olive green */
-  background-color: rgba(85, 107, 47, 0.12); /* Sage tint */
+  color: #556b2f;
+  /* Olive green */
+  background-color: rgba(85, 107, 47, 0.12);
+  /* Sage tint */
   padding: 2px 4px;
   border-radius: 4px;
 }
@@ -160,7 +170,7 @@
   border-radius: 4px;
 
 } */
- 
+
 .prompt-labels {
 
   display: flex;
@@ -172,13 +182,13 @@
   margin-bottom: 24px;
 
 }
- 
+
 .output-section {
 
   margin-top: 20px;
 
 }
- 
+
 .output-images {
 
   display: flex;
@@ -189,7 +199,7 @@
   justify-content: center;
 
 }
- 
+
 .output-images img {
 
   width: 150px;
@@ -207,4 +217,9 @@
 
 }
 
- 
+@media (max-width: 768px) {
+  .output-images img {
+    width: 100px;
+    height: 100px;
+  }
+}

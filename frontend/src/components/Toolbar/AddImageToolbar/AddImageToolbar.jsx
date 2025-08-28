@@ -41,6 +41,8 @@ const AddImageToolbar = () => {
   const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   const allImageData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
+  const { data: settings } = useSelector((state) => state.settingsReducer);
+  const AdminSettingsforAioperation = settings?.artworkEditorSettings || {};
   const img = allImageData?.find((img) => img.id == selectedImageId);
   const isLocked = img?.locked;
   const [rangeValuesSize, setRangeValuesSize] = useState(0);
@@ -1419,7 +1421,7 @@ const AddImageToolbar = () => {
 
 
 
-                  {selectedFilter === "Normal" && (<hr />)}
+                  {/* {selectedFilter === "Normal" && (<hr />)} */}
                   {selectedFilter === "Normal" && (
                     <>
                       <div className={styles.toolbarBoxFontValueSetInnerContainer}>
@@ -1546,25 +1548,36 @@ const AddImageToolbar = () => {
                       <span id={styles.thresholdValue}>{threshold}</span>
                     </div>
                   } */}
-                  {(selectedFilter === "Single Color" && <hr />)}
 
-                  <div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                    <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
-                      Remove Background
-                      <span className={styles.aiBadge}>AI</span>
-                    </div>
-                    <label className={styles.switch}>
-                      <input
-                        type="checkbox"
-                        checked={removeBackground}
-                        id='removeBackgroundInput'
-                        // onChange={() => toggle('bg-remove=true', isActive('bg-remove=true'))}
-                        onChange={removeBackgroundHandler}
-                        disabled={loading}
-                      />
-                      <span className={styles.slider}></span>
-                    </label>
-                  </div>
+                  {AdminSettingsforAioperation?.removeBackgroundAI && (
+                    <>
+
+                      {(selectedFilter === "Single Color" && <hr />)}
+
+                      <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                        <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
+                          Remove Background
+                          <span className={styles.aiBadge}>AI</span>
+                        </div>
+                        <label className={styles.switch}>
+                          <input
+                            type="checkbox"
+                            checked={removeBackground}
+                            id='removeBackgroundInput'
+                            // onChange={() => toggle('bg-remove=true', isActive('bg-remove=true'))}
+                            onChange={removeBackgroundHandler}
+                            disabled={loading}
+                          />
+                          <span className={styles.slider}></span>
+                        </label>
+                      </div>
+                    </>
+
+                  )}
+
+
+
+
 
 
 
@@ -1604,8 +1617,8 @@ const AddImageToolbar = () => {
                     </label>
                   </div>
                   {!removeBackground && < hr />}
+                  {AdminSettingsforAioperation?.replaceBackgroundAI && (
 
-                  {
                     !removeBackground && <div className={styles.toolbarBoxFontValueSetInnerContainer} onClick={() => setreplaceBgwithAi(false)}>
                       <div className={styles.toolbarBoxFontValueSetInnerActionheading} >AI Image Editor<span className={styles.aiBadge}>AI</span></div>
                       <span className={styles.rightarrow}><FaChevronRight /></span>
@@ -1627,7 +1640,12 @@ const AddImageToolbar = () => {
 
                       {/* </div> */}
                     </div>
+
+
+                  )
                   }
+
+
                   <hr />
 
                   <div className={styles.toolbarBoxFontValueSetInnerContainer}>

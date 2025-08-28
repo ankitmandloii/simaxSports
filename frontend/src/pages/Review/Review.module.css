@@ -612,3 +612,9 @@ h3 {
     transform: rotate(360deg);
   }
 }
+
+@media (max-width: 768px) {
+  .review {
+    margin-bottom: 6rem;
+  }
+}

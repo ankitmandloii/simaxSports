@@ -1114,10 +1114,12 @@ function ProductContainer() {
               </div>
             )}
 
-            <div className={style.zoomContainer} onClick={toggleZoom}>
-              {logo}
-              <p>Zoom</p>
-            </div>
+            {settingsForsides?.enableZoomFeature && (
+              <div className={style.zoomContainer} onClick={toggleZoom}>
+                {logo}
+                <p>Zoom</p>
+              </div>
+            )}
           </div>
         )}
       </div>

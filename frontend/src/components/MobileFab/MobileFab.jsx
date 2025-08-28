@@ -7,7 +7,6 @@ import style from './MobileFab.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const MobileFAB = ({ onShare, onSave, onPrice, disablePrev }) => {
-  console.log("-----------disablePrev", disablePrev)
   const [open, setOpen] = useState(false);
   const fabRef = useRef(null);
   const navigate = useNavigate();

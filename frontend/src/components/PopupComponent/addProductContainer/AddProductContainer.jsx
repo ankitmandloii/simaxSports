@@ -419,7 +419,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                                 </button>
                               </div>
 
-                              <div className="color-swatch-list">
+                              {/* <div className="color-swatch-list">
                                 {colors.map((color) => {
                                   const isSelected =
                                     state.selectedColor?.name === color.name;
@@ -478,7 +478,41 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                                     </React.Fragment>
                                   );
                                 })}
+                              </div> */}
+                              <div className="color-swatch-list">
+                                {colors.map((color) => {
+                                  const isSelected = state.selectedColor?.name === color.name;
+                                  const swatchImage = color.swatchImg;
+
+                                  return (
+                                    <React.Fragment key={`${productKey}-${color.name}`}>
+                                      {!swatchLoaded && <ColorSwatchPlaceholder size={30} />}
+                                      <img
+                                        src={swatchImage}
+                                        alt={color.name}
+                                        title={color.name}
+                                        className={`color-swatch ${isSelected ? "selected" : ""}`}
+                                        style={{
+                                          display: swatchLoaded ? "inline-block" : "none",
+                                        }}
+                                        onLoad={() => setSwatchLoaded(true)}
+                                        onMouseEnter={() => {
+                                          if (!state.selectedColor) {
+                                            updateProductState(productKey, { hoverImage: color.img });
+                                          }
+                                        }}
+                                        onMouseLeave={() => {
+                                          if (!state.selectedColor) {
+                                            updateProductState(productKey, { hoverImage: null });
+                                          }
+                                        }}
+                                        onClick={(e) => handleColorSelect(e, productKey, color)}
+                                      />
+                                    </React.Fragment>
+                                  );
+                                })}
                               </div>
+
 
                               <div className={styles.popupActions}>
                                 <button
