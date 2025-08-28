@@ -85,14 +85,19 @@ import { TfiEmail } from "react-icons/tfi";
 import { FaFacebookSquare } from "react-icons/fa";
 import { FaTwitter } from "react-icons/fa";
 import { FaPinterest } from "react-icons/fa";
+import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-const ShareDesignPopup = ({ setSavedesignPopupHandler }) => {
+const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign ,navigate}) => {
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [isEmailFormOpen, setIsEmailFormOpen] = useState(false);
+    const location = useLocation();
+    console.log(lastDesign, "lastDesing in share designpopup")
+    const shareUrl = window.location.href + "&designId=" + lastDesign?._id;
 
     const handleCopy = () => {
-        navigator.clipboard.writeText('https://www.ninjaprinthouse.com/design/?design=MTEyMzkxODk=&i');
-        alert('Link copied to clipboard!');
+        navigator.clipboard.writeText(shareUrl);
+        toast.success("copied")
     };
 
     const handlePreview = () => {
@@ -157,12 +162,12 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler }) => {
                         ) : (
                             <>
                                 <h2 className={styles.title}>Share Your Design</h2>
-                                <p className={styles.description}>Your design "kik" has been saved and emailed to you.</p>
+                                <p className={styles.description}>Your design <b> {lastDesign?.DesignName}</b> has been saved and emailed to you.</p>
                                 <p className={styles.description}>Copy your design link below and share with others.</p>
                                 <div className={styles.linkContainer}>
                                     <input
                                         type="text"
-                                        value="https://www.ninjaprinthouse.com/design/?design=MTEyMzkxODk=&i"
+                                        value={shareUrl}
                                         readOnly
                                         className={styles.linkInput}
                                     />
@@ -170,7 +175,7 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler }) => {
                                         Copy
                                     </button>
                                 </div>
-                                <div className={styles.shareOptions}>
+                                {/* <div className={styles.shareOptions}>
                                     <div className={styles.shareItem} onClick={handleEmailClick}>
                                         <span className={styles.shareIcon}><TfiEmail /></span>
                                         <span className={styles.shareLabel}>Email</span>
@@ -187,8 +192,8 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler }) => {
                                         <span className={styles.shareIcon}><FaPinterest /></span>
                                         <span className={styles.shareLabel}>Pin</span>
                                     </div>
-                                </div>
-                                <button className={styles.continueButton}>Continue to Pricing</button>
+                                </div> */}
+                                <button className={styles.continueButton} onClick={() => navigate("quantity")}>Continue to Pricing</button>
                             </>
                         )}
                     </div>

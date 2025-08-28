@@ -107,7 +107,7 @@ const MainDesignTool = ({
   const navigate = useNavigate();
   const location = useLocation();
   const isQuantityPage = location.pathname === "/quantity" || location.pathname === '/review';
-  console.log("---------------------checkqty", isQuantityPage)
+  // console.log("---------------------checkqty", isQuantityPage)
 
 
   // **********************************************************************************************************************************************************
@@ -340,7 +340,7 @@ const MainDesignTool = ({
       activeNameAndNumberPrintSide
     );
   }
-  const renderAllImageObjectsHelper = () => {
+  const renderAllImageObjectsHelper = (openAieditorPopup, setOpenAieditorPopup) => {
     renderAllImageObjects(
       fabricCanvasRef,
       dispatch,
@@ -1046,7 +1046,7 @@ const MainDesignTool = ({
       // Warning text
       const warningText = new fabric.Text("Please keep design inside the box", {
         left: boxLeft + boxWidth / 2,
-        top: boxTop - canvasHeight * 0.03,
+        top: boxTop - canvasHeight * 0.09,
         fontSize: canvasHeight * 0.03,
         fontFamily: "proxima-soft, sans-serif",
         fill: "white",
@@ -1949,7 +1949,7 @@ const MainDesignTool = ({
     });
     canvas.preserveObjectStacking = true;
     fabricCanvasRef.current = canvas;
-    console.log("productCategory before warning", productCategory)
+    // console.log("productCategory before warning", productCategory)
 
     if ((getProductType(activeProductTitle) === "Zip") || (getProductType(activeProductTitle) === "Jacket")) {
       createWarningForZip(canvasWidth, canvasHeight, canvas)
@@ -2325,7 +2325,7 @@ const MainDesignTool = ({
     // renderCurveTextObjects();
     renderCurveTextObjectsHelper();
     renderNameAndNumberHelper(); //note : we have to call it for render object after canvas initialize
-    renderAllImageObjectsHelper();
+    renderAllImageObjectsHelper(openAieditorPopup, setOpenAieditorPopup);
     //want to do same for image 
     // window.addEventListener("resize", (e) => {
     //   setResize(Math.random());
@@ -2333,8 +2333,15 @@ const MainDesignTool = ({
     return () => {
       // window.removeEventListener("resize", () => { });
       removeAllHtmlControls();
+      setOpenAieditorPopup(false);
       // Remove all listeners
       events.forEach(([event, handler]) => canvas.off(event, handler));
+      const btn = document.getElementById(`canvas-${id}-ai`);
+      if (btn) {
+        btn.removeEventListener("click", () => {
+          console.log("event removed");
+        })
+      }
 
       // Dispose of the canvas to prevent memory leaks
       canvas.dispose();
@@ -2438,7 +2445,7 @@ const MainDesignTool = ({
     // Render image objects
     if (imageContaintObject && imageContaintObject.length > 0) {
       // renderAllImageObjects();
-      renderAllImageObjectsHelper();
+      renderAllImageObjectsHelper(openAieditorPopup, setOpenAieditorPopup);
     }
 
     // Apply proper z-ordering for all elements
@@ -2610,6 +2617,7 @@ const MainDesignTool = ({
       {openAieditorPopup && <EditWithAipopup onClose={() => {
         setOpenAieditorPopup(false);
       }}></EditWithAipopup>}
+
       {showNotes && <DesignNotesPopup handleClose={handleClose} />}
 
       {/* <div class="tenor-gif-embed" data-postid="6449096453315144907" data-share-method="host" data-aspect-ratio="0.991667" data-width="100%" style={{ zIndex: 9999999, position: "absolute", top: "50%", left: "50%" }}>

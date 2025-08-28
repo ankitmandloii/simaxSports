@@ -21,6 +21,9 @@ const AdminSidebar = () => {
   // const hoveredRoute = useSelector((state) => state.hover.hoveredRoute); // ✅
   // const hoveredRoute=useSelector((state)=>state?.hover.hoveredRoute)
   const hoveredRoute = useSelector((state) => state.hoverReducer.hoveredRoute);
+  const { data: settings, loading } = useSelector((state) => state.settingsReducer);
+  // console.log("============settings", settings)
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -48,26 +51,31 @@ const AdminSidebar = () => {
       path: "/design/product",
       icon: <RiTShirt2Line />,
       label: "Products",
+      // visible: settings?.uploadSettings?.sideBarImageUploadSection,
     },
     {
       path: "/design/addText",
       icon: <AddProductIcon />,
       label: "Text",
+      visible: settings?.settingsForTextSection?.sideBarTextSection,
     },
     {
       path: "/design/uploadArt",
       icon: <AddArtIcon />,
       label: "Upload",
+      visible: settings?.uploadSettings?.sideBarImageUploadSection,
     },
     {
       path: "/design/addArt",
       icon: <SelectArtIcon />,
       label: "Generate Art",
+      visible: settings?.settingsforAddArtSection?.sideBarAddArtSection,
     },
     {
       path: "/design/addNames",
       icon: <NumberArtIcon />,
       label: "Names & Numbers",
+      visible: settings?.settingsforAddNamesAndNumbers?.sideBarAddNamesAndNumbersSection,
     },
   ];
 
@@ -121,42 +129,44 @@ const AdminSidebar = () => {
               </Link>
             );
           })} */}
-          {menuItems.map((item) => {
-            const isActive =
-              (item.path.startsWith("/design/product") &&
-                (location.pathname === "/" || location.pathname === "/design/product")) ||
-              location.pathname === item.path;
+          {menuItems
+            .filter((item) => item.visible !== false).map((item) => {
 
-            const isHovered = hoveredRoute === item.path;
+              const isActive =
+                (item.path.startsWith("/design/product") &&
+                  (location.pathname === "/" || location.pathname === "/design/product")) ||
+                location.pathname === item.path;
 
-            // 🔹 Get current persisted query string
-            const query = location.search;
+              const isHovered = hoveredRoute === item.path;
 
-            return (
-              <Link
-                key={item.path}
-                to={`${item.path}${query}`}   // ✅ append params here
-                className={`${styles.sidebarLink} ${isActive ? styles.active : isHovered ? styles.hovered : ""}`}
-                onClick={() => {
-                  setMobileOpen(false);
-                  dispatch(setHoveredRoute(null)); // Clear hover on click
-                }}
-              >
-                <span
-                  className={`${styles.sidebarIcon} ${item.path === "/design/addArt" ? styles.sidebariconAddArt : ""
-                    }`}
+              // 🔹 Get current persisted query string
+              const query = location.search;
+
+              return (
+                <Link
+                  key={item.path}
+                  to={`${item.path}${query}`}   // ✅ append params here
+                  className={`${styles.sidebarLink} ${isActive ? styles.active : isHovered ? styles.hovered : ""}`}
+                  onClick={() => {
+                    setMobileOpen(false);
+                    dispatch(setHoveredRoute(null)); // Clear hover on click
+                  }}
                 >
-                  {item.icon}
-                </span>
-                {item.path === "/design/addArt" && (
-                  <span className={styles.spannAi}>AI</span>
-                )}
-                {!collapsed && (
-                  <span className={styles.sidebarLabel}>{item.label}</span>
-                )}
-              </Link>
-            );
-          })}
+                  <span
+                    className={`${styles.sidebarIcon} ${item.path === "/design/addArt" ? styles.sidebariconAddArt : ""
+                      }`}
+                  >
+                    {item.icon}
+                  </span>
+                  {item.path === "/design/addArt" && (
+                    <span className={styles.spannAi}>AI</span>
+                  )}
+                  {!collapsed && (
+                    <span className={styles.sidebarLabel}>{item.label}</span>
+                  )}
+                </Link>
+              );
+            })}
 
         </nav>
       </div>

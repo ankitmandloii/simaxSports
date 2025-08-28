@@ -1,49 +1,82 @@
-// src/redux/slices/adminSettingsSlice.js
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+// // src/redux/slices/adminSettingsSlice.js
+// import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+// const BASE_URL = process.env.REACT_APP_BASE_URL;
+
+// export const fetchAdminSettings = createAsyncThunk(
+//   'adminSettings/fetchAdminSettings',
+//   async () => {
+//     const response = await fetch(`${BASE_URL}settings/getSettings`, {
+//       method: 'GET',
+//     });
+//     const data = await response.json();
+//     return data.result;
+//   }
+// );
+// const adminSettingsSlice = createSlice({
+//   name: 'adminSettings',
+//   initialState: {
+//     settings: {},
+//     loading: false,
+//     error: null,
+//   },
+//   reducers: {
+//     updateAdminSettingsFromSocket: (state, action) => {
+//       state.settings = {
+//         ...state.settings,
+//         ...action.payload,
+//       };
+//     },
+//   },
+//   extraReducers: (builder) => {
+//     builder
+//       .addCase(fetchAdminSettings.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//       })
+//       .addCase(fetchAdminSettings.fulfilled, (state, action) => {
+//         state.settings = action.payload;
+//         state.loading = false;
+//       })
+//       .addCase(fetchAdminSettings.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.error.message;
+//       });
+//   },
+// });
+
+// export const { updateAdminSettingsFromSocket } = adminSettingsSlice.actions;
+// export default adminSettingsSlice.reducer;
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 const BASE_URL = process.env.REACT_APP_BASE_URL;
+export const fetchSettings = createAsyncThunk("settings/fetch", async () => {
+  const response = await axios.get(`${BASE_URL}design/admin-get-settings`); // your endpoint
+  return response.data.result; // returns only `result` object
+});
 
-export const fetchAdminSettings = createAsyncThunk(
-  'adminSettings/fetchAdminSettings',
-  async () => {
-    const response = await fetch(`${BASE_URL}settings/getSettings`, {
-      method: 'GET',
-    });
-    const data = await response.json();
-    return data.result;
-  }
-);
-const adminSettingsSlice = createSlice({
-  name: 'adminSettings',
+const settingsSlice = createSlice({
+  name: "settings",
   initialState: {
-    settings: {},
+    data: null,
     loading: false,
     error: null,
   },
-  reducers: {
-    updateAdminSettingsFromSocket: (state, action) => {
-      state.settings = {
-        ...state.settings,
-        ...action.payload,
-      };
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchAdminSettings.pending, (state) => {
+      .addCase(fetchSettings.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
-      .addCase(fetchAdminSettings.fulfilled, (state, action) => {
-        state.settings = action.payload;
+      .addCase(fetchSettings.fulfilled, (state, action) => {
+        state.data = action.payload;
         state.loading = false;
       })
-      .addCase(fetchAdminSettings.rejected, (state, action) => {
-        state.loading = false;
+      .addCase(fetchSettings.rejected, (state, action) => {
         state.error = action.error.message;
+        state.loading = false;
       });
   },
 });
 
-export const { updateAdminSettingsFromSocket } = adminSettingsSlice.actions;
-export default adminSettingsSlice.reducer;
+export default settingsSlice.reducer;

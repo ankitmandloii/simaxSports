@@ -5,10 +5,12 @@ import { CartIcon, UserIcon } from '../iconsSvg/CustomIcon';
 import style from './Header.module.css'
 import { useMediaQuery } from 'react-responsive'
 import { BsXLg } from 'react-icons/bs';
+import { useSelector } from 'react-redux';
 
 const Header = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const productState = useSelector((state) => state.productSelection.products);
 
   // const CustomerLogin = searchParams.get("customerEmail");
   const [CustomerLogin, setCustomerLogin] = useState('');
@@ -20,6 +22,12 @@ const Header = () => {
   useEffect(() => {
     setCustomerLogin(searchParams.get("customerEmail"));
   }, [CustomerLogin])
+
+  const shouldRedirectToReview = (productState) => {
+    return Object.values(productState).some((product) => {
+      return Object.values(product.selections || {}).some(quantity => quantity >= 1);
+    });
+  };
 
   return (
     <header className={style.appHeader}>
@@ -45,7 +53,7 @@ const Header = () => {
 
           <Link
             to="/review"
-            className={`${style.step} ${location.pathname === '/review' ? style.stepActive : ''}`}
+            className={`${style.step} ${location.pathname === '/review' ? style.stepActive : ''} ${!shouldRedirectToReview(productState) ? style.deasable : ''}`}
           >
             <span className={style.navSpanNumber}>3</span> Review
           </Link>
@@ -82,15 +90,16 @@ const Header = () => {
                 <span className={style.navSpanHeading}>QUANTITY & SIZES</span>
               </Link>}
 
-              {currentPath == "/review" &&
+              {currentPath === "/review" && (
                 <Link
-                  to={`/review`}
-                  className={`${style.step} ${currentPath === '/review' ? style.stepActive : ''}`}
+                  to="/review"
+                  className={`${style.step} ${style.stepActive} ${!shouldRedirectToReview(productState) ? style.deasable : ''}`}
                 >
                   <span className={style.navSpanNumber}>3</span>
                   <span className={style.navSpanHeading}>Review</span>
                 </Link>
-              }
+              )}
+
             </div>
           )
         }

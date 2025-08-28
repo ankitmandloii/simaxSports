@@ -5,6 +5,7 @@ import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { useSelector, useDispatch } from 'react-redux';
 import {
   addProduct,
+  setCollegiateLicense,
   updateSizeQuantity
 } from '../../../redux/productSelectionSlice/productSelectionSlice.js';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +17,8 @@ const womenSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
 const QuantityToolbar = () => {
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
   const productState = useSelector((state) => state.productSelection.products);
+  const CollegiateLicense = useSelector((state) => state.productSelection.CollegiateLicense);
+
   const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present["back"].nameAndNumberProductList);
   console.log("nameAndNumberProductList", nameAndNumberProductList);
   const dispatch = useDispatch();
@@ -23,8 +26,7 @@ const QuantityToolbar = () => {
   const [products, setAllProducts] = useState([]);
   const [expandedProducts, setExpandedProducts] = useState({});
   const [licenses, setLicenses] = useState({
-    collegiate: false,
-    greek: false,
+    collegiate: CollegiateLicense,
   });
 
   const handleQuantityChange = (productId, size, value) => {
@@ -242,6 +244,7 @@ const QuantityToolbar = () => {
         return Object.values(product.selections || {}).some(quantity => quantity >= 1);
       });
     };
+    dispatch(setCollegiateLicense(licenses.collegiate))
     if (shouldRedirectToReview(productState)) {
       // Redirect to Review page
       navigate("/review");
@@ -323,7 +326,13 @@ const QuantityToolbar = () => {
               type="checkbox"
               style={{ marginRight: "5px" }}
               checked={licenses.collegiate}
-              onChange={() => setLicenses(prev => ({ ...prev, collegiate: !prev.collegiate }))}
+              onChange={(e) => {
+                setLicenses(prev => ({ ...prev, collegiate: !prev.collegiate }))
+                if (e.target.checked) {
+                  toast.info("This item is officially licensed by Simax Design, ensuring it's the genuine article.")
+
+                }
+              }}
             />
             Collegiate License (Has college name in design)
           </label>

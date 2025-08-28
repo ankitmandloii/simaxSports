@@ -286,7 +286,7 @@ const ProductToolbar = () => {
 
   // Debug effect to track active product changes
   useEffect(() => {
-    console.log("Active Product Updated:", activeProduct);
+    // console.log("Active Product Updated:", activeProduct);
   }, [activeProduct]);
 
   return (

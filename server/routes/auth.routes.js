@@ -9,10 +9,10 @@ const router = express.Router();
 router.post('/signup',customerValidation.customerRegister, controllers.signUp);
 router.post('/login',customerValidation.login ,controllers.login); //currntly use in admin
 
-router.post('/login' ,controllers.logintest);
-router.post('/me' ,controllers.meTest);
-router.post('/signUpTest' ,controllers.signUpTest);
-router.post('/logoutTest' ,controllers.logoutTest);
+router.post('/loginShopify' ,controllers.logintest);
+router.post('/userDataAfterShopifyLogin' ,controllers.meTest);
+router.post('/signUpShopify' ,controllers.signUpTest);
+router.post('/logoutShopify' ,controllers.logoutTest);
 
 
 
@@ -27,7 +27,7 @@ router.post("/getDiscountDetails",controllers.getDiscountDetails); //get discoun
 // 0.15 = 15% discount
 
 // 0.005 = 0.5% discount
-router.put("/setDiscountDetails",controllers.setDiscountDetails); //update Descount from admin side
+router.put("/setDiscountDetails",customerValidation.verifyToken,controllers.setDiscountDetails); //update Descount from admin side
 
 
 router.post('/admin-change-password',customerValidation.verifyToken, controllers.adminChangePassword);

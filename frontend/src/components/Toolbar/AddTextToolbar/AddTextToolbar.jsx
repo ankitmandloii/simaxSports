@@ -23,12 +23,16 @@ import { useDispatch, useSelector } from 'react-redux';
 // import { setCenterState, setFlipXState, setFlipYState, setFontFamilyState, setOutLineColorState, setOutLineSizeState, setRangeState, setText, setTextColorState } from '../../../redux/canvasSlice/CanvasSlice.js';
 // import SpanValueBox from '../../CommonComponent/SpanValueBox/SpanValueBox.jsx';
 import { duplicateTextState, addTextState, updateTextState, toggleLockState, moveTextForwardState, moveTextBackwardState, moveElementForwardState, moveElementBackwardState } from '../../..//redux/FrontendDesign/TextFrontendDesignSlice.js';
+import { data } from 'react-router-dom';
 // import { setSelectedBackTextState } from '../../../redux/BackendDesign/TextBackendDesignSlice.js';
 
 const AddTextToolbar = () => {
   // const outlineBoxRef = useRef(null);
   const dispatch = useDispatch();
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+  const { data: settings, loading } = useSelector((state) => state.settingsReducer);
+  // console.log("-----------setting", settings)
+
   const [currentTextToolbarId, setCurrentTextToolbarId] = useState(String(Date.now()));  // current id of toolbar
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   const allImagesData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);

@@ -235,6 +235,24 @@
     width: 100%;
 }
 
+.useImageButton:hover {
+    background: #0b7fd3;
+    /* darker shade of blue */
+    transform: translateY(-2px);
+    /* slight lift */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Click (active) effect */
+.useImageButton:active {
+    background: #0964a8;
+    /* even darker shade */
+    transform: translateY(0);
+    /* reset lift */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) inset;
+    /* pressed look */
+}
+
 /* 
 .useImageButton:hover {
     background: #e05500;

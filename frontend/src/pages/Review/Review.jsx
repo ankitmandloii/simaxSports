@@ -36,15 +36,23 @@ const Review = () => {
   const [isFetchingDesign, setIsFetchingDesign] = useState(false);
   const [designStateDb, setdesignStateDb] = useState();
   const [currentDesign, setCurrentDesing] = useState();
+  const [discountData, setDiscountData] = useState();
+  const [extraInformation, setExtraInformation] = useState([]);
+  const CollegiateLicense = useSelector((state) => state.productSelection.CollegiateLicense);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+
+  const location = useLocation();
   const productState = useSelector((state) => state.productSelection.products);
   const designState = useSelector((state) => state.TextFrontendDesignSlice);
   const { present, DesignNotes } = designState;
 
-
+  const searchParams = new URLSearchParams(location.search);
+  const customerEmail = searchParams.get("customerEmail");
+  const designId = searchParams.get("designId");
   const designPayload = {
-    ownerEmail: "ankitmandloi@itgeeks.com",
+    ownerEmail: customerEmail,
     design: {
       DesignName: "",
       present: {
@@ -144,34 +152,6 @@ const Review = () => {
   );
   const [loading, setLoading] = useState(false);
 
-  // Fetch design to check if it exists
-  // const fetchDesign = async () => {
-  //   try {
-  //     setIsFetchingDesign(true);
-  //     const response = await apiConnecter(
-  //       "GET",
-  //       "design/get-designfrontEnd",
-  //       null,
-  //       null,
-  //       { ownerEmail: customerEmail }
-  //     );
-
-  //     const data = response.data;
-  //     console.log("Fetched designs:", data);
-
-  //     // Check if the design with the given designId exists
-  //     const designFound = data.userDesigns?.designs?.some(
-  //       (design) => design._id === designId
-  //     );
-  //     setDesignExists(designFound);
-  //   } catch (error) {
-  //     console.error("Error fetching design:", error);
-  //     toast.error("Failed to fetch design.");
-  //     setDesignExists(false);
-  //   } finally {
-  //     setIsFetchingDesign(false);
-  //   }
-  // };
   const AddToCartClick = () => {
     setRetrieveLoader(true);
     // fetchDesign();
@@ -190,10 +170,7 @@ const Review = () => {
     });
   }
 
-  // useEffect(() => {
-  //   setRetrieveLoader(true);
-  //   fetchDesign();
-  // }, []);
+
 
   useEffect(() => {
     if (!isFetchingDesign && retrieveLoader) {
@@ -202,73 +179,6 @@ const Review = () => {
     }
   }, [isFetchingDesign, retrieveLoader]);
 
-  // useEffect(() => {
-  //   if (emailSendingLoader) {
-  //     const timer = setTimeout(() => setEmailSendingLoader(false), 4000);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [emailSendingLoader]);
-
-  // async function uploadBlobData(blobDataArray) {
-  //   try {
-  //     const formData = new FormData();
-  //     blobDataArray = blobDataArray.slice(0, 6);
-  //     blobDataArray.forEach((blob, index) => {
-  //       formData.append(`image_${index}`, blob, `image_${index}.png`);
-  //     });
-
-  //     const response = await apiConnecter(
-  //       "POST",
-  //       "imageOperation/fileBlobDataUploadToCloudinary",
-  //       formData
-  //     );
-
-  //     const responseData = response.data;
-  //     console.log("Response from backend:", responseData);
-  //     localStorage.setItem("data", JSON.stringify(responseData));
-  //     return responseData;
-  //   } catch (e) {
-  //     console.error("Error uploading blob data:", e);
-  //     throw e;
-  //   }
-  // }
-
-  // async function saveDesignFunction(payload) {
-  //   try {
-  //     const response = await apiConnecter(
-  //       "POST",
-  //       "design/save-designfrontEnd",
-  //       payload
-  //     );
-
-  //   const responseData = response.data;
-  //   console.log("Design saved successfully:", responseData);
-  //   setdesignStateDb(responseData);
-  //   const designs = responseData.userDesigns?.designs;
-  //   console.log(design);
-  //   setCurrentDesing(designs[designs.length - 1]);
-  //   return responseData;
-  // } catch (error) {
-  //   console.error("Error saving design:", error);
-  //   throw error;
-  // }
-  //   }
-  // mail funstion
-  // async function sendEmailDesign(payload) {
-  //   try {
-  //     const response = await apiConnecter(
-  //       "POST",
-  //       "design/send-email-design",
-  //       payload
-  //     );
-  //     console.log("Email sent successfully:", response.data);
-  //     return response.data;
-  //   } catch (error) {
-  //     console.error("Error sending email:", error);
-  //     toast.error("Failed to send email.");
-  //     throw error;
-  //   }
-  // }
 
 
 
@@ -320,7 +230,7 @@ const Review = () => {
     const present = state.TextFrontendDesignSlice.present;
     const areas = ["front", "back", "leftSleeve", "rightSleeve"];
     let count = areas.reduce((count, area) => {
-      const hasContent = present[area].texts.length + present[area].images.length;
+      const hasContent = Boolean(present[area].texts.length) || Boolean(present[area].images.length)
       return hasContent + count;
     }, 0);
     if (
@@ -377,7 +287,7 @@ const Review = () => {
     return new Blob([bytes], { type: contentType });
   }
 
-  function makeVariantDataForShopify(reviewItems, CloudinaryImages) {
+  async function makeVariantDataForShopify(reviewItems, CloudinaryImages) {
     const splitIntoPairs = (arr) => {
       const result = [];
       for (let i = 0; i < arr.length; i += 2) {
@@ -385,23 +295,79 @@ const Review = () => {
       }
       return result;
     };
-    const ShopifyData = [];
 
+    const ShopifyData = [];
     const groupedImages = splitIntoPairs(CloudinaryImages.files);
     console.log("CloudinaryImages", CloudinaryImages);
+
+    // Loop through products
+    for (let index = 0; index < reviewItems.length; index++) {
+      const product = reviewItems[index];
+      const allVariants = product.allVariants;
+
+      const sizeskey = Object.entries(product?.sizes);
+      const color = product?.color;
+
+      const variantTitles = sizeskey.map(([size, count]) => {
+        return { title: `${color} / ${size}`, inventory_quantity: count };
+      });
+
+      for (const varianttitle of variantTitles) {
+        const variantData = allVariants.find(
+          (v) => v.title === varianttitle.title
+        );
+        console.log(variantData, "variantdata");
+
+        const newData = {
+          variant_id: variantData.id.split("/").reverse()[0],
+          size: varianttitle.title.split("/")[1].trim(),
+          color: varianttitle.title.split("/")[0].trim(),
+          price: discountData?.summary?.eachAfterDiscount,
+          sku: variantData?.sku,
+          designId: currentDesign?._id,
+          quantity: Number(varianttitle.inventory_quantity),
+          vendor: "Addidas test",
+          custom: true,
+          design: {
+            front: groupedImages[index][0],
+            back: groupedImages[index][1],
+            left: groupedImages[index][1],
+            right: groupedImages[index][1],
+          },
+          PreviewImageUrl: groupedImages[index][0],
+        };
+
+        ShopifyData.push(newData);
+      }
+    }
+
+    console.log("Final Shopify Data:", ShopifyData);
+
+    // ✅ Await the async call
+    const response = await createDraftOrderforCheckout(ShopifyData);
+    return response;
+  }
+
+
+  function getIncreasedData(data, value) {
+    console.log("increase by value ", value);
+
+    const cloned = JSON.parse(JSON.stringify(data)); // Deep clone
+    const q = cloned.items[0]?.sizes?.S || 0;
+    cloned.items[0].sizes.S = parseInt(q + value); // Fixed key case
+    return cloned;
+  }
+
+
+  function makeVariantDataForDiscound(reviewItems) {
+
+    const discountData = [];
+
+    // const groupedImages = splitIntoPairs(CloudinaryImages.files);
+    // console.log("CloudinaryImages", CloudinaryImages);
     const data = reviewItems.forEach((product, index) => {
       const allVariants = product.allVariants;
-      const obj = {
-        product_id: product?.variantId,
-        option1: "S",
-        option2: product?.color,
-        price: product?.price,
-        sku: "B665D8502",
-        inventory_quantity: product?.inventory_quantity,
-        image_urls: [
-          "https://simaxdesigns.imgix.net/uploads/1753094129600_front-design.png",
-        ],
-      };
+
       const sizeskey = Object.entries(product?.sizes);
       const color = product?.color;
       const variantTitles = sizeskey.map(([size, count]) => {
@@ -411,37 +377,47 @@ const Review = () => {
       const data = variantTitles.map((varianttitle) => {
         const variantData = allVariants.find((v) => v.title == varianttitle.title);
         console.log(variantData, "variantdata");
+        const size = varianttitle.title.split("/")[1].trim();
+
         const newData = {
-          variant_id: variantData.id.split("/").reverse()[0],
-          size: varianttitle.title.split("/")[1].trim(),
-          color: varianttitle.title.split("/")[0].trim(),
-          price: variantData?.price,
+          unitPrice: Number.parseFloat(variantData?.price),
+          printAreas: printAreaCount,
           sku: variantData?.sku,
-          "designId": currentDesign?._id,
-          quantity: Number(varianttitle.inventory_quantity),
-          "vendor": "Addidas test",
-          "custom": true,
-          "design": {
-            "front": groupedImages[index][0],
-            "back": groupedImages[index][1],
-            "left": groupedImages[index][1],
-            "right": groupedImages[index][1]
+          name: variantData?.title,
+          // quantity: Number(varianttitle.inventory_quantity),
+          "sizes": {
+            [size]: Number(varianttitle.inventory_quantity)
           },
-          "PreviewImageUrl": groupedImages[index][0],
+
         };
-        ShopifyData.push(newData);
+        discountData.push(newData);
         return newData;
       });
       return data;
     });
-    console.log("data.....", ShopifyData);
-    createDraftOrderforCheckout(ShopifyData);
+    const dataForDiscountCheck = {
+      items: discountData, flags: {
+        "collegiateLicense": CollegiateLicense
+      }
+    }
+    console.log("data.....", dataForDiscountCheck);
+    console.log("totalItems", totalItems)
+    if (totalItems == 0) return;
+    calculatePriceAndDiscount(dataForDiscountCheck);
+    const increasedData = getIncreasedData(dataForDiscountCheck, (totalItems * 0.7));
+    calculatePriceAndDiscount2(increasedData);
+    const increasedData2 = getIncreasedData(dataForDiscountCheck, (totalItems * 1.5));
+    calculatePriceAndDiscount2(increasedData2);
+
   }
+  useEffect(() => {
+    makeVariantDataForDiscound(reviewItems);
+  }, [])
   // setEmailSendingLoader(false);
   async function createDraftOrderforCheckout(variants) {
     try {
       // setLoading(true);
-      setEmailSendingLoader(true); // <-- If this loader is relevant here
+      // setEmailSendingLoader(true); // <-- If this loader is relevant here
 
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}products/createDraftOrderforCheckout`, {
         method: 'POST',
@@ -458,12 +434,12 @@ const Review = () => {
       const data = await response.json();
       console.log("Success:", data);
 
-      if (data?.checkoutUrl) {
-        window.location.href = data?.checkoutUrl
-        // window.open(data.checkoutUrl, '_blank');
-      } else {
-        throw new Error("No checkout URL returned");
-      }
+      // if (data?.checkoutUrl) {
+      //   window.location.href = data?.checkoutUrl
+      //   // window.open(data.checkoutUrl, '_blank');
+      // } else {
+      //   throw new Error("No checkout URL returned");
+      // }
 
       return data;
     } catch (error) {
@@ -474,13 +450,82 @@ const Review = () => {
       setEmailSendingLoader(false); // <-- Only if applicable
     }
   }
+  async function calculatePriceAndDiscount(varints) {
+    try {
+      setLoading(true);
+      // setEmailSendingLoader(true); // <-- If this loader is relevant here
 
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}auth/calculatePrice`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(varints)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setDiscountData(data);
+      console.log("Success and get Discount:", data);
+
+
+
+      // return data;
+    } catch (error) {
+      console.error("Error adding variants:", error);
+      toast.error("Failed to add variants.");
+    } finally {
+      setLoading(false);
+      // setEmailSendingLoader(false); // <-- Only if applicable
+    }
+  }
+
+  async function calculatePriceAndDiscount2(varints) {
+    try {
+      setLoading(true);
+      // setEmailSendingLoader(true); // <-- If this loader is relevant here
+
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}auth/calculatePrice`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(varints)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      // setDiscountData(data);
+      const grandTotal = data.summary.grandTotal;
+      const totalQuantity = data.summary.totalQuantity
+      const eachPerUnit = parseFloat(grandTotal / totalQuantity).toFixed(2)
+      if (extraInformation.length < 2) {
+        setExtraInformation((prev) => [...prev, { totalQuantity, eachPerUnit }])
+      }
+      console.log(extraInformation, "extraInformation");
+      console.log("Success and get Discount for futere:", data);
+      // return data;
+    } catch (error) {
+      console.error("Error adding variants:", error);
+      toast.error("Failed to add variants.");
+    } finally {
+      setLoading(false);
+      // setEmailSendingLoader(false); // <-- Only if applicable
+    }
+  }
   const cartHandler = () => {
     setShowPopup(true);
   };
 
   const handleSaveDesign = async (payload) => {
-    setLoading(true);
+
+    // setLoading(true);
     setShowPopup(false);
     setSaveDesignLoader(false);
     setEmailSendingLoader(true);// Close SaveDesignModal/SaveDesignPopup
@@ -541,29 +586,50 @@ const Review = () => {
 
       designPayload.design.FinalImages = cloudinaryResponse?.files?.map((url) => url) || [];
       // Calling save design api
-      await saveDesignFunction(designPayload);
+      const userDesigns = await saveDesignFunction(designPayload);
+      const design = userDesigns.userDesigns.designs;
+      const lastDesing = design[design.length - 1];
+      if (!designId) {
+        console.log('adding desing id to the url', designId);
+        searchParams.set("designId", lastDesing._id);
+        navigate({
+          pathname: location.pathname,
+          search: searchParams.toString(),
+        }, { replace: true });
+      }
+      const checkoutData = await makeVariantDataForShopify(reviewItems, cloudinaryResponse);
+      console.log("checkoutData", checkoutData)
       // api call for email send
       try {
+
         const emailPayload = {
-          email: "ankitmandloi@itgeeks.com",
+          email: customerEmail,
           companyEmail: "service@simaxsports.com",
           frontSrc: cloudinaryResponse?.files?.[0] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786256753_download_4.png",
           backSrc: cloudinaryResponse?.files?.[1] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786306809_download_5.png",
-          designname: "Email Test",
-          phoneNumber: "1234567890",
-          edit_design_link: "#",
-          add_to_cart_link: "#",
+          designname: lastDesing?.DesignName,
+          phoneNumber: "",
+          edit_design_link: window.location.href,
+          add_to_cart_link: checkoutData.checkoutUrl,
           unsubscribe_link: "#",
         };
+        console.log("emailPayload", emailPayload)
         await sendEmailDesign(emailPayload);
-        toast.success("Email sent successfully!");
+        if (checkoutData?.checkoutUrl) {
+          window.location.href = checkoutData?.checkoutUrl
+          // window.open(data.checkoutUrl, '_blank');
+        } else {
+          throw new Error("No checkout URL returned");
+        }
+
+        // toast.success("Email sent successfully!");
       } catch (emailError) {
         console.error("Email sending failed:", emailError);
         toast.error("Failed to send email.");
       } finally {
         // setEmailSendingLoader(false);
       }
-      const variantData = makeVariantDataForShopify(reviewItems, cloudinaryResponse);
+
       // toast.success("Design saved and variants prepared successfully!");
 
       // Show EmailSendingModal if emailUpdates is true
@@ -575,7 +641,7 @@ const Review = () => {
       console.error("Error in handleSaveDesign:", error);
       toast.error("Failed to save design or prepare variants.");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -647,17 +713,15 @@ const Review = () => {
   }
 
 
-  const location = useLocation();
-
   function editDesignHandler() {
     try {
       // const searchParams = new URLSearchParams(location.search);
       // const designId = searchParams.get("designId");
-      const designId = "test"
+
       console.log(designStateDb);
 
       const matchedDesigns = designStateDb.userDesigns.designs.filter(
-        (d) => d.DesignName == "test2"
+        (d) => d._id == designId
       );
 
       if (matchedDesigns.length === 0) {
@@ -684,167 +748,189 @@ const Review = () => {
   }
 
   return (
-    <div className={styles.container}>
-      {retrieveLoader && (
-        <RetrieveSavedDesignsModal
-          onClose={() => setRetrieveLoader(false)}
-          isFetchingDesign={isFetchingDesign}
-          designExists={designExists}
-        />
-      )}
-      {saveDesignLoader &&
-        (designExists ? (
-          <SaveDesignModal
-            onClose={() => setSaveDesignLoader(false)}
-            onSubmit={handleSaveDesign}
-            defaultDesignName="Demo T-Shirt 55555"
-            designId={designId}
-            currentDesign={currentDesign}
-          />
-        ) : (
-          <AddToCartPopup
-            onSave={handleSaveDesign}
-            defaultDesignName=""
-            onClose={() => setSaveDesignLoader(false)}
-          />
-        ))}
-      {emailSendingLoader && (
-        <EmailSendingModal onClose={() => setEmailSendingLoader(false)} />
-      )}
-      <div className={styles.header}>
-        <div className="toolbar-main-heading">
-          <h5 className="Toolbar-badge">Review Your Order</h5>
-        </div>
-        <div className={styles.titleRow}>
-          <div className={styles.arrow} onClick={goBack}>
-            <LuArrowLeft />
-          </div>
-          <h3>Your Products & Pricing</h3>
-          <div className={styles.close} onClick={() => navigate("/design/product")}>
-            <RxCross2 />
-          </div>
-        </div>
-        <hr />
-      </div>
-      {shouldShowBlankProductWarning(design) ? (
-        <BlankProductWarning />
-      ) : (
-        <>
-          <div className={styles.priceInfo}>
-            <p>
-              <span className={styles.strike}>${originalPrice}</span>
-              <span className={styles.discounted}> ${discountedPrice} each</span>
-            </p>
-            <p>
-              <span className={styles.strikeSmall}>
-                ${(originalPrice * totalItems).toFixed(2)}
-              </span>
-              <span className={`${styles.total}`}>
-                {" "}
-                <span className={styles.dollarText}>${totalPrice}</span> total
-                with {discount}% off Bulk Discount
-              </span>
-            </p>
-            <div className={styles.metaInfo}>
-              <div>
-                <FaTshirt /> {totalItems} items
-              </div>
-              <div>
-                <BiTargetLock /> {printAreaCount} print area
-              </div>
-              <div>
-                <IoIosColorPalette /> {colorCount()} colors
-              </div>
-            </div>
+    <>
+      {
+        loading ? <>
+
+          <div className={styles.loaderWrapper}>
+            <div className={styles.loader}></div>
+            <p>calculating price...</p>
           </div>
 
-          <p className={styles.bulkDeal}>
-            <b>Buy More & Save:</b> 21 items for
-            <span className={styles.dollarText}>$17.95</span> ea. <span>|</span>{" "}
-            25 items for <span className={styles.dollarText}>$16.983</span> ea.
-          </p>
-
-          <div className={styles.summaryBlock}>
-            <p className={styles.summaryTitle}>
-              Summary <span>({totalItems} items)</span>
-            </p>
-            {reviewItems.map((item, idx) => (
-              <div key={idx} className={styles.summaryItem}>
-                <img src={item.image} alt={item.name} />
-                <div className={styles.itemDetails}>
-                  <div className={styles.itemHeader}>
-                    <p className={styles.itemName}>{item.name}</p>
-                    <p className={styles.itemPrice}>
-                      ${discountedPrice} <span>each</span>
-                    </p>
-                  </div>
-                  <p className={styles.itemSubtitle}>
-                    {item.color} | {totalItems} Items
-                  </p>
-                  <div className={styles.sizes}>
-                    {Object.entries(item.sizes).map(([size, count]) => (
-                      <button key={size}>
-                        {size}-{count}
-                      </button>
-                    ))}
-                    <span className={styles.edit} onClick={goBack}>
-                      Edit sizes
-                    </span>
-                  </div>
+        </> : <>
+          <div className={styles.container}>
+            {retrieveLoader && (
+              <RetrieveSavedDesignsModal
+                onClose={() => setRetrieveLoader(false)}
+                isFetchingDesign={isFetchingDesign}
+                designExists={designExists}
+              />
+            )}
+            {saveDesignLoader &&
+              (designExists ? (
+                <SaveDesignModal
+                  onClose={() => setSaveDesignLoader(false)}
+                  onSubmit={handleSaveDesign}
+                  defaultDesignName="Demo T-Shirt 55555"
+                  designId={designId}
+                  currentDesign={currentDesign}
+                />
+              ) : (
+                <AddToCartPopup
+                  onSave={handleSaveDesign}
+                  defaultDesignName=""
+                  onClose={() => setSaveDesignLoader(false)}
+                />
+              ))}
+            {emailSendingLoader && (
+              <EmailSendingModal onClose={() => setEmailSendingLoader(false)} />
+            )}
+            <div className={styles.header}>
+              <div className="toolbar-main-heading">
+                <h5 className="Toolbar-badge">Review Your Order</h5>
+              </div>
+              <div className={styles.titleRow}>
+                <div className={styles.arrow} onClick={goBack}>
+                  <LuArrowLeft />
+                </div>
+                <h3>Your Products & Pricing</h3>
+                <div className={styles.close} onClick={() => navigate("/design/product")}>
+                  <RxCross2 />
                 </div>
               </div>
-            ))}
-          </div>
+              <hr />
+            </div>
+            {shouldShowBlankProductWarning(design) ? (
+              <BlankProductWarning />
+            ) : (
+              <>
+                <div className={styles.priceInfo}>
+                  {discountData?.summary?.discountTier?.percent > 0 && <>
+                    < p >
+                      <span className={styles.strike}>${discountData?.summary?.eachBeforeDiscount}</span>
+                      <span className={styles.discounted}> ${discountData?.summary?.eachAfterDiscount} each</span>
+                    </p>
+                    <p>
+                      <span className={styles.strikeSmall}>
+                        ${discountData?.summary?.baseSubtotal}
+                      </span>
+                      <span className={`${styles.total}`}>
+                        {" "}
+                        <span className={styles.dollarText}>${discountData?.summary?.grandTotal}</span> total
+                        with {discountData?.summary?.discountTier?.percent}% off Bulk Discount
+                      </span>
+                    </p></>}
+                  <div className={styles.metaInfo}>
+                    <div>
+                      <FaTshirt /> {totalItems} items
+                    </div>
+                    <div>
+                      <BiTargetLock /> {printAreaCount} print area
+                    </div>
+                    <div>
+                      <IoIosColorPalette /> {colorCount()} colors
+                    </div>
+                  </div>
+                </div>
+                <p className={styles.bulkDeal}>
+                  <b>Buy More & Save:</b>{" "}
+                  {extraInformation?.map((item, index) => {
+                    const unitPrice = 5.59;
+                    const discountedPrice = (unitPrice * (1 - item.rate)).toFixed(2);
+                    return (
+                      <span key={index}>
+                        {item.totalQuantity} items for{" "}
+                        <span className={styles.dollarText}>${item.eachPerUnit}</span>ea.
+                        {index !== extraInformation.length - 1 && <span> | </span>}
+                      </span>
+                    );
+                  })}
+                </p>
 
-          <div className={styles.extraFees}>
-            <p>
-              Collegiate License <span>$39.44</span>
-            </p>
-          </div>
 
-          {/* <button className={styles.addToCart} onClick={cartHandler}>
+                <div className={styles.summaryBlock}>
+                  <p className={styles.summaryTitle}>
+                    Summary <span>({totalItems} items)</span>
+                  </p>
+                  {reviewItems?.map((item, idx) => (
+                    <div key={idx} className={styles.summaryItem}>
+                      <img src={item.image} alt={item.name} />
+                      <div className={styles.itemDetails}>
+                        <div className={styles.itemHeader}>
+                          <p className={styles.itemName}>{item.name}</p>
+                          <p className={styles.itemPrice}>
+                            ${discountData?.summary?.eachAfterDiscount} <span>each</span>
+                          </p>
+                        </div>
+                        <p className={styles.itemSubtitle}>
+                          {item.color} | {totalItems} Items
+                        </p>
+                        <div className={styles.sizes}>
+                          {Object.entries(item.sizes).map(([size, count]) => (
+                            <button key={size}>
+                              {size}-{count}
+                            </button>
+                          ))}
+                          <span className={styles.edit} onClick={goBack}>
+                            Edit sizes
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {CollegiateLicense && <div className={styles.extraFees}>
+                  <p>
+                    Collegiate License <span>${discountData?.summary?.fees?.licenseFee || 0}</span>
+                  </p>
+                </div>
+                }
+
+                {/* <button className={styles.addToCart} onClick={cartHandler}>
             ADD TO CART <LuArrowRight />
           </button> */}
 
 
-          <button className={styles.addToCart} onClick={AddToCartClick}>
-            ADD TO CART <LuArrowRight />
-          </button>
-        </>
-      )}
-      <div className={styles.review}>
-        <img
-          src="https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755870746123_img-xdbtymq29jbjr5pt7xymstyn.png"
-          alt="Reviewer"
-        />
-        <div>
-          <blockquote>
-            "This company is amazing! Shipping is super fast and they are
-            competitively priced. We will absolutely use them again."
-          </blockquote>
-          <p>
-            <strong>Chelsea E.</strong> Ordered 35 pieces
-          </p>
-        </div>
-        {/* <button onClick={(e) => {
+                <button className={styles.addToCart} onClick={AddToCartClick}>
+                  ADD TO CART <LuArrowRight />
+                </button>
+              </>
+            )}
+            <div className={styles.review}>
+              <img
+                src="https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755870746123_img-xdbtymq29jbjr5pt7xymstyn.png"
+                alt="Reviewer"
+              />
+              <div>
+                <blockquote>
+                  "This company is amazing! Shipping is super fast and they are
+                  competitively priced. We will absolutely use them again."
+                </blockquote>
+                <p>
+                  <strong>Chelsea E.</strong> Ordered 35 pieces
+                </p>
+              </div>
+              {/* <button onClick={(e) => {
 
           editDesignHandler(e.target.value)
         }} style={{ color: "red", fontSize: 20 }}>getUrlDesign</button> */}
-      </div>
+            </div>
 
-      {showPopup && (
-        <AddToCartPopup
-          onSave={handleSaveDesign}
-          onClose={() => setShowPopup(false)}
-        />
-      )}
-      <div
-        className="canvas-wrapper"
-        style={{ position: "relative", top: 5, display: "none" }}
-      >
-        <canvas id="canvas-export" style={{ display: "none" }} />
-      </div>
-    </div>
+            {showPopup && (
+              <AddToCartPopup
+                onSave={handleSaveDesign}
+                onClose={() => setShowPopup(false)}
+              />
+            )}
+            <div
+              className="canvas-wrapper"
+              style={{ position: "relative", top: 5, display: "none" }}
+            >
+              <canvas id="canvas-export" style={{ display: "none" }} />
+            </div>
+          </div></>
+      }</>
+
   );
 };
 

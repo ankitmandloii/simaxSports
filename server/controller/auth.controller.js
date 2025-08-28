@@ -542,7 +542,6 @@ function round(n) {
 
 
 
-//dicounts on qty in %
 const DEFAULT_TIERS = [
   { minQty: 1, rate: 0.00 },
   { minQty: 10, rate: 0.05 },
@@ -575,14 +574,17 @@ exports.getDiscountDetails = async (req, res) => {
       cfg = await DiscountConfig.create({
         key: "global",
         tiers: DEFAULT_TIERS,
-        sizeSurcharges: { XL: 1, "2XL": 2, "3XL": 3 },   // defaults
-        licenseFeeFlat: 25
+        sizeSurcharges: { "XL": 1, "2XL": 2, "3XL": 3 },   // defaults
+        licenseFeeFlat: 0,
+        printAreaSurcharges: { "1": 0.23, "2": 0.46, "3": 12.68, "4": 18.92 } // NEW
       });
+      cfg = cfg.toObject();
     }
     res.json({
       tiers: cfg.tiers,
       sizeSurcharges: cfg.sizeSurcharges || {},
-      licenseFeeFlat: cfg.licenseFeeFlat ?? 25
+      licenseFeeFlat: cfg.licenseFeeFlat ?? 0,
+      printAreaSurcharges: toPlainObjectMap(cfg.printAreaSurcharges)  // NEW
     });
   } catch (err) {
     console.error("getDiscountDetails error:", err);
@@ -592,7 +594,7 @@ exports.getDiscountDetails = async (req, res) => {
 
 exports.setDiscountDetails = async (req, res) => {
   try {
-    const { tiers, sizeSurcharges, licenseFeeFlat } = req.body || {};
+    const { tiers, sizeSurcharges, licenseFeeFlat, printAreaSurcharges } = req.body || {};
 
     if (!Array.isArray(tiers) || tiers.length === 0) {
       return res.status(400).json({ error: "tiers array required" });
@@ -603,22 +605,33 @@ exports.setDiscountDetails = async (req, res) => {
     }
 
     // Optional validation for surcharges/fee
-    if (sizeSurcharges) {
-      for (const [k, v] of Object.entries(sizeSurcharges)) {
-        if (!(Number(v) >= 0)) return res.status(400).json({ error: `Invalid surcharge for ${k}` });
+    if (printAreaSurcharges) {
+      for (const [k, v] of Object.entries(printAreaSurcharges)) {
+        const nK = Number(k);
+        if (!Number.isInteger(nK) || nK < 1 || nK > 4) {
+          return res.status(400).json({ error: `printArea key must be 1..4 (got ${k})` });
+        }
+        if (!(Number(v) >= 0)) {
+          return res.status(400).json({ error: `Invalid print-area surcharge for ${k}` });
+        }
       }
     }
     if (licenseFeeFlat != null && !(Number(licenseFeeFlat) >= 0)) {
       return res.status(400).json({ error: "licenseFeeFlat must be >= 0" });
     }
+    const normalizedTiers = tiers
+      .map(t => ({ minQty: Number(t.minQty), rate: Number(t.rate) }))
+      .filter(t => Number.isFinite(t.minQty) && t.minQty >= 1 && Number.isFinite(t.rate) && t.rate >= 0 && t.rate <= 1)
+      .sort((a, b) => a.minQty - b.minQty);
 
     const updated = await DiscountConfig.findOneAndUpdate(
       { key: "global" },
       {
         $set: {
-          tiers: normalized,
+          tiers: normalizedTiers,
           ...(sizeSurcharges ? { sizeSurcharges } : {}),
-          ...(licenseFeeFlat != null ? { licenseFeeFlat: Number(licenseFeeFlat) } : {})
+          ...(licenseFeeFlat != null ? { licenseFeeFlat: Number(licenseFeeFlat) } : {}),
+          ...(printAreaSurcharges ? { printAreaSurcharges } : {}) // NEW
         }
       },
       { new: true, upsert: true }
@@ -627,8 +640,9 @@ exports.setDiscountDetails = async (req, res) => {
     res.json({
       ok: true,
       tiers: updated.tiers,
-      sizeSurcharges: updated.sizeSurcharges || {},
-      licenseFeeFlat: updated.licenseFeeFlat ?? 25
+      sizeSurcharges: toPlainObjectMap(updated.sizeSurcharges),
+      licenseFeeFlat: updated.licenseFeeFlat ?? 0,
+      printAreaSurcharges: toPlainObjectMap(updated.printAreaSurcharges) // NEW
     });
   } catch (err) {
     console.error("setDiscountDetails error:", err);
@@ -668,94 +682,319 @@ function toPlainObjectMap(maybeMap) {
   return { ...maybeMap };
 }
 
+// exports.calculatePrice = async (req, res) => {
+//   try {
+//     const items = Array.isArray(req.body.items) ? req.body.items : [];
+//     const flags = req.body.flags || {};
+//     const extras = req.body.extras || {};
+
+//     // 1) Load admin config from DB (surcharges + license fee)
+//     let cfg = await DiscountConfig.findOne({ key: "global" }).lean();
+//     if (!cfg) {
+//       // sensible defaults if the doc doesn't exist yet
+//       cfg = {
+//         tiers: [],
+//         sizeSurcharges: { XL: 1, "2XL": 2, "3XL": 3 },
+//         licenseFeeFlat: 25
+//       };
+//     }
+//     const dbSurcharges = toPlainObjectMap(cfg.sizeSurcharges);
+//     const dbLicenseFee = Number(cfg.licenseFeeFlat ?? 0);
+
+//     const printAreaFromDB = toPlain(cfg.printAreaSurcharges) || {};
+
+//     // allow per-quote override via extras.printAreaSurcharges (optional)
+//     const printAreaMap = { ...printAreaFromDB, ...(extras.printAreaSurcharges || {}) };
+//     // 2) Allow per-request overrides
+//     const surcharges = { ...dbSurcharges, ...(extras.sizeSurcharges || {}) };
+//     const licenseFeeFlat = (typeof extras.licenseFeeFlat === "number")
+//       ? extras.licenseFeeFlat
+//       : dbLicenseFee;
+
+//     // 3) Build base breakdown first (to get total qty)
+//     const baseBreakdown = items
+//       .map(it => {
+//         // FIX: look up unitPrice properly (either provided or via your catalog)
+//         const unitPrice = (typeof it.unitPrice === "number")
+//           ? it.unitPrice
+//           : (CATALOG && typeof CATALOG[it.sku] === "number" ? CATALOG[it.sku] : NaN);
+
+//         if (!Number.isFinite(unitPrice)) {
+//           throw new Error(`Missing unitPrice for sku ${it.sku}`);
+//         }
+
+//         const printAreas = Math.max(0, Number(it.printAreas) || 0); // per item
+//         const paKey = String(Math.min(4, Math.max(1, printAreas || 0))); // clamp 1..4 if provided
+//         const printAreaSurcharge = Number(printAreaMap[paKey] || 0);     // $ per unit
+//         const effectiveUnit = unitPrice + surcharge /* size */ + printAreaSurcharge; // <-- NEW
+//         const baseLine = effectiveUnit * qty;
+
+//         const sizes = it.sizes || {};
+//         const sizeBreakdown = Object.entries(sizes)
+//           .map(([size, rawQty]) => {
+//             const qty = Math.max(0, Number(rawQty) || 0);
+//             if (!qty) return null;
+
+//             const surcharge = Number(surcharges[size] ?? 0);
+//             const baseLine = (unitPrice + surcharge) * qty;
+
+//             return {
+//               size,
+//               qty,
+//               unitPrice,
+//               surcharge,
+//               lineBeforeDiscount: round(baseLine)
+//             };
+//           })
+//           .filter(Boolean); // drop zero-qty rows
+
+//         const quantity = sizeBreakdown.reduce((s, r) => s + r.qty, 0);
+//         const subtotalBefore = round(sizeBreakdown.reduce((s, r) => s + r.lineBeforeDiscount, 0));
+
+//         return { sku: it.sku, name: it.name, unitPrice, quantity, sizeBreakdown, subtotalBefore };
+//       })
+//       .filter(it => it.quantity > 0); // drop items with no qty
+
+
+
+//     const totalQuantity = baseBreakdown.reduce((s, i) => s + i.quantity, 0);
+
+//     const tiers = await getTiers();                     // [{minQty, rate}, ...] sorted asc
+//     const tier = pickTier(tiers, totalQuantity);
+//     const discountRate = tier?.rate || 0;
+
+
+//     // NEW: compute future (not-yet-reached) tiers for “Buy More & Save”
+//     const futureTiers = (tiers || [])
+//       .filter(t => t.minQty > totalQuantity)
+//       .map(t => ({
+//         threshold: t.minQty,
+//         rate: t.rate,
+//         percent: Math.round(t.rate * 10000) / 100,         // e.g., 20
+//         addQty: Math.max(0, t.minQty - totalQuantity)      // how many more to unlock
+//       }));
+
+//     // 3) Apply discount to each size line and compute after-discount totals
+//     const itemBreakdown = baseBreakdown.map(it => {
+//       const sizeBreakdown = it.sizeBreakdown.map(r => {
+//         const discountedUnitPrice = round((r.unitPrice + r.surcharge + r.printAreaSurcharge) * (1 - discountRate));
+//         const lineAfterDiscount = round(discountedUnitPrice * r.qty);
+
+//         // NEW: future unit prices for this size at each future tier
+//         const futureUnitPrices = futureTiers.map(ft => ({
+//           threshold: ft.threshold,
+//           percent: ft.percent,
+//           rate: ft.rate,
+//           addQty: ft.addQty,
+//           unitPriceAtTier: round((r.unitPrice + r.surcharge) * (1 - ft.rate))
+//         }));
+
+//         return {
+//           size: r.size,
+//           qty: r.qty,
+//           unitPrice: r.unitPrice,
+//           surcharge: r.surcharge,
+//           lineBeforeDiscount: r.lineBeforeDiscount,
+//           discountedUnitPrice,
+//           lineAfterDiscount,
+//           futureUnitPrices               // <= NEW
+//         };
+//       });
+
+//       const subtotalAfter = round(sizeBreakdown.reduce((s, r) => s + r.lineAfterDiscount, 0));
+
+//       return {
+//         sku: it.sku,
+//         name: it.name,
+//         unitPrice: it.unitPrice,
+//         quantity: it.quantity,
+//         sizeBreakdown,
+//         subtotalBefore: it.subtotalBefore,
+//         subtotalAfter
+//       };
+//     });
+
+//     // 4) Summary based on before/after
+//     const baseSubtotal = round(itemBreakdown.reduce((s, i) => s + i.subtotalBefore, 0));
+
+//     const discountedSubtotal = round(itemBreakdown.reduce((s, i) => s + i.subtotalAfter, 0));
+//     const discountAmount = round(baseSubtotal - discountedSubtotal);
+
+//     const fees = { licenseFee: flags.collegiateLicense ? licenseFeeFlat : 0 };
+//     const grandTotal = round(discountedSubtotal + fees.licenseFee);
+//     const eachBeforeDicount = parseFloat((baseSubtotal / totalQuantity).toFixed(2));
+//     const eachAfterDicount = parseFloat((grandTotal / totalQuantity).toFixed(2));
+//     res.json({
+//       summary: {
+//         totalQuantity,
+//         baseSubtotal,
+//         discountTier: {
+//           threshold: tier?.minQty || 1,
+//           rate: discountRate,
+//           percent: Math.round(discountRate * 10000) / 100
+//         },
+//         eachAfterDicount,
+//         eachBeforeDicount,
+//         // NEW: order‑level ladder
+//         ladder: futureTiers,
+//         discountAmount,
+//         fees,
+//         grandTotal
+//       },
+//       items: itemBreakdown
+//     });
+//   } catch (err) {
+//     res.status(400).json({ error: err.message || "Bad request" });
+//   }
+// };
+
+
 exports.calculatePrice = async (req, res) => {
   try {
     const items  = Array.isArray(req.body.items) ? req.body.items : [];
     const flags  = req.body.flags  || {};
     const extras = req.body.extras || {};
 
-    // 1) Load admin config from DB (surcharges + license fee)
+    const toPlainObjectMap = (m) => {
+      if (!m) return {};
+      if (m instanceof Map) return Object.fromEntries(m);
+      return { ...m };
+    };
+
+    // 1) Load config from DB
     let cfg = await DiscountConfig.findOne({ key: "global" }).lean();
     if (!cfg) {
-      // sensible defaults if the doc doesn't exist yet
       cfg = {
         tiers: [],
         sizeSurcharges: { XL: 1, "2XL": 2, "3XL": 3 },
-        licenseFeeFlat: 25
+        licenseFeeFlat: 0,
+        printAreaSurcharges: { "1": 0.23, "2": 0.46, "3": 12.68, "4": 18.92 }
       };
     }
-    const dbSurcharges = toPlainObjectMap(cfg.sizeSurcharges);
-    const dbLicenseFee = Number(cfg.licenseFeeFlat ?? 25);
 
-    // 2) Allow per-request overrides
-    const surcharges = { ...dbSurcharges, ...(extras.sizeSurcharges || {}) };
-    const licenseFeeFlat = (typeof extras.licenseFeeFlat === "number")
-      ? extras.licenseFeeFlat
-      : dbLicenseFee;
+    const dbSurcharges        = toPlainObjectMap(cfg.sizeSurcharges);
+    const dbLicenseFee        = Number(cfg.licenseFeeFlat ?? 0);
+    const printAreaFromDB     = toPlainObjectMap(cfg.printAreaSurcharges);
 
-    // 3) Build base breakdown first (to get total qty)
-    const baseBreakdown = items
-      .map(it => {
-        // FIX: look up unitPrice properly (either provided or via your catalog)
-        const unitPrice = (typeof it.unitPrice === "number")
-          ? it.unitPrice
-          : (CATALOG && typeof CATALOG[it.sku] === "number" ? CATALOG[it.sku] : NaN);
+    const surcharges      = { ...dbSurcharges, ...(extras.sizeSurcharges || {}) };
+    const licenseFeeFlat  = (typeof extras.licenseFeeFlat === "number") ? extras.licenseFeeFlat : dbLicenseFee;
+    const printAreaMap    = { ...printAreaFromDB, ...(extras.printAreaSurcharges || {}) };
 
-        if (!Number.isFinite(unitPrice)) {
-          throw new Error(`Missing unitPrice for sku ${it.sku}`);
-        }
+    // --- Choose how to apply print-area fee ---
+    // mode 'perItem' (default): add once per item line
+    // mode 'orderMax': add once for the whole order, based on the highest printAreas across all items
+    const PRINT_AREA_MODE = 'orderMax'; // 'orderMax'
 
-        const sizes = it.sizes || {};
-        const sizeBreakdown = Object.entries(sizes)
-          .map(([size, rawQty]) => {
-            const qty = Math.max(0, Number(rawQty) || 0);
-            if (!qty) return null;
+    // Track flat fees
+    let printAreaFeeTotal = 0;
 
-            const surcharge = Number(surcharges[size] ?? 0);
-            const baseLine  = (unitPrice + surcharge) * qty;
+    // 2) Build base breakdown (NO print-area in per-unit math)
+    const baseBreakdown = items.map(it => {
+      const unitPrice = (typeof it.unitPrice === "number")
+        ? it.unitPrice
+        : (CATALOG && typeof CATALOG[it.sku] === "number" ? CATALOG[it.sku] : NaN);
+      if (!Number.isFinite(unitPrice)) {
+        throw new Error(`Missing unitPrice for sku ${it.sku}`);
+      }
 
-            return {
-              size,
-              qty,
-              unitPrice,
-              surcharge,
-              lineBeforeDiscount: round(baseLine)
-            };
-          })
-          .filter(Boolean); // drop zero-qty rows
+      // collect per-item print-area flat fee (not per unit)
+      const printAreas = Math.max(0, Number(it.printAreas) || 0);
+      const paKey = printAreas ? String(Math.min(4, Math.max(1, printAreas))) : null;
+      const itemPrintAreaFee = paKey ? Number(printAreaMap[paKey] || 0) : 0;
 
-        const quantity       = sizeBreakdown.reduce((s, r) => s + r.qty, 0);
-        const subtotalBefore = round(sizeBreakdown.reduce((s, r) => s + r.lineBeforeDiscount, 0));
+      // Apply by mode
+      if (PRINT_AREA_MODE === 'perItem') {
+        // add once for this item line
+        printAreaFeeTotal += itemPrintAreaFee;
+      }
+      // (for orderMax mode, we’ll accumulate max later)
 
-        return { sku: it.sku, name: it.name, unitPrice, quantity, sizeBreakdown, subtotalBefore };
-      })
-      .filter(it => it.quantity > 0); // drop items with no qty
+      const sizes = it.sizes || {};
+      const sizeBreakdown = Object.entries(sizes).map(([size, rawQty]) => {
+        const qty = Math.max(0, Number(rawQty) || 0);
+        if (!qty) return null;
 
-    // 4) Determine discount rate from total quantity (FROM DB tiers)
+        const sizeSurcharge = Number(surcharges[size] ?? 0);
+        const effectiveUnit = unitPrice + sizeSurcharge; // ← NO print-area here
+        const baseLine = effectiveUnit * qty;
+
+        return {
+          size,
+          qty,
+          unitPrice,
+          surcharge: sizeSurcharge,
+          // keep for transparency, but not included in per-unit math:
+          printAreaInfo: { printAreas, itemPrintAreaFee }, 
+          lineBeforeDiscount: round(baseLine)
+        };
+      }).filter(Boolean);
+
+      const quantity       = sizeBreakdown.reduce((s, r) => s + r.qty, 0);
+      const subtotalBefore = round(sizeBreakdown.reduce((s, r) => s + r.lineBeforeDiscount, 0));
+
+      return { sku: it.sku, name: it.name, unitPrice, quantity, sizeBreakdown, subtotalBefore, itemPrintAreaFee };
+    }).filter(it => it.quantity > 0);
+
+    // If using orderMax mode, override fee to a single fee based on max printAreas across items
+    if (PRINT_AREA_MODE === 'orderMax') {
+      let maxAreas = 0;
+      for (const it of items) {
+        const pa = Math.max(0, Number(it.printAreas) || 0);
+        if (pa > maxAreas) maxAreas = pa;
+      }
+      const paKey = maxAreas ? String(Math.min(4, Math.max(1, maxAreas))) : null;
+      printAreaFeeTotal = paKey ? Number(printAreaMap[paKey] || 0) : 0;
+    }
+
+    // 3) Discount tier
     const totalQuantity = baseBreakdown.reduce((s, i) => s + i.quantity, 0);
-
-    const tiers = await getTiers();              // returns [{minQty, rate}, ...]
+    const tiers = await getTiers();
     const tier  = pickTier(tiers, totalQuantity);
-    const discountRate = tier?.rate || 0;        // decimal (e.g., 0.2 = 20%)
+    const discountRate = tier?.rate || 0;
 
-    // 5) Apply discount to each size line and compute after-discount totals
+    // Future tiers
+    const futureTiers = (tiers || [])
+      .filter(t => t.minQty > totalQuantity)
+      .map(t => ({
+        threshold: t.minQty,
+        rate: t.rate,
+        percent: Math.round(t.rate * 10000) / 100,
+        addQty: Math.max(0, t.minQty - totalQuantity)
+      }));
+
+    // 4) Apply discount to per-size rows (still NO print-area in unit math)
     const itemBreakdown = baseBreakdown.map(it => {
       const sizeBreakdown = it.sizeBreakdown.map(r => {
-        const discountedUnitPrice = round((r.unitPrice + r.surcharge) * (1 - discountRate));
+        const effectiveBefore = r.unitPrice + r.surcharge; // ← no print-area here
+        const discountedUnitPrice = round(effectiveBefore * (1 - discountRate));
         const lineAfterDiscount   = round(discountedUnitPrice * r.qty);
+
+        const futureUnitPrices = futureTiers.map(ft => {
+          const unitAtTier = round(effectiveBefore * (1 - ft.rate));
+          return {
+            threshold: ft.threshold,
+            percent: ft.percent,
+            rate: ft.rate,
+            addQty: ft.addQty,
+            unitPriceAtTier: unitAtTier,
+            subtotalAtTier: round(unitAtTier * r.qty)
+          };
+        });
+
         return {
           size: r.size,
           qty: r.qty,
           unitPrice: r.unitPrice,
           surcharge: r.surcharge,
+          printAreaInfo: r.printAreaInfo, // for UI reference
           lineBeforeDiscount: r.lineBeforeDiscount,
           discountedUnitPrice,
-          lineAfterDiscount
+          lineAfterDiscount,
+          futureUnitPrices
         };
       });
 
       const subtotalAfter = round(sizeBreakdown.reduce((s, r) => s + r.lineAfterDiscount, 0));
-
       return {
         sku: it.sku,
         name: it.name,
@@ -767,18 +1006,33 @@ exports.calculatePrice = async (req, res) => {
       };
     });
 
-    // 6) Summary based on before/after
-    const baseSubtotal        = round(itemBreakdown.reduce((s, i) => s + i.subtotalBefore, 0));
-    const discountedSubtotal  = round(itemBreakdown.reduce((s, i) => s + i.subtotalAfter, 0));
-    const discountAmount      = round(baseSubtotal - discountedSubtotal);
-    const fees                = { licenseFee: flags.collegiateLicense ? licenseFeeFlat : 0 };
-    const grandTotal          = round(discountedSubtotal + fees.licenseFee);
+    // 5) Summary
+    const baseSubtotal       = round(itemBreakdown.reduce((s, i) => s + i.subtotalBefore, 0));
+    const discountedSubtotal = round(itemBreakdown.reduce((s, i) => s + i.subtotalAfter, 0));
+    const discountAmount     = round(baseSubtotal - discountedSubtotal);
+
+    const fees = {
+      licenseFee: flags.collegiateLicense ? licenseFeeFlat : 0,
+      printAreaFee: round(printAreaFeeTotal) // ← NEW flat fee(s)
+    };
+
+    const grandTotal = round(discountedSubtotal + fees.licenseFee + fees.printAreaFee);
+
+    const eachBeforeDiscount = totalQuantity > 0 ? round(baseSubtotal / totalQuantity) : 0;
+    const eachAfterDiscount  = totalQuantity > 0 ? round(grandTotal   / totalQuantity) : 0;
 
     res.json({
       summary: {
         totalQuantity,
         baseSubtotal,
-        discountTier: { threshold: tier?.minQty || 1, rate: discountRate },
+        discountTier: {
+          threshold: tier?.minQty || 1,
+          rate: discountRate,
+          percent: Math.round(discountRate * 10000) / 100
+        },
+        eachBeforeDiscount,
+        eachAfterDiscount,
+        ladder: futureTiers,
         discountAmount,
         fees,
         grandTotal
@@ -789,3 +1043,4 @@ exports.calculatePrice = async (req, res) => {
     res.status(400).json({ error: err.message || "Bad request" });
   }
 };
+

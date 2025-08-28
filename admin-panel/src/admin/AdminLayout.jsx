@@ -3,7 +3,7 @@ import {
   Icon
 } from '@shopify/polaris';
 import {
-  HomeIcon, ListNumberedIcon, OrderIcon, ProductIcon, SettingsIcon, PersonAddIcon
+  HomeIcon, ListNumberedIcon, OrderIcon, ProductIcon, SettingsIcon, PersonAddIcon, DiscountIcon
 } from '@shopify/polaris-icons';
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -93,12 +93,12 @@ export default function AdminLayout({ children }) {
             selected: location.pathname === '/admin/dashboard',
             onClick: () => navigate('/admin/dashboard'),
           },
-          {
-            label: 'Product Design List',
-            icon: ListNumberedIcon,
-            selected: location.pathname === '/admin/product-design',
-            onClick: () => navigate('/admin/product-design'),
-          },
+          // {
+          //   label: 'Product Design List',
+          //   icon: ListNumberedIcon,
+          //   selected: location.pathname === '/admin/product-design',
+          //   onClick: () => navigate('/admin/product-design'),
+          // },
           // {
           //   label: 'Product List',
           //   icon: ProductIcon,
@@ -106,7 +106,7 @@ export default function AdminLayout({ children }) {
           //   onClick: () => navigate('/admin/product-list'),
           // },
           {
-            label: 'Order List',
+            label: 'Orders',
             icon: OrderIcon,
             selected: location.pathname === '/admin/orders',
             onClick: () => navigate('/admin/orders'),
@@ -118,8 +118,8 @@ export default function AdminLayout({ children }) {
             onClick: () => navigate('/admin/activeUsers'),
           },
           {
-            label: 'Discount Update',
-            icon: SettingsIcon,
+            label: 'Pricing And Discounts',
+            icon: DiscountIcon,
             selected: location.pathname.startsWith('/admin/discountUpdate'),
             onClick: () => navigate('/admin/discountUpdate'),
           },
@@ -208,7 +208,7 @@ export default function AdminLayout({ children }) {
           }}
         >
           <Text variant="bodySm" as="p">
-            © 2025 SimaxSports. All rights reserved.
+            © 2025 SimaxDesign. All rights reserved.
           </Text>
         </footer>
       </Frame>

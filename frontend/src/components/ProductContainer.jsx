@@ -68,6 +68,8 @@ function ProductContainer() {
   const [addSleeves, setAddSleeves] = useState(false);
   const isDesignProduct = location.pathname === '/design/product' || location.pathname === '/quantity' || location.pathname === '/review';
   const [searchParams] = useSearchParams();
+  const { data: settings, loading } = useSelector((state) => state.settingsReducer);
+  const settingsForsides = settings?.otherSettings || {};
 
   const toggleZoom = () => {
     if (isZoomedIn) {
@@ -1056,24 +1058,29 @@ function ProductContainer() {
         {!isQuantityPage && (
           <div className={style.ProuductMirrorContainer}>
             <div className={style.ProuductMirrorLeftContainer}>
-              <div className={style.cornerImgCanvaContainer} onClick={ShowFront}>
-                <img
-                  ref={FrontImgRef}
-                  src={frontPreviewImage}
-                  className={`${style.ProductContainerSmallImage} ${activeSide === "front" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
-                  alt="Front View"
-                />
-                <p>Front</p>
-              </div>
-              <div className={style.cornerImgCanvaContainer} onClick={ShowBack}>
-                <img
-                  ref={BackImgRef}
-                  src={backPreviewImage}
-                  className={`${style.ProductContainerSmallImage} ${activeSide === "back" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
-                  alt="Back View"
-                />
-                <p>Back</p>
-              </div>
+              {settingsForsides?.enableFrontSmallImageSectionShow && (
+                <div className={style.cornerImgCanvaContainer} onClick={ShowFront}>
+                  <img
+                    ref={FrontImgRef}
+                    src={frontPreviewImage}
+                    className={`${style.ProductContainerSmallImage} ${activeSide === "front" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
+                    alt="Front View"
+                  />
+                  <p>Front</p>
+                </div>
+              )}
+              {settingsForsides?.enableFrontSmallImageSectionShow && (
+                <div className={style.cornerImgCanvaContainer} onClick={ShowBack}>
+                  <img
+                    ref={BackImgRef}
+                    src={backPreviewImage}
+                    className={`${style.ProductContainerSmallImage} ${activeSide === "back" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
+                    alt="Back View"
+                  />
+                  <p>Back</p>
+                </div>
+              )}
+
 
               {addSleeves && (
                 <>
@@ -1101,7 +1108,7 @@ function ProductContainer() {
               {openSleeveDesignPopup && <SleeveDesignPopup onClose={onClose} onAddDesign={onAddDesign} />}
             </div>
 
-            {!addSleeves && (
+            {!addSleeves && settingsForsides?.enableSleevesShow && (
               <div className={style.sleeveDesignButn} onClick={onClose}>
                 <p>Sleeve design</p>
               </div>

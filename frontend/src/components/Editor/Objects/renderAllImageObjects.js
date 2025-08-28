@@ -21,8 +21,7 @@ const renderAllImageObjects = (
   setOpenAieditorPopup
 ) => {
   // console.log("imageContaintObject", imageContaintObject);
-  console.log("openAieditorPopup.......", openAieditorPopup,
-    setOpenAieditorPopup)
+  console.log("openAieditorPopup.......", openAieditorPopup)
 
   const canvas = fabricCanvasRef.current;
 
@@ -234,7 +233,7 @@ const renderAllImageObjects = (
 
     // console.warn("button created and done");
   }
-  function createAiEdtiorButton(fabricImage, canvasId, callback, removeBg, setOpenAieditorPopup) {
+  function createAiEdtiorButton(fabricImage, canvasId, callback, removeBg, setOpenAieditorPopup, openAieditorPopup) {
     // console.log("button data ", fabricImage, canvasId, callback, removeBg);
     const id = fabricImage.id;
     const buttonId = `canvas-${id}-ai`;
@@ -252,11 +251,17 @@ const renderAllImageObjects = (
       container.style.top = `${imageBottom + OFFSET}px`;
       container.style.left = `${imageLeft}px`;
       container.style.display = "none";
+      // container.removeEventListener("click", () => { });
+
       container.addEventListener("click", (event) => {
-        setOpenAieditorPopup(!openAieditorPopup);
+        event.stopPropagation();
+
+        if (!openAieditorPopup) {
+          setOpenAieditorPopup(true);
+
+        }
         // console.log("clicked ai btn",openAieditorPopup);
-        // event.stopPropagation();
-      })
+      }, false)
       return;
     }
 
@@ -313,10 +318,14 @@ const renderAllImageObjects = (
     container.appendChild(label);
 
     container.addEventListener("click", (event) => {
-      setOpenAieditorPopup(!openAieditorPopup);
+      event.stopPropagation();
+
+      if (!openAieditorPopup) {
+        setOpenAieditorPopup(true);
+
+      }
       // console.log("clicked ai btn",openAieditorPopup);
-      // event.stopPropagation();
-    })
+    }, false)
     canvasElement.parentElement.appendChild(container);
 
     // Initial position below image
@@ -615,7 +624,7 @@ const renderAllImageObjects = (
 
           createAiEdtiorButton(newImg, `canvas-${activeSide}`, (isChecked, image) => {
             // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
-          }, removeBg, setOpenAieditorPopup);
+          }, removeBg, setOpenAieditorPopup, openAieditorPopup);
 
           canvas.add(newImg);
           newImg.on("scaling", () => toggleVisibility(false, locked));
@@ -891,7 +900,7 @@ const renderAllImageObjects = (
           }, removeBg);
           createAiEdtiorButton(img, `canvas-${activeSide}`, (isChecked, image) => {
             // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
-          }, removeBg, setOpenAieditorPopup);
+          }, removeBg, setOpenAieditorPopup, openAieditorPopup);
 
           canvas.add(img);
 
