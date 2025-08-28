@@ -866,10 +866,10 @@ ex. Remove the text on the side of the boat`}
                         </>
                     )}
                 </div>
-            </>
-                )}
+            </div>
+
         </div>
-        </div >
+
     );
 };
 
