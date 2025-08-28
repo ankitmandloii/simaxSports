@@ -100,7 +100,7 @@ const MainDesignTool = ({
   const [productCategory, setProductCategory] = useState(getProductType(activeProductTitle))
   const [showNotes, setShowNotes] = useState(false);
   const [openAieditorPopup, setOpenAieditorPopup] = useState(false);
-
+  const [size, setSize] = useState();
   // console.log(openAieditorPopup);
   // **********************************************************************************************************************************************************
   //                                                                                    USE DISPTACHS AREA
@@ -2344,14 +2344,26 @@ const MainDesignTool = ({
           console.log("event removed");
         })
       }
-
       // Dispose of the canvas to prevent memory leaks
       canvas.dispose();
       // fabricCanvasRef.current = null;
       // mirrorCanvasRef.current.dispose();
       // mirrorCanvasRef.current = null;
     };
-  }, [id, backgroundImage, activeSide]);
+  }, [id, backgroundImage, activeSide, size]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      console.log("resizing......................", window.innerWidth);
+      setSize(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
 
   useEffect(() => {

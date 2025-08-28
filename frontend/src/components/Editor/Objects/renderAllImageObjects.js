@@ -21,7 +21,7 @@ const renderAllImageObjects = (
   setOpenAieditorPopup
 ) => {
   // console.log("imageContaintObject", imageContaintObject);
-  console.log("openAieditorPopup.......", openAieditorPopup)
+  // console.log("openAieditorPopup.......", openAieditorPopup)
 
   const canvas = fabricCanvasRef.current;
 
