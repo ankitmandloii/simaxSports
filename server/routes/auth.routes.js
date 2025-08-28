@@ -11,6 +11,7 @@ router.post('/login',customerValidation.login ,controllers.login); //currntly us
 router.post('/verify-otp',controllers.verifyOtp); //currntly use in admin
 router.post('/resend-otp',controllers.resendOtp); //currntly use in admin
 router.post('/logout-all',customerValidation.verifyToken,controllers.logoutAll); //currntly use in admin
+router.get('/validate',customerValidation.verifyToken,controllers.validate); //currntly use in admin
 
 
 router.post('/loginShopify' ,controllers.logintest);
