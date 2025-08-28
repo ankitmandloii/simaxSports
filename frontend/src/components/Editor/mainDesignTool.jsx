@@ -77,6 +77,8 @@ const MainDesignTool = ({
   const isRender = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].setRendering);
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
   const loadingState = useSelector(state => state.TextFrontendDesignSlice.present[activeSide].loadingState);
+  const { data: settings } = useSelector((state) => state.settingsReducer);
+  console.log("-------settings", settings)
 
   // console.log("loadingState redux ........", loadingState)
 
@@ -2545,43 +2547,57 @@ const MainDesignTool = ({
         imageContaintObject?.length == 0 &&
         textContaintObject?.length == 0 && (
           <div className={style.buttonsroute} style={{ position: 'absolute', top: getTop(canvasRef), left: getLeft(canvasRef) }} >
-            <button
-              onMouseEnter={() => handleHover("/design/addText")}
-              onMouseLeave={handleLeave}
-              onClick={() => handleClick("/design/addText")}
-              className={style.canvaButton}
-            >
-              <span className={style.icon}><AddProductIcon /></span> Add Text
-            </button>
+            {settings?.settingsForTextSection?.sideBarTextSection && (
 
-            <button
-              onMouseEnter={() => handleHover("/design/uploadArt")}
-              onMouseLeave={handleLeave}
-              onClick={() => handleClick("/design/uploadArt")}
-              className={style.canvaButton}
-            >
-              <span className={style.icon}><AddArtIcon /></span> Upload Art
-            </button>
-
-            <button
-              onMouseEnter={() => handleHover("/design/addArt")}
-              onMouseLeave={handleLeave}
-              onClick={() => handleClick("/design/addArt")}
-              className={style.canvaButton}
-            >
-              <span className={style.icon}><SelectArtIcon /></span> Add Art
-            </button>
-
-            {activeSide === "back" && (
               <button
-                onMouseEnter={() => handleHover("/design/addNames")}
+                onMouseEnter={() => handleHover("/design/addText")}
                 onMouseLeave={handleLeave}
-                onClick={() => handleClick("/design/addNames")}
+                onClick={() => handleClick("/design/addText")}
                 className={style.canvaButton}
               >
-                <span className={style.icon}><NumberArtIcon /></span> Add Number
+                <span className={style.icon}><AddProductIcon /></span> Add Text
               </button>
             )}
+
+
+            {settings?.uploadSettings?.sideBarImageUploadSection && (
+              <button
+                onMouseEnter={() => handleHover("/design/uploadArt")}
+                onMouseLeave={handleLeave}
+                onClick={() => handleClick("/design/uploadArt")}
+                className={style.canvaButton}
+              >
+                <span className={style.icon}><AddArtIcon /></span> Upload Art
+              </button>
+
+            )}
+
+            {settings?.settingsforAddArtSection?.sideBarAddArtSection && (
+              <button
+                onMouseEnter={() => handleHover("/design/addArt")}
+                onMouseLeave={handleLeave}
+                onClick={() => handleClick("/design/addArt")}
+                className={style.canvaButton}
+              >
+                <span className={style.icon}><SelectArtIcon /></span> Add Art
+              </button>
+            )}
+            {settings?.settingsforAddNamesAndNumbers?.sideBarAddNamesAndNumbersSection && (
+              <>
+                {activeSide === "back" && (
+                  <button
+                    onMouseEnter={() => handleHover("/design/addNames")}
+                    onMouseLeave={handleLeave}
+                    onClick={() => handleClick("/design/addNames")}
+                    className={style.canvaButton}
+                  >
+                    <span className={style.icon}><NumberArtIcon /></span> Add Number
+                  </button>
+                )}
+              </>
+            )
+            }
+
           </div>
         )}
 

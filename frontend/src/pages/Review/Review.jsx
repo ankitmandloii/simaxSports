@@ -19,8 +19,8 @@ import { restoreEditDesigns } from "../../redux/FrontendDesign/TextFrontendDesig
 import SaveDesignPopup from "../../components/PopupComponent/SaveDesignPopup/SaveDesignPopup";
 import { fetchDesign, saveDesignFunction, sendEmailDesign, uploadBlobData } from "../../components/utils/GlobalSaveDesignFunctions";
 
-const designId = "";
-const customerEmail = "testuser@example33.com"; // Unencoded email for apiConnecter
+// const designId = "";
+// const customerEmail = "testuser@example33.com"; // Unencoded email for apiConnecter
 
 // const designId = "68a6ba4b6b2c9f3a161435dd";
 // const customerEmail = "testuser@example.com"; // Unencoded email for apiConnecter
@@ -528,6 +528,12 @@ const Review = () => {
     // setLoading(true);
     setShowPopup(false);
     setSaveDesignLoader(false);
+    if (!customerEmail) {
+      console.log("email not")
+
+      toast.error("Email not found")
+      return;
+    }
     setEmailSendingLoader(true);// Close SaveDesignModal/SaveDesignPopup
     try {
       // Update designPayload with the provided name and optional designId
@@ -598,8 +604,8 @@ const Review = () => {
         }, { replace: true });
       }
       const checkoutData = await makeVariantDataForShopify(reviewItems, cloudinaryResponse);
-      console.log("checkoutData", checkoutData)
       // api call for email send
+
       try {
 
         const emailPayload = {
@@ -627,7 +633,7 @@ const Review = () => {
         console.error("Email sending failed:", emailError);
         toast.error("Failed to send email.");
       } finally {
-        // setEmailSendingLoader(false);
+        setEmailSendingLoader(false);
       }
 
       // toast.success("Design saved and variants prepared successfully!");
@@ -753,7 +759,8 @@ const Review = () => {
         loading ? <>
 
           <div className={styles.loaderWrapper}>
-            <div className={styles.loader}></div>
+            {/* <div className={styles.loader}></div> */}
+            <div className="loader" />
             <p>calculating price...</p>
           </div>
 

@@ -1571,6 +1571,8 @@ const AddImageToolbar = () => {
                           <span className={styles.slider}></span>
                         </label>
                       </div>
+                      <hr />
+
                     </>
 
                   )}
@@ -1581,7 +1583,6 @@ const AddImageToolbar = () => {
 
 
 
-                  <hr />
                   <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                     <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                       Crop & Trim

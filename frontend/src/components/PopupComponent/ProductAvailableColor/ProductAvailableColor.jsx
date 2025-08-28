@@ -151,7 +151,7 @@ const ProductAvailableColor = ({
                   title={color.name}
                   className="color-swatch"
                   style={{
-                    width: '30px',
+                    width: '33px',
                     height: '30px',
                     borderRadius: '20%',
                     display: 'inline-block',

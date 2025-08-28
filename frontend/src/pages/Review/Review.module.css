@@ -587,6 +587,7 @@ h3 {
 }
 
 .loaderWrapper {
+  background-color: var(--blue-light);
   display: flex;
   flex-direction: column;
   align-items: center;

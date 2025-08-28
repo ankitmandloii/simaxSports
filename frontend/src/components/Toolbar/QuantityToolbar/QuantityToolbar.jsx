@@ -25,6 +25,8 @@ const QuantityToolbar = () => {
   const navigate = useNavigate();
   const [products, setAllProducts] = useState([]);
   const [expandedProducts, setExpandedProducts] = useState({});
+
+
   const [licenses, setLicenses] = useState({
     collegiate: CollegiateLicense,
   });
@@ -52,6 +54,7 @@ const QuantityToolbar = () => {
     if (!selectedProducts || selectedProducts?.length === 0) return;
 
     const newAllProducts = [];
+    const newExpandedProducts = {};
     function getVariantImagesFromMetafields(metafieldss) {
       console.log("metafieldss.....", metafieldss)
       // const defaultImage = activeProduct?.imgurl || '';
@@ -92,9 +95,12 @@ const QuantityToolbar = () => {
       console.log("product.............", product)
       const addedColors = product?.addedColors || [];
       const consistentTitle = product?.title || product?.name || product?.handle || 'Product';
+      const idd = product.id.split("/").reverse()[0];
+      newExpandedProducts[idd] = true;
 
       const extraProducts = addedColors?.map((variantProduct) => {
         console.log("variants......", variantProduct);
+        // newExpandedProducts[id] = true;
         const prod = {
           id: variantProduct?.variant?.id?.split("/").reverse()[0],
           imgurl: variantProduct?.img,
@@ -109,6 +115,7 @@ const QuantityToolbar = () => {
           selections: [],
           price: variantProduct?.variant?.price,
           allVariants: variantProduct?.allVariants,
+
           inventory_quantity: variantProduct?.variant?.inventoryItem?.inventoryLevels?.edges?.[0]?.node?.quantities?.[0]?.quantity
         };
         console.log("prod", prod)
@@ -138,6 +145,7 @@ const QuantityToolbar = () => {
     });
 
     setAllProducts(newAllProducts);
+    setExpandedProducts(newExpandedProducts);
     nameAndNumberProductList?.forEach((product) => {
       const availableSizes = product?.sizeCount || {};
       const allSizes = product?.sizes || [];
