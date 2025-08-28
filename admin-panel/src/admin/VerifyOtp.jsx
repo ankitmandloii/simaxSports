@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Page, Card, Box, Text, FormLayout, TextField, Button, Icon, InlineError } from '@shopify/polaris';
 import { useToast } from './ToastContext';
 import { EnterIcon } from '@shopify/polaris-icons';
+import Logo from './images/simaxDesignLogo.png'
 
 export default function VerifyOtp() {
   const { showToast } = useToast();
@@ -18,6 +19,7 @@ export default function VerifyOtp() {
   const [otpError, setOtpError] = useState('');
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
+
 
   // simple cooldown (60s) for resend
   const [cooldown, setCooldown] = useState(0);
@@ -128,6 +130,13 @@ export default function VerifyOtp() {
       <div style={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1rem' }}>
         <Card>
           <div style={{ maxWidth: 520, padding: '2rem' }}>
+            <Box padding="400">
+              <img
+                src={Logo}
+                alt="Logo"
+                style={{ maxWidth: '100%', padding: '0 16px' }}
+              />
+            </Box>
             <Box paddingBlockEnd="400">
               <Text variant="headingLg" as="h3">Verify OTP</Text>
             </Box>
@@ -166,8 +175,13 @@ export default function VerifyOtp() {
                 </Button>
               </FormLayout>
             </form>
+            
           </div>
+           <div  tone="subdued" variant="bodyMd"  onClick={()=> navigate(-1)}  style={{cursor: "pointer",textAlign:'center'}}>
+            <b>Cancel</b>
+            </div>
         </Card>
+        
       </div>
     </Page>
   );
