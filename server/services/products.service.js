@@ -17,6 +17,7 @@ export async function getProductsList(limit = 5, cursor = null) {
           id
           title
           tags
+          vendor   
           variants(first: 200) {
             edges {
               node {
@@ -131,6 +132,7 @@ export async function getProductsByCollectionId(limit, collectionId, cursor) {
                 title
                 handle
                 tags
+                vendor
                 variants(first: 200) {
             edges {
               node {
@@ -331,6 +333,7 @@ export async function searchProducts({ q, limit, cursor, collectionId }) {
             title
             handle
             tags
+            vendor
             variants(first: 200) {
               edges {
                 node {
