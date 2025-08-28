@@ -197,6 +197,7 @@ exports.resendOtp = async (req, res) => {
     const auth = req.headers.authorization || '';
     const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
     if (!token) return res.status(401).json({ success: false, message: 'No temp token' });
+    console.log("token",token)
 
     let decoded;
     try {
@@ -204,18 +205,24 @@ exports.resendOtp = async (req, res) => {
     } catch {
       return res.status(403).json({ success: false, message: 'Invalid or expired session.' });
     }
-    if (decoded.purpose !== 'otp') return res.status(403).json({ success: false, message: 'Invalid token purpose' });
+    console.log("decoded",decoded)
 
+    if (decoded.purpose !== 'otp') return res.status(403).json({ success: false, message: 'Invalid token purpose' });
+     console.log("valid")
     const { email } = req.body;
     if (!email || email !== decoded.email) return res.status(400).json({ success: false, message: 'Invalid request' });
-
+  console.log("email",email)
     const otp = generateOtp();
     otpStore.set(email, {
       hash: hashOtp(otp),
       expiresAt: Date.now() + OTP_TTL_SECONDS * 1000,
       attempts: 0,
     });
-    await sendOtpEmail(email, otp);
+    
+    const send = await services.sendEmailForOtpverification(email, otp);
+    if (!send) {
+      return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, "Error in email send For OTP");
+    }
 
     // Optional: rotate temp token on resend
     const newTemp = jwt.sign(
