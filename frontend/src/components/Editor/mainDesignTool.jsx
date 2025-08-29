@@ -266,7 +266,7 @@ const MainDesignTool = ({
   // ---
 
   const checkBoundary = (e) => {
-    return;
+    // return;
     const obj = e.target;
     const canvas = fabricCanvasRef.current;
     const canvasWidth = canvas.getWidth();
@@ -2144,8 +2144,8 @@ const MainDesignTool = ({
     //   // canvas.requestRenderAll();
     // };
 
-    const showBoundaryOnAction = () => {
-
+    const showBoundaryOnAction = (e) => {
+      // checkBoundary(e);
       const canvas = fabricCanvasRef.current;
       const objects = canvas.getObjects();
       const boundaryBox = objects.find((obj) => obj.name === "boundaryBox");
@@ -2355,7 +2355,7 @@ const MainDesignTool = ({
   useEffect(() => {
     const handleResize = () => {
       console.log("resizing......................", window.innerWidth);
-      setSize(window.innerWidth);
+      // setSize(window.innerWidth);  
     };
 
     window.addEventListener("resize", handleResize);

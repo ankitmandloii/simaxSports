@@ -575,19 +575,17 @@ hr {
 
 
 .canvas-wrapper-5 {
-  height: 90vh;
-  aspect-ratio: 1 / 1;
-  /* or 3 / 3 = 1 */
+  height: 90vh !important;
+  width: calc(90vh * (3 / 3)) !important;
+  max-width: 900px !important;
   margin: 0 auto;
-  max-width: 100%;
 }
 
 .canvas-wrapper-export {
-  height: 90vh;
-  aspect-ratio: 1 / 1;
-  /* or 3 / 3 = 1 */
+  height: 90vh !important;
+  width: calc(90vh * (3 / 3)) !important;
+  max-width: 900px !important;
   margin: 0 auto;
-  max-width: 100%;
 }
 
 #canvas {
@@ -725,6 +723,27 @@ hr {
     width: 1rem;
     height: 1rem;
     margin: 2px;
+  }
+
+  .canvas-wrapper {
+    height: 70vh !important;
+    width: calc(70vh * (3 / 3)) !important;
+    /* max-width: 100% !important; */
+    margin: 0 auto;
+  }
+
+  .canvas-wrapper-export {
+    height: 70vh !important;
+    width: calc(70vh * (3 / 3)) !important;
+    /* max-width: 100% !important; */
+    margin: 0 auto;
+  }
+
+  .canvas-wrapper-5 {
+    height: 70vh !important;
+    width: calc(70vh * (3 / 3)) !important;
+    /* max-width: 100% !important; */
+    margin: 0 auto;
   }
 }
 
