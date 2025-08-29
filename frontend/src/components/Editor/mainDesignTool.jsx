@@ -2558,7 +2558,7 @@ const MainDesignTool = ({
       {!hasClicked && !addName && !addNumber &&
         imageContaintObject?.length == 0 &&
         textContaintObject?.length == 0 && (
-          <div className={style.buttonsroute} style={{ position: 'absolute', top: getTop(canvasRef), left: getLeft(canvasRef) }} >
+          <div className={style.buttonsroute}  >
             {settings?.settingsForTextSection?.sideBarTextSection && (
 
               <button
@@ -2611,7 +2611,8 @@ const MainDesignTool = ({
             }
 
           </div>
-        )}
+        )
+      }
 
       {/* {(hasClicked || addName || addNumber || imageContaintObject.length > 0 || textContaintObject.length > 0 || !isQuantityPage) && (
         <div className={style.notesroute}>
@@ -2625,16 +2626,18 @@ const MainDesignTool = ({
           </button>
         </div>
       )} */}
-      {!isQuantityPage && (hasClicked || addName || addNumber || imageContaintObject.length > 0 || textContaintObject.length > 0) && (
-        <div className={style.notesroute}>
-          <button
-            onClick={() => setShowNotes(true)}
-            className={style.canvaButton}
-          >
-            <span className={style.icon}><CgNotes /></span> Add Notes
-          </button>
-        </div>
-      )}
+      {
+        !isQuantityPage && (hasClicked || addName || addNumber || imageContaintObject.length > 0 || textContaintObject.length > 0) && (
+          <div className={style.notesroute}>
+            <button
+              onClick={() => setShowNotes(true)}
+              className={style.canvaButton}
+            >
+              <span className={style.icon}><CgNotes /></span> Add Notes
+            </button>
+          </div>
+        )
+      }
 
       <LayerModal
         isOpen={isModalOpen}
@@ -2642,9 +2645,11 @@ const MainDesignTool = ({
         onLayerAction={handleLayerAction}
         fabricCanvas={fabricCanvasRef.current}
       />
-      {openAieditorPopup && <EditWithAipopup onClose={() => {
-        setOpenAieditorPopup(false);
-      }}></EditWithAipopup>}
+      {
+        openAieditorPopup && <EditWithAipopup onClose={() => {
+          setOpenAieditorPopup(false);
+        }}></EditWithAipopup>
+      }
 
       {showNotes && <DesignNotesPopup handleClose={handleClose} />}
 
@@ -2657,7 +2662,7 @@ const MainDesignTool = ({
 
 
 
-    </div>
+    </div >
   );
 
 
