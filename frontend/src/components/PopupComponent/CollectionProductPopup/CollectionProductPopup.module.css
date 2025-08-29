@@ -226,6 +226,15 @@
   opacity: 0;
 }
 
+.vendorspan {
+  background-color: var(--blue-light);
+  width: fit-content;
+  padding: 3px;
+  /* margin-top: 5px; */
+  border-radius: 5px;
+  margin: 5px auto;
+}
+
 /* Tablet View (max-width: 1023px) */
 @media (max-width: 1023px) {
   .productListCollection {

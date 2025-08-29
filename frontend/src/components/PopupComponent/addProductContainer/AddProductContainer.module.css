@@ -256,6 +256,15 @@
 
 }
 
+.vendorspan {
+  background-color: var(--blue-light);
+  width: fit-content;
+  padding: 3px;
+  /* margin-top: 5px; */
+  border-radius: 5px;
+  margin: 5px auto;
+}
+
 /* -----image */
 .imageWrapper {
   position: relative;

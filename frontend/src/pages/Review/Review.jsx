@@ -18,6 +18,7 @@ import EmailSendingModal from "./EmailSendingModal";
 import { restoreEditDesigns } from "../../redux/FrontendDesign/TextFrontendDesignSlice";
 import SaveDesignPopup from "../../components/PopupComponent/SaveDesignPopup/SaveDesignPopup";
 import { fetchDesign, saveDesignFunction, sendEmailDesign, uploadBlobData } from "../../components/utils/GlobalSaveDesignFunctions";
+import EmailInputPopup from "../../components/PopupComponent/EmailInputPopup/EmailInputPopup";
 
 // const designId = "";
 // const customerEmail = "testuser@example33.com"; // Unencoded email for apiConnecter
@@ -38,6 +39,7 @@ const Review = () => {
   const [currentDesign, setCurrentDesing] = useState();
   const [discountData, setDiscountData] = useState();
   const [extraInformation, setExtraInformation] = useState([]);
+  const [showEmailPopup, setShowEmailPopup] = useState(false);
   const CollegiateLicense = useSelector((state) => state.productSelection.CollegiateLicense);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -152,10 +154,20 @@ const Review = () => {
   );
   const [loading, setLoading] = useState(false);
 
-  const AddToCartClick = () => {
+  const AddToCartClick = (overrideEmail = null) => {
+    // if (!customerEmail) {
+    //   setShowEmailPopup(true);
+    //   return;
+    // }
+    const effectiveEmail = overrideEmail || customerEmail;
+    console.log("----------effectiveEmail", effectiveEmail)
+    if (!effectiveEmail) {
+      setShowEmailPopup(true);
+      return;
+    }
     setRetrieveLoader(true);
     // fetchDesign();
-    fetchDesign(customerEmail).then((data) => {
+    fetchDesign(effectiveEmail).then((data) => {
       const designFound = data.userDesigns?.designs?.some(
         (design) => design._id === designId
       );
@@ -528,12 +540,12 @@ const Review = () => {
     // setLoading(true);
     setShowPopup(false);
     setSaveDesignLoader(false);
-    if (!customerEmail) {
-      console.log("email not")
+    // if (!customerEmail) {
+    //   console.log("email not")
 
-      toast.error("Email not found")
-      return;
-    }
+    //   toast.error("Email not found")
+    //   return;
+    // }
     setEmailSendingLoader(true);// Close SaveDesignModal/SaveDesignPopup
     try {
       // Update designPayload with the provided name and optional designId
@@ -752,7 +764,15 @@ const Review = () => {
     }
 
   }
-
+  const handleEmailSubmit = ({ email }) => {
+    searchParams.set("customerEmail", email);
+    navigate({
+      pathname: location.pathname,
+      search: searchParams.toString(),
+    }, { replace: true });
+    setShowEmailPopup(false);
+    AddToCartClick(email);
+  };
   return (
     <>
       {
@@ -791,6 +811,12 @@ const Review = () => {
               ))}
             {emailSendingLoader && (
               <EmailSendingModal onClose={() => setEmailSendingLoader(false)} />
+            )}
+            {showEmailPopup && (
+              <EmailInputPopup
+                onSubmit={handleEmailSubmit}
+                onClose={() => setShowEmailPopup(false)}
+              />
             )}
             <div className={styles.header}>
               <div className="toolbar-main-heading">
@@ -898,7 +924,7 @@ const Review = () => {
           </button> */}
 
 
-                <button className={styles.addToCart} onClick={AddToCartClick}>
+                <button className={styles.addToCart} onClick={() => AddToCartClick()}>
                   ADD TO CART <LuArrowRight />
                 </button>
               </>

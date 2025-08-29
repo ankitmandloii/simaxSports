@@ -91,12 +91,13 @@ export const fetchProducts = createAsyncThunk(
         });
 
         return {
-          name: node.title,
+          name: node?.title,
           imgurl: variants[0]?.image?.originalSrc || productImages[0] || "", // fallback to first product image
           images: productImages, // ✅ add this field to store all product images
           colors: Object.values(colorMap),
           allVariants: variants,
           id: productID,
+          vendor: node?.vendor
         };
       });
 

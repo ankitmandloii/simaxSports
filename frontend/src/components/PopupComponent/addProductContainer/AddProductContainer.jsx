@@ -23,6 +23,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
   const [searchError, setSearchError] = useState(null);
+  console.log("waaaaaaaa", rawProducts)
 
   // Fetch products from API based on search query
   // Fetch products from API based on search query
@@ -102,7 +103,8 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
         });
 
         return {
-          name: product.title,
+          name: product?.title,
+          vendor: product?.vendor,
           imgurl: variants[0]?.image?.originalSrc || productImages[0] || '',
           images: productImages,
           colors: Object.values(colorMap),
@@ -182,7 +184,8 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
         });
 
         return {
-          name: product.name,
+          name: product?.name,
+          vendor: product?.vendor,
           imgurl: variants[0]?.image?.originalSrc || productImages[0] || '',
           images: productImages,
           colors: Object.values(colorMap),
@@ -355,7 +358,8 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
             ) : (
               <ul className={styles.productList}>
                 {products.map((product) => {
-                  const { productKey, name, colors = [], imgurl } = product;
+                  const { productKey, name, colors = [], imgurl, vendor } = product;
+                  console.log("-------vendor", product)
                   const state = productStates[productKey] || {};
                   const displayImage =
                     state.selectedColor?.img || state.hoverImage || imgurl;
@@ -385,6 +389,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                             onLoad={() => handleImageLoad(productKey)}
                           />
                         </div>
+                        <p className={styles.vendorspan}>{vendor}</p>
                         <p className={styles.addProductPara}>{name}</p>
                       </div>
 

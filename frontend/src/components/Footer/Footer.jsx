@@ -385,6 +385,7 @@ import { fetchDesign, uploadBlobData, saveDesignFunction, sendEmailDesign } from
 import { generateDesigns } from '../Editor/utils/helper.js';
 import { toast } from "react-toastify";
 import { addProduct } from '../../redux/productSelectionSlice/productSelectionSlice.js';
+import EmailInputPopup from '../PopupComponent/EmailInputPopup/EmailInputPopup.jsx';
 
 // const designId = "68ae9e7a3e658d88aa45852a";
 // const customerEmail = "testuser@example.com";
@@ -400,6 +401,7 @@ const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [userDesigns, setUserDesigns] = useState([]);
+  const [pendingAction, setPendingAction] = useState(null);
 
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   const { present, DesignNotes } = useSelector((state) => state.TextFrontendDesignSlice);
@@ -408,6 +410,8 @@ const Footer = () => {
   const isProductPage = location.pathname === "/design/product";
   const searchParams = new URLSearchParams(location.search);
   const customerEmail = searchParams.get("customerEmail");
+  const [localEmail, setLocalEmail] = useState(searchParams.get("customerEmail"));
+
   const designId = searchParams.get("designId");
   console.log("=======ddd", designId)
   const designPayload = {
@@ -532,15 +536,30 @@ const Footer = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const setNavigate = () => navigate('/quantity');
+  const setNavigate = () => navigate(`/quantity`);
+  // const goToQuantity = () => {
+  //   navigate(`/quantity${location.search}`);
+  // };
 
-  const handleDesignAction = (actionType) => {
+  const handleDesignAction = (actionType, emailOverride = null) => {
+    // if (!customerEmail) {
+    //   setPendingAction(actionType);
+    //   setActiveModal("emailInput");
+    //   return;
+    // }
+    const effectiveEmail = emailOverride || customerEmail;
+
+    if (!effectiveEmail) {
+      setPendingAction(actionType);
+      setActiveModal("emailInput");
+      return;
+    }
     setActiveModal("retrieve")
     console.log("------------click")
     setIsFetchingDesign(true);
     dispatch(requestExport());
 
-    fetchDesign(customerEmail)
+    fetchDesign(effectiveEmail)
       .then((data) => {
         const designs = data.userDesigns?.designs || [];
         console.log("desings", designs)
@@ -678,6 +697,20 @@ const Footer = () => {
   // useState(() => {
 
   // }, [lastDesign])
+  const handleEmailSubmit = ({ email }) => {
+    searchParams.set("customerEmail", email);
+    navigate({
+      pathname: location.pathname,
+      search: searchParams.toString(),
+    }, { replace: true });
+    setActiveModal(null); // ✅ Close immediately
+
+    // Small delay ensures searchParams updates before re-calling handleDesignAction
+    setTimeout(() => {
+      // handleDesignAction(pendingAction);
+      handleDesignAction(pendingAction, email);
+    }, 0);
+  };
 
   return (
     <>
@@ -703,6 +736,11 @@ const Footer = () => {
           onClose={() => setActiveModal(null)}
         />
       )}
+      {activeModal === "emailInput" && (
+        <EmailInputPopup
+          onSubmit={handleEmailSubmit}
+          onClose={() => setActiveModal(null)}
+        />)}
       {activeModal === "email" && (
         <EmailSendingModal onClose={() => setActiveModal(null)} />
       )}

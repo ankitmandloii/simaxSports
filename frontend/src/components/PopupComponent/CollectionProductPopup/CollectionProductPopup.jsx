@@ -261,7 +261,7 @@ import ColorWheel from '../../images/color-wheel1.png';
 import ColorSwatchPlaceholder from '../../CommonComponent/ColorSwatchPlaceholder.jsx/ColorSwatchPlaceholder';
 
 const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoading: setParentLoading, setCollectionLoading }) => {
-  console.log("=----collectionId", collectionId)
+  // console.log("=----collectionId", collectionId)
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const popupRef = useRef(null);
   const selectedProducts = useSelector((state) => state?.selectedProducts?.selectedProducts);
@@ -277,13 +277,13 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
   const [loading, setLoading] = useState(false);
   const [swatchLoaded, setSwatchLoaded] = useState(true);
 
-  console.log("------------loadingggg", loading)
+  // console.log("------------loadingggg", loading)
 
 
   // const collectionId = 'gid://shopify/Collection/289328496774';
-  console.log("-------------collections", collections)
+  // console.log("-------------collections", collections)
   const defaultCollectionId = collections.length > 0 ? collections[0].id : null;
-  console.log("-------------defaultCollectionId", defaultCollectionId)
+  // console.log("-------------defaultCollectionId", defaultCollectionId)
 
   const effectiveCollectionId = collectionId || defaultCollectionId;
   const numericId = effectiveCollectionId?.split('/').pop();
@@ -329,7 +329,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
 
   const fetchProducts = useCallback(async (isLoadMore = false) => {
     setLoading(true)
-    console.log("---numericId", numericId)
+    // console.log("---numericId", numericId)
     if (!effectiveCollectionId) return;
     // setLoading(true);
     try {
@@ -341,7 +341,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
 
       const data = await res.json();
       setLoading(false);
-      console.log("-----CollectionData", data)
+      // console.log("-----CollectionData", data)
       const edges = data?.result?.node?.products?.edges || [];
       const pageInfo = data?.result?.node?.products?.pageInfo;
 
@@ -396,6 +396,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
           allVariants: variants,
           id: productID,
           productKey: productID,
+          vendor: node?.vendor,
         };
       });
 
@@ -579,6 +580,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
                       />
                     </div>
                   </div>
+                  <p className={style.vendorspan}>{product?.vendor}</p>
                   <p className={style.collectionProductPara}>{product.name}</p>
                   <div className={style.modalProductcolorContainer}>
                     <img

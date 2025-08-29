@@ -1,0 +1,181 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 15px;
+}
+
+.popup {
+    background: #fff;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+}
+
+.content {
+    padding: 35px;
+    text-align: center;
+}
+
+.header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+    background-color: #f9fafc;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--blue-color);
+}
+
+.closeButton {
+    position: absolute;
+    top: 14px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+    color: #000;
+}
+
+.subText {
+    font-size: 14px;
+    color: #666;
+    margin: 10px 0;
+}
+
+.input {
+    width: 100%;
+    padding: 10px;
+    margin: 12px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+}
+
+.input:focus {
+    border-color: #66afe9;
+    outline: 0;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+}
+
+.inputError {
+    border-color: #e74c3c;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(231, 76, 60, .6);
+}
+
+.errorText {
+    font-size: 12px;
+    color: #e74c3c;
+    text-align: left;
+    margin: 5px 0 10px;
+}
+
+.charLimit {
+    font-size: 12px;
+    color: #999;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.saveButton {
+    background-color: var(--blue-color);
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 14px;
+    font-weight: bold;
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.saveButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.saveButton:hover:not(:disabled) {
+    background-color: var(--blue-color);
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.saveButton:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.privacy {
+    font-size: 12px;
+    color: #999;
+    margin-top: 15px;
+}
+
+.link {
+    color: var(--blue-color);
+    cursor: pointer;
+}
+
+/* 📱 Responsive styles */
+@media (max-width: 768px) {
+    .popup {
+        padding: 25px;
+    }
+
+    .title {
+        font-size: 14px;
+    }
+
+    .subText {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .popup {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    .header {
+        padding: 12px 20px;
+    }
+
+    .title {
+        font-size: 13px;
+    }
+
+    .subText {
+        font-size: 12px;
+    }
+
+    .saveButton {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .privacy,
+    .charLimit,
+    .errorText {
+        font-size: 11px;
+    }
+}
