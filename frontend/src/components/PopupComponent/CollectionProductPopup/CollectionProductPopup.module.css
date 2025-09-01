@@ -239,6 +239,7 @@
 @media (max-width: 1023px) {
   .productListCollection {
     justify-content: center;
+
   }
 
   .modalProduct {
@@ -247,6 +248,20 @@
 
   .imgProContainer {
     height: 140px;
+  }
+
+  .colorPopup {
+    padding: 3px;
+  }
+
+  .loadMore {
+    margin: 2rem auto 4rem;
+  }
+
+  .productPanel .color-swatch {
+    width: 25px;
+    height: 25px;
+
   }
 }
 

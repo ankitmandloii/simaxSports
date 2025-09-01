@@ -151,4 +151,9 @@ a.step:first-child:after {
   .navSpanHeading {
     display: none;
   }
+
+  a.step:first-child:after {
+    display: none;
+  }
+
 }

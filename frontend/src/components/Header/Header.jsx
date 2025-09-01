@@ -65,9 +65,13 @@ const Header = () => {
           <CartIcon />
           <p>Cart</p>
         </button> */}
-        <button className={style.headerBtn}>
+        <button className={style.headerBtn} onClick={() => {
+          if (!CustomerLogin) {
+            window.location.href = "https://simax-designs.myshopify.com/account/login";
+          }
+        }}>
           <UserIcon />
-          {CustomerLogin ? <p className={style.loginName}>{CustomerLogin}</p> : <p>Login</p>}
+          {CustomerLogin ? <p className={style.loginName}>{CustomerLogin}</p> : <p >Login</p>}
         </button>
         {
           isDesktopOrLaptop && (

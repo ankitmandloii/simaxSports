@@ -208,6 +208,10 @@
   .uploadOptionBtn p {
     font-size: 10px;
   }
+
+  .uploadOptionBtn {
+    width: 10rem;
+  }
 }
 
 /* .dashed {

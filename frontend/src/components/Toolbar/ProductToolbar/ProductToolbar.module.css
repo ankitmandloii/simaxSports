@@ -314,6 +314,7 @@
 
   .toolbarMainContainer {
     max-height: initial;
+    min-width: 350px;
   }
 }
 

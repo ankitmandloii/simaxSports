@@ -309,7 +309,7 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
                             <img
                                 src={resultImage}
                                 alt="Generated background"
-                                style={{ maxWidth: '100%', marginTop: '10px', cursor: 'pointer' }}
+                            // style={{ maxWidth: '100%', marginTop: '10px', cursor: 'pointer' }}
 
                             />
                             <div className={styles.BtnWrapper}>

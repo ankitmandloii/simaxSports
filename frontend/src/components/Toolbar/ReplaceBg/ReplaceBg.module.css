@@ -123,6 +123,13 @@
 
 }
 
+.resultContainer img {
+    max-width: '100%';
+    margin-top: '10px';
+    cursor: 'pointer'
+}
+
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);
@@ -130,5 +137,16 @@
 
     100% {
         transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 1024px) {
+    .resultContainer {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .resultContainer img {
+        height: 22rem;
     }
 }

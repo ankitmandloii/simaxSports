@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from './ChangePopup.module.css';
 import CollectionPopupList from '../CollectionPopupList/CollectionPopupList';
 import CollectionProductPopup from '../CollectionProductPopup/CollectionProductPopup';
+import { CrossIcon } from '../../iconsSvg/CustomIcon';
 
 const ChangePopup = ({ onClose, onProductSelect }) => {
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
@@ -21,9 +22,9 @@ const ChangePopup = ({ onClose, onProductSelect }) => {
           <button
             className={styles.closeBtn}
             onClick={onClose}
-            // disabled={isAnyLoading} // disable close while loading if needed
+          // disabled={isAnyLoading} // disable close while loading if needed
           >
-            ×
+            <CrossIcon />
           </button>
         </div>
 

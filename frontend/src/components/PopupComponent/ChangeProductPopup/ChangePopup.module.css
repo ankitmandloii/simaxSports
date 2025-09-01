@@ -233,6 +233,7 @@
   .popupContainer {
     width: 95%;
     height: 90%;
+    top: 2%;
   }
 
   .popupBodyLayout {

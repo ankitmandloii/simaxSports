@@ -487,6 +487,11 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
             title={color}
             className={`color-swatch ${isSelected ? 'selected' : ''}`}
             // style={{
+            //   width: 25,
+            //   height: 25,
+
+            // }}
+            // style={{
             //   width: 30,
             //   height: 30,
             //   borderRadius: '20%',

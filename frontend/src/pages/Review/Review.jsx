@@ -379,6 +379,7 @@ const Review = () => {
     // console.log("CloudinaryImages", CloudinaryImages);
     const data = reviewItems.forEach((product, index) => {
       const allVariants = product.allVariants;
+      console.log("--------------------checkk", allVariants)
 
       const sizeskey = Object.entries(product?.sizes);
       const color = product?.color;

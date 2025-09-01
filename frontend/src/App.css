@@ -652,7 +652,7 @@ hr {
   }
 
   .toolbar-main-container {
-    min-width: 350px;
+    min-width: 350px !important;
     padding: 1px;
     width: 300px;
     margin: 0 auto;
