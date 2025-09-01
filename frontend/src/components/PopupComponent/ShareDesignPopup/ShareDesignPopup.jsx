@@ -193,13 +193,16 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign, navigate }) =
                                         <span className={styles.shareLabel}>Pin</span>
                                     </div>
                                 </div> */}
-                                <button className={styles.continueButton} onClick={() => navigate("quantity")}>Continue to Pricing</button>
+                                <button className={styles.continueButton} onClick={() => {
+                                    navigate("quantity");
+                                    setSavedesignPopupHandler(); // <-- call the function
+                                }}>Continue to Pricing</button>
                             </>
                         )}
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

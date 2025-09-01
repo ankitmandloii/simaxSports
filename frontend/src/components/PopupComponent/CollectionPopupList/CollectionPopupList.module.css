@@ -94,7 +94,14 @@
   .collectionSidebar {
     height: auto;
   }
+
+  .collectionSidebar.open {
+    height: 80vh;
+    /* adjust as needed */
+    overflow-y: auto;
+  }
 }
+
 .disabled {
   pointer-events: none;
   opacity: 0.5;

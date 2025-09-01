@@ -336,7 +336,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
       const res = await fetch(`${BASE_URL}products/collection/${numericId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ limit: 10, cursor: isLoadMore ? cursor : '' }),
+        body: JSON.stringify({ limit: 20, cursor: isLoadMore ? cursor : '' }),
       });
 
       const data = await res.json();

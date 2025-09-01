@@ -684,14 +684,17 @@ const Footer = () => {
         await sendEmailDesign(emailPayload);
         // toast.success("Email sent successfully!");
         setActiveModal("share");
+        console.log("---------now activate share model", activeModal)
       } catch (err) {
         toast.error("Failed to send email.", err.message);
         setActiveModal(null);
+        console.log("---------now activate null model", activeModal)
       }
     } catch (error) {
       toast.error("Failed to save design.", error.message);
     } finally {
-      setActiveModal(null);
+      // setActiveModal(null);
+      // console.log("---------now activate null model", activeModal)
       setLoading(false);
     }
   };

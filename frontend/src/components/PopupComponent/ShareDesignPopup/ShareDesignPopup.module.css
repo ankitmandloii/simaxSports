@@ -173,7 +173,7 @@ form textarea {
 /* Responsive Breakpoints */
 @media (max-width: 768px) {
     .content {
-        flex-direction: column;
+        flex-direction: column-reverse;
         padding: 15px;
     }
 
@@ -183,17 +183,21 @@ form textarea {
 
     .textContainer {
         margin-left: 0;
-        margin-bottom: 4rem;
+        /* margin-bottom: 4rem; */
     }
 
     .title {
         font-size: 1.3rem;
     }
+
+    .modalHeader h3 {
+        font-size: 17px;
+    }
 }
 
 @media (max-width: 480px) {
     .popup {
-        width: 100%;
+        /* width: 100%; */
         height: auto;
         max-height: 95vh;
     }
