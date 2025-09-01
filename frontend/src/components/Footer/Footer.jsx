@@ -685,12 +685,13 @@ const Footer = () => {
         // toast.success("Email sent successfully!");
         setActiveModal("share");
       } catch (err) {
-        toast.error("Failed to send email.");
+        toast.error("Failed to send email.", err.message);
         setActiveModal(null);
       }
     } catch (error) {
-      toast.error("Failed to save design.");
+      toast.error("Failed to save design.", error.message);
     } finally {
+      setActiveModal(null);
       setLoading(false);
     }
   };
@@ -744,7 +745,7 @@ const Footer = () => {
       {activeModal === "email" && (
         <EmailSendingModal onClose={() => setActiveModal(null)} />
       )}
-      {lastDesign && activeModal === "share" && (
+      {activeModal === "share" && (
         <ShareDesignPopup setSavedesignPopupHandler={() => setActiveModal(null)} lastDesign={lastDesign} navigate={navigate} />
       )}
 

@@ -77,24 +77,36 @@ function isLocked(_eventData, transform) {
 // Delete control - clickable
 
 function positionHtmlControl(el, canvas, left, top) {
-  const viewportTransform = canvas.viewportTransform;
-  const rect = canvas.upperCanvasEl.getBoundingClientRect();
+  // get wrapper element instead ofcanvas.upperCanvasEl.parentNode
+  const wrapper = canvas.upperCanvasEl.parentNode;
+  const rect = wrapper.getBoundingClientRect();
 
-  const { x, y } = fabric.util.transformPoint(new fabric.Point(left, top), viewportTransform);
+  // apply viewport transform to (left, top)
+  const { x, y } = fabric.util.transformPoint(
+    new fabric.Point(left, top),
+    canvas.viewportTransform
+  );
 
-  const controlLeft = rect.left + x - 14;
-  const controlTop = rect.top + y - 14;
+  // position relative to wrapper
+  const controlLeft = x - 14;
+  const controlTop = y - 14;
 
-  // Check if the control is within the bounds of the canvas
-  const canvasRect = canvas.upperCanvasEl.getBoundingClientRect();
-  if (controlLeft >= canvasRect.left && controlLeft <= canvasRect.right && controlTop >= canvasRect.top && controlTop <= canvasRect.bottom) {
+  // check bounds inside wrapper (not full window)
+  if (
+    controlLeft >= 0 &&
+    controlLeft <= rect.width &&
+    controlTop >= 0 &&
+    controlTop <= rect.height
+  ) {
+    el.style.position = "absolute";
     el.style.left = `${controlLeft}px`;
     el.style.top = `${controlTop}px`;
-    el.style.display = "flex";  // Show the control
+    el.style.display = "flex";
   } else {
-    el.style.display = "none";  // Hide the control if outside the canvas bounds
+    el.style.display = "none";
   }
 }
+
 function renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, dispatch) {
   // const dispatch = useDispatch();
 
@@ -167,7 +179,7 @@ function renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, d
     };
 
     el.appendChild(img); // Append the icon to the div
-    document.body.appendChild(el); // Add the delete button to the body
+    canvas.upperCanvasEl.parentNode.appendChild(el); // Add the delete button to the body
     fabricObject._htmlControls.delete = el; // Store the control reference for later removal
   }
 
@@ -207,7 +219,7 @@ function renderHtmlResizeControl(ctx, left, top, _styleOverride, fabricObject) {
 
     el.setAttribute("data-fabric-control", "true");
     el.appendChild(img);
-    document.body.appendChild(el);
+    canvas.upperCanvasEl.parentNode.appendChild(el);
     fabricObject._htmlControls.resize = el;
 
     let isHovering = false;
@@ -315,7 +327,7 @@ function renderHtmlRotateControl(ctx, left, top, _styleOverride, fabricObject) {
     img.style.pointerEvents = "none"; // Prevent pointer events from interfering with the icon
     el.setAttribute("data-fabric-control", "true");
     el.appendChild(img); // Append the image inside the circle
-    document.body.appendChild(el); // Add the control to the document body
+    canvas.upperCanvasEl.parentNode.appendChild(el); // Add the control to the document body
     fabricObject._htmlControls.rotate = el; // Store the rotate control reference for removal later
 
     // State for hover detection
@@ -419,7 +431,7 @@ function renderHtmlHeightControl(ctx, left, top, _styleOverride, fabricObject) {
     img.style.pointerEvents = "none"; // Prevent pointer events from interfering with the icon
     el.setAttribute("data-fabric-control", "true");
     el.appendChild(img); // Append the image inside the circle
-    document.body.appendChild(el); // Add the control to the document body
+    canvas.upperCanvasEl.parentNode.appendChild(el); // Add the control to the document body
     fabricObject._htmlControls.height = el; // Store the height control reference for later removal
 
     // State for hover detection
@@ -529,7 +541,7 @@ function renderHtmlWidthControl(ctx, left, top, _styleOverride, fabricObject) {
     img.style.pointerEvents = "none"; // Prevent pointer events from interfering with the icon
     el.setAttribute("data-fabric-control", "true");
     el.appendChild(img); // Append the image inside the circle
-    document.body.appendChild(el); // Add the control to the document body
+    canvas.upperCanvasEl.parentNode.appendChild(el); // Add the control to the document body
     fabricObject._htmlControls.width = el; // Store the width control reference for later removal
 
     // State for hover detection
@@ -657,7 +669,7 @@ function renderHtmlLayerControl(ctx, left, top, _styleOverride, fabricObject, br
     // Append the image to the control div
     el.appendChild(img);
     // Append the control div to the document body
-    document.body.appendChild(el);
+    canvas.upperCanvasEl.parentNode.appendChild(el);
     // Store the control reference for later removal
     fabricObject._htmlControls.layer = el;
   }
@@ -747,7 +759,7 @@ function rotateWithCenter(eventData, transform, x, y) {
 //     };
 
 //     el.appendChild(img); // Append the icon to the div
-//     document.body.appendChild(el); // Add the delete button to the body
+//    canvas.upperCanvasEl.parentNode.appendChild(el); // Add the delete button to the body
 //     fabricObject._htmlControls.delete = el; // Store the control reference for later removal
 //   }
 

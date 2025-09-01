@@ -88,12 +88,12 @@ import { FaPinterest } from "react-icons/fa";
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign ,navigate}) => {
+const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign, navigate }) => {
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [isEmailFormOpen, setIsEmailFormOpen] = useState(false);
     const location = useLocation();
     console.log(lastDesign, "lastDesing in share designpopup")
-    const shareUrl = window.location.href + "&designId=" + lastDesign?._id;
+    const shareUrl = window.location.href;
 
     const handleCopy = () => {
         navigator.clipboard.writeText(shareUrl);

@@ -12,6 +12,7 @@ import renderAllImageObjects from "./Objects/renderAllImageObjects";
 import renderNameAndNumber from "./Objects/renderNameAndNumberObject";
 import updateBoundaryVisibility from "./core/updateBoundaryVisibility";
 import EditWithAipopup from "../PopupComponent/EditWithAipopup/EditWithAipopup"
+import { useMediaQuery } from 'react-responsive';
 
 import {
   deleteImageState,
@@ -2351,11 +2352,13 @@ const MainDesignTool = ({
       // mirrorCanvasRef.current = null;
     };
   }, [id, backgroundImage, activeSide, size]);
-
+  const isTabletOrMobile = useMediaQuery({ query: '(max-width: 768px)' });
   useEffect(() => {
     const handleResize = () => {
       console.log("resizing......................", window.innerWidth);
-      // setSize(window.innerWidth);  
+      if (!isTabletOrMobile) {
+        setSize(window.innerWidth);
+      }
     };
 
     window.addEventListener("resize", handleResize);
