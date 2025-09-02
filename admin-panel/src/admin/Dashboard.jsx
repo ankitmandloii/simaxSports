@@ -279,81 +279,99 @@ export function Dashboard() {
               <Text variant="headingLg" as="h2">All Designs</Text>
             </Box>
             <Divider />
-            <Box padding="400">
-              {userDesigns.length === 0 ? (
-                <EmptyState
-                  heading="No designs found."
-                  image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
-                >
-                  <p>Track and receive your incoming designs from customers.</p>
-                </EmptyState>
-              ) : filteredDesigns.length === 0 ? (
-                <Card>
-                  <Box padding="400">
-                    <Text tone="subdued">No designs match your current filters.</Text>
-                  </Box>
-                </Card>
-              ) : (
-                <ResourceList
-                  items={filteredDesigns}
-                  renderItem={(item) => {
-                    const {
-                      _id,
-                      DesignName,
-                      present,
-                      status,
-                      FinalImages,
-                      ownerEmail,
-                      version,
-                      createdAt,
-                    } = item;
+           <ResourceList
+  items={filteredDesigns}
+  renderItem={(item, index) => {
+    const {
+      _id,
+      DesignName,
+      present,
+      status,
+      FinalImages,
+      ownerEmail,
+      version,
+      createdAt,
+    } = item;
 
-                    const firstThumb =
-                      present?.front?.images?.[0]?.src ||
-                      (FinalImages?.[0] ?? "/placeholder.png");
+    const firstThumb =
+      present?.front?.images?.[0]?.src ||
+      (FinalImages?.[0] ?? "/placeholder.png");
 
-                    return (
-                      <ResourceItem id={_id} key={_id} media={<Thumbnail source={firstThumb} size="small" />}>
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
-                          <TextContainer>
-                            <Text variant="headingMd" as="h3">{DesignName || "(untitled)"}</Text>
-                            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                              <Badge tone={statusTone(status)}>{status}</Badge>
-                              <Text variant="bodySm" tone="subdued">
-                                version: <strong>{version ?? "-"}</strong>
-                              </Text>
-                              <Text variant="bodySm" tone="subdued">
-                                Created: {new Date(createdAt).toLocaleString("en-GB", { timeZone: "UTC" })} UTC
-                              </Text>
-                            </div>
-                            <Text variant="bodySm" tone="subdued">Email: {ownerEmail}</Text>
-                          </TextContainer>
+    // Alternate row background (light grey / white)
+    const rowStyle = {
+      backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#ffffff",
+      padding: "12px",
+      borderRadius: "8px",
+    };
 
-                          <div style={{ display: "flex", gap: 8 }}>
-                            <Button onClick={() => handleViewDesign(item)} primary>
-                              View details
-                            </Button>
-                            <Button
-                              destructive
-                              onClick={() =>
-                                setDeleteDlg({
-                                  open: true,
-                                  id: _id,
-                                  email: ownerEmail,
-                                  name: DesignName || "this design",
-                                })
-                              }
-                            >
-                              Delete
-                            </Button>
-                          </div>
-                        </div>
-                      </ResourceItem>
-                    );
-                  }}
-                />
-              )}
-            </Box>
+    return (
+      <div key={_id} style={rowStyle}>
+        <ResourceItem
+          id={_id}
+          media={<Thumbnail source={firstThumb} size="small" />}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 16,
+              flexWrap: "wrap",
+            }}
+          >
+            <TextContainer>
+              <Text variant="headingMd" as="h3">
+                {DesignName || "(untitled)"}
+              </Text>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  flexWrap: "wrap",
+                }}
+              >
+                <Badge tone={statusTone(status)}>{status}</Badge>
+                <Text variant="bodySm" tone="subdued">
+                  version: <strong>{version ?? "-"}</strong>
+                </Text>
+                <Text variant="bodySm" tone="subdued">
+                  Created:{" "}
+                  {new Date(createdAt).toLocaleString("en-GB", {
+                    timeZone: "UTC",
+                  })}{" "}
+                  UTC
+                </Text>
+              </div>
+              <Text variant="bodySm" tone="subdued">
+                Email: {ownerEmail}
+              </Text>
+            </TextContainer>
+
+            <div style={{ display: "flex", gap: 8 }}>
+              <Button onClick={() => handleViewDesign(item)} primary>
+                View details
+              </Button>
+              <Button
+                destructive
+                onClick={() =>
+                  setDeleteDlg({
+                    open: true,
+                    id: _id,
+                    email: ownerEmail,
+                    name: DesignName || "this design",
+                  })
+                }
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </ResourceItem>
+      </div>
+    );
+  }}
+/>
+
           </Card>
         </Layout.Section>
       </Layout>
@@ -387,7 +405,7 @@ export function Dashboard() {
                 <Box padding="400">
                   <div
                     style={{
-                      width: "100%",
+                      width: "250px",
                       aspectRatio: "4 / 3",
                       borderRadius: 12,
                       overflow: "hidden",
