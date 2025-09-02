@@ -125,7 +125,9 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign, navigate }) =
                 </div>
                 <div className={styles.content}>
                     <div className={styles.designimg}>
-                        <img src="https://cdn.shopify.com/s/files/1/0622/9560/5382/files/82601_f_fl.jpg?v=1754920925" alt="Hoodie Design" className={styles.designImage} />
+                        <img src={lastDesign?.FinalImages[0]} alt="Hoodie Design" className={styles.designImage} />
+
+                        {/* <img src="https://cdn.shopify.com/s/files/1/0622/9560/5382/files/82601_f_fl.jpg?v=1754920925" alt="Hoodie Design" className={styles.designImage} /> */}
                     </div>
                     <div className={styles.textContainer}>
                         {isEmailFormOpen ? (

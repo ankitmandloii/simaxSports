@@ -454,6 +454,10 @@ input:checked+.slider:before {
     justify-content: center;
   }
 
+  .crossIcon {
+    display: none;
+  }
+
 
 }
 

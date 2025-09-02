@@ -2,7 +2,7 @@
   position: relative;
   height: 100vh;
   /* full screen */
-  overflow-y: auto;
+  /* overflow-y: auto; */
   /* main scroll */
   -webkit-overflow-scrolling: touch;
   /* smooth iOS momentum */
@@ -279,7 +279,7 @@
 
 
 .toolbarMainContainer {
-  /* overflow-y: auto; */
+  overflow-y: auto;
   width: 100%;
   background: var(--blue-light);
   /* max-height: 680px; */

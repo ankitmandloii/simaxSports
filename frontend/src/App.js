@@ -370,7 +370,7 @@ function App() {
         setContinueEditPopup(true);
       }
     }
-    // editDesignHandler();
+    editDesignHandler();
   }, [rawProducts, willRenderContinue]);
 
   const handleContinuePopup = () => {

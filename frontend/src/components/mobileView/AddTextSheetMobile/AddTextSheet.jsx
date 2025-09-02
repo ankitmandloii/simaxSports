@@ -61,7 +61,7 @@ export default function AddTextSheet({ isOpen, setIsOpen, sheetContaint, snap })
       isOpen={isOpen}
       onClose={() => {
         setIsOpen(false);
-        navigate('/design/product');
+        // navigate('/design/product');
       }}
 
       snapPoints={snapPoint}
@@ -75,7 +75,7 @@ export default function AddTextSheet({ isOpen, setIsOpen, sheetContaint, snap })
         <button
           onClick={() => {
             setIsOpen(false);
-            navigate('/design/product');
+            // navigate('/design/product');
           }}
           style={{
             position: 'absolute',
