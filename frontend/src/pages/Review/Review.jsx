@@ -956,12 +956,7 @@ const Review = () => {
                 onClose={() => setShowPopup(false)}
               />
             )}
-            <div
-              className="canvas-wrapper"
-              style={{ position: "relative", top: 5, display: "none" }}
-            >
-              <canvas id="canvas-export" style={{ display: "none" }} />
-            </div>
+           
           </div></>
       }</>
 

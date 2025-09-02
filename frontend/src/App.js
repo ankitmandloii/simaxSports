@@ -512,6 +512,12 @@ function App() {
 
         <BottomBar />
       </div>
+      <div
+        className="canvas-wrapper"
+        style={{ position: "relative", top: 5, display: "none" }}
+      >
+        <canvas id="canvas-export" style={{ display: "none" }} />
+      </div>
       <canvas id="HelperCanvas" style={{ display: "none" }}></canvas>
     </>
   );

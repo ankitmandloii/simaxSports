@@ -413,7 +413,7 @@ const Footer = () => {
   const [localEmail, setLocalEmail] = useState(searchParams.get("customerEmail"));
 
   const designId = searchParams.get("designId");
-  console.log("=======ddd", designId)
+  // console.log("=======ddd", designId)
   const designPayload = {
     ownerEmail: customerEmail,
     design: {
@@ -447,7 +447,7 @@ const Footer = () => {
     },
   };
   function getVariantImagesFromMetafields(metafieldss) {
-    console.log("metafieldss.....", metafieldss)
+    // console.log("metafieldss.....", metafieldss)
     // const defaultImage = activeProduct?.imgurl || '';
 
     let front = null;
@@ -462,7 +462,7 @@ const Footer = () => {
 
       if (variantImagesField) {
         const parsedImages = JSON.parse(variantImagesField);
-        console.log(parsedImages, "parsedImages");
+        // console.log(parsedImages, "parsedImages");
 
         front = parsedImages.find((img) => img.includes('_f_fl')) || null;
         back = parsedImages.find((img) => img.includes('_b_fl')) || null;
@@ -524,11 +524,11 @@ const Footer = () => {
     newAllProducts.push(mainProduct, ...extraProducts);
     // return mainProduct;
   });
-  console.log(newAllProducts, "newAllProducts");
+  // console.log(newAllProducts, "newAllProducts");
   const reviewItems = newAllProducts.map((product) => ({
     allImages: [product?.allImages?.[0], product?.allImages?.[1], product?.allImages?.[2], product?.allImages?.[2]],
   }));
-  console.log("reviewItems", reviewItems)
+  // console.log("reviewItems", reviewItems)
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 1200);
@@ -555,14 +555,14 @@ const Footer = () => {
       return;
     }
     setActiveModal("retrieve")
-    console.log("------------click")
+    // console.log("------------click")
     setIsFetchingDesign(true);
     dispatch(requestExport());
 
     fetchDesign(effectiveEmail)
       .then((data) => {
         const designs = data.userDesigns?.designs || [];
-        console.log("desings", designs)
+        // console.log("desings", designs)
         setUserDesigns(designs);
         const designFound = designs?.find((design) => design._id === designId);
 
@@ -571,7 +571,7 @@ const Footer = () => {
         setIsFetchingDesign(false);
         setLastDesign(designFound)
 
-        console.log('designFound', designFound)
+        // console.log('designFound', designFound)
 
         if (actionType === 'share' && designFound) {
           setActiveModal("share");
@@ -638,7 +638,7 @@ const Footer = () => {
         const backDesignImages = await generateDesigns([item.allImages[1]], present.back.texts, present.back.images);
         return { front: frontDesignImages[0], back: backDesignImages[0] };
       });
-      console.log("----------designpromiese", designPromises)
+      // console.log("----------designpromiese", designPromises)
 
 
       const results = await Promise.all(designPromises);
@@ -649,7 +649,7 @@ const Footer = () => {
       }, []);
 
       const cloudinaryResponse = await uploadBlobData(blobData);
-      console.log("---------cloudinaryResponse", cloudinaryResponse)
+      // console.log("---------cloudinaryResponse", cloudinaryResponse)
       designPayload.design.FinalImages = cloudinaryResponse?.files || [];
       const responseData = await saveDesignFunction(designPayload);
       const design = responseData.userDesigns.designs;
@@ -692,6 +692,9 @@ const Footer = () => {
       }
     } catch (error) {
       toast.error("Failed to save design.", error.message);
+      console.log(error);
+
+      setActiveModal(null);
     } finally {
       // setActiveModal(null);
       // console.log("---------now activate null model", activeModal)

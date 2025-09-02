@@ -79,7 +79,7 @@ const MainDesignTool = ({
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
   const loadingState = useSelector(state => state.TextFrontendDesignSlice.present[activeSide].loadingState);
   const { data: settings } = useSelector((state) => state.settingsReducer);
-  console.log("-------settings", settings)
+  // console.log("-------settings", settings)
 
   // console.log("loadingState redux ........", loadingState)
 
@@ -1945,6 +1945,7 @@ const MainDesignTool = ({
 
     const canvasWidth = wrapperElement.clientWidth;
     const canvasHeight = wrapperElement.clientHeight;
+    console.log("canvasWidth canvasHeight", canvasWidth, canvasHeight)
 
     const canvas = new fabric.Canvas(canvasElement, {
       width: canvasWidth,
@@ -2357,7 +2358,7 @@ const MainDesignTool = ({
     const handleResize = () => {
       console.log("resizing......................", window.innerWidth);
       if (!isTabletOrMobile) {
-        setSize(window.innerWidth);
+        // setSize(window.innerWidth);
       }
     };
 
@@ -2550,10 +2551,10 @@ const MainDesignTool = ({
     const centerY = rect?.height / 3;
     return `${centerY}px`;
   }
-  console.log("first", hasClicked, "s", addName, "s", addNumber, "s", imageContaintObject, "s", textContaintObject)
+  // console.log("first", hasClicked, "s", addName, "s", addNumber, "s", imageContaintObject, "s", textContaintObject)
 
   return (
-    <div class="canvas-wrapper" style={{ position: "relative", top: 5 }} >
+    <div class="canvas-wrapper" id="canvasParent" style={{ position: "relative", top: 5 }} >
 
 
 
