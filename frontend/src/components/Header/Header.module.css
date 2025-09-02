@@ -156,4 +156,20 @@ a.step:first-child:after {
     display: none;
   }
 
+  /* .logo {
+
+    max-height: 30px;
+  } */
+
+}
+
+@media (max-width: 1200px) {
+  .navSteps {
+    font-size: 12px;
+  }
+
+  a.step:first-child:after {
+    width: 251px !important;
+    left: 84.8%;
+  }
 }

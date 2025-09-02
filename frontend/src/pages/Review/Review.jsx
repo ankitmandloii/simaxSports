@@ -660,7 +660,7 @@ const Review = () => {
       console.error("Error in handleSaveDesign:", error);
       toast.error("Failed to save design or prepare variants.");
     } finally {
-      // setLoading(false);
+      setLoading(false);
     }
   };
 

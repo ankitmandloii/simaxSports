@@ -56,6 +56,7 @@
 .modalHeader {
   display: flex;
   justify-content: space-between;
+  /* gap: 3rem; */
   align-items: center;
   margin-bottom: 10px;
   /* flex-wrap: wrap; */
@@ -203,6 +204,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  /* margin-bottom: 4rem; */
 
 }
 
@@ -310,6 +312,7 @@
 /* ✅ Responsive Media Queries */
 /* ======================= */
 
+
 @media (max-width: 1024px) {
   .modalContent {
     width: 85%;
@@ -322,13 +325,24 @@
     padding-left: 40px;
     padding-right: 40px;
   }
+
+  /* .searchBox {
+    max-width: 400px !important;
+    width: 80% !important;
+
+
+  } */
 }
 
 @media (max-width: 768px) {
+  .heading {
+    font-size: 10px;
+  }
+
   .modalContent {
     width: 90%;
     padding: 16px;
-    top: 0;
+    top: 10%;
   }
 
   .productList {
@@ -347,6 +361,14 @@
   .colorPopup {
     width: 90%;
     left: 5%;
+  }
+
+  .modalAllProductButtonContainer {
+    margin-bottom: 7rem;
+  }
+
+  .searchBox {
+    width: 4rem;
   }
 }
 
@@ -436,23 +458,24 @@
 /* Mobile responsiveness */
 @media (max-width: 600px) {
   .searchBox {
-    padding: 6px 10px;
+    padding: 3px;
     gap: 6px;
+    width: 9rem;
   }
 
   .searchBox input {
-    font-size: 14px;
+    font-size: 7px;
   }
 
   .searchIcon {
-    font-size: 1.2rem;
-    padding: 8px;
+    font-size: 0.5rem;
+    padding: 5px;
   }
 
   .modalClose {
     background: #f1f1f1;
     /* border: 2px solid black; */
-    font-size: 28px;
+    font-size: 18px;
     height: 20px;
     width: 20px;
     align-items: center;
@@ -464,5 +487,9 @@
     right: 0;
     margin: 0 10px;
     border-radius: 50%;
+  }
+
+  .modalHeader {
+    justify-content: space-around;
   }
 }

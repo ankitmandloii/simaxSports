@@ -359,7 +359,7 @@ canvas#mirrorCanvasBack {
     flex-direction: column;
     justify-content: center;
     height: 100%;
-    z-index: 1000;
+    z-index: 999;
   }
 
   .flex {

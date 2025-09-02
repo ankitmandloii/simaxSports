@@ -453,4 +453,13 @@ input:checked+.slider:before {
   .filterOptions {
     justify-content: center;
   }
+
+
 }
+
+/* @media (max-width:790px) {
+  .crossIcon {
+    display: none;
+  }
+
+} */

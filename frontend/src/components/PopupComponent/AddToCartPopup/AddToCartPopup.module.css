@@ -165,7 +165,7 @@
 /* 📱 Responsive styles */
 @media (max-width: 768px) {
     .popup {
-        padding: 25px;
+        /* padding: 25px; */
     }
 
     .title {
@@ -179,7 +179,7 @@
 
 @media (max-width: 480px) {
     .popup {
-        padding: 20px;
+        /* padding: 20px; */
         max-width: 90%;
         /* shrink to fit small screens */
     }

@@ -272,6 +272,10 @@
     font-size: 1.2rem;
   }
 
+  .popupProducts {
+    padding-bottom: 14rem;
+  }
+
   .popupOverlay .productCard,
   .modalProduct {
     width: 90%;
@@ -295,6 +299,10 @@
   .loadMore {
     width: 90%;
     font-size: 0.9rem;
+  }
+
+  .popupContainer {
+    top: 8%
   }
 }
 

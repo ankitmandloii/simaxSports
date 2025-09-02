@@ -51,16 +51,21 @@
 // }
 import { Sheet } from 'react-modal-sheet';
 import { IoClose } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddTextSheet({ isOpen, setIsOpen, sheetContaint, snap }) {
+  const navigate = useNavigate();
   const snapPoint = (snap === 600 ? [600, 500, 400, 300, 200] : [1200, 800, 700, 600, 500, 400, 300])
   return (
     <Sheet
       isOpen={isOpen}
-      onClose={() => setIsOpen(false)}
+      onClose={() => {
+        setIsOpen(false);
+        navigate('/design/product');
+      }}
 
       snapPoints={snapPoint}
- 
+
     >
       <Sheet.Container>
         {/* ✅ Header is draggable */}
@@ -68,7 +73,10 @@ export default function AddTextSheet({ isOpen, setIsOpen, sheetContaint, snap })
 
         {/* ❌ Close button should not overlap drag area */}
         <button
-          onClick={() => setIsOpen(false)}
+          onClick={() => {
+            setIsOpen(false);
+            navigate('/design/product');
+          }}
           style={{
             position: 'absolute',
             top: 16,

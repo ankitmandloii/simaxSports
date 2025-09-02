@@ -11,6 +11,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from "uuid";   // ✅ import uuid
+import { LuArrowLeft } from 'react-icons/lu';
 
 const adultSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"];
 const womenSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
@@ -227,12 +228,22 @@ const QuantityToolbar = () => {
       toast.warn("A minimum quantity of 1 is required.");
     }
   }
+  const goBack = () => {
+    navigate('/design/product');
+  }
 
   return (
     <div className={` ${style.toolbarMainContainer} ${style.toolbarMargin}`}>
       <div className="toolbar-main-heading">
         <h5 className="Toolbar-badge">Quantity And Sizes</h5>
-        <h2>How Many Do You Need?</h2>
+        <div className={style.quantityHead}>
+          <span className={style.arrow} onClick={goBack}>
+            <LuArrowLeft />
+          </span>
+          <h2>How Many Do You Need?</h2>
+
+
+        </div>
         <p>
           Enter quantities to calculate the price. Save money by increasing
           quantity and reducing ink colors in your design.
