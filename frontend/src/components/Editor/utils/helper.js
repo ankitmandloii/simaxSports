@@ -424,13 +424,13 @@ async function renderDesignOnCanvas(canvasWidth, canvasHeight, canvas, backgroun
 
           // Calculate scale to fit background image within canvas, maintaining aspect ratio
           // Adjusted to fill the canvas, not just fit within a padded area, for backgrounds
-          const scaleX = (canvasWidth - 130) / imgWidth;
-          const scaleY = (canvasHeight - 130) / imgHeight;
+          const scaleX = canvasWidth / imgWidth;
+          const scaleY = canvasHeight / imgHeight;
           const scale = Math.max(scaleX, scaleY); // Use Math.max to ensure it covers the canvas
 
           img.set({
             left: canvasWidth / 2,
-            top: canvasHeight / 2 - 25,
+            top: canvasHeight / 2,
             originX: "center",
             originY: "center",
             scaleX: scale,
@@ -474,7 +474,7 @@ function exportCanvasAsPNG(canvas) {
  * @param {Array<Array<Object>>} images - Array of arrays of image data objects for each design.
  * @returns {Promise<Array<string>>} A Promise that resolves with an array of PNG data URLs.
  */
-export async function generateDesigns(backgrounds, texts, images) {
+export async function generateDesigns(backgrounds, texts, images, activeSide) {
   const exportedImages = [];
 
   // Define a consistent size for the off-screen canvases
@@ -485,12 +485,12 @@ export async function generateDesigns(backgrounds, texts, images) {
   for (let i = 0; i < backgrounds.length; i++) {
     // Create a new off-screen canvas element for each design
     const canvasElement = document.getElementById('canvas-export');
-    const wrapperElement = document.getElementById("canvasParent");
+    const wrapperElement = document.getElementById('canvas-' + activeSide).parentNode;
 
     const canvasWidth = wrapperElement.clientWidth;
     const canvasHeight = wrapperElement.clientHeight;
-    console.log("canvasWidth canvasHeight", canvasWidth, canvasHeight)
-
+    console.log("canvasWidth", canvasWidth, "canvasHeight", canvasHeight)
+    const parentElement = canvasElement.parentElement;
     const canvas = new fabric.Canvas(canvasElement, {
       width: canvasWidth,
       height: canvasHeight,
@@ -503,8 +503,8 @@ export async function generateDesigns(backgrounds, texts, images) {
     try {
       // Render the design for the current canvas
       await renderDesignOnCanvas(
-        canvasWidth,
-        canvasHeight,
+        OFFSCREEN_CANVAS_WIDTH,
+        OFFSCREEN_CANVAS_HEIGHT,
         canvas,
         backgrounds[i],
         texts,
