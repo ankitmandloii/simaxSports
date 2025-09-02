@@ -359,7 +359,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
               <ul className={styles.productList}>
                 {products.map((product) => {
                   const { productKey, name, colors = [], imgurl, vendor } = product;
-                  console.log("-------vendor", product)
+                  // console.log("-------vendor", product)
                   const state = productStates[productKey] || {};
                   const displayImage =
                     state.selectedColor?.img || state.hoverImage || imgurl;

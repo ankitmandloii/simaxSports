@@ -386,11 +386,14 @@ import { generateDesigns } from '../Editor/utils/helper.js';
 import { toast } from "react-toastify";
 import { addProduct } from '../../redux/productSelectionSlice/productSelectionSlice.js';
 import EmailInputPopup from '../PopupComponent/EmailInputPopup/EmailInputPopup.jsx';
+import { setActiveSide } from '../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 
 // const designId = "68ae9e7a3e658d88aa45852a";
 // const customerEmail = "testuser@example.com";
 
 const Footer = () => {
+  const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+  console.log("activeSide in footer", activeSide)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1200);
   const [designExists, setDesignExists] = useState(false);
   const [isFetchingDesign, setIsFetchingDesign] = useState(false);
@@ -623,6 +626,7 @@ const Footer = () => {
     // setActiveModal("retrieve");
 
     setActiveModal("email");
+    // dispatch(setActiveSide('front'))
 
 
     try {
@@ -634,8 +638,8 @@ const Footer = () => {
       }
 
       const designPromises = reviewItems.map(async (item) => {
-        const frontDesignImages = await generateDesigns([item.allImages[0]], present.front.texts, present.front.images);
-        const backDesignImages = await generateDesigns([item.allImages[1]], present.back.texts, present.back.images);
+        const frontDesignImages = await generateDesigns([item.allImages[0]], present.front.texts, present.front.images, activeSide);
+        const backDesignImages = await generateDesigns([item.allImages[1]], present.back.texts, present.back.images, activeSide);
         return { front: frontDesignImages[0], back: backDesignImages[0] };
       });
       // console.log("----------designpromiese", designPromises)
