@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, act } from "react";
 import styles from "./Review.module.css";
 import { LuArrowLeft, LuArrowRight } from "react-icons/lu";
 import { RxCross2 } from "react-icons/rx";
@@ -28,6 +28,7 @@ import EmailInputPopup from "../../components/PopupComponent/EmailInputPopup/Ema
 const randomDiscount = () => Math.floor(Math.random() * 21) + 15; // 15% to 35%
 
 const Review = () => {
+  const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const [discount, setDiscount] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
   const [retrieveLoader, setRetrieveLoader] = useState(false);
@@ -282,7 +283,7 @@ const Review = () => {
 
   const [url, setUrl] = useState("");
   const [backgroundImage, setBackgroundImage] = useState("");
-  const [activeSide, setActiveSide] = useState("");
+  // const [activeSide, setActiveSide] = useState("");
 
   function base64toBlob(base64String, contentType = "image/png") {
     if (!base64String) return;
@@ -575,13 +576,15 @@ const Review = () => {
         const frontDesignImages = await generateDesigns(
           [frontBackground],
           allFrontTextElement,
-          allFrontImagesElement
+          allFrontImagesElement,
+          activeSide
         );
 
         const backDesignImages = await generateDesigns(
           [backBackground],
           allBackTextElement,
-          allBackImagesElement
+          allBackImagesElement,
+          activeSide
         );
 
         return {
@@ -956,7 +959,7 @@ const Review = () => {
                 onClose={() => setShowPopup(false)}
               />
             )}
-           
+
           </div></>
       }</>
 
