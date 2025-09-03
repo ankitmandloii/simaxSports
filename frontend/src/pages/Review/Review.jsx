@@ -1081,6 +1081,8 @@ const Review = () => {
   const [showEmailPopup, setShowEmailPopup] = useState(false);
   const [lastDesign, setLastDesign] = useState(null);
   const CollegiateLicense = useSelector((state) => state.productSelection.CollegiateLicense);
+  const { canvasWidth, canvasHeight } = useSelector((state) => state.canvasReducer);
+  // console.log("---------------canvassss", canvasWidth, canvasHeight)
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -1567,14 +1569,16 @@ const Review = () => {
           [frontBackground],
           allFrontTextElement,
           allFrontImagesElement,
-          activeSide
+          activeSide,
+          canvasWidth,
+          canvasHeight
         );
 
         const backDesignImages = await generateDesigns(
           [backBackground],
           allBackTextElement,
           allBackImagesElement,
-          activeSide
+          activeSide, canvasWidth, canvasHeight
         );
 
         return {
@@ -1651,7 +1655,7 @@ const Review = () => {
         // console.log("emailPayload", emailPayload);
         await sendEmailDesign(emailPayload);
         if (checkoutData?.checkoutUrl) {
-          window.location.href = checkoutData?.checkoutUrl;
+          // window.location.href = checkoutData?.checkoutUrl;
         } else {
           throw new Error("No checkout URL returned");
         }

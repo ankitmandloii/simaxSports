@@ -9,6 +9,7 @@ import canvasExportReducer from './CanvasExportDesign/canvasExportSlice.js'
 import settingsReducer from './SettingsSlice/SettingsSlice.js'
 import hoverReducer from './ProductSlice/HoverSlice.js'
 import productSelectionReducer from './productSelectionSlice/productSelectionSlice.js';
+import canvasReducer from './FrontendDesign/CanvasStoreSlice.js';
 // import TextBackendDesignSlice from "./BackendDesign/TextBackendDesignSlice.js";
 
 export const store = configureStore({
@@ -21,8 +22,9 @@ export const store = configureStore({
     ContinueDesign: ContinueDesignReducer,
     canvasExport: canvasExportReducer,
     settingsReducer: settingsReducer,
-    hoverReducer:hoverReducer,
-    productSelection: productSelectionReducer
+    hoverReducer: hoverReducer,
+    productSelection: productSelectionReducer,
+    canvasReducer: canvasReducer,
     // TextBackendDesignSlice: TextBackendDesignSlice
   },
 });

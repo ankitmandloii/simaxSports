@@ -11,9 +11,17 @@ const MobileFAB = ({ onShare, onSave, onPrice, disablePrev, disableNext }) => {
   const fabRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const steps = ['/design/product', '/quantity', '/review'];
+  const steps = ['/design', '/quantity', '/review'];
   // const currentIndex = steps.indexOf(location.pathname);
-  const currentIndex = useMemo(() => steps.indexOf(location.pathname), [location.pathname, steps]);
+  // const currentIndex = useMemo(() => steps.indexOf(location.pathname), [location.pathname, steps]);
+  const currentIndex = useMemo(() => {
+    const pathname = location.pathname;
+    // Check if the current path starts with /design
+    if (pathname.startsWith('/design')) {
+      return 0; // All /design/* routes map to the first step
+    }
+    return steps.indexOf(pathname);
+  }, [location.pathname, steps]);
 
   // Close FAB when clicking outside
   useEffect(() => {

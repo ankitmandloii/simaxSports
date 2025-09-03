@@ -38,6 +38,7 @@ import { markDesignButtonClicked, setHoveredRoute } from "../../redux/ProductSli
 import { AddArtIcon, AddProductIcon, NumberArtIcon, SelectArtIcon } from "../iconsSvg/CustomIcon";
 import { CgNotes } from "react-icons/cg";
 import DesignNotesPopup from "../PopupComponent/DesignNotesPopup/DesignNotesPopup";
+import { setCanvasDimensions } from "../../redux/FrontendDesign/CanvasStoreSlice";
 fabric.CurvedText = CurvedText;
 const MainDesignTool = ({
 
@@ -1945,6 +1946,12 @@ const MainDesignTool = ({
 
     const canvasWidth = wrapperElement.clientWidth;
     const canvasHeight = wrapperElement.clientHeight;
+    if (canvasWidth !== 0 && canvasHeight !== 0) {
+
+      dispatch(setCanvasDimensions({ width: canvasWidth, height: canvasHeight }));
+
+    }
+
     console.log("canvasWidth canvasHeight", canvasWidth, canvasHeight)
 
     const canvas = new fabric.Canvas(canvasElement, {

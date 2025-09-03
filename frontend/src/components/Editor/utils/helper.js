@@ -240,6 +240,8 @@
 //   return exportedImages;
 // }
 import { fabric } from "fabric";
+import { useSelector } from "react-redux";
+
 
 /**
  * Renders all image objects onto the given Fabric.js canvas.
@@ -474,7 +476,7 @@ function exportCanvasAsPNG(canvas) {
  * @param {Array<Array<Object>>} images - Array of arrays of image data objects for each design.
  * @returns {Promise<Array<string>>} A Promise that resolves with an array of PNG data URLs.
  */
-export async function generateDesigns(backgrounds, texts, images, activeSide) {
+export async function generateDesigns(backgrounds, texts, images, activeSide, canvasHeight, canvasWidth) {
   const exportedImages = [];
 
   // Define a consistent size for the off-screen canvases
@@ -485,11 +487,12 @@ export async function generateDesigns(backgrounds, texts, images, activeSide) {
   for (let i = 0; i < backgrounds.length; i++) {
     // Create a new off-screen canvas element for each design
     const canvasElement = document.getElementById('canvas-export');
-    const wrapperElement = document.getElementById('canvas-' + activeSide).parentNode;
+    // const wrapperElement = document.getElementById('canvas-' + activeSide).parentNode;
 
-    const canvasWidth = wrapperElement.clientWidth;
-    const canvasHeight = wrapperElement.clientHeight;
-    console.log("canvasWidth", canvasWidth, "canvasHeight", canvasHeight)
+    // const canvasWidth = wrapperElement.clientWidth;
+    // const canvasHeight = wrapperElement.clientHeight;
+
+    // console.log("canvasWidth", canvasWidth, "canvasHeight", canvasHeight)
     const parentElement = canvasElement.parentElement;
     const canvas = new fabric.Canvas(canvasElement, {
       width: canvasWidth,

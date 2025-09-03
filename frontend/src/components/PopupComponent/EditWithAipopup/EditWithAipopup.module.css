@@ -238,7 +238,7 @@
 .useImageButton:hover {
     background: #0b7fd3;
     /* darker shade of blue */
-    transform: translateY(-2px);
+    /* transform: translateY(-2px); */
     /* slight lift */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
 }
@@ -247,7 +247,7 @@
 .useImageButton:active {
     background: #0964a8;
     /* even darker shade */
-    transform: translateY(0);
+    /* transform: translateY(0); */
     /* reset lift */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) inset;
     /* pressed look */
@@ -260,7 +260,20 @@
 
 @media (max-width: 600px) {
     .imageCompare {
-        flex-direction: column;
+        /* flex-direction: column; */
         align-items: center;
+        justify-content: space-around;
+        flex-direction: row;
+    }
+
+    .imageWrapper img {
+        /* max-width: 100%; */
+        display: block;
+        width: 6rem;
+        height: 6rem;
+    }
+
+    .useImageButton {
+        padding: 2px;
     }
 }
