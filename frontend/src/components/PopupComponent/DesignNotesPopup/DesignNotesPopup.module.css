@@ -46,6 +46,10 @@
     background-color: #f9fafc;
 }
 
+.header h3 {
+    margin-bottom: 0;
+}
+
 .title {
 
     font-size: 17px;
@@ -117,8 +121,23 @@
     transition: all .2s;
 }
 
-.saveButton:hover {
+.saveButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* .saveButton:hover {
     box-shadow: 0 2px 8px 0 var(--blue-color);
+} */
+
+.saveButton:hover:not(:disabled) {
+    background-color: var(--blue-color);
+    opacity: 0.9;
+    /* transform: scale(1.05); */
+}
+
+.saveButton:active:not(:disabled) {
+    transform: scale(0.98);
 }
 
 /* Media Queries for Responsiveness */

@@ -263,6 +263,19 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
+@media (max-width:1200px) {
+  .clipartImage {
+    width: 8rem !important;
+    height: auto !important;
+
+  }
+
+  .clipartImage:hover {
+    transform: scale(1.1);
+  }
+
+}
+
 @media (max-width: 767px) {
   .loadMoreButton {
     display: block;

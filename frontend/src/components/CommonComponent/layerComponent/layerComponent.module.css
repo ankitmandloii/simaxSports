@@ -1,12 +1,17 @@
 .modalContent {
   background-color: white;
-  padding: 20px;
+  /* padding: 20px; */
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   width: 250px;
   text-align: center;
   position: relative;
 }
+
+/* .modalActions {
+  padding: 0 1rem;
+
+} */
 
 .modalActions button {
   background-color: transparent;
@@ -17,7 +22,7 @@
   align-items: center;
   gap: 10px;
   /* margin: 10px auto; */
-  padding: 10px;
+  padding: 10px 1.2rem;
   cursor: pointer;
 }
 
@@ -47,8 +52,39 @@
 
 .closeIconButton {
   border: none;
-  position: absolute;
-  top: 10px;
-  right: 10px;
+  /* position: absolute; */
+  /* top: 10px;
+  right: 10px; */
   cursor: pointer;
+  display: inline-block;
+  /* font-size: 5px; */
+}
+
+.closeIconButton svg {
+  height: 12px;
+}
+
+.headerTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--blue-color);
+}
+
+.header {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue-color);
+  /* letter-spacing: 1px; */
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #ddd;
+  justify-content: space-between;
+  background-color: #f9fafc;
+  border-radius: 10px 10px 0 0;
+
 }

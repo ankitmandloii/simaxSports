@@ -33,8 +33,17 @@ const LayerModal = ({ isOpen, onClose, onLayerAction }) => {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className={style.modalContent} onClick={(e) => e.stopPropagation()}>
-        <span className={style.closeIconButton} onClick={onClose}><CrossIcon /> </span>
-        <h2>Layer Actions</h2>
+
+
+        <div className={style.header}>
+          <h2 className={style.headerTitle}>Layer Actions</h2>
+          <span className={style.closeIconButton} onClick={onClose}><CrossIcon /> </span>
+
+
+
+        </div>
+
+        {/* -- */}
         <div className={style.modalActions}>
           <button onClick={() => {
             onLayerAction('bringForward');

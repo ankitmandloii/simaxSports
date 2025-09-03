@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import styles from './DesignNotesPopup.module.css';
 import { setDesignNotes } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
+import { toast } from "react-toastify";
+
 
 const DesignNotesPopup = ({ handleClose }) => {
     const dispatch = useDispatch();
@@ -23,21 +25,51 @@ const DesignNotesPopup = ({ handleClose }) => {
         }));
     };
 
+    // Check if all fields are empty
+    const isSaveDisabled = !formData.frontDesign.trim() &&
+        !formData.backDesign.trim() &&
+        !formData.extraInfo.trim();
+
     const handleSave = () => {
-        // 🔥 Save all fields with one generic reducer
+        if (isSaveDisabled) {
+            toast.error("Please fill at least one field before saving");
+            // toast.error('Please fill at least one field before saving', {
+            //     position: "top-right",
+            //     autoClose: 3000,
+            //     hideProgressBar: false,
+            //     closeOnClick: true,
+            //     pauseOnHover: true,
+            //     draggable: true,
+            // });
+            return;
+        }
+
+        // Save all fields with one generic reducer
         dispatch(setDesignNotes({ key: "FrontDesignNotes", value: formData.frontDesign }));
         dispatch(setDesignNotes({ key: "BackDesignNotes", value: formData.backDesign }));
         dispatch(setDesignNotes({ key: "ExtraInfo", value: formData.extraInfo }));
 
-        console.log('Saved Notes:', formData);
+        // console.log('Saved Notes:', formData);
 
-        // Optionally close after save
-        handleClose();
+        // Show success toast
+        // toast.success('Notes saved successfully!', {
+        //     position: "top-right",
+        //     autoClose: 3000,
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        // });
+        toast.success("Notes saved successfully!");
+
+
+        // Close after save
+        // handleClose();
     };
 
     const handleClosee = () => {
         handleClose();
-        console.log('Popup Closed');
+        // console.log('Popup Closed');
     };
 
     return (
@@ -48,8 +80,6 @@ const DesignNotesPopup = ({ handleClose }) => {
                     <button onClick={handleClosee} className={styles.close}><CrossIcon /></button>
                 </div>
                 <div className={styles.content}>
-
-
                     <p className={styles.description}>
                         Leave a note for our design specialist. We review every note after you place your order.
                     </p>
@@ -84,11 +114,16 @@ const DesignNotesPopup = ({ handleClose }) => {
                         />
                     </div>
 
-                    <button onClick={handleSave} className={styles.saveButton}>
+                    <button
+                        onClick={handleSave}
+                        className={styles.saveButton}
+                        disabled={isSaveDisabled}
+                    >
                         Save Notes
                     </button>
                 </div>
             </div>
+            {/* <ToastContainer /> */}
         </div>
     );
 };

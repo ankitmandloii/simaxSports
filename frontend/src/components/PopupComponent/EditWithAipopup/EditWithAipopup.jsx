@@ -666,6 +666,96 @@ const EditWithAipopup = ({ onClose }) => {
     };
 
     // Handle image selection and upload
+    // const handleImageSelect = async (type) => {
+    //     if (type === "your") {
+    //         onClose(); // Close popup if original image is selected
+    //         return;
+    //     }
+
+    //     if (type === "new" && resultImage && resultBlob) {
+    //         setShowUploadBox(true);
+    //         setUploadProgress(0);
+    //         setUploadStatus("preparing");
+    //         setCurrentUploadFileInfo({
+    //             file: null,
+    //             imageUrl: resultImage,
+    //             name: `generated-image-${Date.now()}.jpg`,
+    //         });
+
+    //         const controller = new AbortController();
+    //         setUploadAbortController(controller);
+
+    //         try {
+    //             const file = new File([resultBlob], `generated-image-${Date.now()}.jpg`, {
+    //                 type: resultBlob.type,
+    //             });
+    //             setCurrentUploadFileInfo((prev) => ({ ...prev, file }));
+    //             setUploadStatus("uploading");
+
+    //             const formData = new FormData();
+    //             formData.append("images", file);
+
+    //             const uploadResponse = await axios.post(
+    //                 `${BASE_URL}imageOperation/upload`,
+    //                 formData,
+    //                 {
+    //                     headers: { "Content-Type": "multipart/form-data" },
+    //                     signal: controller.signal,
+    //                     onUploadProgress: (progressEvent) => {
+    //                         const percentCompleted = Math.round(
+    //                             (progressEvent.loaded * 100) / progressEvent.total
+    //                         );
+    //                         setUploadProgress(percentCompleted);
+    //                     },
+    //                 }
+    //             );
+
+    //             if (!Array.isArray(uploadResponse.data.files)) {
+    //                 throw new Error("Invalid upload response structure");
+    //             }
+
+    //             const fileUrl = uploadResponse.data.files[0]?.url;
+    //             if (!fileUrl) {
+    //                 throw new Error("File object missing URL");
+    //             }
+
+    //             setUploadStatus("complete");
+    //             dispatch(
+    //                 updateImageState({
+    //                     id: selectedImageId,
+    //                     changes: {
+    //                         src: fileUrl,
+    //                         base64CanvasImage: fileUrl,
+    //                         loadingText: true,
+    //                     },
+    //                 })
+    //             );
+    //             dispatch(
+    //                 updateImageState({
+    //                     id: selectedImageId,
+    //                     changes: { loadingText: false },
+    //                 })
+    //             );
+
+    //             setTimeout(() => {
+    //                 setShowUploadBox(false);
+    //                 setCurrentUploadFileInfo(null);
+    //                 onClose(); // Close popup after successful upload
+    //             }, 1500);
+    //         } catch (err) {
+    //             if (err.name !== "AbortError") {
+    //                 console.error("Error uploading image:", err.message);
+    //                 toast.error(`Error uploading image: ${err.message}`);
+    //             }
+    //             setUploadStatus("error");
+    //             setUploadProgress(0);
+    //             setTimeout(() => {
+    //                 setShowUploadBox(false);
+    //                 setCurrentUploadFileInfo(null);
+    //             }, 2000);
+    //         }
+    //     }
+    // };
     const handleImageSelect = async (type) => {
         if (type === "your") {
             onClose(); // Close popup if original image is selected
@@ -673,9 +763,10 @@ const EditWithAipopup = ({ onClose }) => {
         }
 
         if (type === "new" && resultImage && resultBlob) {
+            // onClose();
             setShowUploadBox(true);
             setUploadProgress(0);
-            setUploadStatus("preparing");
+            setUploadStatus("fetching"); // Changed from "preparing" to "fetching"
             setCurrentUploadFileInfo({
                 file: null,
                 imageUrl: resultImage,
@@ -867,6 +958,25 @@ ex. Remove the text on the side of the boat`}
                     )}
                 </div>
             </div>
+            {/* {showUploadBox && (
+                <UploadBox
+                    onClose={handleCloseUploadBox}
+                    progress={uploadProgress}
+                    status={uploadStatus}
+                    fileInfo={currentUploadFileInfo}
+                />
+            )} */}
+            {showUploadBox && currentUploadFileInfo && (
+                <UploadBox
+                    file={currentUploadFileInfo.file}
+                    imageUrl={currentUploadFileInfo.imageUrl}
+                    fileName={currentUploadFileInfo.name}
+                    onRemoveFile={handleCloseUploadBox}
+                    progress={uploadProgress}
+                    status={uploadStatus}
+                />
+            )}
+
 
         </div>
 

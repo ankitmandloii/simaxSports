@@ -88,3 +88,27 @@ export const sendEmailDesign = async (payload) => {
         throw error;
     }
 }
+
+// update design payload
+export const updateDesignFunction = async (payload) => {
+    try {
+        // const response = await fetch('https://simax-sports-x93p.vercel.app/api/design/updateDesignFromFrontEnd', {
+        //     method: 'PATCH',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(payload),
+        // });
+        const response = await apiConnecter(
+            "PATCH",
+            "design/updateDesignFromFrontEnd",
+            payload
+        );
+
+        const responseData = response.data;
+        console.log("Design updated successfully:", responseData);
+        return responseData;
+    } catch (error) {
+        throw new Error(`Failed to update design: ${error.message}`);
+    }
+};

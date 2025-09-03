@@ -204,13 +204,17 @@ const QuantityToolbar = () => {
       : [];
   };
 
+  // const getTotalQuantityForProduct = (product) => {
+  //   const key = getProductKey(product);
+  //   if (!productState[key]) return 0;
+  //   return Object.values(productState[key].selections).reduce(
+  //     (sum, qty) => sum + qty,
+  //     0
+  //   );
+  // };
   const getTotalQuantityForProduct = (product) => {
-    const key = getProductKey(product);
-    if (!productState[key]) return 0;
-    return Object.values(productState[key].selections).reduce(
-      (sum, qty) => sum + qty,
-      0
-    );
+    if (!productState[product.id]) return 0;
+    return Object.values(productState[product.id].selections).reduce((sum, qty) => sum + qty, 0);
   };
 
   function calculatePrice() {
