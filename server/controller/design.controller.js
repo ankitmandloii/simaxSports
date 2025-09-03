@@ -74,52 +74,107 @@ function ensureEmail(email) {
   }
 }
 
+
+function validateCreateBody(body) {
+  const errors = [];
+  if (!body?.ownerEmail) errors.push('ownerEmail is required');
+  if (!body?.design) errors.push('design is required');
+  const p = body?.design?.present;
+  if (!p || !p.front || !p.back || !p.leftSleeve || !p.rightSleeve) {
+    errors.push('design.present must include front/back/leftSleeve/rightSleeve');
+  }
+  return errors;
+}
+
+const pickDesignFields = (d = {}) => ({
+  DesignName: d.DesignName ?? 'Untitled Design',
+  present: d.present,
+  FinalImages: d.FinalImages ?? [],
+  DesignNotes: d.DesignNotes ?? null,
+  status: d.status ?? 'draft',
+  version: typeof d.version === 'number' ? d.version : 1,
+});
+
 exports.saveDesignsFromFrontEnd = async (req, res) => {
   try {
-    const { ownerEmail, design, designId } = req.body;
-    ensureEmail(ownerEmail);
+    const errors = validateCreateBody(req.body);
+    if (errors.length) return res.status(400).json({ message: errors.join(', ') });
 
-    if (!design && !designId) {
-      return res.status(400).json({ message: 'Provide `design` for create or `designId` + `design` for update.' });
-    }
+    const { ownerEmail, design } = req.body;
+    const toPush = pickDesignFields(design);
 
-    // If updating an existing design by ID
-    if (designId) {
-      if (!mongoose.isValidObjectId(designId)) {
-        return res.status(400).json({ message: 'Invalid designId' });
-      }
-
-      // Try update existing design in-place
-      const updateRes = await UserDesigns.updateOne(
-        { ownerEmail, 'designs._id': designId },
-        { $set: { 'designs.$': design } }
-      );
-
-      if (updateRes.matchedCount === 0) {
-        // No existing design with this id for this user; push it as new with specified _id
-        const toInsert = { ...design, _id: designId };
-        await UserDesigns.updateOne(
-          { ownerEmail },
-          { $push: { designs: toInsert } },
-          { upsert: true }
-        );
-      }
-
-      const doc = await UserDesigns.findOne({ ownerEmail }).lean();
-      return res.status(200).json({ message: 'Saved', userDesigns: doc });
-    }
-
-    // Creating a new design (no designId provided)
-    // Let Mongo assign a new _id to the subdoc
-    const result = await UserDesigns.findOneAndUpdate(
+    const doc = await UserDesigns.findOneAndUpdate(
       { ownerEmail },
-      { $push: { designs: design } },
-      { upsert: true, new: true }
+      { $push: { designs: toPush } },
+      { upsert: true, new: true, runValidators: true, projection: { designs: { $slice: -1 } } }
     ).lean();
 
-    return res.status(201).json({ message: 'Created', userDesigns: result });
+    return res.status(201).json(doc.designs[0]); // {_id, DesignName, present, ...}
   } catch (err) {
-    console.log(`Some Error Occured ${err}`)
+    if (err.code === 11000) {
+      return res.status(409).json({ message: 'Design name already exists for this user' });
+    }
+    console.error(err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+exports.updateDesignFromFrontEnd = async (req, res) => {
+  try {
+    const { ownerEmail, designId, design } = req.body;
+    if (!ownerEmail || !designId || !design) {
+      return res.status(400).json({ message: 'ownerEmail, designId and design are required' });
+    }
+
+    const _id = new mongoose.Types.ObjectId(designId);
+
+    // 1) Read current subdoc to compute next version (only if present is being replaced)
+    const currentDoc = await UserDesigns.findOne(
+      { ownerEmail, 'designs._id': _id },
+      { 'designs.$': 1 }
+    );
+    if (!currentDoc || !currentDoc.designs?.length) {
+      return res.status(404).json({ message: 'Design not found for this user' });
+    }
+
+    const current = currentDoc.designs[0];
+    const bumpVersion = Object.prototype.hasOwnProperty.call(design, 'present');
+    const nextVersion = bumpVersion ? (current.version || 1) + 1 : (current.version || 1);
+
+    // 2) Build the $set payload (this is what your code called setObj)
+    const set = {};
+    if ('DesignName'   in design) set['designs.$.DesignName']   = design.DesignName;
+    if ('present'      in design) set['designs.$.present']      = design.present;
+    if ('FinalImages'  in design) set['designs.$.FinalImages']  = design.FinalImages;
+    if ('DesignNotes'  in design) set['designs.$.DesignNotes']  = design.DesignNotes;
+    if ('status'       in design) set['designs.$.status']       = design.status;
+    if (bumpVersion)              set['designs.$.version']      = nextVersion;
+
+    // 3) Update (no positional projection here)
+    await UserDesigns.updateOne(
+      { ownerEmail, 'designs._id': _id },
+      { $set: set },
+      { runValidators: true }
+    );
+
+    // 4) Fetch only the updated subdoc (no positional projection, uses $elemMatch)
+    const after = await UserDesigns.findOne(
+      { ownerEmail },
+      { designs: { $elemMatch: { _id } } }
+    ).lean();
+
+    if (!after?.designs?.length) {
+      return res.status(500).json({ message: 'Updated but failed to re-read design' });
+    }
+
+    return res.json(after.designs[0]);
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({ message: 'Design name already exists for this user' });
+    }
+    console.error(err);
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -300,23 +355,23 @@ exports.getAllOrderedDesigns = async (req, res) => {
   }
 };
 
-exports.getAllDesigns  = async (req, res) => {
+exports.getAllDesigns = async (req, res) => {
   // --- paging
-  const page  = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
   const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 50, 1), 200);
-  const skip  = (page - 1) * limit;
+  const skip = (page - 1) * limit;
 
   // --- filters
-  const q       = (req.query.q || '').trim();            // search name/email
+  const q = (req.query.q || '').trim();            // search name/email
   const statusQ = (req.query.status || '').trim();       // e.g. "ordered,in-progress" or "all"
   const fromStr = (req.query.from || '').trim();         // ISO date
-  const toStr   = (req.query.to || '').trim();           // ISO date
+  const toStr = (req.query.to || '').trim();           // ISO date
 
   // --- sorting (default: updatedAt desc, fallback to createdAt desc)
   // Accepts "-updatedAt" / "updatedAt" / "-createdAt" / "createdAt"
   const sortParam = (req.query.sort || '-updatedAt').trim();
   const sortField = sortParam.replace(/^-/, '');
-  const sortDir   = sortParam.startsWith('-') ? -1 : 1;
+  const sortDir = sortParam.startsWith('-') ? -1 : 1;
   const sort = {};
   if (['updatedAt', 'createdAt'].includes(sortField)) {
     sort[sortField] = sortDir;
@@ -396,7 +451,7 @@ exports.getAllDesigns  = async (req, res) => {
     const [agg = { data: [], meta: [] }] = await UserDesigns.aggregate(pipeline).allowDiskUse(true);
 
     const designs = agg.data || [];
-    const total   = (agg.meta && agg.meta[0] && agg.meta[0].total) ? agg.meta[0].total : 0;
+    const total = (agg.meta && agg.meta[0] && agg.meta[0].total) ? agg.meta[0].total : 0;
     const totalPages = total ? Math.ceil(total / limit) : 0;
 
     return res.status(200).json({
