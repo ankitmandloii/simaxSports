@@ -91,17 +91,21 @@ const pickDesignFields = (d = {}) => ({
   present: d.present,
   FinalImages: d.FinalImages ?? [],
   DesignNotes: d.DesignNotes ?? null,
+  NamesAndNumberPrintAreas: Array.isArray(d.NamesAndNumberPrintAreas) ? d.NamesAndNumberPrintAreas : [],
   status: d.status ?? 'draft',
   version: typeof d.version === 'number' ? d.version : 1,
 });
 
 exports.saveDesignsFromFrontEnd = async (req, res) => {
   try {
+
     const errors = validateCreateBody(req.body);
     if (errors.length) return res.status(400).json({ message: errors.join(', ') });
 
     const { ownerEmail, design } = req.body;
+    
     const toPush = pickDesignFields(design);
+    
 
     const doc = await UserDesigns.findOneAndUpdate(
       { ownerEmail },
@@ -147,12 +151,13 @@ exports.updateDesignFromFrontEnd = async (req, res) => {
 
     // 2) Build the $set payload (this is what your code called setObj)
     const set = {};
-    if ('DesignName'   in design) set['designs.$.DesignName']   = design.DesignName;
-    if ('present'      in design) set['designs.$.present']      = design.present;
-    if ('FinalImages'  in design) set['designs.$.FinalImages']  = design.FinalImages;
-    if ('DesignNotes'  in design) set['designs.$.DesignNotes']  = design.DesignNotes;
-    if ('status'       in design) set['designs.$.status']       = design.status;
-    if (bumpVersion)              set['designs.$.version']      = nextVersion;
+    if ('DesignName' in design) set['designs.$.DesignName'] = design.DesignName;
+    if ('present' in design) set['designs.$.present'] = design.present;
+    if ('FinalImages' in design) set['designs.$.FinalImages'] = design.FinalImages;
+    if ('DesignNotes' in design) set['designs.$.DesignNotes'] = design.DesignNotes;
+    if ('NamesAndNumberPrintAreas' in design) set['designs.$.NamesAndNumberPrintAreas'] = design.NamesAndNumberPrintAreas;
+    if ('status' in design) set['designs.$.status'] = design.status;
+    if (bumpVersion) set['designs.$.version'] = nextVersion;
 
     // 3) Update (no positional projection here)
     await UserDesigns.updateOne(

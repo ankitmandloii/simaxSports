@@ -2365,7 +2365,7 @@ const MainDesignTool = ({
     const handleResize = () => {
       console.log("resizing......................", window.innerWidth);
       if (!isTabletOrMobile) {
-        // setSize(window.innerWidth);
+        setSize(window.innerWidth);
       }
     };
 

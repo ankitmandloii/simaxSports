@@ -393,7 +393,6 @@ import { setActiveSide } from '../../redux/FrontendDesign/TextFrontendDesignSlic
 
 const Footer = () => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
-  console.log("activeSide in footer", activeSide)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1200);
   const [designExists, setDesignExists] = useState(false);
   const [isFetchingDesign, setIsFetchingDesign] = useState(false);
@@ -407,7 +406,9 @@ const Footer = () => {
   const [pendingAction, setPendingAction] = useState(null);
   const { canvasWidth, canvasHeight } = useSelector((state) => state.canvasReducer);
   // console.log("---------------canvassss", canvasWidth, canvasHeight)
-
+  const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.nameAndNumberDesignState)
+  const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present["back"].nameAndNumberProductList);
+  const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   const { present, DesignNotes } = useSelector((state) => state.TextFrontendDesignSlice);
   const productState = useSelector((state) => state.productSelection.products);
@@ -420,7 +421,7 @@ const Footer = () => {
   const [localEmail, setLocalEmail] = useState(searchParams.get("customerEmail"));
 
   const designId = searchParams.get("designId");
-  // console.log("=======ddd", designId)
+  console.log("=======nameAndNumberProductList", nameAndNumberProductList, nameAndNumberDesign)
   const designPayload = {
     ownerEmail: customerEmail,
     designId: designId, // Include designId for update
@@ -450,10 +451,32 @@ const Footer = () => {
         BackDesignNotes: DesignNotes.BackDesignNotes || "",
         ExtraInfo: DesignNotes.ExtraInfo || "",
       },
+      NamesAndNumberPrintAreas: NamesAndNumberPrintAreas(),
       status: "draft",
       version: 1,
     },
   };
+  function NamesAndNumberPrintAreas() {
+    console.log("namProductLisst", nameAndNumberProductList)
+    const areas = nameAndNumberProductList.flatMap(product =>
+      product.selections.map(sel => ({
+        color: product.color,
+        size: sel.size,
+        name: sel.name,
+        number: sel.number,
+        fontSize: nameAndNumberDesign.fontSize,          // default or dynamic
+        fontColor: nameAndNumberDesign.fontColor,    // default or dynamic
+        fontFamily: nameAndNumberDesign.fontFamily,   // default or dynamic
+        position: nameAndNumberDesign.position,
+        id: sel.selectionId.replace(/\/\d+$/, ""),   // default or dynamic
+        printSide: activeNameAndNumberPrintSide || "back",
+      }))
+    );
+    console.log("NamesAndNumberPrintAreas", areas)
+    return areas;
+
+  }
+
   function getVariantImagesFromMetafields(metafieldss) {
     // console.log("metafieldss.....", metafieldss)
     // const defaultImage = activeProduct?.imgurl || '';

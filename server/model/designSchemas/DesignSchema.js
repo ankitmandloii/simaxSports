@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const { PresentSideSchema } = require('../designSchemas/PresentSideSchema');
+const { nameAndNumberPrintAreaSchma } = require('../designSchemas/nameAndNumberPrintAreaSchma');
 
 const DesignSchema = new Schema(
   {
@@ -17,6 +18,7 @@ const DesignSchema = new Schema(
       BackDesignNotes: { type: String },
       ExtraInfo: { type: String }
     },
+    NamesAndNumberPrintAreas: { type: [nameAndNumberPrintAreaSchma] },
     status: { type: String, enum: ['draft', 'ordered', 'archived'], default: 'draft', index: true },
     version: { type: Number, default: 1 },
   },

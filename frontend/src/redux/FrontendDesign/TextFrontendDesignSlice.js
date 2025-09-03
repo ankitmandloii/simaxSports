@@ -641,6 +641,7 @@ const TextFrontendDesignSlice = createSlice({
     addNameAndNumberProduct: (state, action) => {
       const { side = state.activeSide, productData } = action.payload;
       const list = state.present[side]?.nameAndNumberProductList;
+      console.log("========addnamelist", list)
       if (!list) return;
 
       // Check if product entry already exists

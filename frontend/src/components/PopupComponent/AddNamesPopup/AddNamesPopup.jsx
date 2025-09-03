@@ -82,14 +82,24 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
     }));
   };
 
-  const updateRow = (key, rowId, field, value) => {
+  const updateRow = (key, rowId, field, value, newId) => {
     setRowsByKey((prev) => ({
       ...prev,
-      [key]: prev[key].map((row) =>
-        row.selectionId === rowId ? { ...row, [field]: value } : row
+      [key]: prev[key].map((row, index) =>
+        row.selectionId === rowId
+          ? {
+            ...row,
+            [field]: value,
+            selectionId:
+              newId !== undefined && row.selectionId !== newId
+                ? newId + "/" + index
+                : row.selectionId,
+          }
+          : row
       ),
     }));
   };
+
 
 
   useEffect(() => {
@@ -122,6 +132,8 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
         title: consistentTitle,
         selections: [],
       };
+      console.log("mainProduct", mainProduct);
+      console.log("extraProducts", extraProducts);
       // Add main product and its variants
       newAllProducts.push(mainProduct, ...extraProducts);
     });
@@ -135,6 +147,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
     // Add default rows only for products with missing or empty rows
     newAllProducts.forEach((product, pIdx) => {
       const key = `${product.id}`;
+      console.log("product in adding product ", product)
       if (!rowsByKey[key] || rowsByKey[key].length === 0) {
         initialRows[key] = [
           { selectionId: Date.now() + pIdx, size: '', name: '', number: '' }
@@ -263,8 +276,11 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
                     <div key={row.selectionId} className={styles.tableRow}>
                       <select
                         value={row.size}
-                        onChange={e =>
-                          updateRow(`${product.id}`, row.selectionId, 'size', e.target.value)
+                        onChange={e => {
+                          const newId = product.sizes.find(s => s.size === e.target.value)?.variantId || row.selectionId;
+                          console.log("newId", newId);
+                          updateRow(`${product.id}`, row.selectionId, 'size', e.target.value, newId)
+                        }
                         }
                         disabled={product.sizes.length === 0}
                       >
