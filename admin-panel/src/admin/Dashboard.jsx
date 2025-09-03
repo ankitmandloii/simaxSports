@@ -22,8 +22,9 @@ import {
 } from "@shopify/polaris";
 
 export function Dashboard() {
+  // console.log("--------------------adddd")
   // New absolute endpoint per your curl example
-   const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   const DESIGNS_URL = `${BASE_URL}design/getAllDesigns`;
 
   const [userDesigns, setUserDesigns] = useState([]);
@@ -35,6 +36,7 @@ export function Dashboard() {
 
   // Viewer modal
   const [selectedDesign, setSelectedDesign] = useState(null);
+  console.log("--------selectedDesign", selectedDesign);
   const [modalOpen, setModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0); // 0: front, 1: back, 2: left, 3: right
   const [galleryIndex, setGalleryIndex] = useState(0);
@@ -49,6 +51,7 @@ export function Dashboard() {
     try {
       const res = await fetch(DESIGNS_URL);
       const data = await res.json();
+      console.log("--------Admindata", data)
       // API response: { ok: true, data: { designs: [...], page, limit, total, totalPages } }
       setUserDesigns(data?.data?.designs ?? []);
     } catch (e) {
@@ -73,6 +76,7 @@ export function Dashboard() {
   }, [DESIGNS_URL, showToast]);
 
   const handleViewDesign = (design) => {
+    console.log("design", design)
     setSelectedDesign(design);
     setModalOpen(true);
     setActiveTab(0);
@@ -279,98 +283,98 @@ export function Dashboard() {
               <Text variant="headingLg" as="h2">All Designs</Text>
             </Box>
             <Divider />
-           <ResourceList
-  items={filteredDesigns}
-  renderItem={(item, index) => {
-    const {
-      _id,
-      DesignName,
-      present,
-      status,
-      FinalImages,
-      ownerEmail,
-      version,
-      createdAt,
-    } = item;
+            <ResourceList
+              items={filteredDesigns}
+              renderItem={(item, index) => {
+                const {
+                  _id,
+                  DesignName,
+                  present,
+                  status,
+                  FinalImages,
+                  ownerEmail,
+                  version,
+                  createdAt,
+                } = item;
 
-    const firstThumb =
-      present?.front?.images?.[0]?.src ||
-      (FinalImages?.[0] ?? "/placeholder.png");
+                const firstThumb =
+                  present?.front?.images?.[0]?.src ||
+                  (FinalImages?.[0] ?? "/placeholder.png");
 
-    // Alternate row background (light grey / white)
-    const rowStyle = {
-      backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#ffffff",
-      padding: "12px",
-      borderRadius: "8px",
-    };
+                // Alternate row background (light grey / white)
+                const rowStyle = {
+                  backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#ffffff",
+                  padding: "12px",
+                  borderRadius: "8px",
+                };
 
-    return (
-      <div key={_id} style={rowStyle}>
-        <ResourceItem
-          id={_id}
-          media={<Thumbnail source={firstThumb} size="small" />}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: 16,
-              flexWrap: "wrap",
-            }}
-          >
-            <TextContainer>
-              <Text variant="headingMd" as="h3">
-                {DesignName || "(untitled)"}
-              </Text>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  flexWrap: "wrap",
-                }}
-              >
-                <Badge tone={statusTone(status)}>{status}</Badge>
-                <Text variant="bodySm" tone="subdued">
-                  version: <strong>{version ?? "-"}</strong>
-                </Text>
-                <Text variant="bodySm" tone="subdued">
-                  Created:{" "}
-                  {new Date(createdAt).toLocaleString("en-GB", {
-                    timeZone: "UTC",
-                  })}{" "}
-                  UTC
-                </Text>
-              </div>
-              <Text variant="bodySm" tone="subdued">
-                Email: {ownerEmail}
-              </Text>
-            </TextContainer>
+                return (
+                  <div key={_id} style={rowStyle}>
+                    <ResourceItem
+                      id={_id}
+                      media={<Thumbnail source={firstThumb} size="small" />}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          gap: 16,
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <TextContainer>
+                          <Text variant="headingMd" as="h3">
+                            {DesignName || "(untitled)"}
+                          </Text>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 8,
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            <Badge tone={statusTone(status)}>{status}</Badge>
+                            <Text variant="bodySm" tone="subdued">
+                              version: <strong>{version ?? "-"}</strong>
+                            </Text>
+                            <Text variant="bodySm" tone="subdued">
+                              Created:{" "}
+                              {new Date(createdAt).toLocaleString("en-GB", {
+                                timeZone: "UTC",
+                              })}{" "}
+                              UTC
+                            </Text>
+                          </div>
+                          <Text variant="bodySm" tone="subdued">
+                            Email: {ownerEmail}
+                          </Text>
+                        </TextContainer>
 
-            <div style={{ display: "flex", gap: 8 }}>
-              <Button onClick={() => handleViewDesign(item)} primary>
-                View details
-              </Button>
-              <Button
-                destructive
-                onClick={() =>
-                  setDeleteDlg({
-                    open: true,
-                    id: _id,
-                    email: ownerEmail,
-                    name: DesignName || "this design",
-                  })
-                }
-              >
-                Delete
-              </Button>
-            </div>
-          </div>
-        </ResourceItem>
-      </div>
-    );
-  }}
-/>
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <Button onClick={() => handleViewDesign(item)} primary>
+                            View details
+                          </Button>
+                          <Button
+                            destructive
+                            onClick={() =>
+                              setDeleteDlg({
+                                open: true,
+                                id: _id,
+                                email: ownerEmail,
+                                name: DesignName || "this design",
+                              })
+                            }
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
+                    </ResourceItem>
+                  </div>
+                );
+              }}
+            />
 
           </Card>
         </Layout.Section>
@@ -488,8 +492,40 @@ export function Dashboard() {
                     <NoteRow label="Back notes" value={selectedDesign?.DesignNotes?.BackDesignNotes} />
                     <NoteRow label="Extra info" value={selectedDesign?.DesignNotes?.ExtraInfo} />
                   </Box>
-                </Card>
+                  <Divider />
 
+                </Card>
+                {/* -- */}
+                <Card>
+                  <Box padding="400" paddingBlockEnd="200">
+                    <Text variant="headingMd">Name And Number</Text>
+                  </Box>
+                  <Divider />
+                  <Box padding="400" style={{ display: "grid", gap: 8 }}>
+                    {selectedDesign?.NamesAndNumberPrintAreas?.length > 0 ? (
+                      selectedDesign?.NamesAndNumberPrintAreas?.map((item, index) => (
+                        <div key={index} style={{ display: "grid", gap: 8, paddingBlock: 8 }}>
+                          <NoteRow label="Name" value={item?.name ?? "-"} />
+                          <NoteRow label="Number" value={item?.number ?? "-"} />
+                          <NoteRow label="Color" value={item?.color ?? "-"} />
+                          <NoteRow label="Size" value={item?.size ?? "-"} />
+                          <NoteRow label="Font Size" value={item?.fontSize ?? "-"} />
+                          <NoteRow label="Font Color" value={item?.fontColor ?? "-"} />
+                          <NoteRow label="Font Family" value={item?.fontFamily ?? "-"} />
+                          <NoteRow
+                            label="Position"
+                            value={`X: ${item?.position?.x ?? "-"}, Y: ${item?.position?.y ?? "-"}`}
+                          />
+                          <NoteRow label="Print Side" value={item?.printSide ?? "-"} />
+                          <NoteRow label="Variant ID" value={item?.id ?? "-"} />
+                          {index < (selectedDesign?.NamesAndNumberPrintAreas?.length ?? 0) - 1 && <Divider />}
+                        </div>
+                      ))
+                    ) : (
+                      <Text tone="subdued">No name and number details available.</Text>
+                    )}
+                  </Box>
+                </Card>
                 <Box paddingBlockStart="0" paddingBlockEnd="0" paddingInlineStart="0" paddingInlineEnd="0">
                   <Text variant="bodySm" tone="subdued">
                     Saved: {new Date(selectedDesign.createdAt).toLocaleString("en-GB", { timeZone: "UTC" })} UTC
