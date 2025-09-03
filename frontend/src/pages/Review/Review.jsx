@@ -29,9 +29,10 @@ const Review = () => {
   const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
   const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberProductList);
   const design = useSelector((state) => state.TextFrontendDesignSlice.present);
-  const { present, DesignNotes } = designState;
   const productState = useSelector((state) => state.productSelection.products);
   const designState = useSelector((state) => state.TextFrontendDesignSlice);
+  const { present, DesignNotes } = designState;
+
 
   const [discount, setDiscount] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
@@ -638,7 +639,7 @@ const Review = () => {
         // console.log("emailPayload", emailPayload);
         await sendEmailDesign(emailPayload);
         if (checkoutData?.checkoutUrl) {
-          // window.location.href = checkoutData?.checkoutUrl;
+          window.location.href = checkoutData?.checkoutUrl;
         } else {
           throw new Error("No checkout URL returned");
         }
