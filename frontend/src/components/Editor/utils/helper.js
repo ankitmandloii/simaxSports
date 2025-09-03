@@ -424,13 +424,13 @@ async function renderDesignOnCanvas(canvasWidth, canvasHeight, canvas, backgroun
 
           // Calculate scale to fit background image within canvas, maintaining aspect ratio
           // Adjusted to fill the canvas, not just fit within a padded area, for backgrounds
-          const scaleX = canvasWidth / imgWidth;
-          const scaleY = canvasHeight / imgHeight;
+          const scaleX = (canvasWidth - 130) / imgWidth;
+          const scaleY = (canvasHeight - 130) / imgHeight;
           const scale = Math.max(scaleX, scaleY); // Use Math.max to ensure it covers the canvas
 
           img.set({
             left: canvasWidth / 2,
-            top: canvasHeight / 2,
+            top: canvasHeight / 2 - 25,
             originX: "center",
             originY: "center",
             scaleX: scale,
@@ -503,8 +503,8 @@ export async function generateDesigns(backgrounds, texts, images, activeSide) {
     try {
       // Render the design for the current canvas
       await renderDesignOnCanvas(
-        OFFSCREEN_CANVAS_WIDTH,
-        OFFSCREEN_CANVAS_HEIGHT,
+        canvasWidth,
+        canvasHeight,
         canvas,
         backgrounds[i],
         texts,
