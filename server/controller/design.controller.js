@@ -110,6 +110,9 @@ exports.saveDesignsFromFrontEnd = async (req, res) => {
     ).lean();
 
     return res.status(201).json(doc.designs[0]); // {_id, DesignName, present, ...}
+    // const fullDoc = await UserDesigns.findOne({ ownerEmail }).lean();
+    // return res.status(200).json({ message: 'Saved', userDesigns: fullDoc });
+
   } catch (err) {
     if (err.code === 11000) {
       return res.status(409).json({ message: 'Design name already exists for this user' });
