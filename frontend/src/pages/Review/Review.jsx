@@ -222,6 +222,7 @@ const Review = () => {
       if (qty > 0) acc[size] = qty;
       return acc;
     }, {});
+    console.log("sizes", sizes);
     return {
       name: product?.name,
       color: product?.color,
@@ -328,6 +329,7 @@ const Review = () => {
 
       const sizeskey = Object.entries(product?.sizes);
       const color = product?.color;
+      console.log("sizeskey", sizeskey);
 
       const variantTitles = sizeskey.map(([size, count]) => {
         return { title: `${color} / ${size}`, inventory_quantity: count };
@@ -363,8 +365,8 @@ const Review = () => {
     }
 
     // console.log("Final Shopify Data:", ShopifyData);
-    const response = await createDraftOrderforCheckout(ShopifyData);
-    return response;
+    // const response = await createDraftOrderforCheckout(ShopifyData);
+    // return response;
   }
 
   function getIncreasedData(data, value) {
@@ -871,11 +873,15 @@ const Review = () => {
                       <div className={styles.itemHeader}>
                         <p className={styles.itemName}>{item.name}</p>
                         <p className={styles.itemPrice}>
-                          ${discountData?.summary?.eachAfterDiscount} <span>each</span>
+                          ${Object.entries(item.sizes).reduce((total, [size, count]) => (
+                            total + count
+                          ), 0) > 0 ? discountData?.summary?.eachAfterDiscount : 0} <span>each</span>
                         </p>
                       </div>
                       <p className={styles.itemSubtitle}>
-                        {item.color} | {totalItems} Items
+                        {item.color} |  {Object.entries(item.sizes).reduce((total, [size, count]) => (
+                          total + count
+                        ), 0)} Items
                       </p>
                       <div className={styles.sizes}>
                         {Object.entries(item.sizes).map(([size, count]) => (
