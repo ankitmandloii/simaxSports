@@ -483,11 +483,15 @@ export function Dashboard() {
                 </Card>
 
                 <Card>
-                  <Box padding="400" paddingBlockEnd="200">
+                  <Box padding="400" >
                     <Text variant="headingMd">Design Notes</Text>
                   </Box>
                   <Divider />
-                  <Box padding="400" style={{ display: "grid", gap: 8 }}>
+                  <Box padding="400" style={{
+                    display: "grid",
+                    gap: 8,
+                    maxWidth: "500px", // keeps text narrow and readable
+                  }}>
                     <NoteRow label="Front notes" value={selectedDesign?.DesignNotes?.FrontDesignNotes} />
                     <NoteRow label="Back notes" value={selectedDesign?.DesignNotes?.BackDesignNotes} />
                     <NoteRow label="Extra info" value={selectedDesign?.DesignNotes?.ExtraInfo} />
@@ -565,14 +569,42 @@ export function Dashboard() {
 
   // ——— helpers ———
 
+  // function NoteRow({ label, value }) {
+  //   return (
+  //     <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 8 }}>
+  //       <Text tone="subdued">{label}:</Text>
+  //       <Text>{value || "-"}</Text>
+  //     </div>
+  //   );
+  // }
   function NoteRow({ label, value }) {
     return (
-      <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 8 }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "100px 1fr",
+          gap: 8,
+          alignItems: "start",
+        }}
+      >
         <Text tone="subdued">{label}:</Text>
-        <Text>{value || "-"}</Text>
+        <div
+          style={{
+            maxHeight: "120px", // limit vertical size
+            overflowY: "auto",
+            wordBreak: "break-word", // wrap long words
+            whiteSpace: "pre-wrap",  // preserve line breaks
+            background: "#fafafa",
+            borderRadius: "6px",
+            padding: "6px 8px",
+          }}
+        >
+          <Text>{value || "-"}</Text>
+        </div>
       </div>
     );
   }
+
 
   function AreaDetails({ area }) {
     if (!area) {
