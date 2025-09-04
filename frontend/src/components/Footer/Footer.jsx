@@ -1,371 +1,4 @@
 
-
-
-// import React, { useState, useEffect } from 'react';
-// import footerStyle from './Footer.module.css';
-// import { IoShareSocialOutline, IoPricetagOutline } from "react-icons/io5";
-// import { FiSave } from "react-icons/fi";
-// import { FaArrowRightLong } from "react-icons/fa6";
-// // import SaveDesignPopup from '../PopupComponent/SaveDesignPopup/SaveDesignPopup.jsx';
-// // import ShareDesignPopup from '../PopupComponent/ShareDesignPopup/ShareDesignPopup.jsx';
-// // import SaveDesignModal from '../Review/SaveDesignModal';
-// // import EmailSendingModal from '../Review/EmailSendingModal';
-// import { useLocation, useNavigate } from 'react-router-dom';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { requestExport } from '../../redux/CanvasExportDesign/canvasExportSlice.js';
-// import MobileFAB from '../MobileFab/MobileFab.jsx';
-// import { RiShareForwardLine } from "react-icons/ri";
-// // import { generateDesigns } from '../Editor/utils/helper';
-// import { toast } from "react-toastify";
-// import { sendEmailDesign, fetchDesign, uploadBlobData, saveDesignFunction } from '../utils/GlobalSaveDesignFunctions.jsx';
-// import RetrieveSavedDesignsModal from '../../pages/Review/RetrieveSavedDesignsModal.jsx';
-// import AddToCartPopup from '../PopupComponent/AddToCartPopup/AddToCartPopup.jsx';
-// import { generateDesigns } from '../Editor/utils/helper.js';
-// import SaveDesignPopup from '../PopupComponent/SaveDesignPopup/SaveDesignPopup.jsx';
-// import SaveDesignModal from '../../pages/Review/SaveDesignModal.jsx';
-// import EmailSendingModal from '../../pages/Review/EmailSendingModal.jsx';
-// import ShareDesignPopup from '../PopupComponent/ShareDesignPopup/ShareDesignPopup.jsx';
-
-// const designId = "68ac04b142c7030c7b74e6d6";
-// const customerEmail = "testuser@example.com";
-
-// const Footer = () => {
-//   const [savedesignpopup, setSavedesignPopup] = useState(false);
-//   const [isMobile, setIsMobile] = useState(false);
-//   const [retrieveLoader, setRetrieveLoader] = useState(false);
-//   const [saveDesignLoader, setSaveDesignLoader] = useState(false);
-//   const [emailSendingLoader, setEmailSendingLoader] = useState(false);
-//   const [designExists, setDesignExists] = useState(false);
-//   const [isFetchingDesign, setIsFetchingDesign] = useState(false);
-//   const [loading, setLoading] = useState(false);
-//   const dispatch = useDispatch();
-//   const navigate = useNavigate();
-//   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
-//   const location = useLocation();
-//   const isProductPage = location.pathname === "/design/product";
-//   const designState = useSelector((state) => state.TextFrontendDesignSlice);
-//   const { present, DesignNotes } = designState;
-//   const productState = useSelector((state) => state.productSelection.products);
-
-//   const designPayload = {
-//     ownerEmail: customerEmail,
-//     design: {
-//       DesignName: "Demo T-Shirt 55555",
-//       present: {
-//         front: {
-//           texts: present.front.texts.map((text) => ({
-//             id: text.id,
-//             layerIndex: text.layerIndex,
-//             position: text.position,
-//             content: text.content,
-//             fontWeight: text.fontWeight,
-//             fontStyle: text.fontStyle,
-//             fontFamily: text.fontFamily,
-//             textColor: text.textColor,
-//           })),
-//           images: present.front.images.map((image) => ({
-//             id: image.id,
-//             layerIndex: image.layerIndex,
-//             position: image.position,
-//             src: image.src,
-//           })),
-//         },
-//         back: {
-//           texts: present.back.texts.map((text) => ({
-//             id: text.id,
-//             layerIndex: text.layerIndex,
-//             position: text.position,
-//             content: text.content,
-//             fontWeight: text.fontWeight,
-//             fontStyle: text.fontStyle,
-//             fontFamily: text.fontFamily,
-//             textColor: text.textColor,
-//           })),
-//           images: present.back.images.map((image) => ({
-//             id: image.id,
-//             layerIndex: image.layerIndex,
-//             position: image.position,
-//             src: image.src,
-//           })),
-//         },
-//         leftSleeve: {
-//           texts: present.leftSleeve.texts.map((text) => ({
-//             id: text.id,
-//             layerIndex: text.layerIndex,
-//             position: text.position,
-//             content: text.content,
-//             fontWeight: text.fontWeight,
-//             fontStyle: text.fontStyle,
-//             fontFamily: text.fontFamily,
-//             textColor: text.textColor,
-//           })),
-//           images: present.leftSleeve.images.map((image) => ({
-//             id: image.id,
-//             layerIndex: image.layerIndex,
-//             position: image.position,
-//             src: image.src,
-//           })),
-//         },
-//         rightSleeve: {
-//           texts: present.rightSleeve.texts.map((text) => ({
-//             id: text.id,
-//             layerIndex: text.layerIndex,
-//             position: text.position,
-//             content: text.content,
-//             fontWeight: text.fontWeight,
-//             fontStyle: text.fontStyle,
-//             fontFamily: text.fontFamily,
-//             textColor: text.textColor,
-//           })),
-//           images: present.rightSleeve.images.map((image) => ({
-//             id: image.id,
-//             layerIndex: image.layerIndex,
-//             position: image.position,
-//             src: image.src,
-//           })),
-//         },
-//       },
-//       FinalImages: [],
-//       DesignNotes: {
-//         FrontDesignNotes: DesignNotes.FrontDesignNotes || "",
-//         BackDesignNotes: DesignNotes.BackDesignNotes || "",
-//         ExtraInfo: DesignNotes.ExtraInfo || "",
-//       },
-//       status: "draft",
-//       version: 1,
-//     },
-//   };
-
-//   const reviewItems = Object.entries(productState).map(([id, product]) => {
-//     const sizes = Object.entries(product.selections).reduce(
-//       (acc, [size, qty]) => {
-//         if (qty > 0) acc[size] = qty;
-//         return acc;
-//       },
-//       {}
-//     );
-//     return {
-//       name: product?.name,
-//       color: product?.color,
-//       sizes,
-//       image: product?.imgurl,
-//       variantId: product?.variantId,
-//       allImages: [
-//         product?.allImages?.[0],
-//         product?.allImages?.[1],
-//         product?.allImages?.[2],
-//         product?.allImages?.[2],
-//       ],
-//       allVariants: product?.allVariants,
-//       price: product?.price,
-//       sku: product?.sku,
-//       inventory_quantity: product?.inventory_quantity,
-//     };
-//   });
-
-//   useEffect(() => {
-//     const handleResize = () => setIsMobile(window.innerWidth <= 1200);
-//     handleResize();
-//     window.addEventListener("resize", handleResize);
-//     return () => window.removeEventListener("resize", handleResize);
-//   }, []);
-
-//   const setNavigate = () => {
-//     navigate('/quantity');
-//   };
-
-//   const setSavedesignPopupHandler = () => {
-//     setRetrieveLoader(true);
-//     dispatch(requestExport());
-//     fetchDesign(customerEmail).then((data) => {
-//       const designFound = data.userDesigns?.designs?.some(
-//         (design) => design._id === designId
-//       );
-//       setDesignExists(designFound);
-//       setIsFetchingDesign(false);
-//     }).catch(() => {
-//       setDesignExists(false);
-//       setIsFetchingDesign(false);
-//     });
-//   };
-
-//   useEffect(() => {
-//     if (!isFetchingDesign && retrieveLoader) {
-//       setRetrieveLoader(false);
-//       setSaveDesignLoader(true);
-//     }
-//   }, [isFetchingDesign, retrieveLoader]);
-
-
-
-//   function base64toBlob(base64String, contentType = "image/png") {
-//     if (!base64String) return;
-//     const base64WithoutPrefix = base64String.replace(
-//       /^data:image\/(png|jpeg|gif|webp|svg\+xml);base64,/,
-//       ""
-//     );
-//     const binaryString = atob(base64WithoutPrefix);
-//     const len = binaryString.length;
-//     const bytes = new Uint8Array(len);
-//     for (let i = 0; i < len; i++) {
-//       bytes[i] = binaryString.charCodeAt(i);
-//     }
-//     return new Blob([bytes], { type: contentType });
-//   }
-
-//   const handleSaveDesign = async (payload) => {
-//     setLoading(true);
-//     setSaveDesignLoader(false);
-//     setEmailSendingLoader(true);
-//     try {
-//       designPayload.design.DesignName = payload.name;
-//       if (payload.type === "update" && payload.designId) {
-//         designPayload.design.designId = payload.designId;
-//       } else {
-//         delete designPayload.design.designId;
-//       }
-
-//       const allFrontImagesElement = present.front.images;
-//       const allBackImagesElement = present.back.images;
-//       const allLeftImagesElement = present.leftSleeve.images;
-//       const allRightImagesElement = present.rightSleeve.images;
-
-//       const allFrontTextElement = present.front.texts;
-//       const allBackTextElement = present.back.texts;
-//       const allLeftTextElement = present.leftSleeve.texts;
-//       const allRightTextElement = present.rightSleeve.texts;
-
-//       const designPromises = reviewItems.map(async (item, index) => {
-//         const frontBackground = item.allImages[0];
-//         const backBackground = item.allImages[1];
-//         const leftBackground = item.allImages[2];
-
-//         const frontDesignImages = await generateDesigns(
-//           [frontBackground],
-//           allFrontTextElement,
-//           allFrontImagesElement
-//         );
-
-//         const backDesignImages = await generateDesigns(
-//           [backBackground],
-//           allBackTextElement,
-//           allBackImagesElement
-//         );
-
-//         return {
-//           front: frontDesignImages[0],
-//           back: backDesignImages[0],
-//         };
-//       });
-
-//       const results = await Promise.all(designPromises);
-//       console.log("All Generated Designs:", results);
-
-//       const blobData = results.reduce((arr, item) => {
-//         arr.push(base64toBlob(item.front, "image/png"));
-//         arr.push(base64toBlob(item.back, "image/png"));
-//         return arr;
-//       }, []);
-
-//       console.log("blobData:", blobData);
-//       const cloudinaryResponse = await uploadBlobData(blobData);
-//       console.log("Cloudinary Response:", cloudinaryResponse);
-
-//       designPayload.design.FinalImages = cloudinaryResponse?.files?.map((url) => url) || [];
-//       await saveDesignFunction(designPayload);
-//       try {
-//         const emailPayload = {
-//           email: "vaishaliverma@itgeeks.com",
-//           companyEmail: "service@simaxsports.com",
-//           frontSrc: cloudinaryResponse?.files?.[0] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786256753_download_4.png",
-//           backSrc: cloudinaryResponse?.files?.[1] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786306809_download_5.png",
-//           designname: "Email Test",
-//           phoneNumber: "1234567890",
-//           edit_design_link: "#",
-//           add_to_cart_link: "#",
-//           unsubscribe_link: "#",
-//         };
-//         await sendEmailDesign(emailPayload);
-//         toast.success("Email sent successfully!");
-//         setSavedesignPopup(true)
-//       } catch (emailError) {
-//         console.error("Email sending failed:", emailError);
-//         toast.error("Failed to send email.");
-//       } finally {
-//         setEmailSendingLoader(false);
-//       }
-//     } catch (error) {
-//       console.error("Error in handleSaveDesign:", error);
-//       toast.error("Failed to save design.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-//   // close share design popup
-//   const CloseShareDesignPopup = () => {
-//     setSavedesignPopup(false);
-//   }
-
-//   return (
-//     <>
-//       {retrieveLoader && (
-//         <RetrieveSavedDesignsModal
-//           onClose={() => setRetrieveLoader(false)}
-//           isFetchingDesign={isFetchingDesign}
-//           designExists={designExists}
-//         />
-//       )}
-//       {saveDesignLoader &&
-//         (designExists ? (
-//           <SaveDesignModal
-//             onClose={() => setSaveDesignLoader(false)}
-//             onSubmit={handleSaveDesign}
-//             defaultDesignName="Demo T-Shirt 55555"
-//             designId={designId}
-//           />
-//         ) : (
-//           <AddToCartPopup
-//             onSave={handleSaveDesign}
-//             defaultDesignName="Demo T-Shirt 55555"
-//             onClose={() => setSaveDesignLoader(false)}
-//           />
-//         ))}
-//       {emailSendingLoader && (
-//         <EmailSendingModal onClose={() => setEmailSendingLoader(false)} />
-//       )}
-//       {!isMobile && !sleevedesignn && (
-//         <div className={footerStyle.footerContainer}>
-//           <button className={footerStyle.footerBtn} onClick={setSavedesignPopupHandler}>
-//             <RiShareForwardLine /> Share
-//           </button>
-//           <button className={footerStyle.footerBtn} onClick={setNavigate}>
-//             <IoPricetagOutline /> Get Price
-//           </button>
-//           <button className={footerStyle.footerBtn} onClick={setSavedesignPopupHandler}>
-//             <FiSave /> Save Design
-//           </button>
-//           <button className={footerStyle.saveButton} onClick={setNavigate}>
-//             Next Step<FaArrowRightLong />
-//           </button>
-//         </div>
-//       )}
-//       {(isMobile || sleevedesignn) && (
-//         <MobileFAB
-//           onShare={setSavedesignPopupHandler}
-//           onSave={setSavedesignPopupHandler}
-//           onPrice={setNavigate}
-//           onNext={setNavigate}
-//           disablePrev={isProductPage}
-//         />
-//       )}
-//       {savedesignpopup && (
-//         <ShareDesignPopup setSavedesignPopupHandler={CloseShareDesignPopup} />
-//       )}
-//     </>
-//   );
-// };
-
-// export default Footer;
 import React, { useState, useEffect } from 'react';
 import footerStyle from './Footer.module.css';
 import { IoPricetagOutline } from "react-icons/io5";
@@ -421,7 +54,7 @@ const Footer = () => {
   const [localEmail, setLocalEmail] = useState(searchParams.get("customerEmail"));
 
   const designId = searchParams.get("designId");
-  console.log("=======nameAndNumberProductList", nameAndNumberProductList, nameAndNumberDesign)
+  // console.log("=======nameAndNumberProductList", nameAndNumberProductList, nameAndNumberDesign)
   const designPayload = {
     ownerEmail: customerEmail,
     designId: designId, // Include designId for update
@@ -457,7 +90,7 @@ const Footer = () => {
     },
   };
   function NamesAndNumberPrintAreas() {
-    console.log("namProductLisst", nameAndNumberProductList)
+    // console.log("namProductLisst", nameAndNumberProductList)
     const areas = nameAndNumberProductList.flatMap(product =>
       product.selections.map(sel => ({
         color: product.color,
@@ -472,7 +105,7 @@ const Footer = () => {
         printSide: activeNameAndNumberPrintSide || "back",
       }))
     );
-    console.log("NamesAndNumberPrintAreas", areas)
+    // console.log("NamesAndNumberPrintAreas", areas)
     return areas;
 
   }
@@ -661,43 +294,55 @@ const Footer = () => {
         designPayload.design.version = 1; // Set version to 1 for new designs
       }
 
-      const designPromises = reviewItems.map(async (item) => {
-        const frontDesignImages = await generateDesigns([item.allImages[0]], present.front.texts, present.front.images, activeSide, canvasWidth, canvasHeight);
-        const backDesignImages = await generateDesigns([item.allImages[1]], present.back.texts, present.back.images, activeSide, canvasWidth, canvasHeight);
+      // const designPromises = reviewItems.map(async (item) => {
+      //   const frontDesignImages = await generateDesigns([item.allImages[0]], present.front.texts, present.front.images, activeSide, canvasWidth, canvasHeight);
+      //   const backDesignImages = await generateDesigns([item.allImages[1]], present.back.texts, present.back.images, activeSide, canvasWidth, canvasHeight);
 
-        return { front: frontDesignImages[0], back: backDesignImages[0] };
+      //   const leftDesignImages = await generateDesigns([item.allImages[2]], present.leftSleeve.texts, present.leftSleeve.images, activeSide, canvasWidth, canvasHeight);
+      //   const rightDesignImages = await generateDesigns([item.allImages[3]], present.rightSleeve.texts, present.rightSleeve.images, activeSide, canvasWidth, canvasHeight);
+      //   return { front: frontDesignImages[0], back: backDesignImages[0] };
+      // });
+      const designPromises = reviewItems.map(async (item) => {
+        const front = (await generateDesigns([item.allImages[0]], present.front.texts, present.front.images, activeSide, canvasWidth, canvasHeight))[0];
+        const back = (await generateDesigns([item.allImages[1]], present.back.texts, present.back.images, activeSide, canvasWidth, canvasHeight))[0];
+        const leftSleeve = (await generateDesigns([item.allImages[2]], present.leftSleeve.texts, present.leftSleeve.images, activeSide, canvasWidth, canvasHeight))[0];
+        const rightSleeve = (await generateDesigns([item.allImages[3]], present.rightSleeve.texts, present.rightSleeve.images, activeSide, canvasWidth, canvasHeight))[0];
+
+        return { front, back, leftSleeve, rightSleeve };
       });
 
       const results = await Promise.all(designPromises);
       const blobData = results.reduce((arr, item) => {
         arr.push(base64toBlob(item.front, "image/png"));
         arr.push(base64toBlob(item.back, "image/png"));
+        arr.push(base64toBlob(item.leftSleeve, "image/png"))
+        arr.push(base64toBlob(item.rightSleeve, "image/png"))
         return arr;
       }, []);
 
       const cloudinaryResponse = await uploadBlobData(blobData);
-      console.log("cloudinaryResponse:", cloudinaryResponse);
+      // console.log("cloudinaryResponse:", cloudinaryResponse);
       designPayload.design.FinalImages = cloudinaryResponse?.files || [];
 
 
       let responseData;
       if (payload.type === "update" && payload.designId) {
-        console.log("Calling updateDesignFunction with payload:", {
-          ownerEmail: customerEmail,
-          designId: payload.designId,
-          design: designPayload.design,
-        });
+        // console.log("Calling updateDesignFunction with payload:", {
+        //   ownerEmail: customerEmail,
+        //   designId: payload.designId,
+        //   design: designPayload.design,
+        // });
         responseData = await updateDesignFunction({
           ownerEmail: customerEmail,
           designId: payload.designId,
           design: designPayload.design,
         });
       } else {
-        console.log("Calling saveDesignFunction with payload:", designPayload);
+        // console.log("Calling saveDesignFunction with payload:", designPayload);
         responseData = await saveDesignFunction(designPayload);
       }
 
-      console.log("responseData:", responseData);
+      // console.log("responseData:", responseData);
 
       // Handle single design object response
       if (!responseData || !responseData._id) {
@@ -705,7 +350,7 @@ const Footer = () => {
       }
 
       const lastDesing = responseData;
-      console.log("lastDesing:", lastDesing);
+      // console.log("lastDesing:", lastDesing);
 
       setLastDesign(lastDesing);
       setDesignExists(lastDesing);
@@ -722,7 +367,7 @@ const Footer = () => {
       });
 
       if (!designId && lastDesing._id) {
-        console.log('Adding design ID to the URL:', lastDesing._id);
+        // console.log('Adding design ID to the URL:', lastDesing._id);
         searchParams.set("designId", lastDesing._id);
         navigate({
           pathname: location.pathname,
@@ -741,10 +386,10 @@ const Footer = () => {
         add_to_cart_link: "#",
         unsubscribe_link: "#",
       };
-      console.log("Sending email with payload:", emailPayload);
+      // console.log("Sending email with payload:", emailPayload);
       try {
         await sendEmailDesign(emailPayload);
-        console.log("Email sent successfully");
+        // console.log("Email sent successfully");
       } catch (emailError) {
         console.error("Failed to send email:", emailError);
         toast.warn("Design saved/updated, but failed to send email: " + emailError.message);

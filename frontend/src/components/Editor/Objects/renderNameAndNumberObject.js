@@ -71,8 +71,8 @@ const renderNameAndNumber = (
     nameText.left = -nameText.width / 2;
     textObjects.push(nameText);
   }
-  console.log("-----------activesiede", activeSide)
-  console.log("-----------activeNameAndNumberPrintSide", activeNameAndNumberPrintSide)
+  // console.log("-----------activesiede", activeSide)
+  // console.log("-----------activeNameAndNumberPrintSide", activeNameAndNumberPrintSide)
 
 
   if (addNumber && number && activeNameAndNumberPrintSide == activeSide) {

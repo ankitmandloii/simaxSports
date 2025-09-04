@@ -27,7 +27,7 @@
 }
 
 .header {
-    padding: 16px 24px;
+    padding: 13px 24px;
     border-bottom: 1px solid #ddd;
     display: flex;
     justify-content: space-between;
@@ -43,9 +43,9 @@
 }
 
 .closeButton {
-    position: absolute;
+    /* position: absolute;
     top: 14px;
-    right: 20px;
+    right: 20px; */
     background: none;
     border: none;
     font-size: 26px;

@@ -618,4 +618,8 @@ h3 {
   .review {
     margin-bottom: 6rem;
   }
+
+  .itemName {
+    font-size: 12px;
+  }
 }

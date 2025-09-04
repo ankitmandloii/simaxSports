@@ -157,7 +157,7 @@ const Review = () => {
   const [loading, setLoading] = useState(false);
 
   function NamesAndNumberPrintAreas() {
-    const areas = nameAndNumberProductList.flatMap(product =>
+    const areas = nameAndNumberProductList?.flatMap(product =>
       product.selections.map(sel => ({
         color: product.color,
         size: sel.size,
@@ -530,6 +530,7 @@ const Review = () => {
       if (payload.type === "update" && payload.designId) {
         designPayload.designId = payload.designId;
         designPayload.design.version = (currentDesign?.version || 1) + 1;
+        delete designPayload.design.DesignName;
       } else {
         delete designPayload.designId;
         designPayload.design.version = 1;
@@ -546,6 +547,7 @@ const Review = () => {
       const allRightTextElement = present.rightSleeve.texts;
 
       const designPromises = reviewItems.map(async (item, index) => {
+        console.log("----allImages", item.allImages)
         const frontBackground = item.allImages[0];
         const backBackground = item.allImages[1];
         const leftBackground = item.allImages[2];

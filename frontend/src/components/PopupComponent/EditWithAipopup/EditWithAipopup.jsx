@@ -652,6 +652,12 @@ const EditWithAipopup = ({ onClose }) => {
             setLoading(false);
         }
     };
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault(); // prevent accidental form submission or page reload
+            handleEditClick();
+        }
+    }
 
     // Handle closing the UploadBox
     const handleCloseUploadBox = () => {
@@ -874,6 +880,7 @@ ex. Remove the text on the side of the boat`}
                         rows={4}
                         autoFocus
                         disabled={loading}
+                        onKeyDown={handleKeyDown}
                     />
 
                     {loading ? (

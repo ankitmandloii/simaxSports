@@ -1952,7 +1952,7 @@ const MainDesignTool = ({
 
     }
 
-    console.log("canvasWidth canvasHeight", canvasWidth, canvasHeight)
+    // console.log("canvasWidth canvasHeight", canvasWidth, canvasHeight)
 
     const canvas = new fabric.Canvas(canvasElement, {
       width: canvasWidth,
@@ -2363,7 +2363,7 @@ const MainDesignTool = ({
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 768px)' });
   useEffect(() => {
     const handleResize = () => {
-      console.log("resizing......................", window.innerWidth);
+      // console.log("resizing......................", window.innerWidth);
       if (!isTabletOrMobile) {
         setSize(window.innerWidth);
       }

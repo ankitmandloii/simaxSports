@@ -31,6 +31,7 @@ function ProductContainer() {
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
   // console.log("----activeProduct in prodyuctContainer", activeProduct)
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
+  // console.log("------selectedProducts", selectedProducts);
 
   const isQuantityPage = location.pathname === "/quantity" || location.pathname === '/review';
 
@@ -52,15 +53,15 @@ function ProductContainer() {
 
   const invertedColor = invertHexColor(activeProductColorHex);
   const [activeProductTitle, setActiveProductTitle] = useState("");
-  const [frontBgImage, setFrontBgImage] = useState('');
-  const [backBgImage, setBackBgImage] = useState('');
-  const [rightSleeveBgImage, setRightSleeveBgImage] = useState('');
-  const [leftSleeveBgImage, setLeftSleeveBgImage] = useState('');
+  const [frontBgImage, setFrontBgImage] = useState(null);
+  const [backBgImage, setBackBgImage] = useState(null);
+  const [rightSleeveBgImage, setRightSleeveBgImage] = useState(null);
+  const [leftSleeveBgImage, setLeftSleeveBgImage] = useState(null);
 
-  const [frontPreviewImage, setFrontPreviewImage] = useState('');
-  const [backPreviewImage, setBackPreviewImage] = useState('');
-  const [rightSleevePreviewImage, setRightSleevePreviewImage] = useState('');
-  const [leftSleevePreviewImage, setLeftSleevePreviewImage] = useState('');
+  const [frontPreviewImage, setFrontPreviewImage] = useState(null);
+  const [backPreviewImage, setBackPreviewImage] = useState(null);
+  const [rightSleevePreviewImage, setRightSleevePreviewImage] = useState(null);
+  const [leftSleevePreviewImage, setLeftSleevePreviewImage] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isZoomedIn, setIsZoomedIn] = useState(false);
   const [logo, setLogo] = useState(<BsZoomIn />);
@@ -70,6 +71,8 @@ function ProductContainer() {
   const [searchParams] = useSearchParams();
   const { data: settings, loading } = useSelector((state) => state.settingsReducer);
   const settingsForsides = settings?.otherSettings || {};
+  const { list: rawProducts } = useSelector((state) => state.products);
+  // console.log("=====rawProducts", rawProducts)
 
   const toggleZoom = () => {
     if (isZoomedIn) {
@@ -109,548 +112,6 @@ function ProductContainer() {
     setAddSleeves(true);
     onClose();
   };
-  // const fetchProductById = async (productId) => {
-  //   try {
-  //     const res = await fetch(`${BASE_URL}design/productById`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ productId }),
-  //     });
-
-  //     if (!res.ok) throw new Error("Failed to fetch product");
-  //     const data = await res.json();
-  //     console.log("----data", data);
-
-  //     const productNode = data?.result?.products?.edges?.[0]?.node;
-  //     if (!productNode) return;
-
-  //     let colors = [];
-
-  //     // ✅ Check if product variants have a "Color" option
-  //     const hasColorOption = productNode.variants.edges.some(({ node }) =>
-  //       node.selectedOptions.some(opt => opt.name === "Color")
-  //     );
-
-  //     if (hasColorOption) {
-  //       // ✅ Group variants by color
-  //       const colorMap = {};
-  //       productNode.variants.edges.forEach(({ node }) => {
-  //         const colorOption = node.selectedOptions.find(opt => opt.name === "Color");
-  //         if (!colorOption) return;
-
-  //         const colorName = colorOption.value;
-
-  //         if (!colorMap[colorName]) {
-  //           colorMap[colorName] = {
-  //             name: colorName,
-  //             img: node.image?.originalSrc || "",
-  //             variant: node, // keep first variant for image ref
-  //             sizes: [],
-
-  //           };
-  //         }
-
-  //         const sizeOption = node.selectedOptions.find(opt => opt.name === "Size");
-  //         if (sizeOption) {
-  //           colorMap[colorName].sizes.push({
-  //             size: sizeOption.value,
-  //             variant: node,
-  //           });
-  //         }
-  //       });
-
-  //       colors = Object.values(colorMap);
-  //     } else {
-  //       // ✅ No "Color" option → treat all variants as one "Default" color
-  //       colors = [
-  //         {
-  //           name: "Default",
-  //           img:
-  //             productNode.variants.edges[0]?.node?.image?.originalSrc ||
-  //             productNode.images?.edges?.[0]?.node?.originalSrc ||
-  //             "",
-  //           variant: productNode.variants.edges[0]?.node,
-  //           sizes: productNode.variants.edges.map(({ node }) => ({
-  //             size: node.selectedOptions.find(opt => opt.name === "Size")?.value,
-  //             variant: node,
-  //           })),
-  //         },
-  //       ];
-  //     }
-
-  //     if (colors.length === 0) return;
-
-  //     // ✅ Process colors for swatch + variant images
-  //     const updatedColors = colors.map(color => {
-  //       let swatchImg = "";
-  //       let variantImg = "";
-  //       let selectedImage = "";
-
-  //       const variant = color?.variant;
-  //       const variantImagesMetafield = variant?.metafields?.edges?.find(
-  //         edge => edge.node.key === "variant_images" && edge.node.namespace === "custom"
-  //       );
-
-  //       if (variantImagesMetafield?.node?.value) {
-  //         try {
-  //           const parsedImages = JSON.parse(variantImagesMetafield.node.value);
-  //           if (Array.isArray(parsedImages)) {
-  //             const colorKey = color.name?.toLowerCase().replace(/\s+/g, "") || "";
-  //             swatchImg =
-  //               parsedImages.find(img => img.toLowerCase().includes(colorKey)) ||
-  //               parsedImages[3] ||
-  //               parsedImages[0] ||
-  //               "";
-  //             variantImg = parsedImages[0] || color.img || "";
-  //             selectedImage = variantImg;
-  //           }
-  //         } catch (error) {
-  //           console.warn("Failed to parse variant_images metafield:", error);
-  //         }
-  //       }
-
-  //       // fallback if no metafield images
-  //       const fallbackImage =
-  //         color.img ||
-  //         variant?.image?.originalSrc ||
-  //         productNode.images?.edges?.[0]?.node?.originalSrc ||
-  //         "";
-  //       swatchImg = swatchImg || fallbackImage;
-  //       variantImg = variantImg || fallbackImage;
-  //       selectedImage = selectedImage || fallbackImage;
-
-  //       return { ...color, swatchImg, variantImg };
-  //     });
-
-  //     // ✅ Pick first color as default selection
-  //     const firstColor = updatedColors[0];
-  //     const initialProductWithColor = {
-  //       id: productNode.id,
-  //       name: productNode.title,
-  //       tags: productNode.tags,
-  //       images: productNode.images.edges.map(edge => edge.node),
-  //       colors: updatedColors,
-  //       selectedColor: firstColor,
-  //       selectedImage: firstColor.variantImg,
-  //       imgurl: firstColor.variantImg,
-  //     };
-  //     console.log("initialProductWithColor", initialProductWithColor);
-
-  //     dispatch(setSelectedProducts([initialProductWithColor]));
-  //     dispatch(setActiveProduct(initialProductWithColor));
-  //   } catch (err) {
-  //     console.error("Error fetching product:", err);
-  //   }
-  // };
-  // second
-  // const fetchProductById = async (productId, variantId) => {
-  //   try {
-  //     const res = await fetch(`${BASE_URL}design/productById`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ productId }),
-  //     });
-
-  //     if (!res.ok) throw new Error("Failed to fetch product");
-  //     const data = await res.json();
-  //     console.log("----data", data);
-
-  //     const productNode = data?.result?.products?.edges?.[0]?.node;
-  //     if (!productNode) return;
-
-  //     let colors = [];
-
-  //     // ✅ Check if product variants have a "Color" option
-  //     const hasColorOption = productNode.variants.edges.some(({ node }) =>
-  //       node.selectedOptions.some((opt) => opt.name === "Color")
-  //     );
-
-  //     // if (hasColorOption) {
-  //     //   const colorMap = {};
-  //     //   productNode.variants.edges.forEach(({ node }) => {
-  //     //     const colorOption = node.selectedOptions.find(
-  //     //       (opt) => opt.name === "Color"
-  //     //     );
-  //     //     if (!colorOption) return;
-
-  //     //     const colorName = colorOption.value;
-
-  //     //     if (!colorMap[colorName]) {
-  //     //       colorMap[colorName] = {
-  //     //         name: colorName,
-  //     //         img: node.image?.originalSrc || "",
-  //     //         variant: node,
-  //     //         sizes: [],
-  //     //         allVariants: [],
-  //     //       };
-  //     //     }
-
-  //     //     const sizeOption = node.selectedOptions.find(
-  //     //       (opt) => opt.name === "Size"
-  //     //     );
-
-  //     //     if (sizeOption) {
-  //     //       colorMap[colorName].sizes.push({
-  //     //         size: sizeOption.value,
-  //     //         variant: node,
-  //     //       });
-  //     //     }
-
-  //     //     colorMap[colorName].allVariants.push(node);
-  //     //   });
-
-  //     //   colors = Object.values(colorMap);
-  //     // } else {
-  //     //   colors = [
-  //     //     {
-  //     //       name: "Default",
-  //     //       img:
-  //     //         productNode.variants.edges[0]?.node?.image?.originalSrc ||
-  //     //         productNode.images?.edges?.[0]?.node?.originalSrc ||
-  //     //         "",
-  //     //       variant: productNode.variants.edges[0]?.node,
-  //     //       sizes: productNode.variants.edges.map(({ node }) => ({
-  //     //         size: node.selectedOptions.find((opt) => opt.name === "Size")
-  //     //           ?.value,
-  //     //         variant: node,
-  //     //       })),
-  //     //       allVariants: productNode.variants.edges.map(({ node }) => node),
-  //     //     },
-  //     //   ];
-  //     // }
-  //     if (hasColorOption) {
-  //       const colorMap = {};
-  //       productNode.variants.edges.forEach(({ node }) => {
-  //         const colorOption = node.selectedOptions.find(
-  //           (opt) => opt.name === "Color"
-  //         );
-  //         if (!colorOption) return;
-
-  //         const colorName = colorOption.value;
-
-  //         if (!colorMap[colorName]) {
-  //           colorMap[colorName] = {
-  //             name: colorName,
-  //             img: node.image?.originalSrc || "",
-  //             variant: node,
-  //             sizes: [],
-  //             allVariants: [], // temporarily
-  //           };
-  //         }
-
-  //         const sizeOption = node.selectedOptions.find(
-  //           (opt) => opt.name === "Size"
-  //         );
-
-  //         if (sizeOption) {
-  //           colorMap[colorName].sizes.push({
-  //             size: sizeOption.value,
-  //             variant: node,
-  //           });
-  //         }
-
-  //         // before we were pushing per color, we'll override later
-  //         colorMap[colorName].allVariants.push(node);
-  //       });
-
-  //       colors = Object.values(colorMap);
-
-  //       // ✅ overwrite with ALL product variants for every color
-  //       const allVariants = productNode.variants.edges.map(({ node }) => node);
-  //       colors = colors.map((c) => ({ ...c, allVariants: [...allVariants], }));
-  //     } else {
-  //       colors = [
-  //         {
-  //           name: "Default",
-  //           img:
-  //             productNode.variants.edges[0]?.node?.image?.originalSrc ||
-  //             productNode.images?.edges?.[0]?.node?.originalSrc ||
-  //             "",
-  //           variant: productNode.variants.edges[0]?.node,
-  //           sizes: productNode.variants.edges.map(({ node }) => ({
-  //             size: node.selectedOptions.find((opt) => opt.name === "Size")?.value,
-  //             variant: node,
-  //           })),
-  //           allVariants: productNode.variants.edges.map(({ node }) => node), // already all
-  //         },
-  //       ];
-  //     }
-
-  //     if (colors.length === 0) return;
-
-  //     // ✅ Process colors for swatch + variant images
-  //     const updatedColors = colors.map((color) => {
-  //       let swatchImg = "";
-  //       let variantImg = "";
-  //       let selectedImage = "";
-
-  //       const variant = color?.variant;
-  //       const variantImagesMetafield = variant?.metafields?.edges?.find(
-  //         (edge) =>
-  //           edge.node.key === "variant_images" &&
-  //           edge.node.namespace === "custom"
-  //       );
-
-  //       if (variantImagesMetafield?.node?.value) {
-  //         try {
-  //           const parsedImages = JSON.parse(variantImagesMetafield.node.value);
-  //           if (Array.isArray(parsedImages)) {
-  //             const colorKey =
-  //               color.name?.toLowerCase().replace(/\s+/g, "") || "";
-  //             swatchImg =
-  //               parsedImages.find((img) =>
-  //                 img.toLowerCase().includes(colorKey)
-  //               ) ||
-  //               parsedImages[3] ||
-  //               parsedImages[0] ||
-  //               "";
-  //             variantImg = parsedImages[0] || color.img || "";
-  //             selectedImage = variantImg;
-  //           }
-  //         } catch (error) {
-  //           console.warn("Failed to parse variant_images metafield:", error);
-  //         }
-  //       }
-
-  //       const fallbackImage =
-  //         color.img ||
-  //         variant?.image?.originalSrc ||
-  //         productNode.images?.edges?.[0]?.node?.originalSrc ||
-  //         "";
-  //       swatchImg = swatchImg || fallbackImage;
-  //       variantImg = variantImg || fallbackImage;
-  //       selectedImage = selectedImage || fallbackImage;
-
-  //       return { ...color, swatchImg, variantImg, selectedImage };
-  //     });
-
-  //     // ✅ If variantId provided → find that variant
-  //     let selectedColor = updatedColors[0];
-  //     let selectedImage = selectedColor.variantImg;
-
-  //     if (variantId) {
-  //       const normalizedVariantId = variantId.startsWith("gid://")
-  //         ? variantId
-  //         : `gid://shopify/ProductVariant/${variantId}`;
-
-  //       const matchingColor = updatedColors.find((c) =>
-  //         c.allVariants.some((v) => v.id === normalizedVariantId)
-  //       );
-
-  //       console.log("--------matchingColor", matchingColor);
-
-  //       if (matchingColor) {
-  //         selectedColor = matchingColor;
-  //         const matchedVariant =
-  //           matchingColor.allVariants.find((v) => v.id === variantId) ||
-  //           matchingColor.variant;
-  //         console.log("-------selectedColor", selectedColor)
-
-  //         selectedImage =
-  //           matchedVariant?.image?.originalSrc || matchingColor.variantImg;
-  //       }
-  //     }
-
-  //     // ✅ Build final product object
-  //     const initialProductWithColor = {
-  //       id: productNode.id,
-  //       name: productNode.title,
-  //       tags: productNode.tags,
-  //       images: productNode.images.edges.map((edge) => edge.node),
-  //       colors: updatedColors,
-  //       selectedColor,
-  //       selectedImage,
-  //       imgurl: selectedImage,
-  //     };
-
-  //     console.log("initialProductWithColor", initialProductWithColor);
-
-  //     dispatch(setSelectedProducts([initialProductWithColor]));
-  //     dispatch(setActiveProduct(initialProductWithColor));
-  //   } catch (err) {
-  //     console.error("Error fetching product:", err);
-  //   }
-  // };
-  // final
-  // const fetchProductById = async (productId, variantId) => {
-  //   try {
-  //     const res = await fetch(`${BASE_URL}design/productById`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ productId }),
-  //     });
-
-  //     if (!res.ok) throw new Error("Failed to fetch product");
-  //     const data = await res.json();
-  //     console.log("----data", data);
-
-  //     const productNode = data?.result?.products?.edges?.[0]?.node;
-  //     if (!productNode) return;
-
-  //     let colors = [];
-
-  //     // ✅ Check if product variants have a "Color" option
-  //     const hasColorOption = productNode.variants.edges.some(({ node }) =>
-  //       node.selectedOptions.some((opt) => opt.name === "Color")
-  //     );
-
-  //     if (hasColorOption) {
-  //       const colorMap = {};
-  //       productNode.variants.edges.forEach(({ node }) => {
-  //         const colorOption = node.selectedOptions.find(
-  //           (opt) => opt.name === "Color"
-  //         );
-  //         if (!colorOption) return;
-
-  //         const colorName = colorOption.value;
-
-  //         if (!colorMap[colorName]) {
-  //           colorMap[colorName] = {
-  //             name: colorName,
-  //             img: node.image?.originalSrc || "",
-  //             variant: node,
-  //             sizes: [],
-  //             allVariants: [], // will overwrite later
-  //           };
-  //         }
-
-  //         const sizeOption = node.selectedOptions.find(
-  //           (opt) => opt.name === "Size"
-  //         );
-
-  //         if (sizeOption) {
-  //           colorMap[colorName].sizes.push({
-  //             size: sizeOption.value,
-  //             variant: node,
-  //           });
-  //         }
-
-  //         colorMap[colorName].allVariants.push(node);
-  //       });
-
-  //       colors = Object.values(colorMap);
-
-  //       // ✅ overwrite with ALL product variants for every color
-  //       const allVariants = productNode.variants.edges.map(({ node }) => node);
-  //       colors = colors.map((c) => ({
-  //         ...c,
-  //         allVariants: [...allVariants],
-  //       }));
-  //     } else {
-  //       colors = [
-  //         {
-  //           name: "Default",
-  //           img:
-  //             productNode.variants.edges[0]?.node?.image?.originalSrc ||
-  //             productNode.images?.edges?.[0]?.node?.originalSrc ||
-  //             "",
-  //           variant: productNode.variants.edges[0]?.node,
-  //           sizes: productNode.variants.edges.map(({ node }) => ({
-  //             size: node.selectedOptions.find((opt) => opt.name === "Size")
-  //               ?.value,
-  //             variant: node,
-  //           })),
-  //           allVariants: productNode.variants.edges.map(({ node }) => node), // already all
-  //         },
-  //       ];
-  //     }
-
-  //     if (colors.length === 0) return;
-
-  //     // ✅ Process colors for swatch + variant images
-  //     const updatedColors = colors.map((color) => {
-  //       let swatchImg = "";
-  //       let variantImg = "";
-  //       let selectedImage = "";
-
-  //       const variant = color?.variant;
-  //       const variantImagesMetafield = variant?.metafields?.edges?.find(
-  //         (edge) =>
-  //           edge.node.key === "variant_images" &&
-  //           edge.node.namespace === "custom"
-  //       );
-
-  //       if (variantImagesMetafield?.node?.value) {
-  //         try {
-  //           const parsedImages = JSON.parse(variantImagesMetafield.node.value);
-  //           if (Array.isArray(parsedImages)) {
-  //             const colorKey =
-  //               color.name?.toLowerCase().replace(/\s+/g, "") || "";
-  //             swatchImg =
-  //               parsedImages.find((img) =>
-  //                 img.toLowerCase().includes(colorKey)
-  //               ) ||
-  //               parsedImages[3] ||
-  //               parsedImages[0] ||
-  //               "";
-  //             variantImg = parsedImages[0] || color.img || "";
-  //             selectedImage = variantImg;
-  //           }
-  //         } catch (error) {
-  //           console.warn("Failed to parse variant_images metafield:", error);
-  //         }
-  //       }
-
-  //       const fallbackImage =
-  //         color.img ||
-  //         variant?.image?.originalSrc ||
-  //         productNode.images?.edges?.[0]?.node?.originalSrc ||
-  //         "";
-  //       swatchImg = swatchImg || fallbackImage;
-  //       variantImg = variantImg || fallbackImage;
-  //       selectedImage = selectedImage || fallbackImage;
-
-  //       return { ...color, swatchImg, variantImg, selectedImage };
-  //     });
-
-  //     // ✅ If variantId provided → find that variant
-  //     let selectedColor = updatedColors[0];
-  //     let selectedImage = selectedColor.variantImg;
-
-  //     if (variantId) {
-  //       const normalizedVariantId = variantId.startsWith("gid://")
-  //         ? variantId
-  //         : `gid://shopify/ProductVariant/${variantId}`;
-
-  //       const matchingColor = updatedColors.find((c) =>
-  //         c.allVariants.some((v) => v.id === normalizedVariantId)
-  //       );
-  //       console.log("-------matcjing", matchingColor)
-
-  //       if (matchingColor) {
-  //         selectedColor = matchingColor;
-  //         const matchedVariant =
-  //           matchingColor.allVariants.find((v) => v.id === variantId) ||
-  //           matchingColor.variant;
-
-  //         selectedImage =
-  //           matchedVariant?.image?.originalSrc || matchingColor.variantImg;
-  //       }
-  //     }
-
-  //     // ✅ Build final product object
-  //     const allVariants = productNode.variants.edges.map(({ node }) => node);
-
-  //     const initialProductWithColor = {
-  //       id: productNode.id,
-  //       name: productNode.title,
-  //       tags: productNode.tags,
-  //       images: productNode.images.edges.map((edge) => edge.node),
-  //       colors: updatedColors,
-  //       selectedColor,
-  //       selectedImage,
-  //       imgurl: selectedImage,
-  //       allVariants, // ✅ ensure product-level allVariants exists (like index 1)
-  //     };
-
-  //     console.log("initialProductWithColor", initialProductWithColor);
-
-  //     dispatch(setSelectedProducts([initialProductWithColor]));
-  //     dispatch(setActiveProduct(initialProductWithColor));
-  //   } catch (err) {
-  //     console.error("Error fetching product:", err);
-  //   }
-  // };
 
   const fetchProductById = async (productId, variantId) => {
     try {
@@ -662,7 +123,7 @@ function ProductContainer() {
 
       if (!res.ok) throw new Error("Failed to fetch product");
       const data = await res.json();
-      console.log("----data", data);
+      // console.log("----data", data);
 
       const productNode = data?.result?.products?.edges?.[0]?.node;
       if (!productNode) return;
@@ -831,7 +292,7 @@ function ProductContainer() {
         allVariants, // ✅ global all variants at product-level
       };
 
-      console.log("initialProductWithColor", initialProductWithColor);
+      // console.log("initialProductWithColor", initialProductWithColor);
 
       dispatch(setSelectedProducts([initialProductWithColor]));
       dispatch(setActiveProduct(initialProductWithColor));
@@ -841,19 +302,170 @@ function ProductContainer() {
   };
 
 
-
-
-
-
+  // default product
   useEffect(() => {
-    console.log("---fetchh")
+    const productId = searchParams.get("pId");
+
+    // Skip if productId is provided
+    if (productId) return;
+
+    // If no productId or variantId, set the first product from rawProducts as activeProduct
+    if (Array.isArray(rawProducts) && rawProducts.length > 0 && selectedProducts.length === 0) {
+      const productNode = rawProducts[0]; // Select the first product
+      let colors = [];
+
+      // Check if product variants have a "Color" option
+      const hasColorOption = productNode.allVariants.some((variant) =>
+        variant.selectedOptions.some((opt) => opt.name === "Color")
+      );
+
+      if (hasColorOption) {
+        const colorMap = {};
+        productNode.allVariants.forEach((node) => {
+          const colorOption = node.selectedOptions.find(
+            (opt) => opt.name === "Color"
+          );
+          if (!colorOption) return;
+
+          const colorName = colorOption.value;
+
+          if (!colorMap[colorName]) {
+            colorMap[colorName] = {
+              name: colorName,
+              img: node.image?.originalSrc || "",
+              variant: node,
+              sizes: [],
+              allVariants: [],
+            };
+          }
+
+          const sizeOption = node.selectedOptions.find(
+            (opt) => opt.name === "Size"
+          );
+          if (sizeOption) {
+            colorMap[colorName].sizes.push({
+              size: sizeOption.value,
+              variant: node,
+            });
+          }
+
+          colorMap[colorName].allVariants.push(node);
+        });
+
+        colors = Object.values(colorMap);
+
+        // Overwrite allVariants with ALL product variants
+        const allVariants = productNode.allVariants;
+        colors = colors.map((c) => ({
+          ...c,
+          allVariants: [...allVariants],
+        }));
+      } else {
+        colors = [
+          {
+            name: "Default",
+            img:
+              productNode.allVariants[0]?.image?.originalSrc ||
+              productNode.images?.[0]?.originalSrc ||
+              "",
+            variant: productNode.allVariants[0],
+            sizes: productNode.allVariants.map((node) => ({
+              size: node.selectedOptions.find((opt) => opt.name === "Size")?.value,
+              variant: node,
+            })),
+            allVariants: productNode.allVariants,
+          },
+        ];
+      }
+
+      if (colors.length === 0) return;
+
+      // Process colors for swatch + variant images
+      const updatedColors = colors.map((color) => {
+        let swatchImg = "";
+        let variantImg = "";
+        let selectedImage = "";
+
+        const variant = color?.variant;
+        const variantImagesMetafield = variant?.metafields?.edges?.find(
+          (edge) =>
+            edge.node.key === "variant_images" &&
+            edge.node.namespace === "custom"
+        );
+
+        if (variantImagesMetafield?.node?.value) {
+          try {
+            const parsedImages = JSON.parse(variantImagesMetafield.node.value);
+            if (Array.isArray(parsedImages)) {
+              const colorKey = color.name?.toLowerCase().replace(/\s+/g, "") || "";
+              swatchImg =
+                parsedImages.find((img) =>
+                  img.toLowerCase().includes(colorKey)
+                ) ||
+                parsedImages[3] ||
+                parsedImages[0] ||
+                "";
+              variantImg = parsedImages[0] || color.img || "";
+              selectedImage = variantImg;
+            }
+          } catch (error) {
+            console.warn("Failed to parse variant_images metafield:", error);
+          }
+        }
+
+        const fallbackImage =
+          color.img ||
+          variant?.image?.originalSrc ||
+          productNode.images?.[0]?.originalSrc ||
+          "";
+        swatchImg = swatchImg || fallbackImage;
+        variantImg = variantImg || fallbackImage;
+        selectedImage = selectedImage || fallbackImage;
+
+        return { ...color, swatchImg, variantImg, selectedImage };
+      });
+
+      // Select the first color as default
+      let selectedColor = updatedColors[0];
+      let selectedImage = selectedColor.variantImg;
+
+      const allVariants = productNode.allVariants;
+
+      const initialProductWithColor = {
+        id: productNode.id,
+        name: productNode.name,
+        tags: productNode.tags || [],
+        images: productNode.images || [],
+        colors: updatedColors,
+        selectedColor,
+        selectedImage,
+        imgurl: selectedImage,
+        allVariants,
+      };
+
+      dispatch(setSelectedProducts([initialProductWithColor]));
+      dispatch(setActiveProduct(initialProductWithColor));
+    }
+  }, [rawProducts, dispatch, selectedProducts, searchParams]);
+
+
+
+  // useEffect(() => {
+  //   console.log("---fetchh")
+  //   const productId = searchParams.get("pId");
+  //   const variantId = searchParams.get("variantid");
+  //   // console.log("---------variantId", variantId)
+  //   if (!productId) return;
+  //   fetchProductById(productId, variantId);
+  // }, []);
+  useEffect(() => {
     const productId = searchParams.get("pId");
     const variantId = searchParams.get("variantid");
-    // console.log("---------variantId", variantId)
-    if (!productId) return;
-    fetchProductById(productId, variantId);
-  }, []);
 
+    if (productId) {
+      fetchProductById(productId, variantId);
+    }
+  }, [searchParams]);
 
 
   // Initialize the first product and its first color variant

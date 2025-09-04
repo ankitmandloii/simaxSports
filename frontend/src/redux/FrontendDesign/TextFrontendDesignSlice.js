@@ -451,7 +451,7 @@ const TextFrontendDesignSlice = createSlice({
       const side = state.activeSide;
       if (state.past[side].length === 0) return;
 
-      console.log("↩️ [undo] Triggered for side:", side);
+      // console.log("↩️ [undo] Triggered for side:", side);
 
       // Save current state → future
       state.future[side].unshift(
@@ -465,7 +465,7 @@ const TextFrontendDesignSlice = createSlice({
         // Pop twice if last change was an image
         state.past[side].pop();
         state.present[side] = state.past[side].pop();
-        console.log("🖼️ [undo] Double-pop for image change");
+        // console.log("🖼️ [undo] Double-pop for image change");
       } else {
         // Normal undo
         state.present[side] = state.past[side].pop();
@@ -476,7 +476,7 @@ const TextFrontendDesignSlice = createSlice({
         state.present[side].renderVersion = 0;
       }
       state.present[side].renderVersion++;
-      console.log("🎨 [undo] Restored snapshot, renderVersion =", state.present[side].renderVersion);
+      // console.log("🎨 [undo] Restored snapshot, renderVersion =", state.present[side].renderVersion);
     },
 
 
@@ -487,13 +487,13 @@ const TextFrontendDesignSlice = createSlice({
       const next = state.future[side].shift();
       const canvasComponent = document.querySelector(`#canvas-${side}`);
       const canvas = canvasComponent?.fabric; // or however you store your Fabric instance
-      console.log(canvas);
+      // console.log(canvas);
 
       if (canvas) {
         const activeObject = canvas.getActiveObject();
         if (activeObject) {
-          console.log("Active object:", activeObject);
-          console.log("Type:", activeObject.type); // 'image', 'text', 'rect', etc.
+          // console.log("Active object:", activeObject);
+          // console.log("Type:", activeObject.type); // 'image', 'text', 'rect', etc.
         }
       }
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
@@ -641,7 +641,7 @@ const TextFrontendDesignSlice = createSlice({
     addNameAndNumberProduct: (state, action) => {
       const { side = state.activeSide, productData } = action.payload;
       const list = state.present[side]?.nameAndNumberProductList;
-      console.log("========addnamelist", list)
+      // console.log("========addnamelist", list)
       if (!list) return;
 
       // Check if product entry already exists
@@ -803,16 +803,16 @@ const TextFrontendDesignSlice = createSlice({
     // },
     addImageState: (state, action) => {
       const { src, id = nanoid(), side = state.activeSide, isRenderOrNot } = action.payload;
-      console.log("🟢 [addImageState] Payload:", action.payload);
+      // console.log("🟢 [addImageState] Payload:", action.payload);
       // console.log()
       // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-      console.log("📦 [addImageState] Snapshot pushed to past");
-      console.log("📦 [addImageState] Before push → past[side]:", JSON.parse(JSON.stringify(state.past[side])));
-      console.log("🖼️ [addImageState] Snapshot about to push:", JSON.parse(JSON.stringify(state.present[side])));
+      // console.log("📦 [addImageState] Snapshot pushed to past");
+      // console.log("📦 [addImageState] Before push → past[side]:", JSON.parse(JSON.stringify(state.past[side])));
+      // console.log("🖼️ [addImageState] Snapshot about to push:", JSON.parse(JSON.stringify(state.present[side])));
 
       // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 
-      console.log("✅ [addImageState] After push → past[side]:", state.past[side]);
+      // console.log("✅ [addImageState] After push → past[side]:", state.past[side]);
       const snapshot = JSON.stringify(state.present[side]);
       const last = JSON.stringify(state.past[side][state.past[side].length - 1]);
 
@@ -845,10 +845,10 @@ const TextFrontendDesignSlice = createSlice({
       state.present[side].selectedImageId = newImage.id;
       state.present[side].images.push(newImage);
 
-      console.log("🖼️ [addImageState] New image added:", newImage);
+      // console.log("🖼️ [addImageState] New image added:", newImage);
 
       state.future[side] = [];
-      console.log("🔄 [addImageState] Future state reset");
+      // console.log("🔄 [addImageState] Future state reset");
     },
 
     // ---neww
@@ -911,8 +911,8 @@ const TextFrontendDesignSlice = createSlice({
       if (!image || image.locked) return;
 
       if (changes?.loading || changes?.loadingText) {
-        console.log("data temp store..", changes);
-        console.log("we are storing present data to past when laoding true ", JSON.parse(JSON.stringify(state.present[side])));
+        // console.log("data temp store..", changes);
+        // console.log("we are storing present data to past when laoding true ", JSON.parse(JSON.stringify(state.present[side])));
         const snap = JSON.parse(JSON.stringify(state.present[side]));
         snap.__type = "image"; // 🏷️ tag snapshot
         state.past[side].push(snap);
@@ -934,7 +934,7 @@ const TextFrontendDesignSlice = createSlice({
           {}
         );
         // Save history
-        console.log("we are storing present data to past when laoding false ", JSON.parse(JSON.stringify(state.present[side])));
+        // console.log("we are storing present data to past when laoding false ", JSON.parse(JSON.stringify(state.present[side])));
 
         const snapshot = JSON.stringify(state.present[side]);
         const last = state.past[side].length
@@ -1029,7 +1029,7 @@ const TextFrontendDesignSlice = createSlice({
 
     // deleteeee reducers
     deleteTextState: (state, action) => {
-      console.log("deletee dispatch")
+      // console.log("deletee dispatch")
       const side = state.activeSide;
       const deletedText = state.present[side].texts.find(t => t.id === action.payload);
       if (!deletedText) return;
@@ -1344,7 +1344,7 @@ const TextFrontendDesignSlice = createSlice({
       const side = state.activeSide;
       const { changes } = action.payload;
 
-      console.log("changes we want to add:", changes);
+      // console.log("changes we want to add:", changes);
 
       // ✅ Safely guard against undefined paths
       if (

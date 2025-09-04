@@ -17,6 +17,14 @@ const AddToCartPopup = ({ onSave, onClose, defaultDesignName }) => {
             onSave(payload);
         }
     };
+
+    // enter key
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault(); // prevent accidental form submission or page reload
+            handleSave();
+        }
+    }
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const customerEmail = searchParams.get("customerEmail");
@@ -63,6 +71,7 @@ const AddToCartPopup = ({ onSave, onClose, defaultDesignName }) => {
                         className={styles.saveButton}
                         onClick={handleSave}
                         disabled={!designName.trim()}
+                        onKeyDown={handleKeyDown}
                     >
                         Save Design
                     </button>

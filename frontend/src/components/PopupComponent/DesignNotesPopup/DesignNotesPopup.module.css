@@ -44,6 +44,9 @@
     border-bottom: 1px solid #ddd;
     position: relative;
     background-color: #f9fafc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .header h3 {
@@ -63,9 +66,9 @@
 }
 
 .close {
-    position: absolute;
+    /* position: absolute;
     top: 14px;
-    right: 20px;
+    right: 20px; */
     background: none;
     border: none;
     font-size: 26px;
@@ -142,10 +145,14 @@
 
 /* Media Queries for Responsiveness */
 @media (max-width: 768px) {
+    .header {
+        padding: 10px 17px;
+    }
+
     .popup {
         width: 85%;
         /* Slightly narrower on tablets */
-        padding: 15px;
+        /* padding: 15px; */
     }
 
     .header h3 {
@@ -172,10 +179,14 @@
 }
 
 @media (max-width: 480px) {
+    .header {
+        padding: 10px 17px;
+    }
+
     .popup {
         width: 90%;
         /* Full width on mobile */
-        padding: 10px;
+        /* padding: 10px; */
     }
 
     .header h3 {

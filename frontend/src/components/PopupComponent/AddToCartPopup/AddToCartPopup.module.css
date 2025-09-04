@@ -61,6 +61,9 @@
     border-bottom: 1px solid #ddd;
     position: relative;
     background-color: #f9fafc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .title {
@@ -71,9 +74,9 @@
 }
 
 .closeButton {
-    position: absolute;
+    /* position: absolute;
     top: 14px;
-    right: 20px;
+    right: 20px; */
     background: none;
     border: none;
     font-size: 26px;

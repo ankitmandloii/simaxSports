@@ -156,6 +156,10 @@ a.step:first-child:after {
     display: none;
   }
 
+  .headerBtn {
+    margin-bottom: 0 !important;
+  }
+
   /* .logo {
 
     max-height: 30px;
@@ -171,5 +175,9 @@ a.step:first-child:after {
   a.step:first-child:after {
     width: 251px !important;
     left: 84.8%;
+  }
+
+  .headerBtn {
+    margin-bottom: 16px;
   }
 }

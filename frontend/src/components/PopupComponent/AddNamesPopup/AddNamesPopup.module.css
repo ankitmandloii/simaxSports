@@ -344,7 +344,9 @@ select:disabled {
   }
 
   .canvasBg {
-    max-height: 180px;
+    /* max-height: 180px;
+     */
+    max-height: 228px;
     width: 100%;
   }
 

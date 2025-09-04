@@ -12,6 +12,7 @@ const EmailInputPopup = ({ onSubmit, onClose }) => {
     };
 
     const handleSubmit = () => {
+        // if (e) e.preventDefault(); // prevent page reload when pressing enter
         if (!email.trim()) {
             setEmailError("Email is required");
             return;
@@ -23,6 +24,12 @@ const EmailInputPopup = ({ onSubmit, onClose }) => {
         onSubmit({ email });
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault(); // prevent accidental form submission or page reload
+            handleSubmit();
+        }
+    }
     return (
         <div className={styles.overlay}>
             <div className={styles.popup}>
@@ -44,6 +51,7 @@ const EmailInputPopup = ({ onSubmit, onClose }) => {
                             setEmail(e.target.value);
                             setEmailError("");
                         }}
+                        onKeyDown={handleKeyDown}
                         className={`${styles.input} ${emailError ? styles.inputError : ""}`}
                     />
                     {emailError && (

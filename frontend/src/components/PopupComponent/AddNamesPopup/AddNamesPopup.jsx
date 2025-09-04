@@ -13,14 +13,14 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
   const activeSide = "back";
   // const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
   const productState = useSelector((state) => state.productSelection.products);
-  console.log("productState..........", productState);
+  // console.log("productState..........", productState);
   const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice);
   const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.nameAndNumberDesignState)
-  console.log("---------addnamedesignSlice", nameAndNumberDesign)
+  // console.log("---------addnamedesignSlice", nameAndNumberDesign)
   const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberProductList);
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  console.log(selectedProducts);
+  // console.log(selectedProducts);
 
   const [allProducts, setAllProducts] = useState(nameAndNumberProductList);
 
@@ -132,8 +132,8 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
         title: consistentTitle,
         selections: [],
       };
-      console.log("mainProduct", mainProduct);
-      console.log("extraProducts", extraProducts);
+      // console.log("mainProduct", mainProduct);
+      // console.log("extraProducts", extraProducts);
       // Add main product and its variants
       newAllProducts.push(mainProduct, ...extraProducts);
     });
@@ -147,7 +147,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
     // Add default rows only for products with missing or empty rows
     newAllProducts.forEach((product, pIdx) => {
       const key = `${product.id}`;
-      console.log("product in adding product ", product)
+      // console.log("product in adding product ", product)
       if (!rowsByKey[key] || rowsByKey[key].length === 0) {
         initialRows[key] = [
           { selectionId: Date.now() + pIdx, size: '', name: '', number: '' }
@@ -187,7 +187,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
       toast.error("All required fields (Size, Name, Number) must be filled.");
       // alert("All required fields must be filled.");
     } else {
-      console.log(selectionsRows, "selectionsRows");
+      // console.log(selectionsRows, "selectionsRows");
 
       const sizeCountWithId = selectionsRows.map(([id, items]) => {
         const sizeCount = {};
@@ -207,7 +207,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
         };
       });
 
-      console.log('sizeCountWithId', sizeCountWithId)
+      // console.log('sizeCountWithId', sizeCountWithId)
 
       selectionsRows.forEach(([id, rows]) => {
         const found = sizeCountWithId.find(obj => obj.id === id);
@@ -228,10 +228,10 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
   const activeProduct = allProducts.find(product =>
     (rowsByKey[product.id] || []).some(row => row.selectionId === activeRowId)
   );
-  console.log("------activee", activeProduct)
+  // console.log("------activee", activeProduct)
   const canvasBgColor = getHexFromName(activeProduct?.color) || "#f5f5f5";
 
-  console.log("--canvass", canvasBgColor)
+  // console.log("--canvass", canvasBgColor)
 
   return (
 
@@ -278,7 +278,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
                         value={row.size}
                         onChange={e => {
                           const newId = product.sizes.find(s => s.size === e.target.value)?.variantId || row.selectionId;
-                          console.log("newId", newId);
+                          // console.log("newId", newId);
                           updateRow(`${product.id}`, row.selectionId, 'size', e.target.value, newId)
                         }
                         }

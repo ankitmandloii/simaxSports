@@ -29,6 +29,9 @@
 }
 
 .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 16px 24px;
     border-bottom: 1px solid #ddd;
     position: relative;
@@ -72,9 +75,9 @@
 }
 
 .close {
-    position: absolute;
+    /* position: absolute;
     top: 14px;
-    right: 20px;
+    right: 20px; */
     background: none;
     border: none;
     font-size: 26px;
@@ -259,6 +262,10 @@
 } */
 
 @media (max-width: 600px) {
+    .title {
+        font-size: 12px;
+    }
+
     .imageCompare {
         /* flex-direction: column; */
         align-items: center;
@@ -275,5 +282,9 @@
 
     .useImageButton {
         padding: 2px;
+    }
+
+    .description {
+        font-size: 0.65rem;
     }
 }
