@@ -63,8 +63,9 @@ const DesignNotesPopup = ({ handleClose }) => {
         toast.success("Notes saved successfully!");
 
 
+
         // Close after save
-        // handleClose();
+        handleClose();
     };
 
     const handleClosee = () => {

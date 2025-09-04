@@ -91,7 +91,7 @@ const Footer = () => {
   };
   function NamesAndNumberPrintAreas() {
     // console.log("namProductLisst", nameAndNumberProductList)
-    const areas = nameAndNumberProductList.flatMap(product =>
+    const areas = nameAndNumberProductList?.flatMap(product =>
       product.selections.map(sel => ({
         color: product.color,
         size: sel.size,

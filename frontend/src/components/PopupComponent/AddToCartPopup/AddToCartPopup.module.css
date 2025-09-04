@@ -162,7 +162,7 @@
 
 .link {
     color: var(--blue-color);
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 
 /* 📱 Responsive styles */

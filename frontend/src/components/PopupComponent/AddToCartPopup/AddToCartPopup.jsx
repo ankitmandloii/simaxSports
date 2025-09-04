@@ -62,6 +62,8 @@ const AddToCartPopup = ({ onSave, onClose, defaultDesignName }) => {
                         }
                         maxLength={25}
                         className={styles.input}
+                        onKeyDown={handleKeyDown}
+
                     />
                     <p className={styles.charLimit}>
                         25 characters max, no symbols except dashes
@@ -71,7 +73,6 @@ const AddToCartPopup = ({ onSave, onClose, defaultDesignName }) => {
                         className={styles.saveButton}
                         onClick={handleSave}
                         disabled={!designName.trim()}
-                        onKeyDown={handleKeyDown}
                     >
                         Save Design
                     </button>
