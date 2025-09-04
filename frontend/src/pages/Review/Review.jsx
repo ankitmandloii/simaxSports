@@ -648,6 +648,12 @@ const Review = () => {
       const checkoutData = await makeVariantDataForShopify(reviewItems, cloudinaryResponse);
 
       try {
+        const url = new URL(window.location.href);
+
+        // always set mode=edit (replaces if already exists, adds if not)
+        url.searchParams.set("mode", "edit");
+
+        const edit_design_link = url.toString();
         const emailPayload = {
           email: customerEmail,
           companyEmail: "service@simaxsports.com",
@@ -655,7 +661,7 @@ const Review = () => {
           backSrc: cloudinaryResponse?.files?.[1] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786306809_download_5.png",
           designname: lastDesing?.DesignName || "Untitled Design",
           phoneNumber: "",
-          edit_design_link: window.location.href,
+          edit_design_link: edit_design_link,
           add_to_cart_link: checkoutData.checkoutUrl,
           unsubscribe_link: "#",
         };

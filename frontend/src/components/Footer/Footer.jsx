@@ -337,6 +337,7 @@ const Footer = () => {
           designId: payload.designId,
           design: designPayload.design,
         });
+
       } else {
         // console.log("Calling saveDesignFunction with payload:", designPayload);
         responseData = await saveDesignFunction(designPayload);
@@ -366,15 +367,17 @@ const Footer = () => {
         return [...prevDesigns, lastDesing];
       });
 
-      if (!designId && lastDesing._id) {
-        // console.log('Adding design ID to the URL:', lastDesing._id);
-        searchParams.set("designId", lastDesing._id);
-        navigate({
-          pathname: location.pathname,
-          search: searchParams.toString(),
-        }, { replace: true });
-      }
+      searchParams.set("designId", lastDesing?._id);
+      navigate({
+        pathname: location.pathname,
+        search: searchParams.toString(),
+      }, { replace: true });
+      const url = new URL(window.location.href);
 
+      // always set mode=edit (replaces if already exists, adds if not)
+      url.searchParams.set("mode", "edit");
+
+      const edit_design_link = url.toString();
       const emailPayload = {
         email: customerEmail,
         companyEmail: "",
@@ -382,7 +385,7 @@ const Footer = () => {
         backSrc: cloudinaryResponse?.files?.[1] || "",
         designname: payload.name,
         phoneNumber: "1234567890",
-        edit_design_link: window.location.href,
+        edit_design_link: edit_design_link,
         add_to_cart_link: "#",
         unsubscribe_link: "#",
       };

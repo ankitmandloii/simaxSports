@@ -93,8 +93,25 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign, navigate }) =
     const [isEmailFormOpen, setIsEmailFormOpen] = useState(false);
     const location = useLocation();
     console.log(lastDesign, "lastDesing in share designpopup")
-    const shareUrl = window.location.href;
+    const url = new URL(window.location.href);
 
+    // naya URL object banao
+    const shareUrlObj = new URL(`${url.origin}/design/product`);
+
+    // optional params ko add karo agar present hai
+    const pId = url.searchParams.get("pId");
+    if (pId) shareUrlObj.searchParams.set("pId", pId);
+
+    const variantId = url.searchParams.get("variantid"); // ya variantId
+    if (variantId) shareUrlObj.searchParams.set("variantId", variantId);
+
+    const designId = url.searchParams.get("designId");
+    if (designId) shareUrlObj.searchParams.set("designId", designId);
+
+    // hamesha mode=share
+    shareUrlObj.searchParams.set("mode", "share");
+
+    const shareUrl = shareUrlObj.toString();
     const handleCopy = () => {
         navigator.clipboard.writeText(shareUrl);
         toast.success("copied")

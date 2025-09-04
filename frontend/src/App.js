@@ -308,11 +308,15 @@ function App() {
   }
 
 
-
   async function editDesignHandler() {
     try {
       const searchParams = new URLSearchParams(location.search);
       const designId = searchParams.get("designId");
+      const mode = searchParams.get("mode");
+      if (!mode) return;
+
+      // agar mode "share" ya "edit" nahi hai
+      if (mode !== "share" && mode !== "edit") return;
       if (!designId) return;
 
       // console.log(designStateDb);
@@ -370,7 +374,7 @@ function App() {
         setContinueEditPopup(true);
       }
     }
-    // editDesignHandler();
+    editDesignHandler();
   }, [rawProducts, willRenderContinue]);
 
   const handleContinuePopup = () => {
@@ -466,7 +470,7 @@ function App() {
               <Route path="/" element={<Layout />}>
                 <Route index element={<Navigate to="design/product" replace />} />
 
-                {/* /design pages */} 
+                {/* /design pages */}
                 <Route path="design">
                   <Route path="product" element={<ProductToolbar />} />
                   <Route path="addText" element={<AddTextToolbar />} />
