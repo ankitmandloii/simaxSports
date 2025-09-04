@@ -97,7 +97,7 @@ const QuantityToolbar = () => {
         imgurl: product?.imgurl,
         color: product?.selectedColor?.name,
         size: product?.selectedColor?.variant?.selectedOptions[1]?.value,
-        sizes: getSizeOptions(product),
+        sizes: getSizeOptions(product, product?.selectedColor?.name),
         title: consistentTitle,
         selections: [],
         allImages: getVariantImagesFromMetafields(
@@ -105,6 +105,8 @@ const QuantityToolbar = () => {
         ),
         allVariants: product?.allVariants,
       };
+      console.log(mainProduct, "mainProduct");
+
       dispatch(addProduct(mainProduct));
       newAllProducts.push(mainProduct);
       newExpandedProducts[mainProduct.uniqueKey] = true;
@@ -117,7 +119,7 @@ const QuantityToolbar = () => {
           imgurl: variantProduct?.img,
           color: variantProduct?.name,
           size: variantProduct?.variant?.selectedOptions[1]?.value,
-          sizes: variantProduct?.sizes,
+          sizes: getSizeOptions(variantProduct, variantProduct?.name),
           name: product?.name,
           title: consistentTitle,
           sku: variantProduct?.variant?.sku,
@@ -132,6 +134,8 @@ const QuantityToolbar = () => {
             variantProduct?.variant?.inventoryItem?.inventoryLevels?.edges?.[0]
               ?.node?.quantities?.[0]?.quantity,
         };
+        console.log(prod, "prod");
+
         dispatch(addProduct(prod));
         newExpandedProducts[prod.uniqueKey] = true;
         return prod;
@@ -165,18 +169,19 @@ const QuantityToolbar = () => {
     });
   }, [selectedProducts, nameAndNumberProductList]);
 
-  const getSizeOptions = (product) => {
+  const getSizeOptions = (product, color) => {
     const extractAvailableSizeVariants = (variants, accessor = (v) => v) => {
       const sizeVariantPairs = variants.flatMap((variantWrapper) => {
         const variant = accessor(variantWrapper);
+        console.log("variant?.selectedOptions?", variant?.selectedOptions)
         const sizeOption = variant?.selectedOptions?.find(
           (opt) => opt.name === 'Size'
         );
         const inventoryQty =
           variant?.inventoryItem?.inventoryLevels?.edges?.[0]?.node
             ?.quantities?.[0]?.quantity || 0;
-
-        if (sizeOption && inventoryQty > 0) {
+        // console.log("variant", variant, "inventoryQty", inventoryQty);
+        if (sizeOption && variant?.selectedOptions?.[0].value == color && inventoryQty > 0) {
           return [
             {
               size: sizeOption.value,

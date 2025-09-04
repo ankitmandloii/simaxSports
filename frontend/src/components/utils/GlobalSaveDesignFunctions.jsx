@@ -33,27 +33,43 @@ export const fetchDesign = async (customerEmail) => {
 // Upload blob data to Cloudinary
 export const uploadBlobData = async (blobDataArray) => {
     try {
-        const formData = new FormData();
-        // blobDataArray = blobDataArray.slice(0, 6);
-        blobDataArray.forEach((blob, index) => {
-            formData.append(`image_${index}`, blob, `image_${index}.png`);
-        });
+        const chunkSize = 4;
+        const results = [];
 
-        const response = await apiConnecter(
-            "POST",
-            "imageOperation/fileBlobDataUploadToCloudinary",
-            formData
-        );
+        // break array into chunks of 4
+        for (let i = 0; i < blobDataArray.length; i += chunkSize) {
+            const chunk = blobDataArray.slice(i, i + chunkSize);
 
-        const responseData = response.data;
-        console.log("Response from backend:", responseData);
-        localStorage.setItem("data", JSON.stringify(responseData));
-        return responseData;
+            const formData = new FormData();
+            chunk.forEach((blob, index) => {
+                formData.append(`image_${i + index}`, blob, `image_${i + index}.png`);
+            });
+
+            const response = await apiConnecter(
+                "POST",
+                "imageOperation/fileBlobDataUploadToCloudinary",
+                formData
+            );
+
+            const responseData = response.data;
+            console.log(`Response from backend for chunk ${i / chunkSize + 1}:`, responseData);
+
+            results.push(responseData);
+        }
+
+        // merge all results into one object
+        const merged = {
+            files: results.flatMap((r) => r.files || []),
+        };
+
+        // localStorage.setItem("data", JSON.stringify(merged));
+        return merged;
     } catch (e) {
-        console.error("Error uploading blob data:", e);
+        console.error("Error uploading blob data in chunks:", e);
         throw e;
     }
 };
+
 
 // Save design to the backend
 export const saveDesignFunction = async (payload) => {

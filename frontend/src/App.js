@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate, useParams, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import Review from "./pages/Review/Review";
 import ProductToolbar from "./components/Toolbar/ProductToolbar/ProductToolbar";
@@ -464,9 +464,10 @@ function App() {
             <Routes>
               {/* Layout wraps all valid pages including /design and /review */}
               <Route path="/" element={<Layout />}>
-                {/* /design pages */}
+                <Route index element={<Navigate to="design/product" replace />} />
+
+                {/* /design pages */} 
                 <Route path="design">
-                  <Route index element={<ProductToolbar />} />
                   <Route path="product" element={<ProductToolbar />} />
                   <Route path="addText" element={<AddTextToolbar />} />
                   <Route path="addImage" element={<AddImageToolbar />} />
