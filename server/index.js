@@ -10,7 +10,7 @@ const { dbConnection } = require('./config/db');
 // const { initSocket } = require('./socket'); // adjust path
 const helmet = require('helmet');
 const multer = require('multer');
-const { startScheduler } = require("./scheduler/cronJob.js");
+// const { startScheduler } = require("./scheduler/cronJob.js");
 const { ConnectCloadinary } = require('./config/cloudinary.js');
 const cookieParser = require("cookie-parser");
 const { verifyShopifyWebhook } = require('./schema/customerValidation.js');
@@ -49,7 +49,7 @@ app.use("/api", routes);
 
 //delete old design which have more then 30 days
 cron.schedule('0 2 * * *', async () => {
-  console.log('[Cron] Running daily cleanup...');
+  console.log(`🗑️ [Cron] Running daily cleanup...`);
   await runCleanupNow({ days: 30 });
 });
 
@@ -69,18 +69,18 @@ app.use((err, req, res, next) => {
 
 
 // Test route
-app.use("/", (req, res) => res.send("Yes, Now you can hit APIs"));
+app.use("/", (req, res) => res.send("✅ Yes, Now you can hit APIs"));
 
 const startServer = async () => {
   try {
     await dbConnection();
     server.listen(PORT, () => {
-      console.log(`Server is ready to listen on port ${PORT}`);
+      console.log(` ✅ Server is ready to listen on port ${PORT}`);
     });
     //for real sync
     // initSocket(server);
   } catch (err) {
-    console.error(`Someting Went Wrong in Start Server, Error is  ${err}`);
+    console.error(`❌Someting Went Wrong in Start Server, Error is  ${err}`);
     process.exit(1);
   }
 }

@@ -13,7 +13,7 @@ exports.dbConnection = async () => {
         await mongoose.connect(process.env.DB_URL);
 
         isConnected = true;
-        console.log("--- Connected to Mongoose Successfully ---");
+        console.log("🛜--- Connected to Mongoose Successfully ---");
 
         //TTL is set to 5 minutes (300s), only users active in the last 5 minutes will be retained,
         const indexes = await ActiveUser.collection.indexes();
