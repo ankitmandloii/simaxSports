@@ -18,7 +18,7 @@ const DesignSchema = new Schema(
       BackDesignNotes: { type: String },
       ExtraInfo: { type: String }
     },
-    NamesAndNumberPrintAreas: { type: [nameAndNumberPrintAreaSchma] },
+    NamesAndNumberPrintAreas: { type: [nameAndNumberPrintAreaSchma], default: [] },
     status: { type: String, enum: ['draft', 'ordered', 'archived'], default: 'draft', index: true },
     version: { type: Number, default: 1 },
   },

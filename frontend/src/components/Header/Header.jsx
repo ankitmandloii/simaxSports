@@ -17,7 +17,7 @@ const Header = () => {
   // Extract current path without query params
   const currentPath = location.pathname;
   // Group of routes that map to "DESIGN"
-  const designRoutes = ['/design/product', '/design/addArt', '/design/uploadArt', '/design/addNames', '/design/addText', '/design/addImage'];
+  const designRoutes = ['/design/product', '/design/addArt', '/design/uploadArt', '/design/addNames', '/design/addText', '/design/addImage', '/design'];
   const isDesktopOrLaptop = useMediaQuery({ query: '(max-width: 750px)' })
   useEffect(() => {
     setCustomerLogin(searchParams.get("customerEmail"));
