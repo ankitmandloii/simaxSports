@@ -176,7 +176,7 @@
   left: 0; */
 }
 
-.toolbarSpan::after {
+/* .toolbarSpan::after {
   content: "";
   position: absolute;
   background-color: var(--indicator-color, "red");
@@ -189,6 +189,29 @@
   transform: translateY(-50%);
   border: 1px solid #888;
   top: 50%;
+} */
+
+.toolbarSpan::after {
+  content: "";
+  position: absolute;
+  height: 10px; /* increased to better show the gradient ring */
+  width: 10px;
+  bottom: 8px;
+  border-radius: 50%;
+  left: 11px;
+  right: 0;
+  transform: translateY(-50%);
+  top: 50%;
+
+  /* Instead of solid color */
+  background-image: conic-gradient(
+    red, orange, yellow, green, cyan, blue, violet, red
+  );
+  background-size: cover;
+
+  /* To make it look like a ring */
+  border: 3px solid white; /* white center space */
+  /* outer border */
 }
 
 .licenseOptions label {
