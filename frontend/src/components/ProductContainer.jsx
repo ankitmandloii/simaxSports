@@ -70,6 +70,7 @@ function ProductContainer() {
   const isDesignProduct = location.pathname === '/design/product' || location.pathname === '/quantity' || location.pathname === '/review';
   const [searchParams] = useSearchParams();
   const { data: settings, loading } = useSelector((state) => state.settingsReducer);
+  console.log("--------settings", settings)
   const settingsForsides = settings?.otherSettings || {};
   const { list: rawProducts } = useSelector((state) => state.products);
   // console.log("=====rawProducts", rawProducts)
@@ -600,6 +601,7 @@ function ProductContainer() {
             ShowRightSleeve={ShowRightSleeve}
             toggleZoom={toggleZoom}
             logo={logo}
+            settingsForsides={settingsForsides}
           />
           {/* <DynamicDimensionBox /> */}
         </div>
