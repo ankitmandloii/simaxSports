@@ -312,8 +312,8 @@ const Review = () => {
   async function makeVariantDataForShopify(reviewItems, CloudinaryImages) {
     const splitIntoPairs = (arr) => {
       const result = [];
-      for (let i = 0; i < arr.length; i += 2) {
-        result.push(arr.slice(i, i + 2));
+      for (let i = 0; i < arr.length; i += 4) {
+        result.push(arr.slice(i, i + 4));
       }
       return result;
     };
@@ -352,8 +352,8 @@ const Review = () => {
           design: {
             front: groupedImages[index][0],
             back: groupedImages[index][1],
-            left: groupedImages[index][1],
-            right: groupedImages[index][1],
+            left: groupedImages[index][2],
+            right: groupedImages[index][3],
           },
           PreviewImageUrl: groupedImages[index][0],
         };
@@ -548,6 +548,8 @@ const Review = () => {
       const designPromises = reviewItems.map(async (item, index) => {
         const frontBackground = item.allImages[0];
         const backBackground = item.allImages[1];
+        const leftBackground = item.allImages[2];
+        const rightBackground = item.allImages[3];
 
         const frontDesignImages = await generateDesigns(
           [frontBackground],
@@ -565,9 +567,24 @@ const Review = () => {
           activeSide, canvasWidth, canvasHeight
         );
 
+        const leftDesignImages = await generateDesigns(
+          [leftBackground],
+          allLeftTextElement,
+          allLeftImagesElement,
+          activeSide, canvasWidth, canvasHeight
+        );
+        const rightDesignImages = await generateDesigns(
+          [rightBackground],
+          allRightTextElement,
+          allRightImagesElement,
+          activeSide, canvasWidth, canvasHeight
+        );
+
         return {
           front: frontDesignImages[0],
           back: backDesignImages[0],
+          leftSleeve: leftDesignImages[0],
+          rightSleeve: rightDesignImages[0],
         };
       });
 
@@ -577,6 +594,8 @@ const Review = () => {
       const blobData = results.reduce((arr, item) => {
         arr.push(base64toBlob(item.front, "image/png"));
         arr.push(base64toBlob(item.back, "image/png"));
+        arr.push(base64toBlob(item.leftSleeve, "image/png"))
+        arr.push(base64toBlob(item.rightSleeve, "image/png"))
         return arr;
       }, []);
 

@@ -34,7 +34,7 @@ export const fetchDesign = async (customerEmail) => {
 export const uploadBlobData = async (blobDataArray) => {
     try {
         const formData = new FormData();
-        blobDataArray = blobDataArray.slice(0, 6);
+        // blobDataArray = blobDataArray.slice(0, 6);
         blobDataArray.forEach((blob, index) => {
             formData.append(`image_${index}`, blob, `image_${index}.png`);
         });
