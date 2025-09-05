@@ -23,7 +23,7 @@ function ProductContainer() {
   const location = useLocation();
   const dispatch = useDispatch();
   const BASE_URL = process.env.REACT_APP_BASE_URL || "https://simax-sports-x93p.vercel.app/api/";
-
+  const hasFetched = useRef(false);
 
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const sleevedesign = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
@@ -460,6 +460,9 @@ function ProductContainer() {
   //   fetchProductById(productId, variantId);
   // }, []);
   useEffect(() => {
+    if (hasFetched.current) return; // 👈 prevent re-running
+    hasFetched.current = true;
+
     const productId = searchParams.get("pId");
     const variantId = searchParams.get("variantid");
 
