@@ -681,3 +681,32 @@ exports.productsSearch = async (req, res) => {
   }
 };
 
+
+
+
+exports.inventoryCheck = async (req, res) => {
+  try {
+    const items = req.body; // Expecting an array of { sku, qty }
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return sendResponse(res, statusCode.BAD_REQUEST, false, "Request body must be an array of { sku, qty } objects");
+    }
+
+    // Run inventory check for each item
+    const results = await Promise.all(
+      items.map(({ sku, qty }) => services.inventoryCheckFromSandS(sku, qty))
+    );
+
+    return sendResponse(
+      res,
+      statusCode.OK,
+      true,
+      "Quantities checked",
+      results
+    );
+  } catch (err) {
+    const detail = err?.response?.data || err?.message || String(err);
+    console.error("S&S qty check error:", detail);
+    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, "Inventory check failed");
+  }
+};

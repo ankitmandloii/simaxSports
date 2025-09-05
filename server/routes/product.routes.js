@@ -12,6 +12,7 @@ router.post("/collectionList", controllers.getAllCollectionList);
 router.post("/collection/:id", controllers.productsByCollectionId);
 // router.post("/addVariantsOnStaticProduct", controllers.addProductVariants);
 router.post("/createDraftOrderforCheckout", controllers.createDraftOrderforCheckout); //for checkout flow
+router.post("/inventoryCheckavailabilitySS", controllers.inventoryCheck );
 
 router.get('/search', controllers.productsSearch);
 module.exports = router;

@@ -1,5 +1,16 @@
+const axios = require("axios");
 
-export async function getProductsList(limit = 5, cursor = null) {
+const getAuthHeader = () => {
+  const username = process.env.SS_USER_NAME;
+  const password = process.env.SS_PASSWORD;
+  const base64Auth = Buffer.from(`${username}:${password}`).toString("base64");
+  return {
+    Authorization: `Basic ${base64Auth}`,
+  };
+};
+
+
+exports.getProductsList = async function (limit = 5, cursor = null) {
   const SHOPIFY_API_URL = `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`;
   const afterClause = cursor ? `, after: "${cursor}"` : "";
 
@@ -104,7 +115,7 @@ export async function getProductsList(limit = 5, cursor = null) {
 }
 
 
-export async function getProductsByCollectionId(limit, collectionId, cursor) {
+exports.getProductsByCollectionId = async function (limit, collectionId, cursor) {
 
   const S_STORE = `${process.env.SHOPIFY_STORE_URL}`;
   const A_TOKEN = `${process.env.SHOPIFY_API_KEY}`;
@@ -222,7 +233,7 @@ export async function getProductsByCollectionId(limit, collectionId, cursor) {
   }
 }
 
-export async function getAllCollectionList(limit = 50, cursor = null) {
+exports.getAllCollectionList = async function (limit = 50, cursor = null) {
   const S_STORE = `${process.env.SHOPIFY_STORE_URL}`;
   const A_TOKEN = `${process.env.SHOPIFY_API_KEY}`;
 
@@ -299,7 +310,7 @@ export async function getAllCollectionList(limit = 50, cursor = null) {
 
 
 // services/products.js
-export async function searchProducts({ q, limit, cursor, collectionId }) {
+exports.searchProducts = async ({ q, limit, cursor, collectionId }) => {
   const S_STORE = process.env.SHOPIFY_STORE_URL;
   const A_TOKEN = process.env.SHOPIFY_API_KEY;
   const SHOPIFY_API_URL = `https://${S_STORE}.myshopify.com/admin/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`;
@@ -430,4 +441,36 @@ export async function searchProducts({ q, limit, cursor, collectionId }) {
   }
 }
 
+
+
+exports.inventoryCheckFromSandS = async (sku, qty) => {
+  try {
+    const resp = await axios.get(`${process.env.SS_API_URL}/inventory/${sku}`, {
+      headers: getAuthHeader(),
+    });
+
+    const rows = Array.isArray(resp.data) ? resp.data : [];
+    if (!rows.length) {
+      return { sku, total_available: 0, requested: qty || undefined, can_fulfill: false };
+    }
+
+    const item = rows[0];
+    const totalAvailable = (item.warehouses || []).reduce((sum, w) => {
+      const n = Number(w?.qty);
+      return sum + (Number.isFinite(n) ? n : 0);
+    }, 0);
+
+    return {
+      sku: item.sku || sku,
+      total_available: totalAvailable,
+      requested: typeof qty === "number" ? qty : undefined,
+      can_fulfill: typeof qty === "number" ? totalAvailable >= qty : undefined,
+      gtin: item.gtin || null,
+      styleID: item.styleID || null
+    };
+  } catch (error) {
+    console.error("Error fetching style IDs:", error.message);
+    throw error;
+  }
+};
 
