@@ -14,7 +14,7 @@ import MobileFAB from '../MobileFab/MobileFab.jsx';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { requestExport } from '../../redux/CanvasExportDesign/canvasExportSlice.js';
-import { fetchDesign, uploadBlobData, saveDesignFunction, sendEmailDesign, updateDesignFunction } from '../utils/GlobalSaveDesignFunctions.jsx';
+import { fetchDesign, uploadBlobData, saveDesignFunction, sendEmailDesign, updateDesignFunction, normalizeObject } from '../utils/GlobalSaveDesignFunctions.jsx';
 import { generateDesigns } from '../Editor/utils/helper.js';
 import { toast } from "react-toastify";
 import { addProduct } from '../../redux/productSelectionSlice/productSelectionSlice.js';
@@ -204,6 +204,17 @@ const Footer = () => {
   // const goToQuantity = () => {
   //   navigate(`/quantity${location.search}`);
   // };
+  // Check Design Change
+  const isDesignChanged = () => {
+    if (!lastDesign) return true;
+
+
+
+    const current = normalizeObject(designPayload.design);
+    const saved = normalizeObject(lastDesign);
+
+    return current !== saved;
+  };
 
   const handleDesignAction = (actionType, emailOverride = null) => {
     // if (!customerEmail) {
@@ -237,13 +248,23 @@ const Footer = () => {
 
         // console.log('designFound', designFound)
 
-        if (actionType === 'share' && designFound) {
-          setActiveModal("share");
-        }
-        // } else if (actionType === 'save') {
+        // if (actionType === 'share' && designFound) {
+        //   setActiveModal("share");
+        // }
+
+        // else {
         //   setActiveModal(designFound ? "save" : "addToCart");
         // }
-        else {
+        // new checking update design
+        if (actionType === 'share') {
+          if (!designFound) {
+            setActiveModal("addToCart");
+          } else if (isDesignChanged()) {
+            setActiveModal("save");
+          } else {
+            setActiveModal("share");
+          }
+        } else {
           setActiveModal(designFound ? "save" : "addToCart");
         }
 

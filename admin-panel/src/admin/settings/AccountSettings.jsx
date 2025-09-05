@@ -9,7 +9,7 @@ import {
   BlockStack,
   Divider,
   Icon,
-  } from '@shopify/polaris';
+} from '@shopify/polaris';
 import { useCallback, useState } from 'react';
 import { useToast } from '../ToastContext';
 import {
@@ -33,7 +33,7 @@ export default function AccountSettings() {
 
 
   const validateEmail = useCallback((value) => {
-    if(value.trim() === '') return 'Email is required';
+    if (value.trim() === '') return 'Email is required';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!value) return 'Email is required';
     else if (!emailRegex.test(value)) return 'Please enter a valid email address';
@@ -41,7 +41,7 @@ export default function AccountSettings() {
   }, []);
 
   const validatePassword = useCallback((value) => {
-    if(value.trim() === '') return 'Password is required';
+    if (value.trim() === '') return 'Password is required';
     if (!value) return 'Password is required';
     else if (value.length < 5) return 'Password must be at least 5 characters long';
     return '';
@@ -84,11 +84,11 @@ export default function AccountSettings() {
 
       if (!response.ok) throw new Error(data?.message || 'Something Went Wrong');
 
-     
-       showToast({
-                content: `${data.message}`,
-                icon: <Icon source={InventoryUpdatedIcon} tone="success" />
-            });
+
+      showToast({
+        content: `${data.message}`,
+        icon: <Icon source={InventoryUpdatedIcon} tone="success" />
+      });
 
     } catch (error) {
 
@@ -106,11 +106,17 @@ export default function AccountSettings() {
   return (
     <Page>
       <Card sectioned title="Account Settings" subtitle="Manage your account settings and preferences">
-         <Box style={{ width: '16px', height: '16px' }}>
+        {/* <Box style={{ width: '16px', height: '16px' }}>
             <Icon source={PersonLockFilledIcon} tone="base" />
-          </Box>
+          </Box> */}
         <BlockStack gap="400" >
-          <Text variant="headingLg" as="h2">Change Password</Text>
+          {/* <Text variant="headingLg" as="h2">Change Password</Text> */}
+          <InlineStack gap="400">
+            <Box style={{ width: '30px', height: '30px', marginTop: '4px' }}>
+              <Icon source={PersonLockFilledIcon} tone="base" />
+            </Box>
+            <Text variant="headingLg">Change Password</Text>
+          </InlineStack>
           <Text tone="subdued">Update your Password And Basic contact info below.</Text>
           <Divider />
           <Box paddingBlockStart="300">

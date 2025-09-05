@@ -102,46 +102,55 @@ export default function ActiveUsers() {
 
   return (
     <Page>
-      <Card padding="500" rounded>
+      <Card padding="300" rounded>
+
         <InlineStack align="space-between" blockAlign="center">
-          <InlineStack gap="400">
-            <Box style={{ width: '24px', height: '24px' }}>
+          <InlineStack gap="300">
+            <Box style={{ width: '20px', height: '20px' }}>
               <Icon source={PersonLockFilledIcon} tone="base" />
             </Box>
-            <Text variant="headingLg">Active Users on Design App</Text>
+            <Text variant="headingMd">Active Users on Design App</Text>
           </InlineStack>
           <Button variant="primary" onClick={getActiveUsersWithLocation} loading={loading}>
             Refresh
           </Button>
         </InlineStack>
 
-        <BlockStack gap="500" paddingBlockStart="400">
-          <InlineStack gap="400" wrap={false}>
-            <Card background="bg-surface-secondary" padding="300">
-              <BlockStack gap="100" align="center">
-                <Text tone="subdued">Active Users</Text>
-                <Text variant="heading2xl" tone="success">{activeUserNumber}</Text>
-              </BlockStack>
-            </Card>
+        <Box margin="600">
 
-            <Card background="bg-surface-secondary" padding="300">
-              <BlockStack gap="100" align="center">
-                <Text tone="subdued">Unique Countries</Text>
-                <Text variant="heading2xl">{uniqueCountries.length}</Text>
-              </BlockStack>
-            </Card>
-          </InlineStack>
+          <BlockStack gap="400" paddingBlockStart="300" margin="500">
+            <InlineStack gap="300" wrap margin="300">
+              <Card background="bg-surface-secondary" padding="200" rounded>
+                <BlockStack gap="100" align="center">
+                  <Text tone="subdued">Active Users</Text>
+                  <Text variant="headingXl" tone="success">{activeUserNumber}</Text>
+                </BlockStack>
+              </Card>
 
-          <Box paddingBlock="200">
-            <ProgressBar progress={progressValue} tone="success" />
-          </Box>
-        </BlockStack>
+              <Card background="bg-surface-secondary" padding="200" rounded>
+                <BlockStack gap="100" align="center">
+                  <Text tone="subdued">Unique Countries</Text>
+                  <Text variant="headingXl">{uniqueCountries.length}</Text>
+                </BlockStack>
+              </Card>
+            </InlineStack>
+
+            <Box paddingBlock="100" paddingInline="200">
+              <ProgressBar
+                progress={progressValue}
+                tone="highlight"
+                size="small"
+                animated
+              />
+            </Box>
+          </BlockStack>
+        </Box>
       </Card>
 
       <Divider />
 
       {users.length > 0 ? (
-        <Card title="Active Users with Location" padding="300">
+        <Card title="Active Users with Location" padding="300" rounded>
           <Box maxHeight="400px" overflow="auto">
             <IndexTable
               resourceName={{ singular: 'user', plural: 'users' }}
@@ -151,7 +160,6 @@ export default function ActiveUsers() {
               headings={[
                 { title: 'Anon ID' },
                 { title: 'City' },
-                // { title: 'Country' },
                 { title: 'Region' },
                 { title: 'IP' },
                 { title: 'Last Active' },
@@ -171,11 +179,6 @@ export default function ActiveUsers() {
                     </Text>
                   </IndexTable.Cell>
                   <IndexTable.Cell>{user.location?.city || '-'}</IndexTable.Cell>
-                  {/* <IndexTable.Cell>
-                    {user.location?.country
-                      ? <Badge tone="success">{user.location.country}</Badge>
-                      : '-'}
-                  </IndexTable.Cell> */}
                   <IndexTable.Cell>{user.location?.region || '-'}</IndexTable.Cell>
                   <IndexTable.Cell>
                     <Text as="span" fontFamily="monospace">{user.location?.ip || '-'}</Text>
@@ -187,17 +190,114 @@ export default function ActiveUsers() {
           </Box>
         </Card>
       ) : (
-        <Card padding="300">
-
+        <Card padding="300" rounded>
           <EmptyState
             heading="No active users yet"
             action={{ content: 'Refresh', onAction: getActiveUsersWithLocation, loading }}
           >
-
             <p>Click refresh to load the latest active users.</p>
           </EmptyState>
         </Card>
       )}
     </Page>
+
+    // <Page>
+    //   <Card padding="500" rounded>
+    //     <InlineStack align="space-between" blockAlign="center">
+    //       <InlineStack gap="400">
+    //         <Box style={{ width: '24px', height: '24px' }}>
+    //           <Icon source={PersonLockFilledIcon} tone="base" />
+    //         </Box>
+    //         <Text variant="headingLg">Active Users on Design App</Text>
+    //       </InlineStack>
+    //       <Button variant="primary" onClick={getActiveUsersWithLocation} loading={loading}>
+    //         Refresh
+    //       </Button>
+    //     </InlineStack>
+
+    //     <BlockStack gap="500" paddingBlockStart="400" margin='200'>
+    //       <InlineStack gap="400" wrap={false}>
+    //         <Card background="bg-surface-secondary" padding="300">
+    //           <BlockStack gap="100" align="center">
+    //             <Text tone="subdued">Active Users</Text>
+    //             <Text variant="heading2xl" tone="success">{activeUserNumber}</Text>
+    //           </BlockStack>
+    //         </Card>
+
+    //         <Card background="bg-surface-secondary" padding="300">
+    //           <BlockStack gap="100" align="center">
+    //             <Text tone="subdued">Unique Countries</Text>
+    //             <Text variant="heading2xl">{uniqueCountries.length}</Text>
+    //           </BlockStack>
+    //         </Card>
+    //       </InlineStack>
+
+    //       <Box paddingBlock="200">
+    //         <ProgressBar progress={progressValue} tone="success" />
+    //       </Box>
+    //     </BlockStack>
+    //   </Card>
+
+    //   <Divider />
+
+    //   {users.length > 0 ? (
+    //     <Card title="Active Users with Location" padding="300">
+    //       <Box maxHeight="400px" overflow="auto">
+    //         <IndexTable
+    //           resourceName={{ singular: 'user', plural: 'users' }}
+    //           itemCount={users.length}
+    //           selectedItemsCount={allResourcesSelected ? 'All' : selectedResources.length}
+    //           onSelectionChange={handleSelectionChange}
+    //           headings={[
+    //             { title: 'Anon ID' },
+    //             { title: 'City' },
+    //             // { title: 'Country' },
+    //             { title: 'Region' },
+    //             { title: 'IP' },
+    //             { title: 'Last Active' },
+    //           ]}
+    //           selectable={false}
+    //         >
+    //           {users.map((user, index) => (
+    //             <IndexTable.Row
+    //               id={user._id}
+    //               key={user._id}
+    //               selected={selectedResources.includes(user._id)}
+    //               position={index}
+    //             >
+    //               <IndexTable.Cell>
+    //                 <Text as="span" fontWeight="medium" fontFamily="monospace">
+    //                   {user.anonId}
+    //                 </Text>
+    //               </IndexTable.Cell>
+    //               <IndexTable.Cell>{user.location?.city || '-'}</IndexTable.Cell>
+    //               {/* <IndexTable.Cell>
+    //                 {user.location?.country
+    //                   ? <Badge tone="success">{user.location.country}</Badge>
+    //                   : '-'}
+    //               </IndexTable.Cell> */}
+    //               <IndexTable.Cell>{user.location?.region || '-'}</IndexTable.Cell>
+    //               <IndexTable.Cell>
+    //                 <Text as="span" fontFamily="monospace">{user.location?.ip || '-'}</Text>
+    //               </IndexTable.Cell>
+    //               <IndexTable.Cell>{new Date(user.lastActive).toLocaleString()}</IndexTable.Cell>
+    //             </IndexTable.Row>
+    //           ))}
+    //         </IndexTable>
+    //       </Box>
+    //     </Card>
+    //   ) : (
+    //     <Card padding="300">
+
+    //       <EmptyState
+    //         heading="No active users yet"
+    //         action={{ content: 'Refresh', onAction: getActiveUsersWithLocation, loading }}
+    //       >
+
+    //         <p>Click refresh to load the latest active users.</p>
+    //       </EmptyState>
+    //     </Card>
+    //   )}
+    // </Page>
   );
 }

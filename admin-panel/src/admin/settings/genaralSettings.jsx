@@ -351,11 +351,17 @@ export default function GeneralSettings() {
         {/* TEXT SECTION SETTINGS */}
         <Card sectioned>
 
-          <Box style={{ width: '16px', height: '16px' }}>
+          {/* <Box style={{ width: '16px', height: '16px' }}>
             <Icon source={TextFontListIcon} tone="base" />
-          </Box>
+          </Box> */}
           <BlockStack gap="400">
-            <Text variant="headingLg" as="h2">Text Section Settings</Text>
+            <InlineStack gap="400">
+              <Box style={{ width: '30px', height: '30px', marginTop: '4px' }}>
+                <Icon source={TextFontListIcon} tone="base" />
+              </Box>
+              <Text variant="headingLg">Text Section Settings</Text>
+            </InlineStack>
+            {/* <Text variant="headingLg" as="h2">Text Section Settings</Text> */}
             <Text tone="subdued">Toggle features you want to enable in the text design section.</Text>
             <Divider />
             <Box paddingBlock="300">
@@ -380,11 +386,17 @@ export default function GeneralSettings() {
 
         {/* NAMES & NUMBERS SETTINGS */}
         <Card sectioned>
-          <Box style={{ width: '16px', height: '16px' }}>
+          {/* <Box style={{ width: '16px', height: '16px' }}>
             <Icon source={ListNumberedIcon} tone="base" />
-          </Box>
+          </Box> */}
           <BlockStack gap="400">
-            <Text variant="headingLg" as="h2">Names & Numbers Settings</Text>
+            <InlineStack gap="400">
+              <Box style={{ width: '30px', height: '30px', marginTop: '4px' }}>
+                <Icon source={ListNumberedIcon} tone="base" />
+              </Box>
+              <Text variant="headingLg">Names & Numbers Settings</Text>
+            </InlineStack>
+            {/* <Text variant="headingLg" as="h2">Names & Numbers Settings</Text> */}
             <Text tone="subdued">Enable/disable personalized name and number options.</Text>
             <Divider />
             <Box paddingBlock="300">
@@ -409,11 +421,17 @@ export default function GeneralSettings() {
 
         {/* ADD ART Sectoin */}
         <Card sectioned>
-          <Box style={{ width: '16px', height: '16px' }}>
+          {/* <Box style={{ width: '16px', height: '16px' }}>
             <Icon source={CameraIcon} tone="base" />
-          </Box>
+          </Box> */}
           <BlockStack gap="400">
-            <Text variant="headingLg" as="h2">Generate Art Settings</Text>
+            <InlineStack gap="400">
+              <Box style={{ width: '30px', height: '30px', marginTop: '4px' }}>
+                <Icon source={CameraIcon} tone="base" />
+              </Box>
+              <Text variant="headingLg">Generate Art Settings</Text>
+            </InlineStack>
+            {/* <Text variant="headingLg" as="h2">Generate Art Settings</Text> */}
             <Text tone="subdued">Enable/disable personalized Generate Art options.</Text>
             <Divider />
             <Box paddingBlock="300">
@@ -441,11 +459,17 @@ export default function GeneralSettings() {
         {/* ARTWORK EDITOR SETTINGS */}
 
         <Card sectioned>
-          <Box style={{ width: '16px', height: '16px' }}>
+          {/* <Box style={{ width: '16px', height: '16px' }}>
             <Icon source={PageUpIcon} tone="base" />
-          </Box>
+          </Box> */}
           <BlockStack gap="400">
-            <Text variant="headingLg" as="h2">Image Upload Sections's Edit Artwork Settings</Text>
+            <InlineStack gap="400">
+              <Box style={{ width: '30px', height: '30px', marginTop: '4px' }}>
+                <Icon source={PageUpIcon} tone="base" />
+              </Box>
+              <Text variant="headingLg">Image Upload Sections's Edit Artwork Settings</Text>
+            </InlineStack>
+            {/* <Text variant="headingLg" as="h2">Image Upload Sections's Edit Artwork Settings</Text> */}
             <Text tone="subdued">Toggle options to control artwork editing tools visible to the user.</Text>
             <Divider />
             <Box paddingBlock="300">
@@ -473,11 +497,17 @@ export default function GeneralSettings() {
 
         {/* IMAGE UPLOAD SETTINGS */}
         <Card sectioned>
-          <Box style={{ width: '16px', height: '16px' }}>
+          {/* <Box style={{ width: '16px', height: '16px' }}>
             <Icon source={PageUpIcon} tone="base" />
-          </Box>
+          </Box> */}
           <BlockStack gap="400">
-            <Text variant="headingLg" as="h2">Upload Art Settings</Text>
+            <InlineStack gap="400">
+              <Box style={{ width: '30px', height: '30px', marginTop: '4px' }}>
+                <Icon source={PageUpIcon} tone="base" />
+              </Box>
+              <Text variant="headingLg">Upload Art Settings</Text>
+            </InlineStack>
+            {/* <Text variant="headingLg" as="h2">Upload Art Settings</Text> */}
             <Text tone="subdued">Enable or disable options for the upload section.</Text>
             <Divider />
             <Box paddingBlock="300">
@@ -503,11 +533,17 @@ export default function GeneralSettings() {
 
         {        /* Other SETTINGS  */}
         <Card sectioned>
-          <Box style={{ width: '16px', height: '16px' }}>
+          {/* <Box style={{ width: '16px', height: '16px' }}>
             <Icon source={ButtonIcon} tone="base" />
-          </Box>
+          </Box> */}
           <BlockStack gap="400">
-            <Text variant="headingLg" as="h2">Other Settings</Text>
+            {/* <Text variant="headingLg" as="h2">Other Settings</Text> */}
+            <InlineStack gap="400">
+              <Box style={{ width: '30px', height: '30px', marginTop: '4px' }}>
+                <Icon source={ButtonIcon} tone="base" />
+              </Box>
+              <Text variant="headingLg" as="h2">Other Settings</Text>
+            </InlineStack>
             <Text tone="subdued">Enable or disable options for the Other settings section.</Text>
             <Divider />
             <Box paddingBlock="300">

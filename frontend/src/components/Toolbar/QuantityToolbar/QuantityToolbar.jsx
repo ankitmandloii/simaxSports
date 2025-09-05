@@ -105,7 +105,7 @@ const QuantityToolbar = () => {
         ),
         allVariants: product?.allVariants,
       };
-      console.log(mainProduct, "mainProduct");
+      // console.log(mainProduct, "mainProduct");
 
       dispatch(addProduct(mainProduct));
       newAllProducts.push(mainProduct);
@@ -113,6 +113,7 @@ const QuantityToolbar = () => {
 
       // ✅ extra variants
       const extraProducts = addedColors?.map((variantProduct) => {
+        console.log("----variantProduct", variantProduct)
         const prod = {
           uniqueKey: uuidv4(),
           id: variantProduct?.variant?.id?.split("/").reverse()[0],
@@ -134,7 +135,7 @@ const QuantityToolbar = () => {
             variantProduct?.variant?.inventoryItem?.inventoryLevels?.edges?.[0]
               ?.node?.quantities?.[0]?.quantity,
         };
-        console.log(prod, "prod");
+        // console.log(prod, "prod");
 
         dispatch(addProduct(prod));
         newExpandedProducts[prod.uniqueKey] = true;
@@ -173,7 +174,7 @@ const QuantityToolbar = () => {
     const extractAvailableSizeVariants = (variants, accessor = (v) => v) => {
       const sizeVariantPairs = variants.flatMap((variantWrapper) => {
         const variant = accessor(variantWrapper);
-        console.log("variant?.selectedOptions?", variant?.selectedOptions)
+        // console.log("variant?.selectedOptions?", variant?.selectedOptions)
         const sizeOption = variant?.selectedOptions?.find(
           (opt) => opt.name === 'Size'
         );

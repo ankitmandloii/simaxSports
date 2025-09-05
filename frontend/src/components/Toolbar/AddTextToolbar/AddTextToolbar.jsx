@@ -64,8 +64,7 @@ const AddTextToolbar = () => {
   const [fontweightValue, setFontweightValue] = useState(textContaintObject ? textContaintObject.fontWeight : "normal");
   const [fontStyleValue, setFontStyleValue] = useState(textContaintObject ? textContaintObject.fontStyle : "normal");
 
-
-
+  console.log("=======fontweight", fontweightValue)
   const colorClassNameForBold = fontweightValue === 'bold'
     ? style.toolbarIconActive
     : style.toolbarIcon;

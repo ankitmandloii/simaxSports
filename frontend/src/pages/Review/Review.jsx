@@ -311,62 +311,69 @@ const Review = () => {
   }
 
   async function makeVariantDataForShopify(reviewItems, CloudinaryImages) {
-    const splitIntoPairs = (arr) => {
-      const result = [];
-      for (let i = 0; i < arr.length; i += 4) {
-        result.push(arr.slice(i, i + 4));
+    console.log("variantttttttttttttt")
+    try {
+      const splitIntoPairs = (arr) => {
+        const result = [];
+        for (let i = 0; i < arr.length; i += 4) {
+          result.push(arr.slice(i, i + 4));
+        }
+        return result;
+      };
+
+      const ShopifyData = [];
+      const groupedImages = splitIntoPairs(CloudinaryImages.files);
+      console.log("CloudinaryImages", CloudinaryImages);
+
+      for (let index = 0; index < reviewItems.length; index++) {
+        const product = reviewItems[index];
+        const allVariants = product.allVariants;
+
+        const sizeskey = Object.entries(product?.sizes);
+        const color = product?.color;
+        console.log("sizeskey", sizeskey);
+
+        const variantTitles = sizeskey.map(([size, count]) => {
+          return { title: `${color} / ${size}`, inventory_quantity: count };
+        });
+
+        for (const varianttitle of variantTitles) {
+          const variantData = allVariants.find(
+            (v) => v.title === varianttitle.title
+          );
+          // console.log(variantData, "variantdata");
+
+          const newData = {
+            variant_id: variantData.id.split("/").reverse()[0],
+            size: varianttitle.title.split("/")[1].trim(),
+            color: varianttitle.title.split("/")[0].trim(),
+            price: discountData?.summary?.eachAfterDiscount,
+            sku: variantData?.sku,
+            designId: currentDesign?._id,
+            quantity: Number(varianttitle.inventory_quantity),
+            vendor: "Addidas test",
+            custom: true,
+            design: {
+              front: groupedImages[index][0],
+              back: groupedImages[index][1],
+              left: groupedImages[index][2],
+              right: groupedImages[index][3],
+            },
+            PreviewImageUrl: groupedImages[index][0],
+          };
+
+          ShopifyData.push(newData);
+        }
       }
-      return result;
-    };
 
-    const ShopifyData = [];
-    const groupedImages = splitIntoPairs(CloudinaryImages.files);
-    // console.log("CloudinaryImages", CloudinaryImages);
-
-    for (let index = 0; index < reviewItems.length; index++) {
-      const product = reviewItems[index];
-      const allVariants = product.allVariants;
-
-      const sizeskey = Object.entries(product?.sizes);
-      const color = product?.color;
-      console.log("sizeskey", sizeskey);
-
-      const variantTitles = sizeskey.map(([size, count]) => {
-        return { title: `${color} / ${size}`, inventory_quantity: count };
-      });
-
-      for (const varianttitle of variantTitles) {
-        const variantData = allVariants.find(
-          (v) => v.title === varianttitle.title
-        );
-        // console.log(variantData, "variantdata");
-
-        const newData = {
-          variant_id: variantData.id.split("/").reverse()[0],
-          size: varianttitle.title.split("/")[1].trim(),
-          color: varianttitle.title.split("/")[0].trim(),
-          price: discountData?.summary?.eachAfterDiscount,
-          sku: variantData?.sku,
-          designId: currentDesign?._id,
-          quantity: Number(varianttitle.inventory_quantity),
-          vendor: "Addidas test",
-          custom: true,
-          design: {
-            front: groupedImages[index][0],
-            back: groupedImages[index][1],
-            left: groupedImages[index][2],
-            right: groupedImages[index][3],
-          },
-          PreviewImageUrl: groupedImages[index][0],
-        };
-
-        ShopifyData.push(newData);
-      }
+      console.log("Final Shopify Data:", ShopifyData);
+      const response = await createDraftOrderforCheckout(ShopifyData);
+      return response;
+    } catch (e) {
+      console.log("error in makeVariantDataForShopify", e)
+      throw new Error(e);
     }
 
-    console.log("Final Shopify Data:", ShopifyData);
-    const response = await createDraftOrderforCheckout(ShopifyData);
-    return response;
   }
 
   function getIncreasedData(data, value) {

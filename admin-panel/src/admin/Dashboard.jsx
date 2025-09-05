@@ -916,40 +916,40 @@ export function Dashboard() {
               <Layout.Section>
                 <Box
                   padding="400"
-                  style={{ display: "grid", gap: "16px", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}
+                  style={{ display: "grid", gap: "16px", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))" }}
                 >
                   <Card sectioned>
-                    <Box padding="400">
+                    <Box padding="200">
                       <Text variant="headingSm">Total Designs</Text>
                       <Text variant="headingLg">{stats.total}</Text>
                     </Box>
                   </Card>
                   <Card sectioned>
-                    <Box padding="400">
+                    <Box padding="200">
                       <Text variant="headingSm">New Today</Text>
                       <Text variant="headingLg">{stats.today}</Text>
                     </Box>
                   </Card>
                   <Card sectioned>
-                    <Box padding="400">
+                    <Box padding="200">
                       <Text variant="headingSm">Last 7 Days</Text>
                       <Text variant="headingLg">{stats.last7d}</Text>
                     </Box>
                   </Card>
                   <Card sectioned>
-                    <Box padding="400">
-                      <Text variant="headingSm">% Ordered</Text>
+                    <Box padding="200">
+                      <Text variant="headingSm">Orders Percentage</Text>
                       <Text variant="headingLg">{stats.orderedPct}%</Text>
                     </Box>
                   </Card>
                   <Card sectioned>
-                    <Box padding="400">
+                    <Box padding="200">
                       <Text variant="headingSm">Unique Customers</Text>
                       <Text variant="headingLg">{stats.uniqueCustomers}</Text>
                     </Box>
                   </Card>
                   <Card sectioned>
-                    <Box padding="400">
+                    <Box padding="200">
                       <Text variant="headingSm">Avg Images / Design</Text>
                       <Text variant="headingLg">{stats.avgImages}</Text>
                     </Box>
@@ -1095,8 +1095,8 @@ export function Dashboard() {
                           </Text>
                         </TextContainer>
 
-                        <div style={{ display: "flex", gap: "8px" }}>
-                          <Button onClick={() => handleViewDesign(item)} primary>
+                        <div style={{ display: "flex", gap: "8px", height: '2rem' }}>
+                          <Button onClick={() => handleViewDesign(item)} primary size="medium">
                             View Details
                           </Button>
                           <Button
@@ -1181,7 +1181,7 @@ export function Dashboard() {
                           key={img + i}
                           onClick={() => setGalleryIndex(i)}
                           style={{
-                            border: i === galleryIndex ? "2px solid var(--p-color-border-interactive)" : "1px solid var(--p-color-border)",
+                            border: i === galleryIndex ? "2px solid #005bff" : "1px solid var(--p-color-border)",
                             borderRadius: "6px",
                             padding: "2px",
                             overflow: "hidden",
@@ -1189,7 +1189,7 @@ export function Dashboard() {
                             cursor: "pointer",
                           }}
                         >
-                          <img src={img} alt={`thumb-${i}`} style={{ width: "100%", height: "60px", objectFit: "cover" }} />
+                          <img src={img} alt={`thumb-${i}`} style={{ width: "100%", height: "60px", objectFit: "contain" }} />
                         </button>
                       ))}
                     </div>
@@ -1218,7 +1218,7 @@ export function Dashboard() {
                     {activeTab === 3 && <AreaDetails area={selectedDesign.present?.rightSleeve} />}
                   </Box>
                 </Card>
-                <Card sectioned>
+                <Card sectioned marginBlockStart="300">
                   <Box padding="400">
                     <Text variant="headingMd">Design Notes</Text>
                   </Box>
@@ -1326,20 +1326,52 @@ export function Dashboard() {
     }
 
     const { images = [], texts = [] } = area;
+    console.log("---------imagesAdmin", images)
 
     return (
       <div style={{ display: "grid", gap: "16px" }}>
         {images.length > 0 && (
           <>
             <Text variant="headingSm">Images</Text>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: "12px" }}>
+            <div style={{ display: "grid", gap: "12px" }}>
               {images.map((img, idx) => (
-                <div
-                  key={idx}
-                  style={{ border: "1px solid var(--p-color-border)", borderRadius: "6px", overflow: "hidden" }}
-                >
-                  <img src={img.src} alt={`img-${idx}`} style={{ width: "100%", height: "100px", objectFit: "cover" }} />
-                </div>
+                <Card key={idx} sectioned>
+                  <Box padding="400" style={{ display: "grid", gap: "8px" }}>
+                    <div
+                      style={{
+                        border: "1px solid var(--p-color-border)",
+                        borderRadius: "6px",
+                        overflow: "hidden",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      <img
+                        src={img.src}
+                        alt={`img-${idx}`}
+                        style={{ width: "100%", height: "100px", objectFit: "contain" }}
+                      />
+                    </div>
+                    <NoteRow label="Source" value={img.src} />
+                    <NoteRow label="ID" value={img.id} />
+                    <NoteRow label="Position" value={`X: ${img.position?.x ?? "-"}, Y: ${img.position?.y ?? "-"}`} />
+                    <NoteRow label="Dimensions" value={`W: ${img.width ?? "-"} × H: ${img.height ?? "-"}`} />
+                    <NoteRow label="Scale" value={`X: ${img.scaleX ?? "-"}, Y: ${img.scaleY ?? "-"}`} />
+                    <NoteRow label="Flip" value={`X: ${img.flipX ? "true" : "false"}, Y: ${img.flipY ? "true" : "false"}`} />
+                    <NoteRow label="Angle" value={img.angle ?? "-"} />
+                    <NoteRow label="Layer Index" value={img.layerIndex ?? "-"} />
+                    <NoteRow label="Crop and Trim" value={img.cropAndTrim ? "true" : "false"} />
+                    <NoteRow label="Edit Color" value={img.editColor ? "true" : "false"} />
+                    <NoteRow label="Invert Color" value={img.invertColor ? "true" : "false"} />
+                    <NoteRow label="Remove Background" value={img.removeBg ? "true" : "false"} />
+                    <NoteRow label="Replace Background Color" value={img.replaceBackgroundColor ?? "-"} />
+                    <NoteRow label="Replace Background Param" value={img.replaceBgParamValue ?? "-"} />
+                    <NoteRow label="Selected Filter" value={img.selectedFilter ?? "-"} />
+                    <NoteRow label="Single Color" value={img.singleColor ?? "-"} />
+                    <NoteRow label="Solid Color" value={img.solidColor ? "true" : "false"} />
+                    <NoteRow label="Super Resolution" value={img.superResolution ? "true" : "false"} />
+                    <NoteRow label="Threshold Value" value={img.thresholdValue ?? "-"} />
+                  </Box>
+                </Card>
               ))}
             </div>
           </>
