@@ -157,7 +157,22 @@ const AddImageToolbar = () => {
       if (editColor) {
         const paletteUrl = imageSrc.split("?  ")[0] + "?palette=json";
         const res = await fetch(paletteUrl);
+        const contentType = res.headers.get("content-type");
+
+
+
+        if (contentType && contentType.includes("application/json")) {
+          // const json = await res.json();
+          // const colors = json?.colors?.map(c => `${c.hex}`) || [];
+          // ... use colors
+        } else {
+          console.warn("Palette API did not return JSON, skipping color replacement.");
+        }
+        console.log("res", res);
+
         const json = await res.json();
+        console.log(json, "json");
+
         const colors = json?.colors?.map(c => `${c.hex}`) || [];
         const updateColors = [...extractedColors];
 

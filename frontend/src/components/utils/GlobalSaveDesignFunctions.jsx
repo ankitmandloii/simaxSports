@@ -163,6 +163,7 @@ export const updateDesignFunction = async (payload) => {
         //     },
         //     body: JSON.stringify(payload),
         // });
+        console.log("Payload for updating design:", payload);
         const response = await apiConnecter(
             "PATCH",
             "design/updateDesignFromFrontEnd",

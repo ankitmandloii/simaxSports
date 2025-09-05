@@ -54,6 +54,7 @@ const renderAllImageObjects = (
 
       if (checkbox) checkbox.checked = removeBg;
 
+
       if (slider && circle) {
         slider.style.backgroundColor = removeBg ? "#3b82f6" : "#ccc";
         circle.style.transform = removeBg ? "translateX(16px)" : "translateX(0)";
@@ -160,46 +161,54 @@ const renderAllImageObjects = (
       checkbox.checked = false;
     }
 
-    checkbox.addEventListener("change", () => {
+    checkbox.addEventListener("change", (event) => {
+      console.log("Checkbox changed for image:", id);
       const addImageToolbarBgBtn = document.querySelector("#removeBackgroundInput");
-      const checked = checkbox.checked;
-      slider.style.backgroundColor = checked ? "#3b82f6" : "#ccc";
-      circle.style.transform = checked ? "translateX(16px)" : "translateX(0)";
-
-      // Get current image source and parameters
       const currentSrc = fabricImage.getSrc();
       const baseSrc = currentSrc.split('?')[0];
       let params = currentSrc.split('?')[1] ? currentSrc.split('?')[1].split('&') : [];
       const hasRemoveBg = params.includes('bg-remove=true');
 
+
+      const checked = hasRemoveBg;
+      slider.style.backgroundColor = checked ? "#3b82f6" : "#ccc";
+      circle.style.transform = checked ? "translateX(16px)" : "translateX(0)";
+
+      // Get current image source and parameters
+
       // Update parameters based on checkbox state
-      if (checked && !hasRemoveBg) {
-        params.push('bg-remove=true');
-      } else if (!checked && hasRemoveBg) {
-        params = params.filter(param => param !== 'bg-remove=true');
-      }
+      // if (!hasRemoveBg) {
+      //   params.push('bg-remove=true');
+      // } else if (hasRemoveBg) {
+      //   params = params.filter(param => param !== 'bg-remove=true');
+      // }
+      // console.log({ currentSrc, baseSrc, params, hasRemoveBg });
 
       // Construct new URL
-      const newTransform = params.length > 0 ? `?${params.join('&')}` : '';
-      const newSrc = `${baseSrc}${newTransform}`;
+      // const newTransform = params.length > 0 ? `?${params.join('&')}` : '';
+      // const newSrc = `${baseSrc}${newTransform}`;
 
       // Show loading state
       globalDispatch("loading", true, id);
       // globalDispatch("loadingSrc", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s", id);
 
       // Update image source
-      fabricImage.setSrc(newSrc, () => {
-        canvas.renderAll();
-        globalDispatch("loading", false, id);
-        // globalDispatch("loadingSrc", null, id);
-        // globalDispatch("src", newSrc, id);
-        // globalDispatch("base64CanvasImage", newSrc, id);
-        // globalDispatch("selectedFilter", "Normal", id);
-        globalDispatch("removeBg", checked, id);
-        globalDispatch("removeBgImagebtn", checked, id);
-        // globalDispatch("removeBgParamValue", checked ? "bg-remove=true" : "", id);
-        if (callback) callback(checked, fabricImage);
-      }, { crossOrigin: "anonymous" });
+      globalDispatch("removeBgImagebtn", Math.random(), id);
+      // fabricImage.setSrc(newSrc, () => {
+
+      //   console.log("Image updated with new src:", newSrc);
+      //   globalDispatch("removeBgImagebtn", checked, id);
+      //   globalDispatch("loading", false, id);
+      //   // globalDispatch("loadingSrc", null, id);
+      //   // globalDispatch("src", newSrc, id);
+      //   // globalDispatch("base64CanvasImage", newSrc, id);
+      //   // globalDispatch("selectedFilter", "Normal", id);
+      //   // globalDispatch("removeBg", checked, id);
+      //   console.log("calling removeBgImagebtn", checked, id);
+      //   canvas.renderAll();
+      //   // globalDispatch("removeBgParamValue", checked ? "bg-remove=true" : "", id);
+      //   if (callback) callback(checked, fabricImage);
+      // }, { crossOrigin: "anonymous" });
 
       // Sync with toolbar checkbox
       const toolbarCheckbox = document.querySelector(`#addImageToolbarBgBtn`);

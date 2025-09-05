@@ -116,7 +116,7 @@ function ProductContainer() {
 
   const fetchProductById = async (productId, variantId) => {
     try {
-      const res = await fetch(`${BASE_URL}design/productById`, {
+      const res = await fetch(`${BASE_URL}products/productById`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId }),

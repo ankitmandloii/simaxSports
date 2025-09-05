@@ -271,6 +271,11 @@ const renderAllImageObjectsHelper = (imageContentObjects, canvas) => {
       const {
         id,
         src,
+        base64CanvasImage,
+        selectedFilter,
+        base64CanvasImageForNormalColor,
+        base64CanvasImageForSinglelColor,
+        base64CanvasImageForBlackAndWhitelColor,
         position,
         angle = 0,
         flipX = false,
@@ -281,9 +286,21 @@ const renderAllImageObjectsHelper = (imageContentObjects, canvas) => {
         layerIndex = 0,
         customType = "main-image",
       } = imageData;
+      let finalSrc = src;
+
+
+      if (selectedFilter === "normal") {
+        finalSrc = base64CanvasImageForNormalColor || src;
+      }
+      else if (selectedFilter === "single") {
+        finalSrc = base64CanvasImageForSinglelColor || src;
+      }
+      else if (selectedFilter === "blackAndWhite") {
+        finalSrc = base64CanvasImageForBlackAndWhitelColor || src;
+      }
 
       // Ensure crossOrigin is set for all external images to prevent tainting
-      fabric.Image.fromURL(src, (img) => {
+      fabric.Image.fromURL(base64CanvasImage, (img) => {
         if (!img) {
           console.warn(`Failed to load image from URL: ${src}`);
           // Resolve even on failure to allow other images to load
