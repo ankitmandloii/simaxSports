@@ -364,9 +364,9 @@ const Review = () => {
       }
     }
 
-    // console.log("Final Shopify Data:", ShopifyData);
-    // const response = await createDraftOrderforCheckout(ShopifyData);
-    // return response;
+    console.log("Final Shopify Data:", ShopifyData);
+    const response = await createDraftOrderforCheckout(ShopifyData);
+    return response;
   }
 
   function getIncreasedData(data, value) {
