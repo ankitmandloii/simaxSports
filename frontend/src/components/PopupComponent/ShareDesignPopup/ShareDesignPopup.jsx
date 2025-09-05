@@ -103,7 +103,7 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign, navigate }) =
     if (pId) shareUrlObj.searchParams.set("pId", pId);
 
     const variantId = url.searchParams.get("variantid"); // ya variantId
-    if (variantId) shareUrlObj.searchParams.set("variantId", variantId);
+    if (variantId) shareUrlObj.searchParams.set("variantid", variantId);
 
     const designId = url.searchParams.get("designId");
     if (designId) shareUrlObj.searchParams.set("designId", designId);

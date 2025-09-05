@@ -467,6 +467,7 @@ function ProductContainer() {
     const variantId = searchParams.get("variantid");
 
     if (productId) {
+      console.log("fetch product id funciton callllllllll")
       fetchProductById(productId, variantId);
     }
   }, [searchParams]);

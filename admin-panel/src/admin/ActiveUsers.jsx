@@ -116,24 +116,29 @@ export default function ActiveUsers() {
           </Button>
         </InlineStack>
 
-        <Box margin="600">
+        <div style={{ marginTop: "1rem" }} >
 
-          <BlockStack gap="400" paddingBlockStart="300" margin="500">
-            <InlineStack gap="300" wrap margin="300">
-              <Card background="bg-surface-secondary" padding="200" rounded>
-                <BlockStack gap="100" align="center">
-                  <Text tone="subdued">Active Users</Text>
-                  <Text variant="headingXl" tone="success">{activeUserNumber}</Text>
+          <BlockStack gap="400" paddingBlockStart="300" >
+            <InlineStack gap="400" wrap>
+              <Card padding="400" rounded background="bg-surface-secondary" shadow="base">
+                <BlockStack align="center">
+                  <Text tone="subdued" variant="bodySm">Active Users</Text>
+                  <Text variant="heading2xl" fontWeight="bold" tone="success">
+                    {activeUserNumber}
+                  </Text>
                 </BlockStack>
               </Card>
 
-              <Card background="bg-surface-secondary" padding="200" rounded>
-                <BlockStack gap="100" align="center">
-                  <Text tone="subdued">Unique Countries</Text>
-                  <Text variant="headingXl">{uniqueCountries.length}</Text>
+              <Card padding="400" rounded background="bg-surface-secondary" shadow="base">
+                <BlockStack align="center">
+                  <Text tone="subdued" variant="bodySm">Unique Countries</Text>
+                  <Text variant="heading2xl" fontWeight="bold">
+                    {uniqueCountries.length}
+                  </Text>
                 </BlockStack>
               </Card>
             </InlineStack>
+
 
             <Box paddingBlock="100" paddingInline="200">
               <ProgressBar
@@ -144,7 +149,7 @@ export default function ActiveUsers() {
               />
             </Box>
           </BlockStack>
-        </Box>
+        </div>
       </Card>
 
       <Divider />
