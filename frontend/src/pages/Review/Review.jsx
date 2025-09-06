@@ -427,13 +427,15 @@ const Review = () => {
     if (totalItems == 0) return;
     calculatePriceAndDiscount(dataForDiscountCheck);
     const increasedData = getIncreasedData(dataForDiscountCheck, (totalItems * 0.7));
-    calculatePriceAndDiscount2(increasedData);
+    calculatePriceAndDiscountForFutureProduct(increasedData);
     const increasedData2 = getIncreasedData(dataForDiscountCheck, (totalItems * 1.5));
-    calculatePriceAndDiscount2(increasedData2);
+    calculatePriceAndDiscountForFutureProduct(increasedData2);
   }
 
   useEffect(() => {
-    makeVariantDataForDiscound(reviewItems);
+    if (!shouldShowBlankProductWarning(design)) {
+      makeVariantDataForDiscound(reviewItems);
+    }
   }, []);
 
   async function createDraftOrderforCheckout(variants) {
@@ -485,7 +487,7 @@ const Review = () => {
     }
   }
 
-  async function calculatePriceAndDiscount2(variants) {
+  async function calculatePriceAndDiscountForFutureProduct(variants) {
     try {
       setLoading(true);
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}auth/calculatePrice`, {
