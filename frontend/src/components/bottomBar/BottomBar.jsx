@@ -13,6 +13,7 @@ import {
   AddProductIcon,
 
 } from "../iconsSvg/CustomIcon";
+import { FaFileImage } from "react-icons/fa";
 import AddTextSheet from '../mobileView/AddTextSheetMobile/AddTextSheet';
 import AddArtToolbar from '../Toolbar/AddArtToolbar/AddArtToolbar';
 import AddImageToolbar from '../Toolbar/AddImageToolbar/AddImageToolbar';
@@ -27,7 +28,7 @@ const menuItems = [
   { path: "/design/uploadArt", icon: <LuHardDriveUpload />, label: "Upload", data: <UploadArtToolbar />, snap: 1200 },
   { path: "/design/addArt", icon: <PiCameraPlusFill />, label: "Add Art", data: <AddArtToolbar />, snap: 1200 },
   { path: "/design/addNames", icon: <PiListNumbersBold />, label: "Names & Numbers", data: <NamesToolbar />, snap: 1200 },
-  // { path: "/addImage", icon: <PiListNumbersBold />, label: "Add Image", data: <AddImageToolbar />, snap: 1200 },
+  { path: "/design/addImage", icon: <FaFileImage />, label: "Add Image", data: <AddImageToolbar />, snap: 1200 },
 
 ];
 

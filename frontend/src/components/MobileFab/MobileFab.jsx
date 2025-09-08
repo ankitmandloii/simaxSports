@@ -5,9 +5,11 @@ import { FaPlus } from 'react-icons/fa';
 import { FaArrowLeftLong, FaArrowRightLong } from 'react-icons/fa6';
 import style from './MobileFab.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const MobileFAB = ({ onShare, onSave, onPrice, disablePrev, disableNext }) => {
   const [open, setOpen] = useState(false);
+  const productState = useSelector((state) => state.productSelection.products);
   const fabRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,6 +50,12 @@ const MobileFAB = ({ onShare, onSave, onPrice, disablePrev, disableNext }) => {
       navigate(steps[currentIndex - 1]);
     }
   }
+  const shouldRedirectToReview = (productState) => {
+    return Object.values(productState).some((product) => {
+      return Object.values(product.selections || {}).some(quantity => quantity >= 1);
+    });
+  };
+  const isNextDisabled = disableNext || (currentIndex === 1 && !shouldRedirectToReview(productState));
 
   return (
     <div className={style.fabContainer} ref={fabRef}>
@@ -71,9 +79,9 @@ const MobileFAB = ({ onShare, onSave, onPrice, disablePrev, disableNext }) => {
             <FiSave />
           </button>
         </div>
-        <div className={`${style.fabTooltipWrapper} ${disableNext ? style.disabledWrapper : ""}`}>
+        <div className={`${style.fabTooltipWrapper} ${isNextDisabled ? style.disabledWrapper : ""}`}>
           <span className={style.fabTooltip}>Next Step</span>
-          <button className={style.fabButton} onClick={onNext} disabled={disableNext}>
+          <button className={style.fabButton} onClick={onNext} disabled={isNextDisabled}>
             <FaArrowRightLong />
           </button>
         </div>

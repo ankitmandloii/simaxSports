@@ -37,7 +37,7 @@ const AddTextToolbar = () => {
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   const allImagesData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   let textContaintObject = allTextInputData.find((text) => text.id === currentTextToolbarId);
-  // console.log(allTextInputData, textContaintObject, "render data");
+  console.log(allTextInputData, textContaintObject, "render data");
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
   const isLocked = textContaintObject?.locked;
   const [prevSize, setPrevSize] = useState(1);
@@ -116,6 +116,10 @@ const AddTextToolbar = () => {
     setRangeValuesSpacing(textContaintObject?.spacing);
     setRangeValuesArc(textContaintObject?.arc);
     setRangeValuesRotate(parseFloat(textContaintObject?.angle));
+    setFontweightValue(textContaintObject?.fontWeight);
+    setFontStyleValue(textContaintObject?.fontStyle);
+    setflipXValue(textContaintObject?.flipX);
+    setflipYValue(textContaintObject?.flipY);
 
     return () => {
       // dispatch(setSelectedTextState(null));
