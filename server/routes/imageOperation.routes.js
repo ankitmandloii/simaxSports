@@ -151,7 +151,7 @@ const storage = multer.memoryStorage(); //for S3
 const upload = multer({
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024,  // Max file size: 10MB
+    fileSize: 20 * 1024 * 1024,  // Max file size: 10MB
     files: 5                    // Max 2 files
   },
   fileFilter: (req, file, cb) => {
