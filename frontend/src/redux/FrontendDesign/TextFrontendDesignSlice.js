@@ -1103,6 +1103,7 @@ const TextFrontendDesignSlice = createSlice({
       });
 
       state.future[side] = [];
+      state.present[side].selectedImageId = null;
       state.present[side].setRendering = !state.present[side].setRendering;
     },
 

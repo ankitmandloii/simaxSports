@@ -13,7 +13,9 @@ import {
   AddProductIcon,
 
 } from "../iconsSvg/CustomIcon";
-import { FaFileImage } from "react-icons/fa";
+// import { FaFileImage } from "react-icons/fa";
+import { CiImageOn } from "react-icons/ci";
+
 import AddTextSheet from '../mobileView/AddTextSheetMobile/AddTextSheet';
 import AddArtToolbar from '../Toolbar/AddArtToolbar/AddArtToolbar';
 import AddImageToolbar from '../Toolbar/AddImageToolbar/AddImageToolbar';
@@ -21,21 +23,36 @@ import NamesToolbar from '../Toolbar/NamesToolbar/NamesToolbar';
 import ProductToolbar from '../Toolbar/ProductToolbar/ProductToolbar';
 import AddTextToolbar from '../Toolbar/AddTextToolbar/AddTextToolbar';
 import UploadArtToolbar from '../Toolbar/UploadArtToolbar/UploadArtToolbar';
+import { useSelector } from 'react-redux';
+// import { selectedImageIdState } from '../../redux/FrontendDesign/TextFrontendDesignSlice';
 
-const menuItems = [
-  { path: "/design/product", icon: <RiTShirt2Line />, label: "Products", data: <ProductToolbar />, snap: 1200 },
-  { path: "/design/addText", icon: <AddProductIcon />, label: "Text", data: <AddTextToolbar />, snap: 600 },
-  { path: "/design/uploadArt", icon: <LuHardDriveUpload />, label: "Upload", data: <UploadArtToolbar />, snap: 1200 },
-  { path: "/design/addArt", icon: <PiCameraPlusFill />, label: "Add Art", data: <AddArtToolbar />, snap: 1200 },
-  { path: "/design/addNames", icon: <PiListNumbersBold />, label: "Names & Numbers", data: <NamesToolbar />, snap: 1200 },
-  { path: "/design/addImage", icon: <FaFileImage />, label: "Add Image", data: <AddImageToolbar />, snap: 1200 },
 
-];
 
 const BottomBar = () => {
   const [card, setCard] = useState(5);
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const activeSide = useSelector(state => state.TextFrontendDesignSlice.activeSide);
+  console.log("-------ac", activeSide);
+
+  const selectedImageId = useSelector(state =>
+    state.TextFrontendDesignSlice.present[activeSide]?.selectedImageId
+  );
+  console.log("---selectedImageId", selectedImageId);
+  const menuItems = [
+    { path: "/design/product", icon: <RiTShirt2Line />, label: "Products", data: <ProductToolbar />, snap: 1200 },
+    { path: "/design/addText", icon: <AddProductIcon />, label: "Text", data: <AddTextToolbar />, snap: 600 },
+    { path: "/design/uploadArt", icon: <LuHardDriveUpload />, label: "Upload", data: <UploadArtToolbar />, snap: 1200 },
+    ...(selectedImageId
+      ? [{ path: "/design/addImage", icon: <CiImageOn />, label: "Add Image", data: <AddImageToolbar />, snap: 1200 }]
+      : []),
+    { path: "/design/addArt", icon: <PiCameraPlusFill />, label: "Add Art", data: <AddArtToolbar />, snap: 1200 },
+    { path: "/design/addNames", icon: <PiListNumbersBold />, label: "Names & Numbers", data: <NamesToolbar />, snap: 1200 },
+
+
+  ];
+
+
   const [sheetSnapPoint, setSheetSnapPoint] = useState(900); // Default to 900
 
   const [sheetContaint, setSheetContaint] = useState(<ProductToolbar></ProductToolbar>);

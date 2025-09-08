@@ -161,7 +161,7 @@
   cursor: pointer;
   border-radius: 100px;
   border: 1px solid var(--borderColor);
-  padding-left: 14px;
+  /* padding-left: 14px; */
   /* transform: translateX(-50%); */
   /* margin-top: 10px;
    */
@@ -174,7 +174,20 @@
   left: 0;
 }
 
-.toolbarSpan::after {
+.swatchImage {
+  width: 14px;
+  /* Size to fit within the 25px button height */
+  height: 14px;
+  object-fit: cover;
+  border-radius: 50%;
+  /* Circular image to match the previous ::after */
+  margin-right: 8px;
+  /* Space between image and text */
+  border: 1px solid #888;
+  /* Match the previous ::after border */
+}
+
+/* .toolbarSpan::after {
   content: "";
   position: absolute;
   background-color: var(--indicator-color, "red");
@@ -187,7 +200,7 @@
   transform: translateY(-50%);
   border: 1px solid #888;
   top: 50%;
-}
+} */
 
 .colorImg {
   height: 22px;

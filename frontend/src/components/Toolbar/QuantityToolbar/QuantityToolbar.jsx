@@ -18,6 +18,7 @@ const womenSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
 
 const QuantityToolbar = () => {
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
+  // console.log("--------quantitysele", selectedProducts);
   const productState = useSelector((state) => state.productSelection.products);
   // console.log("productState", productState)
   const CollegiateLicense = useSelector((state) => state.productSelection.CollegiateLicense);
@@ -104,6 +105,7 @@ const QuantityToolbar = () => {
           product?.selectedColor?.variant?.metafields
         ),
         allVariants: product?.allVariants,
+        swatchImg: product?.selectedColor?.swatchImg,
       };
       // console.log(mainProduct, "mainProduct");
 
@@ -113,7 +115,7 @@ const QuantityToolbar = () => {
 
       // ✅ extra variants
       const extraProducts = addedColors?.map((variantProduct) => {
-        console.log("----variantProduct", variantProduct)
+        // console.log("----variantProduct", variantProduct)
         const prod = {
           uniqueKey: uuidv4(),
           id: variantProduct?.variant?.id?.split("/").reverse()[0],
@@ -131,6 +133,7 @@ const QuantityToolbar = () => {
           selections: [],
           price: variantProduct?.variant?.price,
           allVariants: variantProduct?.allVariants,
+          swatchImg: variantProduct?.swatchImg,
           inventory_quantity:
             variantProduct?.variant?.inventoryItem?.inventoryLevels?.edges?.[0]
               ?.node?.quantities?.[0]?.quantity,
@@ -262,6 +265,7 @@ const QuantityToolbar = () => {
 
       <div className={style.toolbarBox}>
         {products.map((product) => {
+          // console.log("==---------product", product)
           const key = getProductKey(product);
           return (
             <div key={key} className="main-top-container">
@@ -285,7 +289,18 @@ const QuantityToolbar = () => {
                     <h4>{product.title}</h4>
                     <div className={style.rightProductTitleQty}>
                       {product.color && (
-                        <p className={style.toolbarSpan}>{product.color}</p>
+                        // <p className={style.toolbarSpan}>{product.color}</p>
+                        <button
+                          className={style.toolbarSpan}
+
+                        >
+                          <img
+                            src={product?.swatchImg || product?.img}
+                            alt={product?.color}
+                            className={style.swatchImage}
+                          />
+                          {product.color}
+                        </button>
                       )}
                       <p className={style.totalQtyitems}>
                         {getTotalQuantityForProduct(product)} items

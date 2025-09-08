@@ -25,7 +25,7 @@ const ProductToolbar = () => {
   const dispatch = useDispatch();
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  console.log("---selectedsProduct", selectedProducts);
+  // console.log("---selectedsProduct", selectedProducts);
 
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
   // console.log("---activeProduct", activeProduct);
@@ -38,11 +38,34 @@ const ProductToolbar = () => {
   const [hoveredThumbnail, setHoveredThumbnail] = useState({ productIndex: null, colorIndex: null, color: null });
 
   // Clone color safely with fallback for image and variants
+  // const safeCloneColor = (color, fallbackImg = '', allVariants = []) => {
+  //   if (!color || typeof color !== 'object' || Array.isArray(color)) {
+  //     return { name: String(color), img: fallbackImg, allVariants: allVariants || [] };
+  //   }
+  //   return { ...color, allVariants: allVariants || color.allVariants || [] };
+  // };
   const safeCloneColor = (color, fallbackImg = '', allVariants = []) => {
     if (!color || typeof color !== 'object' || Array.isArray(color)) {
-      return { name: String(color), img: fallbackImg, allVariants: allVariants || [] };
+      return { name: String(color), img: fallbackImg, swatchImg: fallbackImg, allVariants: allVariants || [] };
     }
-    return { ...color, allVariants: allVariants || color.allVariants || [] };
+
+    const colorName = color.name?.toLowerCase().trim();
+    const variant = allVariants?.find((v) =>
+      v.selectedOptions?.some(
+        (opt) => opt.name.toLowerCase() === 'color' && opt.value.toLowerCase().trim() === colorName
+      )
+    );
+    const swatchImg =
+      variant?.metafields?.edges?.find(
+        (mf) => mf.node.key === 'swatch_image' && mf.node.namespace === 'custom'
+      )?.node.value || color.swatchImg || color.img || fallbackImg;
+
+    return {
+      ...color,
+      swatchImg, // Include swatchImg
+      img: color.img || fallbackImg,
+      allVariants: allVariants || color.allVariants || [],
+    };
   };
 
   // Open popup for changing/adding product
@@ -63,6 +86,42 @@ const ProductToolbar = () => {
     // console.log('Active Product Color:', activeProduct?.selectedColor?.name);
   }, [activeProduct]);
   // Handle product selection and update/add it to Redux store
+  // const handleProductSelect = (product, selectedColor = null) => {
+  //   const fallbackImg = product?.img || product?.imgurl || product?.selectedImage || '';
+  //   const clonedColor = selectedColor
+  //     ? safeCloneColor(selectedColor, fallbackImg, product.allVariants)
+  //     : product.selectedColor
+  //       ? safeCloneColor(product.selectedColor, fallbackImg, product.allVariants)
+  //       : product.colors?.[0]
+  //         ? safeCloneColor(product.colors[0], fallbackImg, product.allVariants)
+  //         : { name: 'default', img: fallbackImg, allVariants: product.allVariants || [] };
+
+  //   const updatedProduct = {
+  //     ...product,
+  //     selectedColor: clonedColor,
+  //     imgurl: clonedColor?.img || fallbackImg,
+  //     allVariants: product.allVariants || [],
+  //   };
+
+  //   if (isAddingProduct) {
+  //     dispatch(addProductAction(updatedProduct));
+  //     // Set the newly added product as active and its first thumbnail as active
+  //     const newIndex = selectedProducts.length; // Index of the new product
+  //     dispatch(setActiveProduct(updatedProduct));
+  //     setActiveThumbnail({ productIndex: newIndex, colorIndex: 0 });
+  //   } else if (editingProductIndex !== null) {
+  //     dispatch(updateProductAction({ index: editingProductIndex, product: updatedProduct }));
+  //     // Set the updated product as active and its first thumbnail as active
+  //     dispatch(setActiveProduct(updatedProduct));
+  //     setActiveThumbnail({ productIndex: editingProductIndex, colorIndex: 0 });
+  //   }
+
+  //   // Reset all modal states
+  //   setChangeProductPopup(false);
+  //   setEditingProductIndex(null);
+  //   setIsAddingProduct(false);
+  //   setAddProduct(false);
+  // };
   const handleProductSelect = (product, selectedColor = null) => {
     const fallbackImg = product?.img || product?.imgurl || product?.selectedImage || '';
     const clonedColor = selectedColor
@@ -71,35 +130,32 @@ const ProductToolbar = () => {
         ? safeCloneColor(product.selectedColor, fallbackImg, product.allVariants)
         : product.colors?.[0]
           ? safeCloneColor(product.colors[0], fallbackImg, product.allVariants)
-          : { name: 'default', img: fallbackImg, allVariants: product.allVariants || [] };
+          : { name: 'default', img: fallbackImg, swatchImg: fallbackImg, allVariants: product.allVariants || [] };
 
     const updatedProduct = {
       ...product,
       selectedColor: clonedColor,
       imgurl: clonedColor?.img || fallbackImg,
+      swatchImg: clonedColor?.swatchImg || fallbackImg, // Ensure swatchImg at product level
       allVariants: product.allVariants || [],
     };
 
     if (isAddingProduct) {
       dispatch(addProductAction(updatedProduct));
-      // Set the newly added product as active and its first thumbnail as active
-      const newIndex = selectedProducts.length; // Index of the new product
+      const newIndex = selectedProducts.length;
       dispatch(setActiveProduct(updatedProduct));
       setActiveThumbnail({ productIndex: newIndex, colorIndex: 0 });
     } else if (editingProductIndex !== null) {
       dispatch(updateProductAction({ index: editingProductIndex, product: updatedProduct }));
-      // Set the updated product as active and its first thumbnail as active
       dispatch(setActiveProduct(updatedProduct));
       setActiveThumbnail({ productIndex: editingProductIndex, colorIndex: 0 });
     }
 
-    // Reset all modal states
     setChangeProductPopup(false);
     setEditingProductIndex(null);
     setIsAddingProduct(false);
     setAddProduct(false);
   };
-
   const handleDeleteProduct = (indexToDelete, id) => {
     // Remove product at index
     // console.log("id.................", id);
@@ -129,15 +185,34 @@ const ProductToolbar = () => {
   };
 
   // Extract unique color options from Shopify product structure
+  // const normalizeColorsFromShopify = (product) => {
+  //   if (!product?.variants?.edges) return [];
+  //   const colorMap = new Map();
+  //   product.variants.edges.forEach(({ node }) => {
+  //     const colorOption = node.selectedOptions.find((opt) => opt.name.toLowerCase() === 'color');
+  //     if (colorOption && !colorMap.has(colorOption.value)) {
+  //       colorMap.set(colorOption.value, {
+  //         name: colorOption.value,
+  //         img: node.image?.originalSrc || '',
+  //         allVariants: normalizeVariants(product),
+  //       });
+  //     }
+  //   });
+  //   return Array.from(colorMap.values());
+  // };
   const normalizeColorsFromShopify = (product) => {
     if (!product?.variants?.edges) return [];
     const colorMap = new Map();
     product.variants.edges.forEach(({ node }) => {
       const colorOption = node.selectedOptions.find((opt) => opt.name.toLowerCase() === 'color');
       if (colorOption && !colorMap.has(colorOption.value)) {
+        const swatchImg = node.metafields?.edges?.find(
+          (mf) => mf.node.key === 'swatch_image' && mf.node.namespace === 'custom'
+        )?.node.value || node.image?.originalSrc || '';
         colorMap.set(colorOption.value, {
           name: colorOption.value,
           img: node.image?.originalSrc || '',
+          swatchImg, // Include swatchImg
           allVariants: normalizeVariants(product),
         });
       }
@@ -297,19 +372,27 @@ const ProductToolbar = () => {
 
                 <div className={style.productToolbarImageWithBtn}>
                   {[
+                    // {
+                    //   img: product?.selectedColor?.img || product?.selectedImage,
+                    //   name: product?.selectedColor?.name || product?.name,
+                    //   allVariants: product?.allVariants || [],
+                    // },
                     {
                       img: product?.selectedColor?.img || product?.selectedImage,
+                      swatchImg: product?.selectedColor?.swatchImg || product?.selectedImage, // Ensure swatchImg is included
                       name: product?.selectedColor?.name || product?.name,
                       allVariants: product?.allVariants || [],
                     },
                     ...(product?.addedColors || []),
                   ].map((color, i) => {
+                    // console.log("---color", color)
                     const isHovered = hoveredThumbnail.productIndex === index && hoveredThumbnail.colorIndex === i;
                     const imgSrc = isHovered ? hoveredThumbnail.color.img : color.img;
 
                     return (
                       <div
                         key={i}
+
                         className={`mini-prod-img-container ${activeProduct?.id === product?.id &&
                           (
                             (i === 0 &&
@@ -372,7 +455,7 @@ const ProductToolbar = () => {
                                   <CrossIcon />
                                 </span>
                               )}
-                            <button
+                            {/* <button
                               className={style.toolbarSpan}
                               style={{ '--indicator-color': getHexFromName(color?.name) }}
                               onClick={(e) => {
@@ -380,6 +463,21 @@ const ProductToolbar = () => {
                                 setColorChangeTarget({ productIndex: index, colorIndex: i, actionType: 'change' });
                               }}
                             >
+                              Change
+                            </button> */}
+                            <button
+                              className={style.toolbarSpan}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setColorChangeTarget({ productIndex: index, colorIndex: i, actionType: 'change' });
+                                // console.log("----swatch", color.swatchImage, "--img", color.img)
+                              }}
+                            >
+                              <img
+                                src={color.swatchImg || color.img}
+                                alt={color.name}
+                                className={style.swatchImage}
+                              />
                               Change
                             </button>
                           </div>
