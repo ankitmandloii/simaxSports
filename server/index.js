@@ -48,7 +48,11 @@ app.use("/api", routes);
 
 
 //delete old design which have more then 30 days
-cron.schedule('0 2 * * *', async () => {
+// cron.schedule('0 2 * * *', async () => {
+cron.schedule('18 13 * * *', async () => {
+  console.log(`🗑️ [Cron] Running daily cleanup log...`);
+  console.info(`🗑️ [Cron] Running daily cleanup info...`);
+  console.error(`🗑️ [Cron] Running daily cleanup error...`);
   console.log(`🗑️ [Cron] Running daily cleanup...`);
   await runCleanupNow({ days: 30 });
 });
