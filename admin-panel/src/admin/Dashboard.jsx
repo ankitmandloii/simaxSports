@@ -19,6 +19,10 @@ import {
   SkeletonBodyText,
   SkeletonDisplayText,
   SkeletonPage,
+  InlineStack,
+  TextField,
+  Select,
+  BlockStack,
 } from "@shopify/polaris";
 
 export function Dashboard() {
@@ -226,68 +230,34 @@ export function Dashboard() {
               </Layout.Section>
             </Layout>
           </Box>
+          <BlockStack gap="300">
+            <InlineStack gap="400" blockAlign="center" wrap>
+              {/* Search Input - takes 70% on desktop, full width on small screens */}
+              <Box width="70%" minWidth="250px">
+                <TextField
+                  value={q}
+                  onChange={setQ}
+                  placeholder="Search by name or email…"
+                  autoComplete="off"
+                />
+              </Box>
 
-          <Box paddingBlockStart="400" paddingBlockEnd="200">
-            <Layout>
-              <Layout.Section>
-                <Box padding="200">
-                  <input
-                    value={q}
-                    onChange={(e) => setQ(e.target.value)}
-                    placeholder="Search by name or email…"
-                    style={{
-                      padding: "12px 16px",
-                      border: "2px solid #dfe3e8",
-                      borderRadius: "8px",
-                      minWidth: "350px",
-                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                      outline: "none",
-                      fontSize: "15px",
-                      transition: "border-color 0.3s, box-shadow 0.3s",
-                    }}
-                    onFocus={(e) => {
-                      e.target.style.borderColor = "#005bff";
-                      e.target.style.boxShadow = "0 4px 12px rgba(0,91,255,0.2)";
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.borderColor = "#dfe3e8";
-                      e.target.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
-                    }}
-                  />
-                </Box>
-              </Layout.Section>
-              <Layout.Section secondary>
-                <select
+              {/* Status Dropdown - takes auto width */}
+              <Box width="auto" minWidth="150px">
+                <Select
+                  labelHidden
+                  label="Filter by status"
+                  options={[
+                    { label: "All statuses", value: "all" },
+                    ...Object.keys(stats.byStatus).map((k) => ({ label: k, value: k })),
+                  ]}
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  style={{
-                    padding: "12px 16px",
-                    border: "2px solid #dfe3e8",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                    outline: "none",
-                    fontSize: "15px",
-                    appearance: "none",
-                    background: "white url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' fill=\'%23333\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z\'/%3E%3C/svg%3E') no-repeat right 12px center",
-                    cursor: "pointer",
-                    transition: "border-color 0.3s, box-shadow 0.3s",
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = "#005bff";
-                    e.target.style.boxShadow = "0 4px 12px rgba(0,91,255,0.2)";
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = "#dfe3e8";
-                    e.target.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
-                  }}
-                >
-                  <option value="all">All statuses</option>
-                  {Object.keys(stats.byStatus).map((k) => (
-                    <option key={k} value={k}>{k}</option>
-                  ))}
-                </select>
-              </Layout.Section>
-              <Layout.Section secondary>
+                  onChange={setStatusFilter}
+                />
+              </Box>
+
+              {/* Export Button */}
+              <Box width="auto">
                 <Button
                   onClick={() => {
                     const rows = filteredDesigns.map((d) => ({
@@ -316,114 +286,115 @@ export function Dashboard() {
                 >
                   Export CSV
                 </Button>
-              </Layout.Section>
-            </Layout>
-          </Box>
-
-          <Card sectioned>
-            <Box padding="400">
-              <Text variant="headingMd" as="h3">Status Breakdown</Text>
-              <Box paddingBlockStart="200" style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
-                {Object.entries(stats.byStatus).map(([s, c]) => (
-                  <Badge key={s} tone={statusColor(s)}>{s}: {c}</Badge>
-                ))}
               </Box>
-            </Box>
-          </Card>
+            </InlineStack>
 
-          <Card sectioned>
-            <Box padding="400">
-              <Text variant="headingLg" as="h2">All Designs</Text>
-            </Box>
-            <Divider />
-            <ResourceList
-              items={filteredDesigns}
-              renderItem={(item, index) => {
-                const {
-                  _id,
-                  DesignName,
-                  present,
-                  status,
-                  FinalImages,
-                  ownerEmail,
-                  version,
-                  createdAt,
-                } = item;
 
-                const firstThumb =
-                  present?.front?.images?.[0]?.src ||
-                  (FinalImages?.[0] ?? "/placeholder.png");
+            <Card sectioned >
+              <Box padding="400">
+                <Text variant="headingMd" as="h3" >Status Breakdown</Text>
+                <Box paddingBlockStart="200" style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center", marginTop: '1rem' }}>
+                  {Object.entries(stats.byStatus).map(([s, c]) => (
+                    <Badge key={s} tone={statusColor(s)}>{s}: {c}</Badge>
+                  ))}
+                </Box>
+              </Box>
+            </Card>
 
-                const rowStyle = {
-                  backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#ffffff",
-                  padding: "12px",
-                  borderRadius: "4px",
-                };
+            <Card sectioned>
+              <Box padding="400">
+                <Text variant="headingLg" as="h2">All Designs</Text>
+              </Box>
+              <Divider />
+              <ResourceList
+                items={filteredDesigns}
+                renderItem={(item, index) => {
+                  const {
+                    _id,
+                    DesignName,
+                    present,
+                    status,
+                    FinalImages,
+                    ownerEmail,
+                    version,
+                    createdAt,
+                  } = item;
 
-                return (
-                  <div key={_id} style={rowStyle}>
-                    <ResourceItem
-                      id={_id}
-                      media={<Thumbnail source={firstThumb} size="small" />}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          gap: "16px",
-                          flexWrap: "wrap",
-                        }}
+                  const firstThumb =
+                    present?.front?.images?.[0]?.src ||
+                    (FinalImages?.[0] ?? "/placeholder.png");
+
+                  const rowStyle = {
+                    backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#ffffff",
+                    padding: "12px",
+                    borderRadius: "4px",
+                  };
+
+                  return (
+                    <div key={_id} style={rowStyle}>
+                      <ResourceItem
+                        id={_id}
+                        media={<Thumbnail source={firstThumb} size="small" />}
                       >
-                        <TextContainer>
-                          <Text variant="headingMd" as="h3">
-                            {DesignName || "(untitled)"}
-                          </Text>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                              flexWrap: "wrap",
-                            }}
-                          >
-                            <Badge tone={statusTone(status)}>{status}</Badge>
-                            <Text variant="bodySm" tone="subdued">
-                              Version: <strong>{version ?? "-"}</strong>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            gap: "16px",
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          <TextContainer>
+                            <Text variant="headingMd" as="h3">
+                              {DesignName || "(untitled)"}
                             </Text>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              <Badge tone={statusTone(status)}>{status}</Badge>
+                              <Text variant="bodySm" tone="subdued">
+                                Version: <strong>{version ?? "-"}</strong>
+                              </Text>
+                              <Text variant="bodySm" tone="subdued">
+                                Created: {new Date(createdAt).toLocaleString("en-GB", { timeZone: "UTC" })} UTC
+                              </Text>
+                            </div>
                             <Text variant="bodySm" tone="subdued">
-                              Created: {new Date(createdAt).toLocaleString("en-GB", { timeZone: "UTC" })} UTC
+                              Email: {ownerEmail}
                             </Text>
-                          </div>
-                          <Text variant="bodySm" tone="subdued">
-                            Email: {ownerEmail}
-                          </Text>
-                        </TextContainer>
+                          </TextContainer>
 
-                        <div style={{ display: "flex", gap: "8px", height: '2rem' }}>
-                          <Button onClick={() => handleViewDesign(item)} primary size="medium">
-                            View Details
-                          </Button>
-                          <Button
-                            destructive
-                            onClick={() =>
-                              setDeleteDlg({
-                                open: true,
-                                id: _id,
-                                email: ownerEmail,
-                                name: DesignName || "this design",
-                              })
-                            }
-                          >
-                            Delete
-                          </Button>
+                          <div style={{ display: "flex", gap: "8px", height: '2rem' }}>
+                            <Button onClick={() => handleViewDesign(item)} primary size="medium">
+                              View Details
+                            </Button>
+                            <Button
+                              destructive
+                              onClick={() =>
+                                setDeleteDlg({
+                                  open: true,
+                                  id: _id,
+                                  email: ownerEmail,
+                                  name: DesignName || "this design",
+                                })
+                              }
+                            >
+                              Delete
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    </ResourceItem>
-                  </div>
-                );
-              }}
-            />
-          </Card>
+                      </ResourceItem>
+                    </div>
+                  );
+                }}
+              />
+            </Card>
+          </BlockStack>
         </Layout.Section>
       </Layout>
 
@@ -501,70 +472,72 @@ export function Dashboard() {
                 </Card>
               </Layout.Section>
               <Layout.Section oneHalf>
-                <Card sectioned>
-                  <Box padding="400">
-                    <Tabs
-                      tabs={[
-                        { id: "front", content: "Front" },
-                        { id: "back", content: "Back" },
-                        { id: "left", content: "Left Sleeve" },
-                        { id: "right", content: "Right Sleeve" },
-                      ]}
-                      selected={activeTab}
-                      onSelect={setActiveTab}
-                    />
+                <BlockStack gap="300">
+                  <Card sectioned>
+                    <Box padding="400">
+                      <Tabs
+                        tabs={[
+                          { id: "front", content: "Front" },
+                          { id: "back", content: "Back" },
+                          { id: "left", content: "Left Sleeve" },
+                          { id: "right", content: "Right Sleeve" },
+                        ]}
+                        selected={activeTab}
+                        onSelect={setActiveTab}
+                      />
+                    </Box>
+                    <Divider />
+                    <Box padding="400">
+                      {activeTab === 0 && <AreaDetails area={selectedDesign.present?.front} />}
+                      {activeTab === 1 && <AreaDetails area={selectedDesign.present?.back} />}
+                      {activeTab === 2 && <AreaDetails area={selectedDesign.present?.leftSleeve} />}
+                      {activeTab === 3 && <AreaDetails area={selectedDesign.present?.rightSleeve} />}
+                    </Box>
+                  </Card>
+                  <Card sectioned marginBlockStart="300">
+                    <Box padding="400">
+                      <Text variant="headingMd">Design Notes</Text>
+                    </Box>
+                    <Divider />
+                    <Box padding="400" style={{ display: "grid", gap: "16px" }}>
+                      <NoteRow label="Front Notes" value={selectedDesign?.DesignNotes?.FrontDesignNotes} />
+                      <NoteRow label="Back Notes" value={selectedDesign?.DesignNotes?.BackDesignNotes} />
+                      <NoteRow label="Extra Info" value={selectedDesign?.DesignNotes?.ExtraInfo} />
+                    </Box>
+                  </Card>
+                  <Card sectioned>
+                    <Box padding="400" paddingBlockEnd="200">
+                      <Text variant="headingMd">Name and Number</Text>
+                    </Box>
+                    <Divider />
+                    <Box padding="400" style={{ display: "grid", gap: "16px" }}>
+                      {selectedDesign?.NamesAndNumberPrintAreas?.length > 0 ? (
+                        selectedDesign?.NamesAndNumberPrintAreas?.map((item, index) => (
+                          <div key={index} style={{ display: "grid", gap: "8px", paddingBlock: "8px" }}>
+                            <NoteRow label="Name" value={item?.name ?? "-"} />
+                            <NoteRow label="Number" value={item?.number ?? "-"} />
+                            <NoteRow label="Color" value={item?.color ?? "-"} />
+                            <NoteRow label="Size" value={item?.size ?? "-"} />
+                            <NoteRow label="Font Size" value={item?.fontSize ?? "-"} />
+                            <NoteRow label="Font Color" value={item?.fontColor ?? "-"} />
+                            <NoteRow label="Font Family" value={item?.fontFamily ?? "-"} />
+                            <NoteRow label="Position" value={`X: ${item?.position?.x ?? "-"}, Y: ${item?.position?.y ?? "-"}`} />
+                            <NoteRow label="Print Side" value={item?.printSide ?? "-"} />
+                            <NoteRow label="Variant ID" value={item?.id ?? "-"} />
+                            {index < (selectedDesign?.NamesAndNumberPrintAreas?.length ?? 0) - 1 && <Divider />}
+                          </div>
+                        ))
+                      ) : (
+                        <Text tone="subdued">No name and number details available.</Text>
+                      )}
+                    </Box>
+                  </Card>
+                  <Box paddingBlockStart="200" paddingBlockEnd="0">
+                    <Text variant="bodySm" tone="subdued">
+                      Saved: {new Date(selectedDesign.createdAt).toLocaleString("en-GB", { timeZone: "UTC" })} UTC
+                    </Text>
                   </Box>
-                  <Divider />
-                  <Box padding="400">
-                    {activeTab === 0 && <AreaDetails area={selectedDesign.present?.front} />}
-                    {activeTab === 1 && <AreaDetails area={selectedDesign.present?.back} />}
-                    {activeTab === 2 && <AreaDetails area={selectedDesign.present?.leftSleeve} />}
-                    {activeTab === 3 && <AreaDetails area={selectedDesign.present?.rightSleeve} />}
-                  </Box>
-                </Card>
-                <Card sectioned marginBlockStart="300">
-                  <Box padding="400">
-                    <Text variant="headingMd">Design Notes</Text>
-                  </Box>
-                  <Divider />
-                  <Box padding="400" style={{ display: "grid", gap: "16px" }}>
-                    <NoteRow label="Front Notes" value={selectedDesign?.DesignNotes?.FrontDesignNotes} />
-                    <NoteRow label="Back Notes" value={selectedDesign?.DesignNotes?.BackDesignNotes} />
-                    <NoteRow label="Extra Info" value={selectedDesign?.DesignNotes?.ExtraInfo} />
-                  </Box>
-                </Card>
-                <Card sectioned>
-                  <Box padding="400" paddingBlockEnd="200">
-                    <Text variant="headingMd">Name and Number</Text>
-                  </Box>
-                  <Divider />
-                  <Box padding="400" style={{ display: "grid", gap: "16px" }}>
-                    {selectedDesign?.NamesAndNumberPrintAreas?.length > 0 ? (
-                      selectedDesign?.NamesAndNumberPrintAreas?.map((item, index) => (
-                        <div key={index} style={{ display: "grid", gap: "8px", paddingBlock: "8px" }}>
-                          <NoteRow label="Name" value={item?.name ?? "-"} />
-                          <NoteRow label="Number" value={item?.number ?? "-"} />
-                          <NoteRow label="Color" value={item?.color ?? "-"} />
-                          <NoteRow label="Size" value={item?.size ?? "-"} />
-                          <NoteRow label="Font Size" value={item?.fontSize ?? "-"} />
-                          <NoteRow label="Font Color" value={item?.fontColor ?? "-"} />
-                          <NoteRow label="Font Family" value={item?.fontFamily ?? "-"} />
-                          <NoteRow label="Position" value={`X: ${item?.position?.x ?? "-"}, Y: ${item?.position?.y ?? "-"}`} />
-                          <NoteRow label="Print Side" value={item?.printSide ?? "-"} />
-                          <NoteRow label="Variant ID" value={item?.id ?? "-"} />
-                          {index < (selectedDesign?.NamesAndNumberPrintAreas?.length ?? 0) - 1 && <Divider />}
-                        </div>
-                      ))
-                    ) : (
-                      <Text tone="subdued">No name and number details available.</Text>
-                    )}
-                  </Box>
-                </Card>
-                <Box paddingBlockStart="200" paddingBlockEnd="0">
-                  <Text variant="bodySm" tone="subdued">
-                    Saved: {new Date(selectedDesign.createdAt).toLocaleString("en-GB", { timeZone: "UTC" })} UTC
-                  </Text>
-                </Box>
+                </BlockStack>
               </Layout.Section>
             </Layout>
           )}

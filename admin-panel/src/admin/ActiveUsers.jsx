@@ -119,7 +119,7 @@ export default function ActiveUsers() {
         <div style={{ marginTop: "1rem" }} >
 
           <BlockStack gap="400" paddingBlockStart="300" >
-            <InlineStack gap="400" wrap>
+            {/* <InlineStack gap="400" wrap>
               <Card padding="400" rounded background="bg-surface-secondary" shadow="base">
                 <BlockStack align="center">
                   <Text tone="subdued" variant="bodySm">Active Users</Text>
@@ -137,7 +137,27 @@ export default function ActiveUsers() {
                   </Text>
                 </BlockStack>
               </Card>
+            </InlineStack> */}
+            <InlineStack gap="400" wrap>
+              <Card padding="200" rounded background="bg-surface-secondary" shadow="base">
+                <BlockStack align="center" gap="100">
+                  <Text tone="subdued" variant="bodySm">Active Users</Text>
+                  <Text variant="headingLg" fontWeight="bold" tone="success">
+                    {activeUserNumber}
+                  </Text>
+                </BlockStack>
+              </Card>
+
+              <Card padding="200" rounded background="bg-surface-secondary" shadow="base">
+                <BlockStack align="center" gap="100">
+                  <Text tone="subdued" variant="bodySm">Unique Countries</Text>
+                  <Text variant="headingLg" fontWeight="bold">
+                    {uniqueCountries.length}
+                  </Text>
+                </BlockStack>
+              </Card>
             </InlineStack>
+
 
 
             <Box paddingBlock="100" paddingInline="200">
