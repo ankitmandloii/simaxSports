@@ -241,6 +241,7 @@
 // }
 import { fabric } from "fabric";
 import { useSelector } from "react-redux";
+import renderNameAndNumber from "../Objects/renderNameAndNumberObject";
 
 
 /**
@@ -410,6 +411,126 @@ const renderCurveTextObjectsHelper = (textContentObjects, canvas) => {
     canvas.add(curved);
   });
 };
+// -=-
+const renderNameAndNumberObjectHeloper = (
+  nameAndNumberDesignState,
+  canvas,
+  addNumber = true,
+  addName = true
+) => {
+  // console.log("productCategory.......", productCategory)
+
+  // const canvas = fabricCanvasRef.current;
+  if (!canvas || !nameAndNumberDesignState) {
+    // console.warn("Canvas or nameAndNumberDesignState is missing.");
+    return;
+  }
+
+  const { name, number, position, fontFamily, fontColor, fontSize, id } =
+    nameAndNumberDesignState;
+
+  const objectId = id;
+
+  if (!addName && !addNumber) {
+    const existingGroup = canvas
+      .getObjects()
+      .find((obj) => obj.id === objectId);
+    if (existingGroup) {
+      canvas.remove(existingGroup);
+      canvas.requestRenderAll();
+    }
+    return;
+  }
+
+  const fontSizeMap = {
+    small: 60,
+    medium: 100,
+    large: 150,
+  };
+  const baseFontSize = fontSizeMap[fontSize] || 80;
+
+  // Remove old group if it exists
+  const oldGroup = canvas
+    .getObjects()
+    .filter((obj) => obj.isDesignGroup === true);
+  oldGroup.forEach((oldGroup) => canvas.remove(oldGroup));
+
+  const textObjects = [];
+
+  if (addName && name) {
+    const nameText = new fabric.Text(name, {
+      fontSize: baseFontSize * 0.3,
+      fontFamily: fontFamily,
+      fill: fontColor,
+      originX: "left", // manual centering
+      originY: "top",
+    });
+    // Center horizontally
+    nameText.left = -nameText.width / 2;
+    textObjects.push(nameText);
+  }
+  // console.log("-----------activesiede", activeSide)
+  // console.log("-----------activeNameAndNumberPrintSide", activeNameAndNumberPrintSide)
+
+
+  if (addNumber && number) {
+    const numberText = new fabric.Text(number, {
+      fontSize: baseFontSize,
+      fontFamily: fontFamily,
+      fill: fontColor,
+      originX: "left",
+      originY: "top",
+    });
+    numberText.left = -numberText.width / 2;
+
+    // Stack below name if present
+    if (textObjects.length > 0) {
+      const previous = textObjects[textObjects.length - 1];
+      numberText.top = previous.top + previous.height + 5;
+      numberText.left = -previous.width / 2 - (fontSize === "small" ? 12 : 30);
+    }
+    textObjects.push(numberText);
+  }
+
+  if (textObjects.length === 0) return;
+
+  const group = new fabric.Group(textObjects, {
+    id: objectId,
+    left: position?.x || canvas.getWidth() / 2,
+    top: position?.y || canvas.getHeight() / 2,
+    originX: "center",
+    originY: "center",
+    alignText: "center",
+    selectable: true,
+    fontFamily: fontFamily,
+    hasBorders: false,
+    hasControls: false,
+    evented: true,
+    isSync: true,
+  });
+
+
+
+  // console.log("group ", group, group.type);
+  // Force recalculation of bounds
+  group._calcBounds();
+  group._updateObjectsCoords();
+  group.set({
+    width: fontSize === "small" ? 60 : 190,
+    left: position?.x || canvas.getWidth() / 2,
+    top: position?.y || canvas.getHeight() / 2,
+
+    // originX: 'center',
+    // originY: 'center',
+    isDesignGroup: true,
+    hasBorders: false,
+  });
+
+  group.setCoords();
+  canvas.add(group);
+  canvas.requestRenderAll();
+};
+
 
 /**
  * Renders a complete design (background, texts, images) onto an off-screen canvas.
@@ -422,9 +543,10 @@ const renderCurveTextObjectsHelper = (textContentObjects, canvas) => {
  * @param {Array<Object>} images - Array of image data objects.
  * @returns {Promise<void>} A Promise that resolves when the design is fully rendered.
  */
-async function renderDesignOnCanvas(canvasWidth, canvasHeight, canvas, backgroundImageSrc, texts, images) {
+async function renderDesignOnCanvas(canvasWidth, canvasHeight, canvas, backgroundImageSrc, texts, images, nameAndNumberDesignState) {
   // Clear the canvas before rendering new design
   canvas.clear();
+  console.log("nameAndNumberDesignState in renderDesignOnCanvas step 2", nameAndNumberDesignState)
 
   // Add background image (if provided)
   if (backgroundImageSrc) {
@@ -468,10 +590,15 @@ async function renderDesignOnCanvas(canvasWidth, canvasHeight, canvas, backgroun
   }
 
   // Render text elements (synchronous)
-  renderCurveTextObjectsHelper(texts, canvas);
+  console.log("nameAndNumberDesignState before desing", nameAndNumberDesignState)
+  {
 
+    nameAndNumberDesignState && renderNameAndNumberObjectHeloper(nameAndNumberDesignState, canvas);
+  }
+  renderCurveTextObjectsHelper(texts, canvas);
   // Render image elements (asynchronous, await its completion)
   await renderAllImageObjectsHelper(images, canvas);
+  // Render Name and Number
 
   // After all elements are added, render the canvas once
   canvas.renderAll();
@@ -493,8 +620,9 @@ function exportCanvasAsPNG(canvas) {
  * @param {Array<Array<Object>>} images - Array of arrays of image data objects for each design.
  * @returns {Promise<Array<string>>} A Promise that resolves with an array of PNG data URLs.
  */
-export async function generateDesigns(backgrounds, texts, images, activeSide, canvasHeight, canvasWidth) {
+export async function generateDesigns(backgrounds, texts, images, nameAndNumberDesignState, activeSide, canvasHeight, canvasWidth) {
   const exportedImages = [];
+  console.log("nameAndNumberDesignState in generateDesigns step 1", nameAndNumberDesignState)
 
   // Define a consistent size for the off-screen canvases
   const OFFSCREEN_CANVAS_WIDTH = 500;
@@ -528,7 +656,8 @@ export async function generateDesigns(backgrounds, texts, images, activeSide, ca
         canvas,
         backgrounds[i],
         texts,
-        images
+        images,
+        nameAndNumberDesignState
       );
 
       // Export the canvas as PNG and push to the array

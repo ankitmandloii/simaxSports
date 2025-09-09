@@ -43,7 +43,8 @@ const Footer = () => {
   const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present["back"].nameAndNumberProductList);
   const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
-  const { present, DesignNotes } = useSelector((state) => state.TextFrontendDesignSlice);
+  const { present, DesignNotes, nameAndNumberDesignState } = useSelector((state) => state.TextFrontendDesignSlice);
+  console.log("present...", present)
   const productState = useSelector((state) => state.productSelection.products);
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
   const isProductPage = location.pathname === "/design/product";
@@ -324,10 +325,65 @@ const Footer = () => {
       //   return { front: frontDesignImages[0], back: backDesignImages[0] };
       // });
       const designPromises = reviewItems.map(async (item) => {
-        const front = (await generateDesigns([item.allImages[0]], present.front.texts, present.front.images, activeSide, canvasWidth, canvasHeight))[0];
-        const back = (await generateDesigns([item.allImages[1]], present.back.texts, present.back.images, activeSide, canvasWidth, canvasHeight))[0];
-        const leftSleeve = (await generateDesigns([item.allImages[2]], present.leftSleeve.texts, present.leftSleeve.images, activeSide, canvasWidth, canvasHeight))[0];
-        const rightSleeve = (await generateDesigns([item.allImages[3]], present.rightSleeve.texts, present.rightSleeve.images, activeSide, canvasWidth, canvasHeight))[0];
+        console.log("-------------itemm", item)
+        // const front = (await generateDesigns([item.allImages[0]], present.front.texts, present.front.images, activeSide, canvasWidth, canvasHeight))[0];
+        let front, back;
+
+        // Handle front
+        if (activeNameAndNumberPrintSide === "front") {
+          front = (
+            await generateDesigns(
+              [item.allImages[0]],
+              present.front.texts,
+              present.front.images,
+              nameAndNumberDesignState,
+              activeSide,
+              canvasWidth,
+              canvasHeight
+            )
+          )[0];
+        } else {
+          front = (
+            await generateDesigns(
+              [item.allImages[0]],
+              present.back.texts,
+              present.back.images,
+              null,
+              activeSide,
+              canvasWidth,
+              canvasHeight
+            )
+          )[0];
+        }
+
+        // Handle back
+        if (activeNameAndNumberPrintSide === "back") {
+          back = (
+            await generateDesigns(
+              [item.allImages[1]],
+              present.back.texts,
+              present.back.images,
+              nameAndNumberDesignState,
+              activeSide,
+              canvasWidth,
+              canvasHeight
+            )
+          )[0];
+        } else {
+          back = (
+            await generateDesigns(
+              [item.allImages[1]],
+              present.back.texts,
+              present.back.images,
+              null,
+              activeSide,
+              canvasWidth,
+              canvasHeight
+            )
+          )[0];
+        }
+        const leftSleeve = (await generateDesigns([item.allImages[2]], present.leftSleeve.texts, present.leftSleeve.images, null, activeSide, canvasWidth, canvasHeight))[0];
+        const rightSleeve = (await generateDesigns([item.allImages[3]], present.rightSleeve.texts, present.rightSleeve.images, null, activeSide, canvasWidth, canvasHeight))[0];
 
         return { front, back, leftSleeve, rightSleeve };
       });

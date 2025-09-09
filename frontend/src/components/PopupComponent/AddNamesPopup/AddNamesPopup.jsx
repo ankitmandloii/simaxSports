@@ -20,7 +20,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
   const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberProductList);
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  // console.log(selectedProducts);
+  // console.log(selectedProducts, "-----alllproductselect");
 
   const [allProducts, setAllProducts] = useState(nameAndNumberProductList);
 
@@ -131,7 +131,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
         size: product.selectedColor?.variant?.selectedOptions[1]?.value,
         sizes: getSizeOptions(product), // assume this is a valid function in scope
         title: consistentTitle,
-        swatchImg: product?.swatchImg,
+        swatchImg: product?.swatchImg || product?.selectedColor?.swatchImg,
         selections: [],
       };
       // console.log("mainProduct", mainProduct);

@@ -23,7 +23,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
   const [searchError, setSearchError] = useState(null);
-  console.log("waaaaaaaa", rawProducts)
+  // console.log("waaaaaaaa", rawProducts)
 
   // Fetch products from API based on search query
   // Fetch products from API based on search query
