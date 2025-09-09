@@ -491,9 +491,9 @@ const AddTextToolbar = () => {
                       onClick={() => {
                         const canvasComponent = document.querySelector(`#canvas-${activeSide}`); // Simple way, but ideally use refs or context
                         const rect = canvasComponent.getBoundingClientRect();
-                        const centerX = rect.width / 2;
-                        const centerY = rect.height / 2;
-                        globalDispatch("position", { x: centerX, y: textContaintObject.position.y });
+                        const centerX = 50;
+                        const centerY = 50;
+                        globalDispatch("position", { x: centerX, y: centerY });
                         setCenterActive(!centerActive);
                       }}
                     >

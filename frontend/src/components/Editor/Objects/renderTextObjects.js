@@ -62,10 +62,10 @@ const renderCurveTextObjects = (
         existingObj.set({
           width: Math.min(measuredWidth + 20, 200),
         });
-        console.log({
-          left: (textInput.position.x / 100) * canvasWidth,
-          top: (textInput.position.y / 100) * canvasHeight,
-        }, canvasWidth, canvasHeight, textInput)
+        // console.log({
+        //   left: (textInput.position.x / 100) * canvasWidth,
+        //   top: (textInput.position.y / 100) * canvasHeight,
+        // }, canvasWidth, canvasHeight, textInput)
         existingObj.set({
           text: textInput.content,
           fontWeight: textInput.fontWeight || "normal",
@@ -118,7 +118,7 @@ const renderCurveTextObjects = (
           const percentX = (obj.left / canvasWidth) * 100;
           const percentY = (obj.top / canvasHeight) * 100;
           obj.setPositionByOrigin(center, "center", "center");
-          obj.setCoords(); 
+          obj.setCoords();
 
           globalDispatch("position", { x: percentX, y: percentY }, textInput.id);
           globalDispatch("angle", obj.angle, textInput.id);

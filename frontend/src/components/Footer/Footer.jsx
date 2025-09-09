@@ -46,7 +46,7 @@ const Footer = () => {
   const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   const { present, DesignNotes, nameAndNumberDesignState } = useSelector((state) => state.TextFrontendDesignSlice);
-  console.log("present...", present)
+  // console.log("present...", present)
   const productState = useSelector((state) => state.productSelection.products);
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
   const isProductPage = location.pathname === "/design/product";
