@@ -22,6 +22,7 @@ import AddColorBtn from '../../CommonComponent/AddColorBtn/AddColorBtn';
 import { removeProduct } from '../../../redux/productSelectionSlice/productSelectionSlice';
 
 const ProductToolbar = () => {
+
   const dispatch = useDispatch();
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
@@ -38,12 +39,7 @@ const ProductToolbar = () => {
   const [hoveredThumbnail, setHoveredThumbnail] = useState({ productIndex: null, colorIndex: null, color: null });
 
   // Clone color safely with fallback for image and variants
-  // const safeCloneColor = (color, fallbackImg = '', allVariants = []) => {
-  //   if (!color || typeof color !== 'object' || Array.isArray(color)) {
-  //     return { name: String(color), img: fallbackImg, allVariants: allVariants || [] };
-  //   }
-  //   return { ...color, allVariants: allVariants || color.allVariants || [] };
-  // };
+
   const safeCloneColor = (color, fallbackImg = '', allVariants = []) => {
     if (!color || typeof color !== 'object' || Array.isArray(color)) {
       return { name: String(color), img: fallbackImg, swatchImg: fallbackImg, allVariants: allVariants || [] };
@@ -122,6 +118,7 @@ const ProductToolbar = () => {
   //   setIsAddingProduct(false);
   //   setAddProduct(false);
   // };
+  // Product selection
   const handleProductSelect = (product, selectedColor = null) => {
     const fallbackImg = product?.img || product?.imgurl || product?.selectedImage || '';
     const clonedColor = selectedColor
@@ -156,6 +153,7 @@ const ProductToolbar = () => {
     setIsAddingProduct(false);
     setAddProduct(false);
   };
+  // Product deletion
   const handleDeleteProduct = (indexToDelete, id) => {
     // Remove product at index
     // console.log("id.................", id);

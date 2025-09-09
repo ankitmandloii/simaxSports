@@ -33,12 +33,12 @@ const BottomBar = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const activeSide = useSelector(state => state.TextFrontendDesignSlice.activeSide);
-  console.log("-------ac", activeSide);
+  // console.log("-------ac", activeSide);
 
   const selectedImageId = useSelector(state =>
     state.TextFrontendDesignSlice.present[activeSide]?.selectedImageId
   );
-  console.log("---selectedImageId", selectedImageId);
+  // console.log("---selectedImageId", selectedImageId);
   const menuItems = [
     { path: "/design/product", icon: <RiTShirt2Line />, label: "Products", data: <ProductToolbar />, snap: 1200 },
     { path: "/design/addText", icon: <AddProductIcon />, label: "Text", data: <AddTextToolbar />, snap: 600 },

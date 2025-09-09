@@ -23,7 +23,7 @@ export const fetchProducts = createAsyncThunk(
       }
 
       const data = await response.json();
-      console.log("====reduxdata", data)
+      // console.log("====reduxdata", data)
       const edges = data.result.data.products.edges;
       // const products = edges.map(({ node }) => {
       //   const variants = node.variants.edges.map((v) => v.node);

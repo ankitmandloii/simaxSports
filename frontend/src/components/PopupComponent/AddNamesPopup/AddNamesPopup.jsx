@@ -120,6 +120,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
         name: product?.name,
         title: consistentTitle,
         selections: [],
+        swatchImg: variantProduct?.swatchImg
       }));
 
       const mainProduct = {
@@ -130,6 +131,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
         size: product.selectedColor?.variant?.selectedOptions[1]?.value,
         sizes: getSizeOptions(product), // assume this is a valid function in scope
         title: consistentTitle,
+        swatchImg: product?.swatchImg,
         selections: [],
       };
       // console.log("mainProduct", mainProduct);
@@ -232,6 +234,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
   const canvasBgColor = getHexFromName(activeProduct?.color) || "#f5f5f5";
 
   // console.log("--canvass", canvasBgColor)
+  console.log("====all", allProducts)
 
   return (
 
@@ -258,7 +261,8 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
                   <div>
                     <h4>{product.name || product?.title}</h4>
                     <div className={styles.colorShowDiv}>
-                      <span className={styles.prColorSpan} style={{ backgroundColor: getHexFromName(product?.color) }}></span>
+                      <img src={product?.swatchImg} className={styles.prColorSpan} alt='colorSwatch' />
+                      {/* <span className={styles.prColorSpan} style={{ backgroundColor: getHexFromName(product?.color) }}></span> */}
                       <h5 className={styles.productColorSpanName}>{product?.color}</h5>
                     </div>
                   </div>
@@ -381,6 +385,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
               <button className={styles.linkBtn} onClick={showAddnamesPopupHandler}>Exit Without Saving</button>
             </div>
           </div>
+
         </div>
       </div>
     </div>

@@ -312,7 +312,7 @@ function ProductContainer() {
 
     // If no productId or variantId, set the first product from rawProducts as activeProduct
     if (Array.isArray(rawProducts) && rawProducts.length > 0 && selectedProducts.length === 0) {
-      const productNode = rawProducts[0]; // Select the first product
+      const productNode = rawProducts[1]; // Select the first product
       let colors = [];
 
       // Check if product variants have a "Color" option
@@ -732,12 +732,16 @@ function ProductContainer() {
               </div>
             )}
 
-            {settingsForsides?.enableZoomFeature && (
+            {/* {settingsForsides?.enableZoomFeature && (
               <div className={style.zoomContainer} onClick={toggleZoom}>
                 {logo}
                 <p>Zoom</p>
               </div>
-            )}
+            )} */}
+            <div className={style.zoomContainer} onClick={toggleZoom}>
+              {logo}
+              <p>Zoom</p>
+            </div>
           </div>
         )}
       </div>
