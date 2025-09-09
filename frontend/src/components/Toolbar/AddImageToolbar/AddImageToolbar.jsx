@@ -338,8 +338,6 @@ const AddImageToolbar = () => {
 
       // Dispatch the base64 string to your global state (no need to convert it to a string again)
       globalDispatch("base64CanvasImage", currentBase64Image);
-
-      globalDispatch("base64CanvasImage", String(currentBase64Image));
       if (selectedFilter == "Normal") {
         globalDispatch("base64CanvasImageForNormalColor", String(currentBase64Image));
       }
@@ -757,9 +755,9 @@ const AddImageToolbar = () => {
       globalDispatch("loading", true);
       Newbase64image = await invertColorsAndGetUrl(img.getBase64CanvasImage || base64Image || previewUrl);
       console.log("inverted image in base64", Newbase64image);
-      globalDispatch("loading", false);
       globalDispatch("base64CanvasImage", Newbase64image);
       globalDispatch("base64CanvasImageForSinglelColor", String(Newbase64image));
+      globalDispatch("loading", false);
     }
 
 
@@ -1448,7 +1446,7 @@ const AddImageToolbar = () => {
                             if (loading) return;
                             // applyTransform(f.transform);
                             setSelectedFilter(f.name);
-                            globalDispatch("src", buildUrl(f.transform, false, f.name));
+                            // globalDispatch("src", buildUrl(f.transform, false, f.name));
                             globalDispatch("selectedFilter", f.name);
                             // globalDispatch("base64CanvasImage", f.image);
                             handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor, editColor);
