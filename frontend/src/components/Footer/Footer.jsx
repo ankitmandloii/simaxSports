@@ -20,6 +20,8 @@ import { toast } from "react-toastify";
 import { addProduct } from '../../redux/productSelectionSlice/productSelectionSlice.js';
 import EmailInputPopup from '../PopupComponent/EmailInputPopup/EmailInputPopup.jsx';
 import { setActiveSide } from '../../redux/FrontendDesign/TextFrontendDesignSlice.js';
+import { apiConnecter } from '../utils/apiConnector.jsx';
+import axios from 'axios';
 
 // const designId = "68ae9e7a3e658d88aa45852a";
 // const customerEmail = "testuser@example.com";
@@ -217,6 +219,14 @@ const Footer = () => {
     return current !== saved;
   };
 
+
+  async function blobUrlToFile(blobUrl, filename = "canvas.png") {
+    const response = await fetch(blobUrl);   // fetch blob data
+    const blob = await response.blob();      // convert to blob
+    return new File([blob], filename, { type: blob.type });
+  }
+
+
   const handleDesignAction = (actionType, emailOverride = null) => {
     // if (!customerEmail) {
     //   setPendingAction(actionType);
@@ -346,9 +356,9 @@ const Footer = () => {
           front = (
             await generateDesigns(
               [item.allImages[0]],
-              present.back.texts,
-              present.back.images,
-              null,
+              present.front.texts,
+              present.front.images,
+              {},
               activeSide,
               canvasWidth,
               canvasHeight
@@ -375,15 +385,15 @@ const Footer = () => {
               [item.allImages[1]],
               present.back.texts,
               present.back.images,
-              null,
+              {},
               activeSide,
               canvasWidth,
               canvasHeight
             )
           )[0];
         }
-        const leftSleeve = (await generateDesigns([item.allImages[2]], present.leftSleeve.texts, present.leftSleeve.images, null, activeSide, canvasWidth, canvasHeight))[0];
-        const rightSleeve = (await generateDesigns([item.allImages[3]], present.rightSleeve.texts, present.rightSleeve.images, null, activeSide, canvasWidth, canvasHeight))[0];
+        const leftSleeve = (await generateDesigns([item.allImages[2]], present.leftSleeve.texts, present.leftSleeve.images, {}, activeSide, canvasWidth, canvasHeight))[0];
+        const rightSleeve = (await generateDesigns([item.allImages[3]], present.rightSleeve.texts, present.rightSleeve.images, {}, activeSide, canvasWidth, canvasHeight))[0];
 
         return { front, back, leftSleeve, rightSleeve };
       });
@@ -400,6 +410,71 @@ const Footer = () => {
       const cloudinaryResponse = await uploadBlobData(blobData);
       // console.log("cloudinaryResponse:", cloudinaryResponse);
       designPayload.design.FinalImages = cloudinaryResponse?.files || [];
+
+      const allFrontImagesElement = designPayload.design.present.front.images;
+      const allBackImagesElement = designPayload.design.present.back.images;
+      const allLeftImagesElement = designPayload.design.present.leftSleeve.images;
+      const allRightImagesElement = designPayload.design.present.rightSleeve.images;
+      const allImages = [
+        ...allFrontImagesElement,
+        ...allBackImagesElement,
+        ...allLeftImagesElement,
+        ...allRightImagesElement
+      ];
+
+      const allFiles = [];
+      const formData = new FormData();
+      for (let i = 0; i < allImages.length; i++) {
+        const blobUrl = allImages[i].base64CanvasImage;
+        if (!blobUrl) continue;
+
+        // use the ID in the filename
+        const file = await blobUrlToFile(blobUrl, `${allImages[i].id}.png`);
+        formData.append("images", file);
+      }
+
+
+
+      // const file = await blobUrlToFile(base64CanvasImage);
+
+      // formData.append("file", file);
+      console.log("all fils from blob ", formData)
+
+
+      if ([...formData.entries()].length > 0) {
+        const responseForblobToFiles = await axios.post(
+          `${process.env.REACT_APP_BASE_URL}imageOperation/upload`,
+          formData,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          }
+        );
+
+        console.log("responseForblobToFiles ", responseForblobToFiles);
+        const uploadedImages = responseForblobToFiles.data.files;
+        console.log("uploadedImages", uploadedImages)
+        const updateImages = (images) =>
+          images.map(img => {
+            const match = uploadedImages.find(
+              u => u.name.split(".")[0].toLowerCase() === img.id.toLowerCase()
+            );
+            return match ? { ...img, src: match.url } : img;
+          });
+
+        designPayload.design.present.front.images = updateImages(designPayload.design.present.front.images);
+        designPayload.design.present.back.images = updateImages(designPayload.design.present.back.images);
+        designPayload.design.present.leftSleeve.images = updateImages(designPayload.design.present.leftSleeve.images);
+        designPayload.design.present.rightSleeve.images = updateImages(designPayload.design.present.rightSleeve.images);
+
+      }
+      else {
+        console.log("formdata is empty")
+      }
+
+      // await fetch("/upload", {
+      //   method: "POST",
+      //   body: formData
+      // });
 
 
       let responseData;

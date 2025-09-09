@@ -1445,7 +1445,7 @@ const AddImageToolbar = () => {
                         </div>
 
                         <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
-                          {extractedColors.length > 0 ? (
+                          {extractedColors?.length > 0 ? (
                             extractedColors.map((color, index) => (
                               // <span>{color}</span>
                               <SpanColorBox

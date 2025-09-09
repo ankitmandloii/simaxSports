@@ -122,6 +122,7 @@ export const uploadBlobData = async (blobDataArray) => {
 // Save design to the backend
 export const saveDesignFunction = async (payload) => {
     try {
+        console.log("desing payload", payload)
         const response = await apiConnecter(
             "POST",
             "design/save-designfrontEnd",

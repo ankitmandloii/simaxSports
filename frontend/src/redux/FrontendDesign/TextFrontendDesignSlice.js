@@ -254,8 +254,14 @@ const TextFrontendDesignSlice = createSlice({
       const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
       const canvasComponent = document.querySelector(`#canvas-${side}`); // Simple way, but ideally use refs or context
       const rect = canvasComponent.getBoundingClientRect();
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
+      // const centerX = rect.width / 2;
+      // const centerY = rect.height / 2;
+      // const canvasWidth = canvas.getWidth();
+      // const canvasHeight = canvas.getHeight();
+      const centerX = 50; // Start at center
+      const centerY = 50; // Start at center
+
+      // globalDispatch("position", { x: percentX, y: percentY }, id);
       const newText = createNewText(
         { value, id, centerX, centerY },
         totalElements

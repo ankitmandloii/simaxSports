@@ -54,12 +54,18 @@ const renderCurveTextObjects = (
         canvas.discardActiveObject();
         canvas.renderAll();
       }
+      const canvasWidth = canvas.getWidth();
+      const canvasHeight = canvas.getHeight();
 
       // console.log("existing object", existingObj);
       if (existingObj) {
         existingObj.set({
           width: Math.min(measuredWidth + 20, 200),
         });
+        console.log({
+          left: (textInput.position.x / 100) * canvasWidth,
+          top: (textInput.position.y / 100) * canvasHeight,
+        }, canvasWidth, canvasHeight, textInput)
         existingObj.set({
           text: textInput.content,
           fontWeight: textInput.fontWeight || "normal",
@@ -70,8 +76,10 @@ const renderCurveTextObjects = (
           strokeWidth: textInput.outLineSize || 0,
           fill: textInput.textColor || "white",
           angle: textInput.angle || 0,
-          left: textInput.position.x || 300,
-          top: textInput.position.y || 300,
+          // left: textInput.position.x || 300,
+          // top: textInput.position.y || 300,
+          left: (textInput.position.x / 100) * canvasWidth,
+          top: (textInput.position.y / 100) * canvasHeight,
           fontFamily: textInput.fontFamily || "Impact",
           scaleX: textInput.scaleX,
           scaleY: textInput.scaleY,
@@ -99,14 +107,33 @@ const renderCurveTextObjects = (
         canvas.requestRenderAll();
         existingObj.controls = createControls(bringPopup, dispatch);
         canvas.renderAll();
+        existingObj.on("modified", (e) => {
+          setActiveObjectType("curved-text");
+          const obj = e.target;
+          if (!obj || textInput.locked) return;
+
+          const center = obj.getCenterPoint();
+          const canvasWidth = canvas.getWidth();
+          const canvasHeight = canvas.getHeight();
+          const percentX = (obj.left / canvasWidth) * 100;
+          const percentY = (obj.top / canvasHeight) * 100;
+          obj.setPositionByOrigin(center, "center", "center");
+          obj.setCoords(); 
+
+          globalDispatch("position", { x: percentX, y: percentY }, textInput.id);
+          globalDispatch("angle", obj.angle, textInput.id);
+          canvas.renderAll();
+          // handleScale(e);
+          syncMirrorCanvasHelper(activeSide);
+        });
       } else if (!existingObj) {
         const curved = new fabric.CurvedText(textInput.content, {
           lockScalingFlip: true,
           id: textInput.id,
           fontWeight: textInput.fontWeight || "normal",
           fontStyle: textInput.fontStyle || "normal",
-          left: textInput.position.x || 300,
-          top: textInput.position.y || 300,
+          left: (textInput.position.x / 100) * canvasWidth,
+          top: (textInput.position.y / 100) * canvasHeight,
           stroke: textInput.outLineColor || "",
           strokeWidth: textInput.outLineSize || 0,
           fill: textInput.textColor || "white",
@@ -236,10 +263,15 @@ const renderCurveTextObjects = (
           if (!obj || textInput.locked) return;
 
           const center = obj.getCenterPoint();
+          const canvasWidth = canvas.getWidth();
+          const canvasHeight = canvas.getHeight();
+          const percentX = (obj.left / canvasWidth) * 100;
+          const percentY = (obj.top / canvasHeight) * 100;
+          console.log("percentx,percenty", percentX, percentY)
+          globalDispatch("position", { x: percentX, y: percentY }, textInput.id);
 
           obj.setPositionByOrigin(center, "center", "center");
           obj.setCoords();
-          globalDispatch("position", { x: obj.left, y: obj.top }, textInput.id);
           globalDispatch("angle", obj.angle, textInput.id);
           canvas.renderAll();
           handleScale(e);

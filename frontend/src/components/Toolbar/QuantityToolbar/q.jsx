@@ -12,14 +12,12 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from "uuid";   // ✅ import uuid
 import { LuArrowLeft } from 'react-icons/lu';
-import { apiConnecter } from '../../utils/apiConnector.jsx';
 
 const adultSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"];
 const womenSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
 
 const QuantityToolbar = () => {
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  // console.log("--------quantitysele", selectedProducts);
   const productState = useSelector((state) => state.productSelection.products);
   // console.log("productState", productState)
   const CollegiateLicense = useSelector((state) => state.productSelection.CollegiateLicense);
@@ -32,12 +30,10 @@ const QuantityToolbar = () => {
   const navigate = useNavigate();
   const [products, setAllProducts] = useState([]);
   const [expandedProducts, setExpandedProducts] = useState({});
+  const [loading, setLoading] = useState(false);
   const [licenses, setLicenses] = useState({
     collegiate: CollegiateLicense,
   });
-  const [loading, setLoading] = useState(true)
-  const [sizes, setSizes] = useState([]);
-  const [availableSizesQuantity, setAvailableSizesQuantity] = useState([])
 
   /** 🔑 Every product gets its own random stable key */
   const getProductKey = (product) => product.uniqueKey;
@@ -109,7 +105,6 @@ const QuantityToolbar = () => {
           product?.selectedColor?.variant?.metafields
         ),
         allVariants: product?.allVariants,
-        swatchImg: product?.selectedColor?.swatchImg,
       };
       // console.log(mainProduct, "mainProduct");
 
@@ -119,7 +114,7 @@ const QuantityToolbar = () => {
 
       // ✅ extra variants
       const extraProducts = addedColors?.map((variantProduct) => {
-        // console.log("----variantProduct", variantProduct)
+        console.log("----variantProduct", variantProduct)
         const prod = {
           uniqueKey: uuidv4(),
           id: variantProduct?.variant?.id?.split("/").reverse()[0],
@@ -137,7 +132,6 @@ const QuantityToolbar = () => {
           selections: [],
           price: variantProduct?.variant?.price,
           allVariants: variantProduct?.allVariants,
-          swatchImg: variantProduct?.swatchImg,
           inventory_quantity:
             variantProduct?.variant?.inventoryItem?.inventoryLevels?.edges?.[0]
               ?.node?.quantities?.[0]?.quantity,
@@ -153,7 +147,6 @@ const QuantityToolbar = () => {
     });
 
     setAllProducts(newAllProducts);
-    fetchSizes(newAllProducts);
     setExpandedProducts(newExpandedProducts);
 
     // ✅ Populate sizes from nameAndNumber state
@@ -182,6 +175,7 @@ const QuantityToolbar = () => {
     const extractAvailableSizeVariants = (variants, accessor = (v) => v) => {
       const sizeVariantPairs = variants.flatMap((variantWrapper) => {
         const variant = accessor(variantWrapper);
+        // console.log("variant", variant)
         // console.log("variant?.selectedOptions?", variant?.selectedOptions)
         const sizeOption = variant?.selectedOptions?.find(
           (opt) => opt.name === 'Size'
@@ -196,7 +190,7 @@ const QuantityToolbar = () => {
               size: sizeOption.value,
               variantId: variant.id,
               quantity: inventoryQty,
-              sku: variant.sku
+              sku: variant.sku,
             },
           ];
         }
@@ -213,12 +207,52 @@ const QuantityToolbar = () => {
     return [];
   };
 
-  const getAvailableSizesAndQuantity = (product) => {
-    return product.sizes && product.sizes.length > 0
-      ? product.sizes
-      : [];
-  };
+  const getAvailableSizesAndQuantity = async (product) => {
+    try {
+      setLoading(true);
+      if (!product.sizes || product.sizes.length === 0) {
+        return [];
+      }
 
+      // Build request payload
+      const payload = product.sizes.map(size => ({
+        sku: size.sku,         // assuming product.sizes has sku
+        qty: size.quantity || 1,    // send qty from product.sizes or fallback
+      }));
+
+      const response = await fetch(
+        "https://simax-sports-x93p.vercel.app/api/products/inventoryCheckavailabilitySS",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const { result } = await response.json();
+
+      // Merge API response into product.sizes
+      const merged = product.sizes.map(size => {
+        const apiData = result.find(r => r.sku === size.sku);
+        return {
+          ...size,
+          ...apiData, // this adds total_available, can_fulfill, etc.
+        };
+      });
+      return merged;
+    } catch (err) {
+      console.error("Error fetching available sizes:", err);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   // const getTotalQuantityForProduct = (product) => {
@@ -253,44 +287,22 @@ const QuantityToolbar = () => {
     navigate('/design/product');
   }
 
+  const [sizes, setSizes] = useState([]);
 
-  const getAvailableSizesAndQuantityFromSAndS = async (product) => {
-    try {
-
-      const response = await apiConnecter("post", "products/inventoryCheckavailabilitySS", product);
-      const { result } = await response.data;
-      return result;
-    } catch (err) {
-      console.error("Error fetching available sizes:", err);
-      return [];
-    }
-  };
-
-  const fetchSizes = async (products) => {
-    const prod = products.flatMap((products) => {
-      return products.sizes.map(size => { return { sku: size.sku, "qty": 0 } })
-      // return products
-    })
-    // console.log("prod before calling", prod)
-    if (prod.size == 0) return;
-    setLoading(true);
-    try {
-      const result = await getAvailableSizesAndQuantityFromSAndS(prod);
+  useEffect(() => {
+    const fetchSizes = async () => {
+      setLoading(true);
+      const prod = products.map((products) => {
+        return products.sku
+      })
+      // const result = await getAvailableSizesAndQuantity(product);
       // setSizes(result);
-      setAvailableSizesQuantity(result)
-      console.log("prod", result)
-    }
-    catch (err) {
-      console.log("getting error while fetching the quantity ")
-    } finally {
+      console.log("prod", prod)
       setLoading(false);
-    }
+    };
 
-  };
-
-  function getMaxAvaibleQuantity(item) {
-    return availableSizesQuantity.find((i) => i.sku == item.sku)?.total_available ?? 0
-  }
+    fetchSizes();
+  }, []);
 
   return (
     <div className={` ${style.toolbarMainContainer} ${style.toolbarMargin}`}>
@@ -311,52 +323,48 @@ const QuantityToolbar = () => {
       </div>
 
       <div className={style.toolbarBox}>
-
-        {
-          loading ? <div className={style.loaderWrapper}>
-            <div className={style.loader}></div>
-            <p>Loading available sizes.....</p>:
-          </div> :
-            <>{products.map((product) => {
-              const key = getProductKey(product);
-              return (
-                <div key={key} className="main-top-container">
-                  <div className="toolbar-box-top-content">
-                    <div
-                      className={style.quantityToolbarHead}
-                      onClick={() => toggleProductExpansion(product)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <div className={style.downArrow}>
-                        {expandedProducts[key] ? <FaChevronDown /> : <FaChevronRight />}
-                      </div>
-                      <div className={style.miniProdImgContainer}>
-                        <img
-                          src={product.imgurl || miniProd}
-                          className={style.productMiniImg}
-                          alt="product"
-                        />
-                      </div>
-                      <div className={style.rightProductQtyTitle}>
-                        <h4>{product.title}</h4>
-                        <div className={style.rightProductTitleQty}>
-                          {product.color && (
-                            <p className={style.toolbarSpan}>{product.color}</p>
-                          )}
-                          <p className={style.totalQtyitems}>
-                            {getTotalQuantityForProduct(product)} items
-                          </p>
-                        </div>
-                      </div>
+        {products.map((product) => {
+          const key = getProductKey(product);
+          return (
+            <div key={key} className="main-top-container">
+              <div className="toolbar-box-top-content">
+                <div
+                  className={style.quantityToolbarHead}
+                  onClick={() => toggleProductExpansion(product)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className={style.downArrow}>
+                    {expandedProducts[key] ? <FaChevronDown /> : <FaChevronRight />}
+                  </div>
+                  <div className={style.miniProdImgContainer}>
+                    <img
+                      src={product.imgurl || miniProd}
+                      className={style.productMiniImg}
+                      alt="product"
+                    />
+                  </div>
+                  <div className={style.rightProductQtyTitle}>
+                    <h4>{product.title}</h4>
+                    <div className={style.rightProductTitleQty}>
+                      {product.color && (
+                        <p className={style.toolbarSpan}>{product.color}</p>
+                      )}
+                      <p className={style.totalQtyitems}>
+                        {getTotalQuantityForProduct(product)} items
+                      </p>
                     </div>
                   </div>
+                </div>
+              </div>
 
-                  {expandedProducts[key] && (
-                    <div className={style.sizeSection}>
-                      <div className={style.sizeGroup}>
-                        <h5>Available Sizes</h5>
-                        <div className={style.sizeInputs}>
-                          {getAvailableSizesAndQuantity(product).map((item) => (
+              {expandedProducts[key] && (
+                <div className={style.sizeSection}>
+                  <div className={style.sizeGroup}>
+                    <h5>Available Sizes</h5>
+                    <div className={style.sizeInputs}>
+                      {
+                        loading ? <>loading...</> : <>
+                          {sizes?.map((item) => (
                             <div
                               className={style.sizeBox}
                               key={`${key}-${item.size}`}
@@ -379,7 +387,7 @@ const QuantityToolbar = () => {
                               <input
                                 type="number"
                                 min="0"
-                                max={getMaxAvaibleQuantity(item)}
+                                max={item.quantity}
                                 value={productState[product.id]?.selections?.[item.size] || ''}
                                 onChange={(e) => {
                                   if (e.target.value > item.quantity) return;
@@ -389,46 +397,45 @@ const QuantityToolbar = () => {
 
                               />
                             </div>
-                          ))}
+                          ))}</>
+                      }
 
-                        </div>
-                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
-              );
-            })}</>
-        }
+              )}
+            </div>
+          );
+        })}
 
-        {!loading && <>
-          <div className={style.licenseOptions}>
-            <label>
-              <input
-                type="checkbox"
-                style={{ marginRight: "5px" }}
-                checked={licenses.collegiate}
-                onChange={(e) => {
-                  setLicenses((prev) => ({
-                    ...prev,
-                    collegiate: !prev.collegiate,
-                  }));
-                  if (e.target.checked) {
-                    toast.info(
-                      "This item is officially licensed by Simax Design, ensuring it's the genuine article."
-                    );
-                  }
-                }}
-              />
-              Collegiate License (Has college name in design)
-            </label>
-          </div>
-          <button
-            className={style.calculateBtn}
-            onClick={() => calculatePrice()}
-          >
-            CALCULATE PRICING
-          </button></>
-        }
+        <div className={style.licenseOptions}>
+          <label>
+            <input
+              type="checkbox"
+              style={{ marginRight: "5px" }}
+              checked={licenses.collegiate}
+              onChange={(e) => {
+                setLicenses((prev) => ({
+                  ...prev,
+                  collegiate: !prev.collegiate,
+                }));
+                if (e.target.checked) {
+                  toast.info(
+                    "This item is officially licensed by Simax Design, ensuring it's the genuine article."
+                  );
+                }
+              }}
+            />
+            Collegiate License (Has college name in design)
+          </label>
+        </div>
+
+        <button
+          className={style.calculateBtn}
+          onClick={() => calculatePrice()}
+        >
+          CALCULATE PRICING
+        </button>
       </div>
     </div>
   );

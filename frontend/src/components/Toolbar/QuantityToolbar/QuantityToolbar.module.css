@@ -143,7 +143,7 @@
 .toolbarBox {
   /* width: 22rem; */
   /* height: 22rem; */
-  /* height: 500px; */
+  height: 500px;
   background-color: #fff;
   padding: 10px 15px 7rem;
   margin-bottom: 100px;
@@ -301,4 +301,31 @@
 .totalQtyitems {
   font-size: 13px;
   /* color: red; */
+}
+
+.loaderWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  /* background: gray; */
+  height: 100%;
+}
+
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border-left-color: var(--black-color);
+  /* Indigo or your primary color */
+  animation: spin 1s ease infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

@@ -98,8 +98,8 @@ const Review = () => {
             id: image.id,
             layerIndex: image.layerIndex,
             position: image.position,
-            src: image.src,
-            base64CanvasImage: image.src,
+            src: image.base64CanvasImage,
+            base64CanvasImage: image.base64CanvasImage,
           })),
         },
         leftSleeve: {
@@ -117,7 +117,7 @@ const Review = () => {
             id: image.id,
             layerIndex: image.layerIndex,
             position: image.position,
-            src: image.src,
+            src: image.base64CanvasImage,
             base64CanvasImage: image.src,
           })),
         },
@@ -136,7 +136,7 @@ const Review = () => {
             id: image.id,
             layerIndex: image.layerIndex,
             position: image.position,
-            src: image.src,
+            src: image.base64CanvasImage,
             base64CanvasImage: image.src,
           })),
         },
@@ -568,6 +568,7 @@ const Review = () => {
           [frontBackground],
           allFrontTextElement,
           allFrontImagesElement,
+          {},
           activeSide,
           canvasWidth,
           canvasHeight
@@ -577,6 +578,7 @@ const Review = () => {
           [backBackground],
           allBackTextElement,
           allBackImagesElement,
+          {},
           activeSide, canvasWidth, canvasHeight
         );
 
@@ -584,12 +586,14 @@ const Review = () => {
           [leftBackground],
           allLeftTextElement,
           allLeftImagesElement,
+          {},
           activeSide, canvasWidth, canvasHeight
         );
         const rightDesignImages = await generateDesigns(
           [rightBackground],
           allRightTextElement,
           allRightImagesElement,
+          {},
           activeSide, canvasWidth, canvasHeight
         );
 

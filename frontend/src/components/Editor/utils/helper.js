@@ -360,6 +360,8 @@ const renderCurveTextObjectsHelper = (textContentObjects, canvas) => {
   if (!textContentObjects || textContentObjects.length === 0) {
     return; // No text to render
   }
+  const canvasWidth = canvas.getWidth();
+  const canvasHeight = canvas.getHeight();
 
   textContentObjects.forEach((textInput) => {
     const text = textInput.content || "";
@@ -377,8 +379,8 @@ const renderCurveTextObjectsHelper = (textContentObjects, canvas) => {
       id: textInput.id,
       fontWeight: textInput.fontWeight || "normal",
       fontStyle: textInput.fontStyle || "normal",
-      left: textInput.position.x || 300,
-      top: textInput.position.y || 300,
+      left: (textInput.position.x / 100) * canvasWidth,
+      top: (textInput.position.y / 100) * canvasHeight,
       stroke: textInput.outLineColor || "",
       strokeWidth: textInput.outLineSize || 0,
       fill: textInput.textColor || "white",
