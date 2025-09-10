@@ -1,22 +1,8 @@
 const mongoose = require("mongoose");
 
-// const ssProductMappingSchema = new mongoose.Schema({
-//   styleID: { type: Number, required: true },
-//   ssProductSku: { type: String, required: true }, // "B00760033"
-//   ssProductQty: { type: Number, required: true }, // total qty (sum of warehouses)
-//   ssProductData: { type: Object, required: true },
 
-//   warehouses: { type: [Object], default: [] }, // ✅ Add this
 
-//   shopifyProductId: { type: String, default: null },
-//   shopifyProductData: { type: Object, default: null },
-//   shopifyVariantId: { type: String, default: null },
-//   shopifyInventoryId: { type: String, default: null },
-//   shopifyInventoryStatus: { type: String, default: "not_synced" },
-//   shopifyDataUpdateStatus: { type: String, default: "pending" },
-// }, { timestamps: true });
-
-const ssProductMappingSchema = new mongoose.Schema({
+const SSProductMapping = new mongoose.Schema({
   sku: { type: String, required: true },
   gtin: String,
   skuID_Master: Number,
@@ -71,10 +57,15 @@ const ssProductMappingSchema = new mongoose.Schema({
   shopifyProductData: { type: Object, default: null },
   shopifyVariantId: { type: String, default: null },
   shopifyInventoryId: { type: String, default: null },
-  shopifyInventoryStatus: { type: String, default: "not_synced" },
+  shopifyInventoryStatus: { type: String, default: "pending" },
   shopifyDataUpdateStatus: { type: String, default: "pending" },
+  error: { type: String, default: null },
+  specs: [
+    {
+      specName: { type: String, required: true },
+      value: { type: String, required: true },
+    }
+  ],
 }, { timestamps: true });
 
-
-module.exports = mongoose.model("ssProductMapping", ssProductMappingSchema);
-// Stores each individual SKU (color/size combination) under a style ID.
+module.exports = mongoose.model("SSProductMapping", SSProductMapping);

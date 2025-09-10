@@ -8,7 +8,8 @@ const ProductVariantSchema = new mongoose.Schema({
   inventory_quantity: { type: Number, required: true },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
-  image_url: { type: String },
+  uploadedImage_url: { type: String },
+  S3_image_all_urls: [{type: String}]
 });
 
 const ProductVariant = mongoose.model('ProductVariantSchema', ProductVariantSchema);
