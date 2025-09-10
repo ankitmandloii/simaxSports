@@ -247,151 +247,151 @@ function App() {
 
 
   // Save Redux state to localStorage (iOS-friendly)
+  // useEffect(() => {
+  //   const handleSaveState = () => {
+  //     try {
+  //       // localStorage.setItem("savedReduxState", JSON.stringify(reduxState));
+  //     } catch (e) {
+  //       console.error("Error saving Redux state to localStorage:", e);
+  //     }
+  //   };
+
+  //   window.addEventListener("pagehide", handleSaveState);
+  //   document.addEventListener("visibilitychange", () => {
+  //     if (document.visibilityState === "hidden") {
+  //       handleSaveState();
+  //     }
+  //   });
+
+  //   return () => {
+  //     window.removeEventListener("pagehide", handleSaveState);
+  //     document.removeEventListener("visibilitychange", handleSaveState);
+  //   };
+  // }, [reduxState]);
+
+  // Fetch product list on mount
   useEffect(() => {
-    const handleSaveState = () => {
-      try {
-        // localStorage.setItem("savedReduxState", JSON.stringify(reduxState));
-      } catch (e) {
-        console.error("Error saving Redux state to localStorage:", e);
-      }
-    };
+    setTimeout(() => {
+      dispatch(fetchProducts());
+      dispatch(fetchSettings());
 
-    //   window.addEventListener("pagehide", handleSaveState);
-    //   document.addEventListener("visibilitychange", () => {
-    //     if (document.visibilityState === "hidden") {
-    //       handleSaveState();
-    //     }
-    //   });
+    }, 5000);
+  }, [dispatch]);
 
-    //   return () => {
-    //     window.removeEventListener("pagehide", handleSaveState);
-    //     document.removeEventListener("visibilitychange", handleSaveState);
-    //   };
-    // }, [reduxState]);
+  function restorePresentFromData(incomingPresent, src) {
+    const sides = ["front", "back", "leftSleeve", "rightSleeve"];
+    const restored = {};
 
-    // Fetch product list on mount
-    useEffect(() => {
-      setTimeout(() => {
-        dispatch(fetchProducts());
-        dispatch(fetchSettings());
+    sides.forEach(side => {
+      const originalImages = incomingPresent?.[side]?.images || [];
 
-      }, 5000);
-    }, [dispatch]);
+      const enhancedImages = originalImages.map(image => ({
+        ...image,
+        base64CanvasImage: image.src  // Add base64 image string to each image
+      }));
 
-    function restorePresentFromData(incomingPresent, src) {
-      const sides = ["front", "back", "leftSleeve", "rightSleeve"];
-      const restored = {};
+      restored[side] = {
+        selectedTextId: null,
+        selectedImageId: null,
+        loadingState: {
+          loading: false,
+          position: null
+        },
+        texts: incomingPresent?.[side]?.texts || [],
+        images: enhancedImages,
+        setRendering: false,
+        nameAndNumberProductList: [],
+      };
+    });
 
-      sides.forEach(side => {
-        const originalImages = incomingPresent?.[side]?.images || [];
+    return restored;
+  }
 
-        const enhancedImages = originalImages.map(image => ({
-          ...image,
-          base64CanvasImage: image.src  // Add base64 image string to each image
-        }));
 
-        restored[side] = {
-          selectedTextId: null,
-          selectedImageId: null,
-          loadingState: {
-            loading: false,
-            position: null
-          },
-          texts: incomingPresent?.[side]?.texts || [],
-          images: enhancedImages,
-          setRendering: false,
-          nameAndNumberProductList: [],
+  async function editDesignHandler() {
+    try {
+      const searchParams = new URLSearchParams(location.search);
+      const designId = searchParams.get("designId");
+      const mode = searchParams.get("mode");
+      if (!mode) return;
+
+      // agar mode "share" ya "edit" nahi hai
+      if (mode !== "share" && mode !== "edit") return;
+      if (!designId) return;
+
+      // console.log(designStateDb);
+      const response = await apiConnecter("get", "design/getDesignsFromFrontEndById", "", "", { designId });
+      console.log(response);
+
+      const matchedDesigns = response.data.userDesigns.designs;
+
+      if (matchedDesigns.length === 0) {
+        console.error("Design not found for id:", designId);
+      } else {
+        const apiData = matchedDesigns[0]; // get the first match
+
+        const restoredState = {
+          // ...initialState,
+          present: restorePresentFromData(apiData.present),
+          DesignNotes: apiData.DesignNotes || initialState.DesignNotes,
         };
-      });
+        console.log(restorePresentFromData(apiData.present));
+        dispatch(restoreEditDesigns(restorePresentFromData(apiData.present)))
 
-      return restored;
+        console.log(restoredState);
+      }
+
+    }
+    catch (e) {
+      console.log("error while fetching desing", e)
     }
 
+  }
 
-    async function editDesignHandler() {
+
+  // Check if saved state should trigger continue edit popup
+  useEffect(() => {
+    if (!willRenderContinue && rawProducts.length > 0) {
+      let savedState = null;
       try {
-        const searchParams = new URLSearchParams(location.search);
-        const designId = searchParams.get("designId");
-        const mode = searchParams.get("mode");
-        if (!mode) return;
-
-        // agar mode "share" ya "edit" nahi hai
-        if (mode !== "share" && mode !== "edit") return;
-        if (!designId) return;
-
-        // console.log(designStateDb);
-        const response = await apiConnecter("get", "design/getDesignsFromFrontEndById", "", "", { designId });
-        console.log(response);
-
-        const matchedDesigns = response.data.userDesigns.designs;
-
-        if (matchedDesigns.length === 0) {
-          console.error("Design not found for id:", designId);
-        } else {
-          const apiData = matchedDesigns[0]; // get the first match
-
-          const restoredState = {
-            // ...initialState,
-            present: restorePresentFromData(apiData.present),
-            DesignNotes: apiData.DesignNotes || initialState.DesignNotes,
-          };
-          console.log(restorePresentFromData(apiData.present));
-          dispatch(restoreEditDesigns(restorePresentFromData(apiData.present)))
-
-          console.log(restoredState);
-        }
-
-      }
-      catch (e) {
-        console.log("error while fetching desing", e)
+        savedState = JSON.parse(localStorage.getItem("savedReduxState"));
+      } catch (e) {
+        console.error("Error parsing saved Redux state:", e);
+        return;
       }
 
+      if (!savedState || !savedState.TextFrontendDesignSlice) return;
+
+      const { addName, addNumber, present, activeSide } =
+        savedState.TextFrontendDesignSlice;
+      const textObjects = present?.[activeSide]?.texts || [];
+
+      const imgObjects = present?.[activeSide]?.images || [];
+
+
+      if ((textObjects.length > 0) || (imgObjects.length > 0) || addName || addNumber) {
+        setWillRenderContinue(true);
+        setContinueEditPopup(true);
+      }
     }
+    editDesignHandler();
+  }, [rawProducts, willRenderContinue]);
+
+  const handleContinuePopup = () => {
+    setContinueEditPopup(false);
+  };
+  // set initial
+  // useEffect(() => {
+  // if (location.pathname === "/") {
+  // }
+  // navigate("design/product", { replace: true });
+  // }, []);
 
 
-    // Check if saved state should trigger continue edit popup
-    useEffect(() => {
-      if (!willRenderContinue && rawProducts.length > 0) {
-        let savedState = null;
-        try {
-          savedState = JSON.parse(localStorage.getItem("savedReduxState"));
-        } catch (e) {
-          console.error("Error parsing saved Redux state:", e);
-          return;
-        }
-
-        if (!savedState || !savedState.TextFrontendDesignSlice) return;
-
-        const { addName, addNumber, present, activeSide } =
-          savedState.TextFrontendDesignSlice;
-        const textObjects = present?.[activeSide]?.texts || [];
-
-        const imgObjects = present?.[activeSide]?.images || [];
-
-
-        if ((textObjects.length > 0) || (imgObjects.length > 0) || addName || addNumber) {
-          setWillRenderContinue(true);
-          setContinueEditPopup(true);
-        }
-      }
-      editDesignHandler();
-    }, [rawProducts, willRenderContinue]);
-
-    const handleContinuePopup = () => {
-      setContinueEditPopup(false);
-    };
-    // set initial
-    // useEffect(() => {
-    // if (location.pathname === "/") {
-    // }
-    // navigate("design/product", { replace: true });
-    // }, []);
-
-
-    return (
-      <>
-        <div className="app-main-container">
-          {/* <div
+  return (
+    <>
+      <div className="app-main-container">
+        {/* <div
           id="html-delete-control"
           style={{
             position: "absolute",
@@ -430,25 +430,25 @@ function App() {
 
 
 
-          <div className="main-inner-container">
+        <div className="main-inner-container">
 
-            <div
-              className={`main-layout-container ${isQuantityPage ? "quantity-page" : ""
-                }`}
-            >
-              {rawProducts.length === 0 ? (
-                <>
-                  <div
-                    className="fullscreen-loader"
-                    style={{ flexDirection: "column" }}
-                  >
-                    <LoadingScreen />
-                  </div>
-                </>
-              ) : (
-                <></>
-              )}
-              {/* <Routes>
+          <div
+            className={`main-layout-container ${isQuantityPage ? "quantity-page" : ""
+              }`}
+          >
+            {rawProducts.length === 0 ? (
+              <>
+                <div
+                  className="fullscreen-loader"
+                  style={{ flexDirection: "column" }}
+                >
+                  <LoadingScreen />
+                </div>
+              </>
+            ) : (
+              <></>
+            )}
+            {/* <Routes>
               <Route path="/design" element={<Layout />}>
                 <Route index element={<ProductToolbar />} />
                 <Route path="product" element={<ProductToolbar />} />
@@ -465,63 +465,63 @@ function App() {
               <Route path="*" element={<NotFound />} />
 
             </Routes> */}
-              <Routes>
-                {/* Layout wraps all valid pages including /design and /review */}
-                <Route path="/" element={<Layout />}>
-                  <Route index element={<Navigate to="design/product" replace />} />
+            <Routes>
+              {/* Layout wraps all valid pages including /design and /review */}
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Navigate to="design/product" replace />} />
 
-                  {/* /design pages */}
-                  <Route path="design">
-                    <Route path="product" element={<ProductToolbar />} />
-                    <Route path="addText" element={<AddTextToolbar />} />
-                    <Route path="addImage" element={<AddImageToolbar />} />
-                    <Route path="products" element={<ProductContainer />} />
-                    <Route path="uploadArt" element={<UploadArtToolbar />} />
-                    <Route path="addArt" element={<AddArtToolbar />} />
-                    <Route path="addNames" element={<NamesToolbar />} />
+                {/* /design pages */}
+                <Route path="design">
+                  <Route path="product" element={<ProductToolbar />} />
+                  <Route path="addText" element={<AddTextToolbar />} />
+                  <Route path="addImage" element={<AddImageToolbar />} />
+                  <Route path="products" element={<ProductContainer />} />
+                  <Route path="uploadArt" element={<UploadArtToolbar />} />
+                  <Route path="addArt" element={<AddArtToolbar />} />
+                  <Route path="addNames" element={<NamesToolbar />} />
 
-                    {/* Catch invalid nested routes in /design */}
-                    {/* <Route path="*" element={<NotFound />} /> */}
-                  </Route>
-                  <Route path="quantity" element={<QuantityToolbar />} />
-
-                  {/* /review page with Layout (not nested under /design) */}
-                  <Route path="review" element={<Review />} />
-
-                  {/* Catch any other invalid top-level routes */}
-
+                  {/* Catch invalid nested routes in /design */}
+                  {/* <Route path="*" element={<NotFound />} /> */}
                 </Route>
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+                <Route path="quantity" element={<QuantityToolbar />} />
+
+                {/* /review page with Layout (not nested under /design) */}
+                <Route path="review" element={<Review />} />
+
+                {/* Catch any other invalid top-level routes */}
+
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
 
 
-            </div>
           </div>
-
-          <ToastContainer
-            style={{ zIndex: "99999" }}
-            position="bottom-center"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            pauseOnHover
-            draggable
-            theme="light"
-            limit={1}
-          />
-
-          {continueEditPopup && (
-            <ContinueEditPopup handleContinuePopup={handleContinuePopup} />
-          )}
-
-          <BottomBar />
         </div>
 
-        <canvas id="canvas-export" style={{ display: "none" }} />
-        <canvas id="HelperCanvas" style={{ display: "none" }}></canvas>
-      </>
-    );
-  }
+        <ToastContainer
+          style={{ zIndex: "99999" }}
+          position="bottom-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="light"
+          limit={1}
+        />
+
+        {continueEditPopup && (
+          <ContinueEditPopup handleContinuePopup={handleContinuePopup} />
+        )}
+
+        <BottomBar />
+      </div>
+
+      <canvas id="canvas-export" style={{ display: "none" }} />
+      <canvas id="HelperCanvas" style={{ display: "none" }}></canvas>
+    </>
+  );
+}
 
 export default App;
