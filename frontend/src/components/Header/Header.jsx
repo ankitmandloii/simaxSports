@@ -24,6 +24,7 @@ const Header = () => {
   }, [CustomerLogin])
 
   const shouldRedirectToReview = (productState) => {
+    if(window.location.pathname == "/design/product") return false
     return Object.values(productState).some((product) => {
       return Object.values(product.selections || {}).some(quantity => quantity >= 1);
     });

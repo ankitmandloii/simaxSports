@@ -290,8 +290,8 @@ const TextFrontendDesignSlice = createSlice({
         ...JSON.parse(JSON.stringify(textToDuplicate)),
         id: nanoid(),
         position: {
-          x: textToDuplicate.position.x + 20,
-          y: textToDuplicate.position.y + 20,
+          x: textToDuplicate.position.x + 4,
+          y: textToDuplicate.position.y + 4,
         },
         layerIndex: totalElements, // Use totalElements instead of just texts length
       };

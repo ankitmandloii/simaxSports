@@ -5,6 +5,7 @@ import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { useSelector, useDispatch } from 'react-redux';
 import {
   addProduct,
+  resetProducts,
   setCollegiateLicense,
   updateSizeQuantity
 } from '../../../redux/productSelectionSlice/productSelectionSlice.js';
@@ -62,6 +63,7 @@ const QuantityToolbar = () => {
 
   useEffect(() => {
     if (!selectedProducts || selectedProducts?.length === 0) return;
+    dispatch(resetProducts(selectedProducts))
 
     const newAllProducts = [];
     const newExpandedProducts = {};
@@ -111,7 +113,7 @@ const QuantityToolbar = () => {
         allVariants: product?.allVariants,
         swatchImg: product?.selectedColor?.swatchImg,
       };
-      // console.log(mainProduct, "mainProduct");
+      console.log(mainProduct, "mainProduct");
 
       dispatch(addProduct(mainProduct));
       newAllProducts.push(mainProduct);
@@ -142,7 +144,7 @@ const QuantityToolbar = () => {
             variantProduct?.variant?.inventoryItem?.inventoryLevels?.edges?.[0]
               ?.node?.quantities?.[0]?.quantity,
         };
-        // console.log(prod, "prod");
+        console.log(prod, "prod");
 
         dispatch(addProduct(prod));
         newExpandedProducts[prod.uniqueKey] = true;
@@ -378,15 +380,23 @@ const QuantityToolbar = () => {
                               ); */}
                               <input
                                 type="number"
-                                min="0"
+                                min={0} // 👈 start from 1, not 0
                                 max={getMaxAvaibleQuantity(item)}
                                 value={productState[product.id]?.selections?.[item.size] || ''}
                                 onChange={(e) => {
-                                  if (e.target.value > item.quantity) return;
-                                  handleQuantityChange(product.id, item.size, e.target.value)
-                                }
-                                }
+                                  let val = Number(e.target.value);
 
+                                  if (isNaN(val) || val < 0) {
+                                    e.target.value = 0;
+                                    handleQuantityChange(product.id, item.size, 0);
+                                    return;
+                                  }; // ignore invalid input
+                                  if (val <= getMaxAvaibleQuantity(item)) {
+                                    handleQuantityChange(product.id, item.size, val);
+                                    // e.target.value = 0;
+                                    return
+                                  }
+                                }}
                               />
                             </div>
                           ))}

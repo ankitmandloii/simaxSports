@@ -123,11 +123,11 @@ const renderCurveTextObjects = (
           globalDispatch("position", { x: percentX, y: percentY }, textInput.id);
           globalDispatch("angle", obj.angle, textInput.id);
           canvas.renderAll();
-          // handleScale(e);
+          // h`a`ndleScale(e);
           syncMirrorCanvasHelper(activeSide);
         });
       } else if (!existingObj) {
-        const curved = new fabric.CurvedText(textInput.content, {
+        const curved = new fabric.Text(textInput.content, {
           lockScalingFlip: true,
           id: textInput.id,
           fontWeight: textInput.fontWeight || "normal",

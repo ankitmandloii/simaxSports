@@ -390,8 +390,10 @@ const AddImageToolbar = () => {
       setLoading(false);
       globalDispatch("loading", false);
     };
+    if (img?.src) {
+      tempImage.src = img?.src
+    }
 
-    tempImage.src = img?.src
   }, [selectedImageId])
 
 

@@ -76,7 +76,39 @@ const productSelectionSlice = createSlice({
     },
     setCollegiateLicense(state, action) {
       state.CollegiateLicense = action.payload;
+    },
+    resetProducts(state, action) {
+      const selectedProducts = action.payload;
+      if (!selectedProducts || selectedProducts.length === 0) return;
+
+      // Get the IDs of the selected products
+      console.log("resetProducts called with:", selectedProducts);
+      const selectedIds = selectedProducts.flatMap(p => {
+        const ids = [p?.id.split("/").reverse()[0]];
+        if (p?.addedColors && p.addedColors.length > 0) {
+          p.addedColors.forEach(variantProduct => {
+            const id = variantProduct?.variant?.id?.split("/").reverse()[0];
+            if (id) {
+              ids.push(id);
+            }
+          });
+        }
+        return ids
+      }
+      )
+
+      console.log(selectedIds, "selectedIds");
+
+
+      // Keep only products whose id is in selectedIds
+      state.products = Object.fromEntries(
+        Object.entries(state.products).filter(([productId]) =>
+          selectedIds.includes(productId)
+        )
+      );
+      // state.products = {};
     }
+
   }
 });
 
@@ -87,7 +119,8 @@ export const {
   decrementSize,
   removeProduct,
   resetSelections,
-  setCollegiateLicense
+  setCollegiateLicense,
+  resetProducts
 } = productSelectionSlice.actions;
 
 export default productSelectionSlice.reducer;

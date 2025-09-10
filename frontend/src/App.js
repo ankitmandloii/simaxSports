@@ -250,7 +250,7 @@ function App() {
   useEffect(() => {
     const handleSaveState = () => {
       try {
-        localStorage.setItem("savedReduxState", JSON.stringify(reduxState));
+        // localStorage.setItem("savedReduxState", JSON.stringify(reduxState));
       } catch (e) {
         console.error("Error saving Redux state to localStorage:", e);
       }

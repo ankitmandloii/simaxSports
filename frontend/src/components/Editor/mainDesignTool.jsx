@@ -2370,9 +2370,10 @@ const MainDesignTool = ({
     };
 
     window.addEventListener("resize", handleResize);
-
+ 
     return () => {
       window.removeEventListener("resize", handleResize);
+
     };
   }, []);
 
@@ -2561,7 +2562,7 @@ const MainDesignTool = ({
   // console.log("first", hasClicked, "s", addName, "s", addNumber, "s", imageContaintObject, "s", textContaintObject)
 
   return (
-    <div class="canvas-wrapper" data-canvasParent="canvasParent" style={{ position: "relative", top: 5 }} >
+    <div className="canvas-wrapper" data-canvasparent="canvasParent" style={{ position: "relative", top: 5 }} >
 
 
 

@@ -27,7 +27,7 @@ const renderAllImageObjects = (
 
 
   if (!canvas) return;
-
+  let syncing = false;
   function createRemoveBackgroundToggle(fabricImage, canvasId, callback, removeBg) {
     // console.log("button data ", fabricImage, canvasId, callback, removeBg);
     const id = fabricImage.id;
@@ -163,37 +163,47 @@ const renderAllImageObjects = (
 
     checkbox.addEventListener("change", (event) => {
       console.log("Checkbox changed for image:", id);
+
       const addImageToolbarBgBtn = document.querySelector("#removeBackgroundInput");
-      const currentSrc = fabricImage.getSrc();
+      const currentSrc = fabricImage.src;
       const baseSrc = currentSrc.split('?')[0];
       let params = currentSrc.split('?')[1] ? currentSrc.split('?')[1].split('&') : [];
-      const hasRemoveBg = params.includes('bg-remove=true');
 
+      const checked = event.target.checked; // ✅ use actual checkbox state
+      console.log("checked or not ", checked)
 
-      const checked = hasRemoveBg;
+      // Update toggle UI
       slider.style.backgroundColor = checked ? "#3b82f6" : "#ccc";
       circle.style.transform = checked ? "translateX(16px)" : "translateX(0)";
 
-      // Get current image source and parameters
+      // Remove old bg-remove params
+      params = params.filter(param => !param.startsWith("bg-remove="));
 
-      // Update parameters based on checkbox state
-      // if (!hasRemoveBg) {
-      //   params.push('bg-remove=true');
-      // } else if (hasRemoveBg) {
-      //   params = params.filter(param => param !== 'bg-remove=true');
-      // }
-      // console.log({ currentSrc, baseSrc, params, hasRemoveBg });
+      // Add new param based on state
+      params.push(`bg-remove=${checked}`);
 
       // Construct new URL
-      // const newTransform = params.length > 0 ? `?${params.join('&')}` : '';
-      // const newSrc = `${baseSrc}${newTransform}`;
+      const newTransform = params.length > 0 ? `?${params.join('&')}` : '';
+      const newSrc = `${baseSrc}${newTransform}`;
+      console.log("New image src:", newSrc);
 
+      if (window.innerWidth <= 1200) {
+        globalDispatch("loading", true, id);
+        globalDispatch("src", newSrc, id);
+        globalDispatch("base64CanvasImage", newSrc, id);
+        globalDispatch("removeBg", checked, id);
+        globalDispatch("selectedFilter", "Normal", id);
+        globalDispatch("loading", false, id);
+      }
+      else {
+        globalDispatch("removeBgImagebtn", Math.random(), id);
+      }
       // Show loading state
-      globalDispatch("loading", true, id);
+      // globalDispatch("loading", true, id);
       // globalDispatch("loadingSrc", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s", id);
 
       // Update image source
-      globalDispatch("removeBgImagebtn", Math.random(), id);
+
       // fabricImage.setSrc(newSrc, () => {
 
       //   console.log("Image updated with new src:", newSrc);
