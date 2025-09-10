@@ -27,4 +27,8 @@ export const store = configureStore({
     canvasReducer: canvasReducer,
     // TextBackendDesignSlice: TextBackendDesignSlice
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });

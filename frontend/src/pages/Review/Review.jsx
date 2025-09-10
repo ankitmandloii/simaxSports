@@ -563,38 +563,69 @@ const Review = () => {
         const backBackground = item.allImages[1];
         const leftBackground = item.allImages[2];
         const rightBackground = item.allImages[3];
+        let frontDesignImages, backDesignImages;
+        if (activeNameAndNumberPrintSide === 'front' && (addName || addNumber)) {
+          frontDesignImages = await generateDesigns(
+            [frontBackground],
+            allFrontTextElement,
+            allFrontImagesElement,
+            nameAndNumberDesign,
+            activeSide,
+            canvasWidth,
+            canvasHeight,
+            addName,
+            addNumber
+          );
+        }
+        else {
+          frontDesignImages = await generateDesigns(
+            [frontBackground],
+            allFrontTextElement,
+            allFrontImagesElement,
+            {},
+            activeSide,
+            canvasWidth,
+            canvasHeight,
+            addName,
+            addNumber
+          );
 
-        const frontDesignImages = await generateDesigns(
-          [frontBackground],
-          allFrontTextElement,
-          allFrontImagesElement,
-          {},
-          activeSide,
-          canvasWidth,
-          canvasHeight
-        );
+        }
 
-        const backDesignImages = await generateDesigns(
-          [backBackground],
-          allBackTextElement,
-          allBackImagesElement,
-          {},
-          activeSide, canvasWidth, canvasHeight
-        );
+        if (activeNameAndNumberPrintSide === 'back' && (addName || addNumber)) {
+          backDesignImages = await generateDesigns(
+            [backBackground],
+            allBackTextElement,
+            allBackImagesElement,
+            nameAndNumberDesign,
+            activeSide, canvasWidth, canvasHeight, addName, addNumber
+          );
+        }
+        else {
+          backDesignImages = await generateDesigns(
+            [backBackground],
+            allBackTextElement,
+            allBackImagesElement,
+            {},
+            activeSide, canvasWidth, canvasHeight, addName, addNumber
+          );
+
+        }
+
 
         const leftDesignImages = await generateDesigns(
           [leftBackground],
           allLeftTextElement,
           allLeftImagesElement,
           {},
-          activeSide, canvasWidth, canvasHeight
+          activeSide, canvasWidth, canvasHeight, addName, addNumber
         );
         const rightDesignImages = await generateDesigns(
           [rightBackground],
           allRightTextElement,
           allRightImagesElement,
           {},
-          activeSide, canvasWidth, canvasHeight
+          activeSide, canvasWidth, canvasHeight, addName, addNumber
         );
 
         return {

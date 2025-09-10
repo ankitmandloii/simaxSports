@@ -855,36 +855,124 @@ function isLocked(_eventData, transform) {
 // --- Renderers for HTML controls ---
 // Delete control - clickable
 
-function positionHtmlControl(el, canvas, left, top) {
-  // get wrapper element instead ofcanvas.upperCanvasEl.parentNode
+// function positionHtmlControl(el, canvas, left, top) {
+//   // get wrapper element instead ofcanvas.upperCanvasEl.parentNode
+//   const wrapper = canvas.upperCanvasEl.parentNode;
+//   const rect = wrapper.getBoundingClientRect();
+
+//   // apply viewport transform to (left, top)
+//   const { x, y } = fabric.util.transformPoint(
+//     new fabric.Point(left, top),
+//     canvas.viewportTransform
+//   );
+
+//   // position relative to wrapper
+//   const controlLeft = x - 14;
+//   const controlTop = y - 14;
+
+//   // check bounds inside wrapper (not full window)
+//   if (
+//     controlLeft >= 0 &&
+//     controlLeft <= rect.width &&
+//     controlTop >= 0 &&
+//     controlTop <= rect.height
+//   ) {
+//     el.style.position = "absolute";
+//     el.style.left = `${controlLeft}px`;
+//     el.style.top = `${controlTop}px`;
+//     el.style.display = "flex";
+//   } else {
+//     el.style.display = "none";
+//   }
+// }
+function positionHtmlControlForHide(el, canvas, left, top) {
+  // get wrapper (relative container)
   const wrapper = canvas.upperCanvasEl.parentNode;
   const rect = wrapper.getBoundingClientRect();
+
+  // current zoom + pan
+  const zoom = canvas.getZoom();
+  const vpt = canvas.viewportTransform;
 
   // apply viewport transform to (left, top)
   const { x, y } = fabric.util.transformPoint(
     new fabric.Point(left, top),
-    canvas.viewportTransform
+    vpt
   );
 
-  // position relative to wrapper
-  const controlLeft = x - 14;
-  const controlTop = y - 14;
+  // account for zoom scaling of control size
+  const controlOffset = 28 * zoom;
 
-  // check bounds inside wrapper (not full window)
+  const controlLeft = x - controlOffset;
+  const controlTop = y - controlOffset;
+
+  // check bounds inside wrapper (after zoom)
   if (
     controlLeft >= 0 &&
     controlLeft <= rect.width &&
     controlTop >= 0 &&
     controlTop <= rect.height
   ) {
-    el.style.position = "absolute";
-    el.style.left = `${controlLeft}px`;
-    el.style.top = `${controlTop}px`;
-    el.style.display = "flex";
+    el.style.display = "flex ";
   } else {
     el.style.display = "none";
   }
 }
+
+function positionHtmlControl(el, canvas, left, top) {
+  if (!el || !canvas?.upperCanvasEl) return;
+
+  const doPosition = () => {
+    // Wait for element to be rendered/measured
+    if (!el.offsetWidth || !el.offsetHeight) {
+      requestAnimationFrame(() => doPosition());
+      return;
+    }
+    // get wrapper element instead ofcanvas.upperCanvasEl.parentNode
+    //   const wrapper = canvas.upperCanvasEl.parentNode;
+    //   const rect = wrapper.getBoundingClientRect();
+    const wrapper = canvas.upperCanvasEl.parentNode;
+    const rect = wrapper.getBoundingClientRect();
+    //   // apply viewport transform to (left, top)
+    const { x, y } = fabric.util.transformPoint(
+      new fabric.Point(left, top),
+      canvas.viewportTransform
+    );
+
+    //   // position relative to wrapper
+    const controlLeft = x - 14;
+    const controlTop = y - 14;
+
+    const offsetW = el.offsetWidth;
+    const offsetH = el.offsetHeight;
+
+    // Use left/top directly (already in screen space, centered on control)
+    const finalLeft = left - offsetW / 2;
+    const finalTop = top - offsetH / 2;
+
+    // Optional bounds check to hide off-screen controls
+
+    const canvasRect = canvas.upperCanvasEl.getBoundingClientRect();
+    if (
+      finalLeft >= canvasRect.left - rect.left &&
+      finalLeft <= canvasRect.right - rect.left &&
+      finalTop >= canvasRect.top - rect.top &&
+      finalTop <= canvasRect.bottom - rect.top
+    ) {
+      el.style.position = "absolute";
+      el.style.left = `${finalLeft}px`;
+      el.style.top = `${finalTop}px`;
+      // el.style.display = "block";
+    } else {
+      // el.style.display = "none";
+    }
+  };
+
+  requestAnimationFrame(doPosition);
+  positionHtmlControlForHide(el, canvas, left, top);
+}
+
+
 
 function renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, dispatch) {
   // const dispatch = useDispatch();

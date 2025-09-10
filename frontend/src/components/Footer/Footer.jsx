@@ -45,7 +45,7 @@ const Footer = () => {
   const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present["back"].nameAndNumberProductList);
   const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
-  const { present, DesignNotes, nameAndNumberDesignState } = useSelector((state) => state.TextFrontendDesignSlice);
+  const { present, DesignNotes, nameAndNumberDesignState, addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice);
   // console.log("present...", present)
   const productState = useSelector((state) => state.productSelection.products);
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
@@ -340,7 +340,7 @@ const Footer = () => {
         let front, back;
 
         // Handle front
-        if (activeNameAndNumberPrintSide === "front") {
+        if (activeNameAndNumberPrintSide === "front" && (addName || addNumber)) {
           front = (
             await generateDesigns(
               [item.allImages[0]],
@@ -349,7 +349,9 @@ const Footer = () => {
               nameAndNumberDesignState,
               activeSide,
               canvasWidth,
-              canvasHeight
+              canvasHeight,
+              addName,
+              addNumber
             )
           )[0];
         } else {
@@ -361,13 +363,15 @@ const Footer = () => {
               {},
               activeSide,
               canvasWidth,
-              canvasHeight
+              canvasHeight,
+              addName,
+              addNumber
             )
           )[0];
         }
 
         // Handle back
-        if (activeNameAndNumberPrintSide === "back") {
+        if (activeNameAndNumberPrintSide === "back" && (addName || addNumber)) {
           back = (
             await generateDesigns(
               [item.allImages[1]],
@@ -376,7 +380,9 @@ const Footer = () => {
               nameAndNumberDesignState,
               activeSide,
               canvasWidth,
-              canvasHeight
+              canvasHeight,
+              addName,
+              addNumber
             )
           )[0];
         } else {
@@ -388,12 +394,16 @@ const Footer = () => {
               {},
               activeSide,
               canvasWidth,
-              canvasHeight
+              canvasHeight,
+              addName,
+              addNumber
             )
           )[0];
         }
-        const leftSleeve = (await generateDesigns([item.allImages[2]], present.leftSleeve.texts, present.leftSleeve.images, {}, activeSide, canvasWidth, canvasHeight))[0];
-        const rightSleeve = (await generateDesigns([item.allImages[3]], present.rightSleeve.texts, present.rightSleeve.images, {}, activeSide, canvasWidth, canvasHeight))[0];
+        const leftSleeve = (await generateDesigns([item.allImages[2]], present.leftSleeve.texts, present.leftSleeve.images, {}, activeSide, canvasWidth, canvasHeight, addName,
+          addNumber))[0];
+        const rightSleeve = (await generateDesigns([item.allImages[3]], present.rightSleeve.texts, present.rightSleeve.images, {}, activeSide, canvasWidth, canvasHeight, addName,
+          addNumber))[0];
 
         return { front, back, leftSleeve, rightSleeve };
       });
@@ -438,7 +448,7 @@ const Footer = () => {
       // const file = await blobUrlToFile(base64CanvasImage);
 
       // formData.append("file", file);
-      console.log("all fils from blob ", formData)
+      // console.log("all fils from blob ", formData)
 
 
       if ([...formData.entries()].length > 0) {
@@ -450,9 +460,9 @@ const Footer = () => {
           }
         );
 
-        console.log("responseForblobToFiles ", responseForblobToFiles);
+        // console.log("responseForblobToFiles ", responseForblobToFiles);
         const uploadedImages = responseForblobToFiles.data.files;
-        console.log("uploadedImages", uploadedImages)
+        // console.log("uploadedImages", uploadedImages)
         const updateImages = (images) =>
           images.map(img => {
             const match = uploadedImages.find(
@@ -530,6 +540,7 @@ const Footer = () => {
       url.searchParams.set("mode", "edit");
 
       const edit_design_link = url.toString();
+
       const emailPayload = {
         email: customerEmail,
         companyEmail: "",
@@ -541,7 +552,7 @@ const Footer = () => {
         add_to_cart_link: "#",
         unsubscribe_link: "#",
       };
-      // console.log("Sending email with payload:", emailPayload);
+      console.log("Sending email with payload:", emailPayload);
       try {
         await sendEmailDesign(emailPayload);
         // console.log("Email sent successfully");
@@ -549,6 +560,7 @@ const Footer = () => {
         console.error("Failed to send email:", emailError);
         toast.warn("Design saved/updated, but failed to send email: " + emailError.message);
       }
+      setActiveModal("share");
 
       toast.success(`${payload.type === "update" ? "Design updated" : "Design saved"} successfully!`);
       setActiveModal("share");

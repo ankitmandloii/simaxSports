@@ -417,13 +417,14 @@ const renderCurveTextObjectsHelper = (textContentObjects, canvas) => {
 const renderNameAndNumberObjectHeloper = (
   nameAndNumberDesignState,
   canvas,
-  addNumber = true,
-  addName = true
+  addName,
+  addNumber
 ) => {
   // console.log("productCategory.......", productCategory)
 
   // const canvas = fabricCanvasRef.current;
-  if (!canvas || !nameAndNumberDesignState) {
+  if (!canvas || !nameAndNumberDesignState
+  ) {
     // console.warn("Canvas or nameAndNumberDesignState is missing.");
     return;
   }
@@ -545,7 +546,8 @@ const renderNameAndNumberObjectHeloper = (
  * @param {Array<Object>} images - Array of image data objects.
  * @returns {Promise<void>} A Promise that resolves when the design is fully rendered.
  */
-async function renderDesignOnCanvas(canvasWidth, canvasHeight, canvas, backgroundImageSrc, texts, images, nameAndNumberDesignState) {
+async function renderDesignOnCanvas(canvasWidth, canvasHeight, canvas, backgroundImageSrc, texts, images, nameAndNumberDesignState, addName,
+  addNumber) {
   // Clear the canvas before rendering new design
   canvas.clear();
   console.log("nameAndNumberDesignState in renderDesignOnCanvas step 2", nameAndNumberDesignState)
@@ -595,7 +597,8 @@ async function renderDesignOnCanvas(canvasWidth, canvasHeight, canvas, backgroun
   console.log("nameAndNumberDesignState before desing", nameAndNumberDesignState)
   {
 
-    nameAndNumberDesignState && renderNameAndNumberObjectHeloper(nameAndNumberDesignState, canvas);
+    nameAndNumberDesignState && renderNameAndNumberObjectHeloper(nameAndNumberDesignState, canvas, addName,
+      addNumber);
   }
   renderCurveTextObjectsHelper(texts, canvas);
   // Render image elements (asynchronous, await its completion)
@@ -622,7 +625,8 @@ function exportCanvasAsPNG(canvas) {
  * @param {Array<Array<Object>>} images - Array of arrays of image data objects for each design.
  * @returns {Promise<Array<string>>} A Promise that resolves with an array of PNG data URLs.
  */
-export async function generateDesigns(backgrounds, texts, images, nameAndNumberDesignState, activeSide, canvasHeight, canvasWidth) {
+export async function generateDesigns(backgrounds, texts, images, nameAndNumberDesignState, activeSide, canvasWidth, canvasHeight, addName,
+  addNumber) {
   const exportedImages = [];
   console.log("nameAndNumberDesignState in generateDesigns step 1", nameAndNumberDesignState)
 
@@ -659,7 +663,9 @@ export async function generateDesigns(backgrounds, texts, images, nameAndNumberD
         backgrounds[i],
         texts,
         images,
-        nameAndNumberDesignState
+        nameAndNumberDesignState,
+        addName,
+        addNumber
       );
 
       // Export the canvas as PNG and push to the array

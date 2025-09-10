@@ -267,7 +267,7 @@ const renderCurveTextObjects = (
           const canvasHeight = canvas.getHeight();
           const percentX = (obj.left / canvasWidth) * 100;
           const percentY = (obj.top / canvasHeight) * 100;
-          console.log("percentx,percenty", percentX, percentY)
+          // console.log("percentx,percenty", percentX, percentY)s
           globalDispatch("position", { x: percentX, y: percentY }, textInput.id);
 
           obj.setPositionByOrigin(center, "center", "center");
