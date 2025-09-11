@@ -24,7 +24,7 @@ import {
   Select,
   BlockStack,
 } from "@shopify/polaris";
-
+import { SlRefresh } from "react-icons/sl";
 export function Dashboard() {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const DESIGNS_URL = `${BASE_URL}design/getAllDesigns`;
@@ -260,8 +260,17 @@ export function Dashboard() {
               </Box>
 
               {/* Refresh Button */}
-              <Box width="auto">
-                <Button onClick={reloadDesigns} primary>
+              <Box width="auto" display>
+                <Button onClick={reloadDesigns} primary  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center", // Center the contents horizontally
+                    paddingLeft: "12px", // Adds a little space to the left of the text
+                    paddingRight: "12px", // Adds a little space to the right of the text
+                  }}>
+                 <SlRefresh   style={{  marginRight: "8px" }}/>
+                   
+                  
                   Refresh
                 </Button>
               </Box>
