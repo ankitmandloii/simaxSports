@@ -27,14 +27,7 @@ const selectedProductSlice = createSlice({
       // console.log("-----------------activedispatch", action.payload);
       state.activeProduct = action.payload;
     },
-    // In your reducer (SelectedProductSlice)
 
-    // setActiveProduct(state, action) {
-    //   const { product, productIndex, colorIndex } = action.payload;
-    //   state.activeProduct = product;
-    //   state.activeProductIndex = productIndex;
-    //   state.activeColorIndex = colorIndex;
-    // },
 
     restoreDesignSelectedProductSlice(state, action) {
       return { ...state, ...action.payload };

@@ -80,13 +80,7 @@ const BottomBar = () => {
       setIsOpen(true);
     }
   }, [location.pathname]);
-  // useEffect(() => {
-  //   const matchedItem = menuItems.find(item => location.pathname.startsWith(item.path));
-  //   if (matchedItem) {
-  //     setSheetContaint(matchedItem.data);
-  //     setIsOpen(true);
-  //   }
-  // }, [location.pathname]);
+
 
   return (
     <div className={styles.wrapper}>

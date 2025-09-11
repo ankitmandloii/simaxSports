@@ -17,10 +17,7 @@ import { requestExport } from '../../redux/CanvasExportDesign/canvasExportSlice.
 import { fetchDesign, uploadBlobData, saveDesignFunction, sendEmailDesign, updateDesignFunction, normalizeObject } from '../utils/GlobalSaveDesignFunctions.jsx';
 import { generateDesigns } from '../Editor/utils/helper.js';
 import { toast } from "react-toastify";
-import { addProduct } from '../../redux/productSelectionSlice/productSelectionSlice.js';
 import EmailInputPopup from '../PopupComponent/EmailInputPopup/EmailInputPopup.jsx';
-import { setActiveSide } from '../../redux/FrontendDesign/TextFrontendDesignSlice.js';
-import { apiConnecter } from '../utils/apiConnector.jsx';
 import axios from 'axios';
 
 // const designId = "68ae9e7a3e658d88aa45852a";
@@ -47,7 +44,7 @@ const Footer = () => {
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
   const { present, DesignNotes, nameAndNumberDesignState, addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice);
   // console.log("present...", present)
-  const productState = useSelector((state) => state.productSelection.products);
+  // const productState = useSelector((state) => state.productSelection.products);
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
   const isProductPage = location.pathname === "/design/product";
   const isReviewPage = location.pathname === "/review";
@@ -572,129 +569,7 @@ const Footer = () => {
       setLoading(false);
     }
   };
-  // const handleSaveDesign = async (payload) => {
 
-  //   console.log("payload", payload)
-  //   setLoading(true);
-  //   if (payload?.name) {
-
-  //     const nameExists = userDesigns.some(
-  //       (design) => design.DesignName === payload.name && design._id !== payload.designId
-  //     );
-
-  //     if (nameExists) {
-  //       toast.error("A design with this name already exists. Please choose a different name.");
-  //       setLoading(false);
-  //       return;
-  //     }
-  //   }
-  //   // setActiveModal("retrieve");
-
-  //   setActiveModal("email");
-  //   // dispatch(setActiveSide('front'))
-
-
-  //   try {
-  //     designPayload.design.DesignName = payload.name;
-  //     // if (payload.type === "update" && payload.designId) {
-  //     //   designPayload.design.designId = payload.designId;
-  //     // } else {
-  //     //   delete designPayload.design.designId;
-  //     // }
-  //     if (payload.type === "update" && payload.designId) {
-  //       designPayload.designId = payload.designId;
-  //     } else {
-  //       delete designPayload.designId;
-  //     }
-
-  //     const designPromises = reviewItems.map(async (item) => {
-  //       const frontDesignImages = await generateDesigns([item.allImages[0]], present.front.texts, present.front.images, activeSide);
-  //       const backDesignImages = await generateDesigns([item.allImages[1]], present.back.texts, present.back.images, activeSide);
-  //       return { front: frontDesignImages[0], back: backDesignImages[0] };
-  //     });
-  //     // console.log("----------designpromiese", designPromises)
-
-
-  //     const results = await Promise.all(designPromises);
-  //     const blobData = results.reduce((arr, item) => {
-  //       arr.push(base64toBlob(item.front, "image/png"));
-  //       arr.push(base64toBlob(item.back, "image/png"));
-  //       return arr;
-  //     }, []);
-
-  //     const cloudinaryResponse = await uploadBlobData(blobData);
-  //     // console.log("---------cloudinaryResponse", cloudinaryResponse)
-  //     designPayload.design.FinalImages = cloudinaryResponse?.files || [];
-  //     // const responseData = await saveDesignFunction(designPayload);
-  //     let responseData;
-  //     if (payload.type === "update" && payload.designId) {
-  //       // Call the update API for existing designs
-  //       responseData = await updateDesignFunction({
-  //         ownerEmail: customerEmail,
-  //         designId: payload.designId,
-  //         design: designPayload.design,
-  //       });
-  //     } else {
-  //       // Call the original save function for new designs
-  //       responseData = await saveDesignFunction(designPayload);
-  //     }
-  //     console.log("--------responseData", responseData)
-
-
-
-  //     const design = responseData.userDesigns.designs;
-
-  //     const lastDesing = design[design.length - 1];
-  //     console.log("lastDesing", lastDesing);
-  //     setLastDesign(lastDesing);
-  //     setDesignExists(lastDesing);
-  //     setUserDesigns([...design]);
-  //     if (!designId) {
-  //       console.log('adding desing id to the url', designId);
-  //       searchParams.set("designId", lastDesing?._id);
-  //       navigate({
-  //         pathname: location.pathname,
-  //         search: searchParams.toString(),
-  //       }, { replace: true });
-  //     }
-  //     console.log("lastDesing", lastDesing);
-  //     console.log("lastDesing id ", lastDesing?._id);
-
-  //     try {
-  //       const emailPayload = {
-  //         email: customerEmail,
-  //         companyEmail: "",
-  //         frontSrc: cloudinaryResponse?.files?.[0] || "",
-  //         backSrc: cloudinaryResponse?.files?.[1] || "",
-  //         designname: payload.name,
-  //         phoneNumber: "1234567890",
-  //         edit_design_link: window.location.href,
-  //         add_to_cart_link: "#",
-  //         unsubscribe_link: "#",
-  //       };
-  //       await sendEmailDesign(emailPayload);
-  //       // toast.success("Email sent successfully!");
-  //       setActiveModal("share");
-  //       console.log("---------now activate share model", activeModal)
-  //     } catch (err) {
-  //       toast.error("Failed to send email.", err.message);
-  //       setActiveModal(null);
-  //       console.log("---------now activate null model", activeModal)
-  //     }
-  //   } catch (error) {
-  //     toast.error("Failed to save design.", error.message);
-  //     console.log(error);
-
-  //     setActiveModal(null);
-  //   } finally {
-  //     // setActiveModal(null);
-  //     // console.log("---------now activate null model", activeModal)
-  //     setLoading(false);
-  //   }
-  // };
-  // useState(() => {
-
-  // }, [lastDesign])
   const handleEmailSubmit = ({ email }) => {
     searchParams.set("customerEmail", email);
     navigate({

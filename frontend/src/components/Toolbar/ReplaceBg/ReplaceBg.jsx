@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import styles from './ReplaceBg.module.css';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
-import { useDispatch, useSelector } from 'react-redux';
-import { addImageState, updateImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
+import { useDispatch } from 'react-redux';
+// import { addImageState, updateImageState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 import { toast } from 'react-toastify';
 import UploadBox from '../../utils/UploadBox';
 import { useNavigate } from 'react-router-dom';
@@ -19,12 +19,14 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
     const [uploadStatus, setUploadStatus] = useState('');
     const [currentUploadFileInfo, setCurrentUploadFileInfo] = useState(null);
     const [uploadAbortController, setUploadAbortController] = useState(null);
-    const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+    const [generateAbortController, setGenerateAbortController] = useState(null);
 
-    const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
+    // const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+
+    // const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
 
 
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
     const navigate = useNavigate();
     const BASE_URL = process.env.REACT_APP_BASE_URL || 'https://simax-sports-x93p.vercel.app/api/';
     const apiKey = process.env.GENERATE_API_KEY;
@@ -99,6 +101,8 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
         }
 
         setLoading(true);
+        const controller = new AbortController();
+        setGenerateAbortController(controller);
         try {
             console.log('Generating with img.src:', img.src);
             const file = await urlToFile(img.src, 'image.jpg', 'image/jpeg');
@@ -115,7 +119,8 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
                 headers: {
                     Authorization: `Bearer ${apiKey}`
                 },
-                body: formData
+                body: formData,
+                signal: controller.signal,
             });
             console.log('editImageByAi response:', res.status, res.statusText);
 
@@ -137,6 +142,7 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
             toast.error(`Error generating background: ${err.message}`)
         } finally {
             setLoading(false);
+            setGenerateAbortController(null);
         }
     };
 
@@ -243,6 +249,10 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
         if (uploadAbortController) {
             uploadAbortController.abort();
             setUploadAbortController(null);
+        }
+        if (generateAbortController) {
+            generateAbortController.abort();
+            setGenerateAbortController(null);
         }
         setShowUploadBox(false);
         setUploadProgress(0);

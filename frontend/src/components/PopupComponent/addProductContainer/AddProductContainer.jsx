@@ -300,23 +300,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
           <h3 className={styles.heading}>Add Product</h3>
-          {/* <div className={styles.searchBox}>
-            <input
-              type="text"
-              placeholder="Enter Product Name"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault(); // Prevent form submission/reload
-                  handleSearch();
-                }
-              }}
-            />
-            <span className={styles.searchIcon} onClick={handleSearch}>
-              <IoMdSearch />
-            </span>
-          </div> */}
+
           <div className={styles.searchBox}>
             <input
               type="text"
@@ -424,66 +408,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                                 </button>
                               </div>
 
-                              {/* <div className="color-swatch-list">
-                                {colors.map((color) => {
-                                  const isSelected =
-                                    state.selectedColor?.name === color.name;
-                                  const swatchImage = color.swatchImg;
 
-                                  return (
-                                    <React.Fragment
-                                      key={`${productKey}-${color.name}`}
-                                    >
-                                      {!swatchLoaded && (
-                                        <ColorSwatchPlaceholder size={30} />
-                                      )}
-                                      <img
-                                        src={swatchImage}
-                                        alt={color.name}
-                                        title={color.name}
-                                        style={{
-                                          width: 30,
-                                          height: 30,
-                                          borderRadius: "20%",
-                                          cursor: "pointer",
-                                          margin: 5,
-                                          display: swatchLoaded
-                                            ? "inline-block"
-                                            : "none",
-                                          border: isSelected
-                                            ? "2px solid black"
-                                            : "1px solid gray",
-                                          objectFit: "cover",
-                                        }}
-                                        className={`color-swatch ${isSelected ? "selected" : ""
-                                          }`}
-                                        onLoad={() => setSwatchLoaded(true)}
-                                        onMouseEnter={() => {
-                                          if (!state.selectedColor) {
-                                            updateProductState(productKey, {
-                                              hoverImage: color.img,
-                                            });
-                                          }
-                                        }}
-                                        onMouseLeave={() => {
-                                          if (!state.selectedColor) {
-                                            updateProductState(productKey, {
-                                              hoverImage: null,
-                                            });
-                                          }
-                                        }}
-                                        onClick={(e) =>
-                                          handleColorSelect(
-                                            e,
-                                            productKey,
-                                            color
-                                          )
-                                        }
-                                      />
-                                    </React.Fragment>
-                                  );
-                                })}
-                              </div> */}
                               <div className="color-swatch-list">
                                 {colors.map((color) => {
                                   const isSelected = state.selectedColor?.name === color.name;

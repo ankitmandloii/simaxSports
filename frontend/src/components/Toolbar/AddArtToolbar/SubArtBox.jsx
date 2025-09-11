@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { SearchIcon } from '../../iconsSvg/CustomIcon';
 import { RxCross1 } from 'react-icons/rx';
@@ -21,6 +21,8 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
   const [currentUploadFileInfo, setCurrentUploadFileInfo] = useState(null);
   const [uploadAbortController, setUploadAbortController] = useState(null);
   const [hasMore, setHasMore] = useState(true);
+  const [generateAbortController, setGenerateAbortController] = useState(null);
+
   const BASE_URL = process.env.REACT_APP_BASE_URL || 'https://simax-sports-x93p.vercel.app/api/';
 
   const dispatch = useDispatch();
@@ -31,6 +33,11 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
       toast.error('Please enter a search query.');
       return;
     }
+    if (generateAbortController) {
+      generateAbortController.abort();
+    }
+    const controller = new AbortController();
+    setGenerateAbortController(controller);
 
     const imagesPerPage = 6;
     const requestBody = {
@@ -51,7 +58,9 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
           'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
+        signal: controller.signal,
+
       });
 
       const data = await res.json(); // read as text first
@@ -81,10 +90,17 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
       setHasMore(newResults.length === imagesPerPage);
 
     } catch (err) {
-      console.error('API error:', err.message);
-      toast.error(err.message ?? 'Failed to generate images');
+      if (err.name === 'AbortError') {
+        console.log('Image generation aborted'); // 👈 silent cancel (no toast)
+      } else {
+        console.error('API error:', err.message);
+        toast.error(err.message ?? 'Failed to generate images');
+      }
+      // console.error('API error:', err.message);
+      // toast.error(err.message ?? 'Failed to generate images');
     } finally {
       setLoading(false);
+      setGenerateAbortController(null);
     }
   };
 
@@ -202,11 +218,21 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
       uploadAbortController.abort();
       setUploadAbortController(null);
     }
+    if (generateAbortController) {
+      generateAbortController.abort();
+      setGenerateAbortController(null);
+    }
     setShowUploadBox(false);
     setUploadProgress(0);
     setUploadStatus('');
     setCurrentUploadFileInfo(null);
   };
+  useEffect(() => {
+    return () => {
+      if (uploadAbortController) uploadAbortController.abort();
+      if (generateAbortController) generateAbortController.abort();
+    };
+  }, [uploadAbortController, generateAbortController]);
 
   return (
     <div className={style.toolbarMainContainerClipArt}>

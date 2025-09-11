@@ -391,41 +391,7 @@ function App() {
   return (
     <>
       <div className="app-main-container">
-        {/* <div
-          id="html-delete-control"
-          style={{
-            position: "absolute",
-            zIndex: 9999,
-            display: "none",
-            width: "28px",
-            height: "28px",
-            cursor: "pointer",
-            backgroundColor: "white",
-            borderRadius: "50%",         // 🟢 Make it a circle
-            boxShadow: "0 0 4px rgba(0,0,0,0.2)", // Optional: subtle shadow
-            display: "flex",             // 🟢 Center SVG
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "2px"
-          }}
-        >
-          <img
-            id="html-delete-btn"
-            src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-trash" viewBox="0 0 16 16">
-        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-      </svg>
-    `)}`}
-            alt="Delete"
-            width="16"
-            height="16"
-            style={{
-              pointerEvents: "auto",
-              display: "block"
-            }}
-          />
-        </div> */}
+
 
 
 
@@ -448,23 +414,7 @@ function App() {
             ) : (
               <></>
             )}
-            {/* <Routes>
-              <Route path="/design" element={<Layout />}>
-                <Route index element={<ProductToolbar />} />
-                <Route path="product" element={<ProductToolbar />} />
-                <Route path="addText" element={<AddTextToolbar />} />
-                <Route path="addImage" element={<AddImageToolbar />} />
-                <Route path="products" element={<ProductContainer />} />
-                <Route path="uploadArt" element={<UploadArtToolbar />} />
-                <Route path="addArt" element={<AddArtToolbar />} />
-                <Route path="addNames" element={<NamesToolbar />} />
-                <Route path="quantity" element={<QuantityToolbar />} />
-                <Route path="/review" element={<Review />} />
 
-              </Route>
-              <Route path="*" element={<NotFound />} />
-
-            </Routes> */}
             <Routes>
               {/* Layout wraps all valid pages including /design and /review */}
               <Route path="/" element={<Layout />}>

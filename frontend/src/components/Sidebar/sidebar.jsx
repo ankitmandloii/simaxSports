@@ -89,46 +89,7 @@ const AdminSidebar = () => {
         className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""} ${mobileOpen ? styles.show : ""}`}
       >
         <nav className={styles.sidebarMenu}>
-          {/* {menuItems.map((item) => {
-            const isActive =
-              (item.path.startsWith("/design/product") &&
-                (location.pathname === "/" || location.pathname === "/design/product")) ||
-              location.pathname + location.search === item.path;
 
-            const isHovered = hoveredRoute === item.path; // ✅
-
-
-            return (
-              // <Link
-              //   key={item.path}
-              //   to={item.path}
-              //   className={`${styles.sidebarLink} ${isActive ? styles.active : ""} ${isHovered ? styles.hovered : ""}`}
-              //   onClick={() => setMobileOpen(false)}
-              // >
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`${styles.sidebarLink} ${isActive ? styles.active : isHovered ? styles.hovered : ""}`}
-                onClick={() => {
-                  setMobileOpen(false);
-                  dispatch(setHoveredRoute(null)); // Clear hover on click
-                }}
-              >
-                <span
-                  className={`${styles.sidebarIcon} ${item.path === "/design/addArt" ? styles.sidebariconAddArt : ""
-                    }`}
-                >
-                  {item.icon}
-                </span>
-                {item.path === "/design/addArt" && (
-                  <span className={styles.spannAi}>AI</span>
-                )}
-                {!collapsed && (
-                  <span className={styles.sidebarLabel}>{item.label}</span>
-                )}
-              </Link>
-            );
-          })} */}
           {menuItems
             .filter((item) => item.visible !== false).map((item) => {
 

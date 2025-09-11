@@ -3,16 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   products: {
-    // example:
-    // "7434523443334": {
-    //   name: "Comfort Colors 1467 - Black",
-    //   color: "Black",
-    //   imgurl: "...",
-    //   selections: {
-    //     S: 2,
-    //     M: 1,
-    //     XL: 0
-    //   }
+
     // }
   },
   CollegiateLicense: false

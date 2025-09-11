@@ -18,7 +18,6 @@ import {
 } from '../../../redux/ProductSlice/SelectedProductSlice';
 import { removeNameAndNumberProduct, setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSlice';
-import AddColorBtn from '../../CommonComponent/AddColorBtn/AddColorBtn';
 import { removeProduct } from '../../../redux/productSelectionSlice/productSelectionSlice';
 
 const ProductToolbar = () => {
