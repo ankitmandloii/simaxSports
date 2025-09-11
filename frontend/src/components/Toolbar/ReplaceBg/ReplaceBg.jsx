@@ -290,6 +290,12 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
                             placeholder="Begin Typing.... (e.g., 'add sunrise in background')"
                             value={prompt}
                             onChange={(e) => setPrompt(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault(); // prevent newline
+                                    handleGenerate();
+                                }
+                            }}
                             disabled={loading}
                         />
                         <div className={styles.buttonGroup}>
