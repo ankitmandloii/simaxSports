@@ -63,13 +63,13 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
       // }
 
       console.log('API Response:', data);
-      if (data.errors?.[0].error?.error?.message) {
-        throw new Error(data.errors[0].error.error.message);
-      }
-
-      // if (!data.urls || !Array.isArray(data.urls)) {
-      //   throw new Error('Invalid response: urls not found');
+      // if (data.errors?.[0].error?.error?.message) {
+      //   throw new Error(data.errors[0].error.error.message);
       // }
+
+      if (!data.urls || !Array.isArray(data.urls)) {
+        throw new Error('Invalid response: urls not found');
+      }
 
       const newResults = data.urls.map((url, index) => ({
         id: `${query}-${pageNumber}-${index}`,
