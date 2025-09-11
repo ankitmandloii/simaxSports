@@ -48,13 +48,16 @@ export function Dashboard() {
 
   async function reloadDesigns() {
     try {
+      setLoading(true);
       const res = await fetch(DESIGNS_URL);
       const data = await res.json();
       console.log("--------Admindata", data);
       setUserDesigns(data?.data?.designs ?? []);
     } catch (e) {
       console.error(e);
-    }
+    } finally {
+        setLoading(false);
+      }
   }
 
   useEffect(() => {
@@ -254,6 +257,13 @@ export function Dashboard() {
                   value={statusFilter}
                   onChange={setStatusFilter}
                 />
+              </Box>
+
+              {/* Refresh Button */}
+              <Box width="auto">
+                <Button onClick={reloadDesigns} primary>
+                  Refresh
+                </Button>
               </Box>
 
               {/* Export Button */}
