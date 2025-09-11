@@ -32,7 +32,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
       return;
     }
 
-    const imagesPerPage = 5;
+    const imagesPerPage = 6;
     const requestBody = {
       model: 'dall-e-3',
       prompt: query,
