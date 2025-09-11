@@ -11,8 +11,8 @@ const { dbConnection } = require("../config/db.js");
 const Location = require('../model/locationSchema.js')
 const jwt = require('jsonwebtoken');
 const DiscountConfig = require("../model/DiscountConfig.js");
-const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
-const crypto = require('crypto');
+// const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
+// const crypto = require('crypto');
 // const client = require('../utils/redisClient.js');
 
 exports.signUp = async (req, res) => {
@@ -46,37 +46,23 @@ exports.signUp = async (req, res) => {
 
 
 
-// // create access token controller
-// exports.login = async (req, res) => {
-//     try {
-//         const {email , password} = req.body;
 
 
 
-//         const result = await services.login(email, password);
-//         if (!result) {
-//             return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.WRONG_EMAIL_OR_PASSWORD);
-//         }
-//         return sendResponse(res, statusCode.OK, true, SuccessMessage.LOGIN_SUCCESS, result);
-//     } catch (error) {
-//         //console.log(error)
-//         return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
-//     }
-// };
+//oTP logic
+// const OTP_TTL_SECONDS = 5 * 60; // 5 minutes
+// const TEMP_TOKEN_TTL_SECONDS = 10 * 60; // 10 minutes
 
-const OTP_TTL_SECONDS = 5 * 60; // 5 minutes
-const TEMP_TOKEN_TTL_SECONDS = 10 * 60; // 10 minutes
+// const otpStore = new Map();
 
-const otpStore = new Map();
+// function generateOtp() {
+//   // 6-digit numeric
+//   return ('' + Math.floor(100000 + Math.random() * 900000));
+// }
 
-function generateOtp() {
-  // 6-digit numeric
-  return ('' + Math.floor(100000 + Math.random() * 900000));
-}
-
-function hashOtp(otp) {
-  return crypto.createHash('sha256').update(otp).digest('hex');
-}
+// function hashOtp(otp) {
+//   return crypto.createHash('sha256').update(otp).digest('hex');
+// }
 
 
 exports.login = async (req, res) => {
@@ -99,33 +85,34 @@ exports.login = async (req, res) => {
       return sendResponse(res, statusCode.UNAUTHORIZED, false, ErrorMessage.WRONG_EMAIL_OR_PASSWORD);
     }
 
+    return sendResponse(res, statusCode.OK, true, SuccessMessage.LOGIN_SUCCESS, loginResult);
 
     // 2) Generate & send OTP
-    const otp = generateOtp();
-    console.log("otp", otp)
-    const record = {
-      hash: hashOtp(otp),
-      expiresAt: Date.now() + OTP_TTL_SECONDS * 1000,
-      attempts: 0,
-    };
-    otpStore.set(email, record);
-    const send = await services.sendEmailForOtpverification(email, otp);
-    if (!send) {
-      return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, "Error in email send For OTP");
-    }
+    // const otp = generateOtp();
+    // console.log("otp", otp)
+    // const record = {
+    //   hash: hashOtp(otp),
+    //   expiresAt: Date.now() + OTP_TTL_SECONDS * 1000,
+    //   attempts: 0,
+    // };
+    // otpStore.set(email, record);
+    // const send = await services.sendEmailForOtpverification(email, otp);
+    // if (!send) {
+    //   return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, "Error in email send For OTP");
+    // }
 
-    // 3) Create a short-lived temp token (only for OTP verification)
-    const tempToken = jwt.sign(
-      { email, purpose: 'otp', role, exp: Math.floor(Date.now() / 1000) + TEMP_TOKEN_TTL_SECONDS },
-      SECRET_KEY
-    );
+    // // 3) Create a short-lived temp token (only for OTP verification)
+    // const tempToken = jwt.sign(
+    //   { email, purpose: 'otp', role, exp: Math.floor(Date.now() / 1000) + TEMP_TOKEN_TTL_SECONDS },
+    //   SECRET_KEY
+    // );
 
-    // 4) Tell client to go to OTP page
-    return res.status(200).json({
-      success: true,
-      message: 'Password accepted. OTP sent to email.',
-      result: { requiresOtp: true, tempToken, email }
-    });
+    // // 4) Tell client to go to OTP page
+    // return res.status(200).json({
+    //   success: true,
+    //   message: 'Password accepted. OTP sent to email.',
+    //   result: { requiresOtp: true, tempToken, email }
+    // });
 
   } catch (error) {
     return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, `${error.message}`);
@@ -134,123 +121,123 @@ exports.login = async (req, res) => {
 
 
 
-exports.verifyOtp = async (req, res) => {
-  try {
-    const auth = req.headers.authorization || '';
-    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
-    if (!token) return res.status(401).json({ success: false, message: 'No temp token' });
+// exports.verifyOtp = async (req, res) => {
+//   try {
+//     const auth = req.headers.authorization || '';
+//     const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+//     if (!token) return res.status(401).json({ success: false, message: 'No temp token' });
 
-    // verify temp token
-    let decoded;
-    try {
-      decoded = jwt.verify(token, SECRET_KEY);
-    } catch {
-      return res.status(403).json({ success: false, message: 'Invalid or expired session. Please login again.' });
-    }
-    if (decoded.purpose !== 'otp') {
-      return res.status(403).json({ success: false, message: 'Invalid token purpose' });
-    }
+//     // verify temp token
+//     let decoded;
+//     try {
+//       decoded = jwt.verify(token, SECRET_KEY);
+//     } catch {
+//       return res.status(403).json({ success: false, message: 'Invalid or expired session. Please login again.' });
+//     }
+//     if (decoded.purpose !== 'otp') {
+//       return res.status(403).json({ success: false, message: 'Invalid token purpose' });
+//     }
 
-    const { email: emailFromToken, role } = decoded;
-    const { email, otp } = req.body;
-    if (!email || !otp || email !== emailFromToken) {
-      return res.status(400).json({ success: false, message: 'Invalid request' });
-    }
+//     const { email: emailFromToken, role } = decoded;
+//     const { email, otp } = req.body;
+//     if (!email || !otp || email !== emailFromToken) {
+//       return res.status(400).json({ success: false, message: 'Invalid request' });
+//     }
 
-    const record = otpStore.get(email);
-    if (!record) return res.status(400).json({ success: false, message: 'No OTP pending for this email' });
-    if (Date.now() > record.expiresAt) {
-      otpStore.delete(email);
-      return res.status(400).json({ success: false, message: 'OTP expired. Please login again.' });
-    }
-    if (record.attempts >= 5) {
-      otpStore.delete(email);
-      return res.status(429).json({ success: false, message: 'Too many attempts. Please login again.' });
-    }
+//     const record = otpStore.get(email);
+//     if (!record) return res.status(400).json({ success: false, message: 'No OTP pending for this email' });
+//     if (Date.now() > record.expiresAt) {
+//       otpStore.delete(email);
+//       return res.status(400).json({ success: false, message: 'OTP expired. Please login again.' });
+//     }
+//     if (record.attempts >= 5) {
+//       otpStore.delete(email);
+//       return res.status(429).json({ success: false, message: 'Too many attempts. Please login again.' });
+//     }
 
-    record.attempts += 1;
-    if (hashOtp(otp) !== record.hash) {
-      return res.status(401).json({ success: false, message: 'Incorrect OTP' });
-    }
+//     record.attempts += 1;
+//     if (hashOtp(otp) !== record.hash) {
+//       return res.status(401).json({ success: false, message: 'Incorrect OTP' });
+//     }
 
-    // OTP is correct -> clean up and issue real app token
-    otpStore.delete(email);
+//     // OTP is correct -> clean up and issue real app token
+//     otpStore.delete(email);
 
-    const user = await services.findUserForLogin(email); // or include user id/role in temp token
-    const appTokenPayload = { id: user._id, email: user.email, role: role || user.role, tokenVersion: user.tokenVersion };
-    const appToken = jwt.sign(appTokenPayload, SECRET_KEY, { expiresIn: '7d' });
+//     const user = await services.findUserForLogin(email); // or include user id/role in temp token
+//     const appTokenPayload = { id: user._id, email: user.email, role: role || user.role, tokenVersion: user.tokenVersion };
+//     const appToken = jwt.sign(appTokenPayload, SECRET_KEY, { expiresIn: '7d' });
 
-    return res.status(200).json({
-      success: true,
-      message: 'OTP verified',
-      result: { token: appToken }
-    });
-  } catch (e) {
-    console.error(e);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-};
+//     return res.status(200).json({
+//       success: true,
+//       message: 'OTP verified',
+//       result: { token: appToken }
+//     });
+//   } catch (e) {
+//     console.error(e);
+//     return res.status(500).json({ success: false, message: 'Internal server error' });
+//   }
+// };
 
 
-exports.resendOtp = async (req, res) => {
-  try {
-    const auth = req.headers.authorization || '';
-    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
-    if (!token) return res.status(401).json({ success: false, message: 'No temp token' });
-    console.log("token",token)
+// exports.resendOtp = async (req, res) => {
+//   try {
+//     const auth = req.headers.authorization || '';
+//     const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+//     if (!token) return res.status(401).json({ success: false, message: 'No temp token' });
+//     console.log("token",token)
 
-    let decoded;
-    try {
-      decoded = jwt.verify(token, SECRET_KEY);
-    } catch {
-      return res.status(403).json({ success: false, message: 'Invalid or expired session.' });
-    }
-    console.log("decoded",decoded)
+//     let decoded;
+//     try {
+//       decoded = jwt.verify(token, SECRET_KEY);
+//     } catch {
+//       return res.status(403).json({ success: false, message: 'Invalid or expired session.' });
+//     }
+//     console.log("decoded",decoded)
 
-    if (decoded.purpose !== 'otp') return res.status(403).json({ success: false, message: 'Invalid token purpose' });
-     console.log("valid")
-    const { email } = req.body;
-    if (!email || email !== decoded.email) return res.status(400).json({ success: false, message: 'Invalid request' });
-  console.log("email",email)
-    const otp = generateOtp();
-    otpStore.set(email, {
-      hash: hashOtp(otp),
-      expiresAt: Date.now() + OTP_TTL_SECONDS * 1000,
-      attempts: 0,
-    });
+//     if (decoded.purpose !== 'otp') return res.status(403).json({ success: false, message: 'Invalid token purpose' });
+//      console.log("valid")
+//     const { email } = req.body;
+//     if (!email || email !== decoded.email) return res.status(400).json({ success: false, message: 'Invalid request' });
+//   console.log("email",email)
+//     const otp = generateOtp();
+//     otpStore.set(email, {
+//       hash: hashOtp(otp),
+//       expiresAt: Date.now() + OTP_TTL_SECONDS * 1000,
+//       attempts: 0,
+//     });
     
-    const send = await services.sendEmailForOtpverification(email, otp);
-    if (!send) {
-      return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, "Error in email send For OTP");
-    }
+//     const send = await services.sendEmailForOtpverification(email, otp);
+//     if (!send) {
+//       return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, "Error in email send For OTP");
+//     }
 
-    // Optional: rotate temp token on resend
-    const newTemp = jwt.sign(
-      { email, purpose: 'otp', role: decoded.role, exp: Math.floor(Date.now() / 1000) + TEMP_TOKEN_TTL_SECONDS },
-      SECRET_KEY
-    );
+//     // Optional: rotate temp token on resend
+//     const newTemp = jwt.sign(
+//       { email, purpose: 'otp', role: decoded.role, exp: Math.floor(Date.now() / 1000) + TEMP_TOKEN_TTL_SECONDS },
+//       SECRET_KEY
+//     );
 
-    return res.status(200).json({
-      success: true,
-      message: 'OTP resent',
-      result: { tempToken: newTemp }
-    });
-  } catch (e) {
-    console.error(e);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-};
+//     return res.status(200).json({
+//       success: true,
+//       message: 'OTP resent',
+//       result: { tempToken: newTemp }
+//     });
+//   } catch (e) {
+//     console.error(e);
+//     return res.status(500).json({ success: false, message: 'Internal server error' });
+//   }
+// };
 
 
-exports.logoutAll = async (req, res) => {
-  try {
-    await services.incrementTokenVersion(req.user.id);
-    return res.json({ success: true, message: 'Logged out from all devices.' });
-  } catch (e) {
-    console.error(e);
-    return res.status(500).json({ success: false, message: 'Internal server error.' });
-  }
-};
+// exports.logoutAll = async (req, res) => {
+//   try {
+//     await services.incrementTokenVersion(req.user.id);
+//     return res.json({ success: true, message: 'Logged out from all devices.' });
+//   } catch (e) {
+//     console.error(e);
+//     return res.status(500).json({ success: false, message: 'Internal server error.' });
+//   }
+// };
 
 
 exports.validate = async (req, res) => {

@@ -70,31 +70,23 @@ export default function Login() {
             if (!response.ok) throw new Error(data?.message || 'Login failed');
 
 
-            // showToast({
-            //     content: 'Welcome back!',
-            //     icon: <Icon source={EnterIcon} tone="success" />
-            // });
-            // localStorage.setItem('admin-token', data.result.token);
-            // navigate('/admin/dashboard');
-
-            // server now responds with a short-lived temp token and tells us OTP is required
-            // e.g. { success: true, result: { requiresOtp: true, tempToken: '...', email: '...' } }
-            if (data?.result?.requiresOtp && data?.result?.tempToken) {
-                sessionStorage.setItem('otp-temp-token', data.result.tempToken); // short-lived
-                sessionStorage.setItem('pending-email', email);
-                showToast({ content: 'Password accepted. Check your email for the OTP.' });
-                navigate('/admin/verify-otp', { state: { email } });
-            } else if (data?.result?.token) {
-                // fallback: if backend decides no OTP needed
-                localStorage.setItem('admin-token', data.result.token);
+            //  if (data?.result?.requiresOtp && data?.result?.tempToken) {
+            //     sessionStorage.setItem('otp-temp-token', data.result.tempToken); // short-lived
+            //     sessionStorage.setItem('pending-email', email);
+            //     showToast({ content: 'Password accepted. Check your email for the OTP.' });
+            //     navigate('/admin/verify-otp', { state: { email } });
+            // } else if (data?.result?.token) {
+            //     // fallback: if backend decides no OTP needed
+            //     localStorage.setItem('admin-token', data.result.token);
                 showToast({
                     content: 'Welcome back!',
                     icon: <Icon source={EnterIcon} tone="success" />
                 });
+                localStorage.setItem('admin-token', data.result.token);
                 navigate('/admin/dashboard');
-            } else {
-                throw new Error('Unexpected response from server');
-            }
+            // } else {
+            //     throw new Error('Unexpected response from server');
+            // }
 
 
         } catch (error) {
