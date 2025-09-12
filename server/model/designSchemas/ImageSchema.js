@@ -28,6 +28,8 @@ const ImageSchema = new Schema(
     removeBg: { type: Boolean, default: false },
     singleColor: { type: String, default: '#ffffff' },
     selectedFilter: { type: String, default: 'Normal' },
+    previewImage: { type: String , default: ''},
+    extractedColors: { type: [String], default: [] },
     editColor: { type: Boolean, default: false },
   },
   { _id: false }
