@@ -15,8 +15,8 @@ import { v4 as uuidv4 } from "uuid";   // ✅ import uuid
 import { LuArrowLeft } from 'react-icons/lu';
 import { apiConnecter } from '../../utils/apiConnector.jsx';
 
-const adultSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"];
-const womenSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
+// const adultSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"];
+// const womenSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
 
 const QuantityToolbar = () => {
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
@@ -37,12 +37,13 @@ const QuantityToolbar = () => {
     collegiate: CollegiateLicense,
   });
   const [loading, setLoading] = useState(true)
-  const [sizes, setSizes] = useState([]);
+  // const [sizes, setSizes] = useState([]);
   const [availableSizesQuantity, setAvailableSizesQuantity] = useState([])
 
-  /** 🔑 Every product gets its own random stable key */
+  /** ----------------- Every product gets its own random stable key--------------- */
   const getProductKey = (product) => product.uniqueKey;
 
+  /** ------------------- Update quantity for a size of a product---------------------- */
   const handleQuantityChange = (productKey, size, value) => {
     dispatch(
       updateSizeQuantity({
@@ -53,6 +54,7 @@ const QuantityToolbar = () => {
     );
   };
 
+  /** ⬇------------------ Toggle expand/collapse for product details------------------------------ */
   const toggleProductExpansion = (product) => {
     const key = getProductKey(product);
     setExpandedProducts((prev) => ({
@@ -61,6 +63,7 @@ const QuantityToolbar = () => {
     }));
   };
 
+  // --------------------------------------Runs when selected products change-------------------------
   useEffect(() => {
     if (!selectedProducts || selectedProducts?.length === 0) return;
     dispatch(resetProducts(selectedProducts))
@@ -68,6 +71,7 @@ const QuantityToolbar = () => {
     const newAllProducts = [];
     const newExpandedProducts = {};
 
+    // -------------------------------------- Extract variant images (front, back, sleeve) from metafields-------------------------
     function getVariantImagesFromMetafields(metafieldss) {
       let front = null;
       let back = null;
@@ -90,12 +94,13 @@ const QuantityToolbar = () => {
       return [front, back, sleeve];
     }
 
+    // ------------------------Loop through each selected product---------------------
     selectedProducts?.forEach((product) => {
       const addedColors = product?.addedColors || [];
       const consistentTitle =
         product?.title || product?.name || product?.handle || 'Product';
 
-      // ✅ main product
+      // ----------------------- main product-----------------------------
       const id = product.id.split("/").reverse()[0];
       const mainProduct = {
         uniqueKey: uuidv4(),
@@ -119,7 +124,7 @@ const QuantityToolbar = () => {
       newAllProducts.push(mainProduct);
       newExpandedProducts[mainProduct.uniqueKey] = true;
 
-      // ✅ extra variants
+      // ---------------------- extra variants----------------------
       const extraProducts = addedColors?.map((variantProduct) => {
         // console.log("----variantProduct", variantProduct)
         const prod = {
@@ -158,7 +163,7 @@ const QuantityToolbar = () => {
     fetchSizes(newAllProducts);
     setExpandedProducts(newExpandedProducts);
 
-    // ✅ Populate sizes from nameAndNumber state
+    // -------------Populate sizes from nameAndNumber state--------------------
     nameAndNumberProductList?.forEach((product) => {
       const availableSizes = product?.sizeCount || {};
       const allSizes = product?.sizes || [];
@@ -180,6 +185,7 @@ const QuantityToolbar = () => {
     });
   }, [selectedProducts, nameAndNumberProductList]);
 
+  /** -----------------Extract available sizes & their quantities from product variants------------ */
   const getSizeOptions = (product, color) => {
     const extractAvailableSizeVariants = (variants, accessor = (v) => v) => {
       const sizeVariantPairs = variants.flatMap((variantWrapper) => {
@@ -192,7 +198,7 @@ const QuantityToolbar = () => {
           variant?.inventoryItem?.inventoryLevels?.edges?.[0]?.node
             ?.quantities?.[0]?.quantity || 0;
         // console.log("variant", variant, "inventoryQty", inventoryQty);
-        if (sizeOption && variant?.selectedOptions?.[0].value == color && inventoryQty > 0) {
+        if (sizeOption && variant?.selectedOptions?.[0].value === color && inventoryQty > 0) {
           return [
             {
               size: sizeOption.value,
@@ -215,6 +221,8 @@ const QuantityToolbar = () => {
     return [];
   };
 
+
+  // ---------------Get sizes to render in UI ---------------------
   const getAvailableSizesAndQuantity = (product) => {
     return product.sizes && product.sizes.length > 0
       ? product.sizes
@@ -231,11 +239,15 @@ const QuantityToolbar = () => {
   //     0
   //   );
   // };
+
+  // ---------------------------Calculate total quantity selected for a product----------------------
   const getTotalQuantityForProduct = (product) => {
     if (!productState[product.id]) return 0;
     return Object.values(productState[product.id].selections).reduce((sum, qty) => sum + qty, 0);
   };
 
+
+  // --------------Redirect to review page if quantity > 0, else show warning------------------------
   function calculatePrice() {
     const shouldRedirectToReview = (productState) => {
       return Object.values(productState).some((product) => {
@@ -251,11 +263,13 @@ const QuantityToolbar = () => {
       toast.warn("A minimum quantity of 1 is required.");
     }
   }
+
+  // --------------------------- Go back to product design screen -----------------------
   const goBack = () => {
     navigate('/design/product');
   }
 
-
+  // ----------------------API: check available stock from S&S (inventory system)-----------------------
   const getAvailableSizesAndQuantityFromSAndS = async (product) => {
     try {
 
@@ -268,13 +282,14 @@ const QuantityToolbar = () => {
     }
   };
 
+  // --------------------------------Fetch inventory availability for all products--------------------------
   const fetchSizes = async (products) => {
     const prod = products.flatMap((products) => {
       return products.sizes.map(size => { return { sku: size.sku, "qty": 0 } })
       // return products
     })
     // console.log("prod before calling", prod)
-    if (prod.size == 0) return;
+    if (prod.size === 0) return;
     setLoading(true);
     try {
       const result = await getAvailableSizesAndQuantityFromSAndS(prod);
@@ -290,8 +305,10 @@ const QuantityToolbar = () => {
 
   };
 
+
+  // ------------------ Helper: get max available quantity for a given SKU-------------------------
   function getMaxAvaibleQuantity(item) {
-    return availableSizesQuantity.find((i) => i.sku == item.sku)?.total_available ?? 0
+    return availableSizesQuantity.find((i) => i.sku === item.sku)?.total_available ?? 0
   }
 
   return (

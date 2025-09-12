@@ -56,8 +56,8 @@ export function Dashboard() {
     } catch (e) {
       console.error(e);
     } finally {
-        setLoading(false);
-      }
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -261,16 +261,16 @@ export function Dashboard() {
 
               {/* Refresh Button */}
               <Box width="auto" display>
-                <Button onClick={reloadDesigns} primary  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center", // Center the contents horizontally
-                    paddingLeft: "12px", // Adds a little space to the left of the text
-                    paddingRight: "12px", // Adds a little space to the right of the text
-                  }}>
-                 <SlRefresh   style={{  marginRight: "8px" }}/>
-                   
-                  
+                <Button onClick={reloadDesigns} primary style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center", // Center the contents horizontally
+                  paddingLeft: "12px", // Adds a little space to the left of the text
+                  paddingRight: "12px", // Adds a little space to the right of the text
+                }}>
+                  <SlRefresh style={{ marginRight: "8px" }} />
+
+
                   Refresh
                 </Button>
               </Box>
@@ -642,7 +642,7 @@ export function Dashboard() {
                       }}
                     >
                       <img
-                        src={img.src}
+                        src={img?.previewImage}
                         alt={`img-${idx}`}
                         style={{ width: "100%", height: "100px", objectFit: "contain" }}
                       />

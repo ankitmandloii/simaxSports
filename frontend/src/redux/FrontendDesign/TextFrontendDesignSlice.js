@@ -1,5 +1,5 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
-import { act } from "react";
+// import { act } from "react";
 function getStaringCenterPostion() {
   const canvasComponent = document.querySelector("#canvas-front"); // Simple way, but ideally use refs or context
   if (!canvasComponent) {
@@ -201,7 +201,7 @@ const initialState = {
     name: "NAME",
     number: "00",
     fontColor: "#000000",
-    fontFamily: "Oswald",
+    fontFamily: "Interstate",
     fontSize: "large",
     position: getStaringCenterPostion(),
   },

@@ -18,7 +18,7 @@ const LayerModal = ({ isOpen, onClose, onLayerAction }) => {
   if (!isOpen) return null;
   const selectedElementId = selectedTextId || selectedImageId;
   const elementType = selectedTextId ? 'text' : 'image';
-  // Function to Copy element from one side to another side
+  // -------------------Function to Copy element from one side to another side-------------
   const handleCopyToSide = (targetSide) => {
     if (selectedElementId) {
       dispatch(copyElementToSide({
@@ -43,8 +43,8 @@ const LayerModal = ({ isOpen, onClose, onLayerAction }) => {
 
         </div>
 
-        {/* -- */}
         <div className={style.modalActions}>
+          {/* -----------------Layering Actions---------------------- */}
           <button onClick={() => {
             onLayerAction('bringForward');
             onClose();
@@ -64,6 +64,9 @@ const LayerModal = ({ isOpen, onClose, onLayerAction }) => {
             onClose();
           }}> <img src={SendBack} alt="Bring Forward" title="Bring Forward" /> Send to Back</button>
 
+
+
+          {/* --------------Copy elements on Sides----------------- */}
           {activeSide !== 'front' && (
             <button onClick={() => handleCopyToSide('front')}>
               <img src={CopyImg} alt="Copy to Front" title="Copy to Front" />Copy to Front

@@ -1,11 +1,11 @@
-@font-face {
+/* @font-face {
   font-family: "Roboto-Regular";
   src: url("../../../../public/Roboto-Regular.ttf") format("opentype");
   font-weight: normal;
   font-display: swap;
-}
+} */
 
-@font-face {
+/* @font-face {
   font-family: "PornStarAcademy";
   src: url("../../../../public/fonts/sportsjersey.ttf") format("opentype");
   font-display: swap;
@@ -15,6 +15,26 @@
   font-family: "Interstate";
   src: url("../../../../public/fonts/overpass/overpass-extrabold.otf") format("opentype");
   font-display: swap;
+} */
+
+@font-face {
+  font-family: "PornStarAcademy";
+  font-weight: normal;
+  font-style: normal;
+
+  src: url("../../../../public/fonts/collegiateflf/CollegiateInsideFLF.ttf") format("truetype");
+
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Interstate";
+  font-weight: normal;
+  font-style: normal;
+  src: url("../../../../public/fonts/interstate-2/InterstateBlack.otf") format("opentype");
+  font-display: swap;
+
+  /* src: url("interstate_black.woff") format("woff"), url("interstate_black.ttf") format("truetype"); */
 }
 
 .addNamesNumberrsRow {

@@ -38,7 +38,8 @@ const BottomBar = () => {
   const selectedImageId = useSelector(state =>
     state.TextFrontendDesignSlice.present[activeSide]?.selectedImageId
   );
-  // console.log("---selectedImageId", selectedImageId);
+
+  //-----------------------Menu items for bottom bar-------------------------
   const menuItems = [
     { path: "/design/product", icon: <RiTShirt2Line />, label: "Products", data: <ProductToolbar />, snap: 1200 },
     { path: "/design/addText", icon: <AddProductIcon />, label: "Text", data: <AddTextToolbar />, snap: 600 },
@@ -56,6 +57,7 @@ const BottomBar = () => {
   const [sheetSnapPoint, setSheetSnapPoint] = useState(900); // Default to 900
 
   const [sheetContaint, setSheetContaint] = useState(<ProductToolbar></ProductToolbar>);
+  //-------------------- Handle responsive slide count----------------------------
   useEffect(() => {
     const updateCardCount = () => {
       const width = window.innerWidth;
@@ -68,6 +70,9 @@ const BottomBar = () => {
     window.addEventListener('resize', updateCardCount);
     return () => window.removeEventListener('resize', updateCardCount);
   }, []);
+
+
+  // -----------------Auto-open sheet on mobile/tablet for Add Image------------------------
   useEffect(() => {
     const width = window.innerWidth;
 

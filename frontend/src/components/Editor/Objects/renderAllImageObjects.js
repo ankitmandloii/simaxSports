@@ -706,7 +706,7 @@ const renderAllImageObjects = (
           const widthInches = (widthPixels / DPI).toFixed(2);
           const heightInches = (heightPixels / DPI).toFixed(2);
 
-          // console.log(`Print Size: ${widthInches} in × ${heightInches} in`);
+          console.log(`Print Size: ${widthInches} in × ${heightInches} in`);
 
           canvas.renderAll();
         },
@@ -816,7 +816,7 @@ const renderAllImageObjects = (
       const printSize = getPrintSizeFromCanvasBackground(existingObj, fabricCanvasRef.current, 19);
 
       if (printSize) {
-        // console.log(`Print Area: ${printSize.width} in × ${printSize.height} in`);
+        console.log(`Print Area: ${printSize.width} in × ${printSize.height} in`);
       }
 
       existingObj.controls = createControls(bringPopup, dispatch);

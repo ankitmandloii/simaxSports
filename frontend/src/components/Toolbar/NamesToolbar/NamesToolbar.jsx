@@ -38,6 +38,7 @@ const NamesToolbar = () => {
   const [activeSize, setActiveSize] = useState(nameAndNumberDesign?.fontSize);
   const [activeFont, setActiveFont] = useState(nameAndNumberDesign?.fontFamily);
   const [activeColor, setActiveColor] = useState(nameAndNumberDesign?.fontColor);
+  console.log("-----------activeFont", activeFont)
 
   const showAddnamesPopupHandler = () => {
     // console.log("--------------------nameeee")
@@ -104,6 +105,7 @@ const NamesToolbar = () => {
       <div className="toolbar-main-heading">
         <h5 className="Toolbar-badge">Names And Numbers</h5>
         <h2>Names & Numbers Tools</h2>
+        <h2 className='fonttest'>NAME</h2>
       </div>
 
       <div className="toolbar-box">
@@ -181,14 +183,15 @@ const NamesToolbar = () => {
             <h5>Font</h5>
             <div className={style.namesButtonMainContainer}>
               <button
-                className={`${style.namesToolbarButton} ${activeFont === 'Oswald' ? style.namesToolbarButtonActive : ''}`}
-                onClick={() => fontHandler("Oswald")}
+                className={`${style.namesToolbarButton} ${activeFont === 'Interstate' ? style.namesToolbarButtonActive : ''}`}
+                onClick={() => fontHandler("Interstate")}
+
               >
                 <img src={InterStatebutton} alt="Interstate" />
               </button>
               <button
-                className={`${style.namesToolbarButton} ${activeFont === 'Chakra Petch' ? style.namesToolbarButtonActive : ''}`}
-                onClick={() => fontHandler('Chakra Petch')}
+                className={`${style.namesToolbarButton} ${activeFont === 'PornStarAcademy' ? style.namesToolbarButtonActive : ''}`}
+                onClick={() => fontHandler('PornStarAcademy')}
               >
                 <img src={Collegiatebutton} alt="Collegiate" />
               </button>
