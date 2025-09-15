@@ -5,19 +5,19 @@ import { restoreDesignSelectedProductSlice } from "../../redux/ProductSlice/Sele
 
 export const restoreAllSlicesFromLocalStorage = () => (dispatch) => {
   // alert("hii")    
-  // const saved = localStorage.getItem('savedReduxState');
-  // if (!saved) return;
+  const saved = localStorage.getItem('savedReduxState');
+  if (!saved) return;
 
-  // const parsedState = JSON.parse(saved);
+  const parsedState = JSON.parse(saved);
 
 
-  // if (parsedState.TextFrontendDesignSlice) {
-  //   dispatch(restoreDesignFromSavedState(parsedState.TextFrontendDesignSlice));
-  // }
+  if (parsedState.TextFrontendDesignSlice) {
+    dispatch(restoreDesignFromSavedState(parsedState.TextFrontendDesignSlice));
+  }
 
-  // if (parsedState.selectedProducts) {
-  //   dispatch(restoreDesignSelectedProductSlice(parsedState.selectedProducts));
-  // }
+  if (parsedState.selectedProducts) {
+    dispatch(restoreDesignSelectedProductSlice(parsedState.selectedProducts));
+  }
 
   // if (parsedState.ui) {
   //   dispatch(restoreDesignSelectedProductSlice(parsedState.ui));

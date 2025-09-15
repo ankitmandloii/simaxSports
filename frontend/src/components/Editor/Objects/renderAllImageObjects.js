@@ -18,7 +18,8 @@ const renderAllImageObjects = (
   bringPopup,
   productCategory,
   openAieditorPopup,
-  setOpenAieditorPopup
+  setOpenAieditorPopup,
+  isZoomedIn
 ) => {
   // console.log("imageContaintObject", imageContaintObject);
   // console.log("openAieditorPopup.......", openAieditorPopup)
@@ -443,7 +444,12 @@ const renderAllImageObjects = (
     // if (!base64CanvasImage) return;
     if (locked) {
       canvas.discardActiveObject();
-      canvas.renderAll();
+      try {
+        canvas.renderAll();
+
+      } catch (err) {
+        console.log("error in image render component")
+      }
     }
     const existingObj = canvas.getObjects("image").find((obj) => obj.id === id);
 
@@ -572,10 +578,10 @@ const renderAllImageObjects = (
             borderColor: "skyblue",
             borderDashArray: [4, 4],
             hasBorders: true,
-            hasControls: !locked,
-            selectable: true,
+            hasControls: !locked || !isZoomedIn,
+            selectable: !isZoomedIn,
             locked: locked,
-            evented: true,
+            evented: !isZoomedIn,
             customType,
             isSync: true,
             layerIndex,
@@ -583,7 +589,8 @@ const renderAllImageObjects = (
             singleColor,
             invertColor,
             thresholdValue,
-            solidColor
+            solidColor,
+            evented: !isZoomedIn,
           });
 
           newImg.setControlsVisibility({
@@ -677,8 +684,14 @@ const renderAllImageObjects = (
             globalDispatch("height", imageHeightPx, id);
             globalDispatch("position", { x: obj.left, y: obj.top }, id);
             globalDispatch("angle", obj.angle, id);
+            // globalDispatch("")
             handleScale(e);
-            canvas.renderAll();
+            try {
+              canvas.renderAll();
+
+            } catch (err) {
+              console.log("error in image render component")
+            }
             syncMirrorCanvasHelper(activeSide);
             toggleVisibility(true);
           });
@@ -717,7 +730,12 @@ const renderAllImageObjects = (
 
           console.log(`Print Size: ${widthInches} in × ${heightInches} in`);
 
-          canvas.renderAll();
+          try {
+            canvas.renderAll();
+
+          } catch (err) {
+            console.log("error in image render component")
+          }
         },
         { crossOrigin: "anonymous" }
       );
@@ -738,10 +756,14 @@ const renderAllImageObjects = (
         scaleY: finalY,
         lockMovementX: locked,
         lockMovementY: locked,
+        evented: !isZoomedIn,
         layerIndex,
         customType,
         isSync: true,
-        hasControls: !locked,
+        hasControls: !locked || !isZoomedIn,
+        selectable: !isZoomedIn,
+        locked: locked,
+        evented: !isZoomedIn,
       });
 
       existingObj.on("selected", (e) => {
@@ -849,7 +871,12 @@ const renderAllImageObjects = (
 
 
 
-      canvas.renderAll();
+      try {
+        canvas.renderAll();
+
+      } catch (err) {
+        console.log("error in image render component")
+      }
     } else {
       fabric.Image.fromURL(
         base64CanvasImage,
@@ -889,7 +916,11 @@ const renderAllImageObjects = (
             hasControls: !locked,
             invertColor,
             thresholdValue,
-            solidColor
+            solidColor,
+            hasControls: !locked || !isZoomedIn,
+            selectable: !isZoomedIn,
+            locked: locked,
+            evented: !isZoomedIn,
           });
 
           img.setControlsVisibility({
@@ -943,7 +974,12 @@ const renderAllImageObjects = (
               dispatch(selectedImageIdState(obj.id));
               setActiveObjectType("image");
               navigate("/design/addImage");
-              canvas.renderAll();
+              try {
+                canvas.renderAll();
+
+              } catch (err) {
+                console.log("error in image render component")
+              }
             }
           });
 
@@ -988,7 +1024,12 @@ const renderAllImageObjects = (
 
             globalDispatch("angle", obj.angle, id);
             handleScale(e);
-            canvas.renderAll();
+            try {
+              canvas.renderAll();
+
+            } catch (err) {
+              console.log("error in image render component")
+            }
             syncMirrorCanvasHelper(activeSide);
             toggleVisibility(true);
           });
@@ -1016,7 +1057,12 @@ const renderAllImageObjects = (
             if (toggle) toggle.style.display = "none";
             if (aiButton) aiButton.style.display = "none";
           });
-          canvas.renderAll();
+          try {
+            canvas.renderAll();
+
+          } catch (err) {
+            console.log("error in image render component")
+          }
         },
         { crossOrigin: "anonymous" }
       );

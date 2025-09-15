@@ -3,7 +3,16 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   products: {
-
+    // example:
+    // "7434523443334": {
+    //   name: "Comfort Colors 1467 - Black",
+    //   color: "Black",
+    //   imgurl: "...",
+    //   selections: {
+    //     S: 2,
+    //     M: 1,
+    //     XL: 0
+    //   }
     // }
   },
   CollegiateLicense: false
@@ -73,9 +82,10 @@ const productSelectionSlice = createSlice({
       if (!selectedProducts || selectedProducts.length === 0) return;
 
       // Get the IDs of the selected products
-      console.log("resetProducts called with:", selectedProducts);
+      // console.log("resetProducts called with:", selectedProducts, "current state:", JSON.stringify(state.products));
       const selectedIds = selectedProducts.flatMap(p => {
-        const ids = [p?.id.split("/").reverse()[0]];
+        // console.log(p, p.selectedColor.variant.id, "product in flatmap");
+        const ids = [p.selectedColor.variant.id.split("/")?.reverse()[0]];
         if (p?.addedColors && p.addedColors.length > 0) {
           p.addedColors.forEach(variantProduct => {
             const id = variantProduct?.variant?.id?.split("/").reverse()[0];
@@ -88,7 +98,7 @@ const productSelectionSlice = createSlice({
       }
       )
 
-      console.log(selectedIds, "selectedIds");
+      // console.log(selectedIds, "selectedIds");
 
 
       // Keep only products whose id is in selectedIds

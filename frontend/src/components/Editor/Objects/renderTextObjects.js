@@ -14,7 +14,8 @@ const renderCurveTextObjects = (
   globalDispatch,
   activeSide,
   bringPopup,
-  productCategory
+  productCategory,
+  isZoomedIn
 ) => {
   // console.log("productCategory.......", productCategory)
   const canvas = fabricCanvasRef.current;
@@ -90,10 +91,10 @@ const renderCurveTextObjects = (
           lockMovementX: textInput.locked,
           lockMovementY: textInput.locked,
           locked: textInput.locked,
-          selectable: true,
+          selectable: !isZoomedIn,
           lockMovement: textInput.locked,
-          evented: true,
-          hasControls: !textInput.locked,
+          evented: !isZoomedIn,
+          hasControls: !textInput.locked || !isZoomedIn,
           lockMovementX: textInput.locked,
           lockMovementY: textInput.locked,
           lockScalingX: textInput.locked,
@@ -127,7 +128,7 @@ const renderCurveTextObjects = (
           syncMirrorCanvasHelper(activeSide);
         });
       } else if (!existingObj) {
-        const curved = new fabric.Text(textInput.content, {
+        const curved = new fabric.CurvedText(textInput.content, {
           lockScalingFlip: true,
           id: textInput.id,
           fontWeight: textInput.fontWeight || "normal",
@@ -159,8 +160,8 @@ const renderCurveTextObjects = (
           borderDashArray: [4, 4],
           hasBorders: true,
           selectable: true,
-          evented: true,
-          hasControls: true,
+          evented: !isZoomedIn,
+          hasControls: !isZoomedIn,
           width: Math.min(measuredWidth + 20, 200),
           isSync: true,
           locked: textInput.locked,

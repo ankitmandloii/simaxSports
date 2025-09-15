@@ -31,7 +31,7 @@ import ReplaceBg from '../ReplaceBg/ReplaceBg.jsx';
 const AddImageToolbar = () => {
   const BASE_FILTERS = [
     { name: 'Normal', transform: '' },
-    { name: 'Single Color', transform: '?monochrome=white' },
+    { name: 'Single Color', transform: '' },
     { name: 'Black/White', transform: '?sat=-100' },
   ];
   const dispatch = useDispatch();
@@ -62,7 +62,7 @@ const AddImageToolbar = () => {
   const [superResolution, setSuperResolution] = useState(false);
   const [cropAndTrim, setCropAndTrim] = useState(false);
   const [bgColor, setBgColor] = useState("var(--black-color)");
-  const [singleColor, setSingleColor] = useState("");
+  const [singleColor, setSingleColor] = useState("#ffffff");
   const [invertColor, setInvertColor] = useState(false);
   const [solidColor, setSolidColor] = useState(false);
   const [editColor, setEditColor] = useState(false);
@@ -105,9 +105,7 @@ const AddImageToolbar = () => {
     };
   }
 
-  useEffect(() => {
 
-  }, [editColor, invertColor, selectedFilter])
   // Init from store
   useEffect(() => {
     // console.log("--img", img)
@@ -123,6 +121,7 @@ const AddImageToolbar = () => {
     setSolidColor(img.solidColor);
     setEditColor(img.editColor);
     setPreviewUrl(img.src || '');
+    setResetDefault(img.resetDefault || false);
     // console.log(previewUrl);
     try {
       const params = img.src?.split('?')[1] || '';
@@ -176,173 +175,173 @@ const AddImageToolbar = () => {
   };
 
 
-  async function processAndReplaceColors(imageSrc, color, editColor = false, extractedColors = []) {
-    try {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d", { willReadFrequently: true });
-      const img = new Image();
-
-      if (!imageSrc.startsWith("data:image")) {
-        img.crossOrigin = "anonymous";
-      }
-
-      img.src = imageSrc;
-
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = () => reject(new Error("Failed to load image"));
-      });
-
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-
-      if (editColor) {
-        try {
-          const paletteUrl = imageSrc.split("?")[0] + "?palette=json";
-          const res = await fetch(paletteUrl);
-
-          if (res.ok && res.headers.get("content-type")?.includes("application/json")) {
-            const json = await res.json();
-            const colors = json?.colors?.map(c => `${c.hex}`) || [];
-            const updateColors = [...extractedColors];
-
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
-
-            const minLength = Math.min(colors.length, updateColors.length);
-            for (let i = 0; i < minLength; i++) {
-              const targetColor = hexToRgbForReplaceColor(colors[i]);
-              const newColor = hexToRgbForReplaceColor(updateColors[i]);
-
-              for (let j = 0; j < data.length; j += 4) {
-                const r = data[j], g = data[j + 1], b = data[j + 2];
-                if (colorsMatch([r, g, b], targetColor, 50)) {
-                  data[j] = newColor[0];
-                  data[j + 1] = newColor[1];
-                  data[j + 2] = newColor[2];
-                }
-              }
-            }
-
-            ctx.putImageData(imageData, 0, 0);
-          } else {
-            console.warn("Palette not found, returning normal image.");
-          }
-        } catch (paletteError) {
-          console.warn("Failed to fetch/parse palette, returning normal image:", paletteError.message);
-        }
-      }
-
-      // Always return something (normal image if no replacement was done)
-      const objectURL = await new Promise((resolve, reject) => {
-        canvas.toBlob(
-          (blob) => (blob ? resolve(URL.createObjectURL(blob)) : reject(new Error("Failed to convert canvas to blob"))),
-          "image/png",
-          0.92
-        );
-      });
-
-      canvas.width = 0;
-      canvas.height = 0;
-
-      return objectURL;
-    } catch (error) {
-      console.error("Error in processing the image:", error);
-      throw error;
-    }
-  }
-
   // async function processAndReplaceColors(imageSrc, color, editColor = false, extractedColors = []) {
   //   try {
-  //     const canvas = document.createElement('canvas');
-  //     const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  //     const canvas = document.createElement("canvas");
+  //     const ctx = canvas.getContext("2d", { willReadFrequently: true });
   //     const img = new Image();
 
-  //     // Handle cross-origin
   //     if (!imageSrc.startsWith("data:image")) {
   //       img.crossOrigin = "anonymous";
   //     }
 
   //     img.src = imageSrc;
 
-  //     // Wait for the image to load
   //     await new Promise((resolve, reject) => {
   //       img.onload = resolve;
   //       img.onerror = () => reject(new Error("Failed to load image"));
   //     });
 
-  //     // Draw image on canvas
   //     canvas.width = img.width;
   //     canvas.height = img.height;
   //     ctx.drawImage(img, 0, 0);
 
-  //     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  //     let data = imageData.data;
-
   //     if (editColor) {
-  //       const paletteUrl = imageSrc.split("?  ")[0] + "?palette=json";
-  //       const res = await fetch(paletteUrl);
-  //       const contentType = res.headers.get("content-type");
+  //       try {
+  //         const paletteUrl = imageSrc.split("?")[0] + "?palette=json";
+  //         const res = await fetch(paletteUrl);
 
+  //         if (res.ok && res.headers.get("content-type")?.includes("application/json")) {
+  //           const json = await res.json();
+  //           const colors = json?.colors?.map(c => `${c.hex}`) || [];
+  //           const updateColors = [...extractedColors];
 
+  //           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  //           const data = imageData.data;
 
-  //       if (contentType && contentType.includes("application/json")) {
-  //         // const json = await res.json();
-  //         // const colors = json?.colors?.map(c => `${c.hex}`) || [];
-  //         // ... use colors
-  //       } else {
-  //         console.warn("Palette API did not return JSON, skipping color replacement.");
-  //       }
-  //       console.log("res", res);
+  //           const minLength = Math.min(colors.length, updateColors.length);
+  //           for (let i = 0; i < minLength; i++) {
+  //             const targetColor = hexToRgbForReplaceColor(colors[i]);
+  //             const newColor = hexToRgbForReplaceColor(updateColors[i]);
 
-  //       const json = await res.json();
-  //       console.log(json, "json");
-
-  //       const colors = json?.colors?.map(c => `${c.hex}`) || [];
-  //       const updateColors = [...extractedColors];
-
-  //       const minLength = Math.min(colors.length, updateColors.length);
-  //       for (let i = 0; i < minLength; i++) {
-  //         const targetColor = hexToRgbForReplaceColor(colors[i]);
-  //         const newColor = hexToRgbForReplaceColor(updateColors[i]);
-
-  //         for (let j = 0; j < data.length; j += 4) {
-  //           const r = data[j], g = data[j + 1], b = data[j + 2];
-  //           if (colorsMatch([r, g, b], targetColor, 50)) {
-  //             data[j] = newColor[0];
-  //             data[j + 1] = newColor[1];
-  //             data[j + 2] = newColor[2];
+  //             for (let j = 0; j < data.length; j += 4) {
+  //               const r = data[j], g = data[j + 1], b = data[j + 2];
+  //               if (colorsMatch([r, g, b], targetColor, 50)) {
+  //                 data[j] = newColor[0];
+  //                 data[j + 1] = newColor[1];
+  //                 data[j + 2] = newColor[2];
+  //               }
+  //             }
   //           }
-  //         }
-  //       }
 
-  //       ctx.putImageData(imageData, 0, 0);
+  //           ctx.putImageData(imageData, 0, 0);
+  //         } else {
+  //           console.warn("Palette not found, returning normal image.");
+  //         }
+  //       } catch (paletteError) {
+  //         console.warn("Failed to fetch/parse palette, returning normal image:", paletteError.message);
+  //       }
   //     }
 
-  //     // Convert canvas to blob and return object URL
+  //     // Always return something (normal image if no replacement was done)
   //     const objectURL = await new Promise((resolve, reject) => {
-  //       canvas.toBlob((blob) => {
-  //         if (blob) {
-  //           resolve(URL.createObjectURL(blob));
-  //         } else {
-  //           reject(new Error("Failed to convert canvas to blob"));
-  //         }
-  //       }, "image/png", 0.92);
+  //       canvas.toBlob(
+  //         (blob) => (blob ? resolve(URL.createObjectURL(blob)) : reject(new Error("Failed to convert canvas to blob"))),
+  //         "image/png",
+  //         0.92
+  //       );
   //     });
 
-  //     // Cleanup
   //     canvas.width = 0;
   //     canvas.height = 0;
-  //     // canvas.remove();
 
   //     return objectURL;
-
   //   } catch (error) {
-  //     console.error('Error in processing the image:', error);
+  //     console.error("Error in processing the image:", error);
   //     throw error;
   //   }
   // }
+
+  async function processAndReplaceColors(imageSrc, color, editColor = false, extractedColors = []) {
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      const img = new Image();
+
+      // Handle cross-origin
+      if (!imageSrc.startsWith("data:image")) {
+        img.crossOrigin = "anonymous";
+      }
+
+      img.src = imageSrc;
+
+      // Wait for the image to load
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = () => reject(new Error("Failed to load image"));
+      });
+
+      // Draw image on canvas
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      let data = imageData.data;
+
+      if (editColor) {
+        const paletteUrl = imageSrc.split("?  ")[0] + "?palette=json";
+        const res = await fetch(paletteUrl);
+        const contentType = res.headers.get("content-type");
+
+
+
+        if (contentType && contentType.includes("application/json")) {
+          // const json = await res.json();
+          // const colors = json?.colors?.map(c => `${c.hex}`) || [];
+          // ... use colors
+        } else {
+          console.warn("Palette API did not return JSON, skipping color replacement.");
+        }
+        console.log("res", res);
+
+        const json = await res.json();
+        console.log(json, "json");
+
+        const colors = json?.colors?.map(c => `${c.hex}`) || [];
+        const updateColors = [...extractedColors];
+
+        const minLength = Math.min(colors.length, updateColors.length);
+        for (let i = 0; i < minLength; i++) {
+          const targetColor = hexToRgbForReplaceColor(colors[i]);
+          const newColor = hexToRgbForReplaceColor(updateColors[i]);
+
+          for (let j = 0; j < data.length; j += 4) {
+            const r = data[j], g = data[j + 1], b = data[j + 2];
+            if (colorsMatch([r, g, b], targetColor, 50)) {
+              data[j] = newColor[0];
+              data[j + 1] = newColor[1];
+              data[j + 2] = newColor[2];
+            }
+          }
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+      }
+
+      // Convert canvas to blob and return object URL
+      const objectURL = await new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(URL.createObjectURL(blob));
+          } else {
+            reject(new Error("Failed to convert canvas to blob"));
+          }
+        }, "image/png", 0.92);
+      });
+
+      // Cleanup
+      canvas.width = 0;
+      canvas.height = 0;
+      // canvas.remove();
+
+      return objectURL;
+
+    } catch (error) {
+      console.error('Error in processing the image:', error);
+      throw error;
+    }
+  }
   async function handleImage(imageSrc, color = "#ffffff", selectedFilter, invertColor, editColor) {
     try {
 
@@ -351,7 +350,8 @@ const AddImageToolbar = () => {
 
       // globalDispatch("editColor", false);
       // globalDispatch("loading", true); // Corrected the typo here
-      console.log("handle image function called with src", imageSrc);
+      console.log("handle image function called with src", imageSrc, color, selectedFilter, invertColor, editColor);
+      console.log(img.editColor, "img.editColor")
 
       // Await the base64 image after processing the image
 
@@ -369,7 +369,7 @@ const AddImageToolbar = () => {
         }
       }
       else if (selectedFilter == "Normal") {
-        // console.log("edit color state is: ", editColor)
+        console.log("edit color state is: ", editColor)
         if (editColor) {
           currentBase64Image = await processAndReplaceColors(imageSrc, color, editColor, extractedColors);
         }
@@ -473,7 +473,7 @@ const AddImageToolbar = () => {
       return {
         ...filter,
         transform: allParams.length ? `?${allParams.join('&')}` : '',
-        image: img?.base64CanvasImageForSinglelColor || buildUrl(allParams.length ? `?${allParams.join('&')}` : '', false, filter.name)
+        image: img?.base64CanvasImageForSinglelColor || "https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif"
       };
     }));
     // console.log(filters, "&&&&&&&&&&&&")
@@ -644,10 +644,23 @@ const AddImageToolbar = () => {
 
 
   const buildUrl = useCallback((transform, resetAll, filterName) => {
-    // console.log(transform, filterName, filterName, "<<<<<<<<<<<<<<<<<<<<<<")
+    console.log(transform, filterName, selectedFilter, "<<<<<<<<<<<<<<<<<<<<<<")
     const base = img?.src?.split('?')[0] || '';
     if (resetAll) {
       return base;
+    }
+    if (!filterName) {
+      if (selectedFilter == "Black/White") {
+        if (!transform.includes("sat=-100")) {
+          transform = transform ? `${transform}&sat=-100` : '?sat=-100';
+        }
+      }
+      else {
+        if (transform.includes("sat=-100")) {
+          transform = transform.replace("sat=-100", "");
+        }
+      }
+
     }
     return `${base}${transform}`;
   }, [img]);
@@ -732,30 +745,28 @@ const AddImageToolbar = () => {
       return newEffects;
     });
   };
+  function cleanTransformString(str) {
+    if (!str) return "";
+
+    return str
+      .replace(/\?&+/, "?")         // replace "?&" with "?"
+      .replace(/&&+/g, "&")         // replace multiple "&" with single "&"
+      .replace(/(\?|&)$/, "")       // remove trailing ? or &
+      .replace(/undefined/g, "")    // remove accidental "undefined"
+      .trim();
+  }
+
 
   // Toggle a URL query parameter (like 'bg-remove=true') on/off in the activeTransform
   const toggle = (param, condition, filterName) => {
-    // console.log("active tranform .......", activeTransform)
-    console.log("toggle  functin call ", param, condition, filterName);
-    // If condition is true, we want to **remove** the param from the activeTransform
     if (condition) {
-      // Use a RegExp to find and remove the param and its trailing '&' if present
-      // Example: '?invert=true&bg-remove=true' -> remove 'bg-remove=true'
       const cleaned = activeTransform.replace(new RegExp(`${param}(&|$)`), '');
-
-      // Call applyTransform with the new transform string (with param removed)
-      return applyTransform(cleaned, false, editColor);
+      return applyTransform(cleanTransformString(cleaned), false, editColor);
     }
 
-    // If condition is false, we want to **add** the param to the activeTransform
-    // Decide whether to add with `?` or `&` depending on whether transform is empty or not
     const separator = activeTransform ? '&' : '?';
-
-    // Build the new transform string with param added
     const updated = `${activeTransform}${separator}${param}`;
-
-    // Call applyTransform with the new transform string (with param added)
-    return applyTransform(updated, false, editColor);
+    return applyTransform(cleanTransformString(updated), false, editColor);
   };
 
   const isActive = useCallback((param) => activeTransform.includes(param), [activeTransform]);
@@ -859,8 +870,8 @@ const AddImageToolbar = () => {
     // handleImage(previewUrl);
     setResetDefault(false);
     fetchPalette();
-    // setEditColor(false);
-    // globalDispatch("editColor", false); 
+    setEditColor(false);
+    globalDispatch("editColor", false);
 
   }
 
@@ -1065,6 +1076,7 @@ const AddImageToolbar = () => {
   }, [img?.src]);
 
   function applyFilterAndGetUrl(imageSrc, color) {
+    console.log("apply filter call with color", color, imageSrc);
     imageSrc = String(imageSrc);
     if (imageSrc.includes("monochrome=black")) {
       imageSrc = imageSrc.replace("monochrome=black", "");
@@ -1310,8 +1322,8 @@ const AddImageToolbar = () => {
     globalDispatch("cropAndTrim", !value);
     setResetDefault(false);
     fetchPalette();
-    // setEditColor(false);
-    // globalDispatch("editColor", false);
+    setEditColor(false);
+    globalDispatch("editColor", false);
 
     // handleImage(previewUrl);
   }
@@ -1327,19 +1339,20 @@ const AddImageToolbar = () => {
     globalDispatch("superResolution", !value);
     setResetDefault(false);
     fetchPalette();
-    // setEditColor(false);
-    // globalDispatch("editColor", false);
+    setEditColor(false);
+    globalDispatch("editColor", false);
     // handleImage(previewUrl);
   }
 
 
-  const handleReset = () => {
+  const handleReset = async () => {
     if (resetDefault) return;
     // 1. Dispatch global image state reset
     const canvasComponent = document.querySelector(`#canvas-${activeSide}`); // Simple way, but ideally use refs or context
     const rect = canvasComponent.getBoundingClientRect();
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
+    const applyFilterURL = await applyFilterAndGetUrl(img.src ?? previewUrl, "#ffffff");
     const changes = {
       scaleX: 1,
       scaleY: 1,
@@ -1360,6 +1373,9 @@ const AddImageToolbar = () => {
       editColor: false,
       src: previewUrl.split("?")[0],
       selectedFilter: "Normal",
+      base64CanvasImageForNormalColor: previewUrl.split("?")[0],
+      base64CanvasImageForSinglelColor: applyFilterURL,
+      base64CanvasImageForBlackAndWhitelColor: previewUrl.split("?")[0] + "?sat=-100",
       base64CanvasImage: previewUrl.split("?")[0],
     };
     fetchPalette();
@@ -1541,11 +1557,31 @@ const AddImageToolbar = () => {
 
 
   };
-  // function getDPILabel(dpi) {
-  //   if (dpi <= 72) return 'Web';
-  //   if (dpi <= 150) return 'Print';
-  //   return 'High Print';
-  // }
+  const rf = useRef(null);
+  useEffect(() => {
+    if (img?.base64CanvasImageForSinglelColor) {
+      console.log("base64CanvasImageForSinglelColor already exists", img?.base64CanvasImageForSinglelColor);
+      return;
+    }
+    // console.log(img.base64CanvasImageForSinglelColor, "base64CanvasImageForSinglelColor");
+    if (!filters || filters.length === 0) return;
+    if (rf.current) return
+    rf.current = true;
+    (async () => {
+      const applyFilterURL = await applyFilterAndGetUrl(img.src ?? previewUrl, singleColor);
+      console.log("applied filter url ", applyFilterURL);
+      globalDispatch("base64CanvasImageForSinglelColor", String(applyFilterURL));
+      setFilters(fs => fs.map(f => {
+        if (f.name === "Single Color") {
+          return { ...f, transform: '', image: applyFilterURL };
+        }
+        return f;
+      }));
+    })();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // runs when filters are populated
+
   // console.log("previewUrl", previewUrl, "image src", img?.src);
   //  if(loading) return <div className={styles.loadingOverlay}><div className={styles.loadingSpinner} /><p>Applying changes...</p></div>;
   return (
@@ -1582,7 +1618,7 @@ const AddImageToolbar = () => {
                             // globalDispatch("src", buildUrl(f.transform, false, f.name));
                             globalDispatch("selectedFilter", f.name);
                             // globalDispatch("base64CanvasImage", f.image);
-                            handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor, editColor);
+                            handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor, img.editColor || editColor);
                             if (f.name != "Normal") setResetDefault(false);
                           }}
                         >
@@ -1685,7 +1721,7 @@ const AddImageToolbar = () => {
 
 
 
-                  {selectedFilter === "Black/Whte" && null}
+                  {selectedFilter === "Black/White" && null}
 
 
                   {selectedFilter === "Single Color" && (<hr />)}

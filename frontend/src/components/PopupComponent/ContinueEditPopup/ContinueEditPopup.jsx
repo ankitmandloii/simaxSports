@@ -1,16 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import style from './ContinueEditPopup.module.css';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { restoreAllSlicesFromLocalStorage } from '../../utils/RestoreSliceStates';
 
 const ContinueEditPopup = ({ handleContinuePopup }) => {
   const dispatch = useDispatch();
+  const reduxdata = JSON.parse(localStorage.getItem("savedReduxState"));
+  // console.log("reduxdata in ContinueEditPopup", JSON.parse(reduxdata));
+  let selectedProducts = null
+  selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts[0])
+  // if (reduxdata?.selectedProducts?.selectedProducts) {
+  //   selectedProducts = reduxdata?.selectedProducts?.selectedProducts[0]
+  // }
 
+  // const selectedProducts = reduxdata?.selectedProducts?.selectedProducts[0] ?? useSelector((state) => state.selectedProducts.selectedProducts[0]);
+  console.log("selectedProducts in ContinueEditPopup", selectedProducts);
+  const [lastProductImages, setLastProductImages] = useState([])
   const continueEditHandler = () => {
     dispatch(restoreAllSlicesFromLocalStorage());
     handleContinuePopup();
   };
+
+  useEffect(() => {
+    if (!selectedProducts || selectedProducts.length === 0) return;
+    const lastProductImages = selectedProducts.images.slice(0, 3);
+    lastProductImages.push(lastProductImages.slice(-1)[0]);
+
+
+    setLastProductImages(lastProductImages);
+  }, [selectedProducts]);
 
   return (
     <div className={style.overlay}>
@@ -25,10 +44,10 @@ const ContinueEditPopup = ({ handleContinuePopup }) => {
           </p>
 
           <div className={style.previewRow}>
-            {Array(4).fill().map((_, i) => (
+            {lastProductImages.map((src, i) => (
               <img
                 key={i}
-                src="https://cdn.shopify.com/s/files/1/0724/8517/5535/files/unisex-premium-sweatshirt-team-red-front-6765fb41737e1.png?v=1734736719"
+                src={src.originalSrc ?? src}
                 alt="Design preview"
                 className={style.previewImage}
               />

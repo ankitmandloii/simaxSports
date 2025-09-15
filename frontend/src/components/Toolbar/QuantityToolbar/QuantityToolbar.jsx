@@ -20,9 +20,11 @@ import { apiConnecter } from '../../utils/apiConnector.jsx';
 
 const QuantityToolbar = () => {
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
+  console.log(selectedProducts, "selectedProducts");
+
   // console.log("--------quantitysele", selectedProducts);
   const productState = useSelector((state) => state.productSelection.products);
-  // console.log("productState", productState)
+
   const CollegiateLicense = useSelector((state) => state.productSelection.CollegiateLicense);
 
   const nameAndNumberProductList = useSelector(
@@ -65,6 +67,7 @@ const QuantityToolbar = () => {
 
   // --------------------------------------Runs when selected products change-------------------------
   useEffect(() => {
+    console.log("selectedProducts", selectedProducts)
     if (!selectedProducts || selectedProducts?.length === 0) return;
     dispatch(resetProducts(selectedProducts))
 
@@ -97,6 +100,7 @@ const QuantityToolbar = () => {
     // ------------------------Loop through each selected product---------------------
     selectedProducts?.forEach((product) => {
       const addedColors = product?.addedColors || [];
+      const selectedColor = [product?.selectedColor] || [];
       const consistentTitle =
         product?.title || product?.name || product?.handle || 'Product';
 
@@ -118,11 +122,11 @@ const QuantityToolbar = () => {
         allVariants: product?.allVariants,
         swatchImg: product?.selectedColor?.swatchImg,
       };
-      console.log(mainProduct, "mainProduct");
+      // console.log(mainProduct, "mainProduct");
 
-      dispatch(addProduct(mainProduct));
-      newAllProducts.push(mainProduct);
-      newExpandedProducts[mainProduct.uniqueKey] = true;
+      // dispatch(addProduct(mainProduct));
+      // newAllProducts.push(mainProduct);
+      // newExpandedProducts[mainProduct.uniqueKey] = true;
 
       // ---------------------- extra variants----------------------
       const extraProducts = addedColors?.map((variantProduct) => {
@@ -149,7 +153,37 @@ const QuantityToolbar = () => {
             variantProduct?.variant?.inventoryItem?.inventoryLevels?.edges?.[0]
               ?.node?.quantities?.[0]?.quantity,
         };
-        console.log(prod, "prod");
+        // console.log(prod, "prod");
+
+        dispatch(addProduct(prod));
+        newExpandedProducts[prod.uniqueKey] = true;
+        return prod;
+      });
+      const extraProducts2 = selectedColor?.map((variantProduct) => {
+        // console.log("----variantProduct", variantProduct)
+        const prod = {
+          uniqueKey: uuidv4(),
+          id: variantProduct?.variant?.id?.split("/").reverse()[0],
+          imgurl: variantProduct?.img,
+          color: variantProduct?.name,
+          size: variantProduct?.variant?.selectedOptions[1]?.value,
+          sizes: getSizeOptions(variantProduct, variantProduct?.name),
+          name: product?.name,
+          title: consistentTitle,
+          sku: variantProduct?.variant?.sku,
+          variantId: variantProduct?.variant?.id,
+          allImages: getVariantImagesFromMetafields(
+            variantProduct?.variant?.metafields
+          ),
+          selections: [],
+          price: variantProduct?.variant?.price,
+          allVariants: variantProduct?.allVariants,
+          swatchImg: variantProduct?.swatchImg,
+          inventory_quantity:
+            variantProduct?.variant?.inventoryItem?.inventoryLevels?.edges?.[0]
+              ?.node?.quantities?.[0]?.quantity,
+        };
+        // console.log(prod, "prod");
 
         dispatch(addProduct(prod));
         newExpandedProducts[prod.uniqueKey] = true;
@@ -157,6 +191,7 @@ const QuantityToolbar = () => {
       });
 
       newAllProducts.push(...extraProducts);
+      newAllProducts.push(...extraProducts2);
     });
 
     setAllProducts(newAllProducts);
@@ -183,6 +218,8 @@ const QuantityToolbar = () => {
         });
       }
     });
+    // console.log("products ..", products);
+    // console.log("productState", productState)
   }, [selectedProducts, nameAndNumberProductList]);
 
   /** -----------------Extract available sizes & their quantities from product variants------------ */
@@ -311,6 +348,22 @@ const QuantityToolbar = () => {
     return availableSizesQuantity.find((i) => i.sku === item.sku)?.total_available ?? 0
   }
 
+  function getValueOfItem(productId, item) {
+    // console.log("product state is", productState)
+    // console.log("calling function for getting value", productId, item.size);
+    // console.log("avialbel quuantity", productState[productId]?.selections?.[item.size])
+
+    return productState[productId]?.selections?.[item.size] || ''
+  }
+
+  function getValueOfItem(productId, item) {
+    // console.log("product state is", productState)
+    // console.log("calling function for getting value", productId, item.size);
+    // console.log("avialbel quuantity", productState[productId]?.selections?.[item.size])
+
+    return productState[productId]?.selections?.[item.size] || ''
+  }
+
   return (
     <div className={` ${style.toolbarMainContainer} ${style.toolbarMargin}`}>
       <div className="toolbar-main-heading">
@@ -360,18 +413,7 @@ const QuantityToolbar = () => {
                         <h4>{product.title}</h4>
                         <div className={style.rightProductTitleQty}>
                           {product.color && (
-                            // <p className={style.toolbarSpan}>{product.color}</p>
-                            <button
-                              className={style.toolbarSpan}
-
-                            >
-                              <img
-                                src={product?.swatchImg || product?.img}
-                                alt={product?.color}
-                                className={style.swatchImage}
-                              />
-                              {product.color}
-                            </button>
+                            <p className={style.toolbarSpan}>{product.color}</p>
                           )}
                           <p className={style.totalQtyitems}>
                             {getTotalQuantityForProduct(product)} items
@@ -410,7 +452,7 @@ const QuantityToolbar = () => {
                                 type="number"
                                 min={0} // 👈 start from 1, not 0
                                 max={getMaxAvaibleQuantity(item)}
-                                value={productState[product.id]?.selections?.[item.size] || ''}
+                                value={getValueOfItem(product.id, item)}
                                 onChange={(e) => {
                                   let val = Number(e.target.value);
 
@@ -457,7 +499,7 @@ const QuantityToolbar = () => {
                   }
                 }}
               />
-              Collegiate License(Has college name in design)
+              Collegiate License (Has college name in design)
             </label>
           </div>
           <button

@@ -86,11 +86,15 @@ const createNewImage = (
   loadingSrc: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s",
   replaceSrc: false,
   selectedFilter: "Normal",
+  base64CanvasImageForNormalColor: null,
+  base64CanvasImageForSinglelColor: null,
+  base64CanvasImageForBlackAndWhitelColor: null,
   editColor: false,
   extractedColors: [],
   removeBgImagebtn: false,
   loadingText: false,
   dpi: dpi || 300,
+  resetDefault: false
 });
 
 const initialState = {
@@ -660,7 +664,62 @@ const TextFrontendDesignSlice = createSlice({
         // console.log("product added succesfully");
       }
     },
+    // UpdateNameAndNumberProduct: (state, action) => {
+    //   const {
+    //     id,
+    //     newSelections = [], // Array of { selectionId, name, number, size }
+    //     side = "back",
+    //     isRenderOrNot,
+    //   } = action.payload;
 
+    //   // Save to undo history
+    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+    //   const list = state.present[side]?.nameAndNumberProductList;
+    //   if (!list) return;
+
+    //   const product = list.find((p) => p.id === id);
+    //   if (!product) {
+    //     // console.log("Product not found:", id);
+    //     return;
+    //   }
+
+    //   // Create a map of new selectionIds
+    //   const incomingMap = new Map(
+    //     newSelections.map((sel) => [sel.selectionId, sel])
+    //   );
+
+    //   // Filter out selections not in the incoming list
+    //   product.selections = product.selections.filter((existing) => {
+    //     const incoming = incomingMap.get(existing.selectionId);
+    //     if (incoming) {
+    //       // Only update if not locked
+    //       if (!existing.locked) {
+    //         Object.assign(existing, incoming);
+    //       }
+    //       // Keep it
+    //       return true;
+    //     }
+    //     // Remove if not present in new list
+    //     return false;
+    //   });
+
+    //   // Add any new selectionIds that didn't already exist
+    //   const existingIds = new Set(product.selections.map((s) => s.selectionId));
+    //   newSelections.forEach((sel) => {
+    //     if (!existingIds.has(sel.selectionId)) {
+    //       product.selections.push(sel);
+    //     }
+    //   });
+
+    //   // Optional render flag toggle
+    //   if (isRenderOrNot) {
+    //     state.present[side].setRendering = !state.present[side].setRendering;
+    //   }
+
+    //   // Clear redo history
+    //   state.future[side] = [];
+    // },
     UpdateNameAndNumberProduct: (state, action) => {
       const {
         id,
@@ -726,7 +785,33 @@ const TextFrontendDesignSlice = createSlice({
       ].nameAndNumberProductList.filter((product) => product.id !== id);
     },
 
-
+    // addImageState: (state, action) => {
+    //   const { src, id = nanoid(), side = state.activeSide, isRenderOrNot } = action.payload;
+    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    //   const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
+    //   const canvasComponent = document.querySelector(`#canvas-${side}`); // Simple way, but ideally use refs or context
+    //   const rect = canvasComponent.getBoundingClientRect();
+    //   const centerX = rect.width / 2;
+    //   const centerY = rect.height / 2;
+    //   const newImage = createNewImage(
+    //     { src: src },
+    //     // { src: src + "?auto=enhance&sharp=80&upscale=true" },
+    //     totalElements,
+    //     centerX,
+    //     centerY
+    //   );
+    //   // const newImage = createNewImage(
+    //   //   { src },
+    //   //   state.present[side].images.length
+    //   // );
+    //   if (!state.present[side].images) {
+    //     state.present[side].images = [];
+    //   }
+    //   state.present[side].selectedImageId = newImage.id;
+    //   state.present[side].images.push(newImage);
+    //   state.future[side] = [];
+    //   // state.present[side].setRendering = !state.present[side].setRendering;
+    // },
     addImageState: (state, action) => {
       console.log("---------actionnn", action.payload)
       const { src, id = nanoid(), side = state.activeSide, isRenderOrNot, dpi } = action.payload;
@@ -769,7 +854,60 @@ const TextFrontendDesignSlice = createSlice({
       // console.log("🔄 [addImageState] Future state reset");
     },
 
+    // ---neww
+    // updateImageState: (state, action) => {
+    //   const { id, changes, side = state.activeSide, isRenderOrNot } = action.payload;
+    //   const image = state.present[side]?.images?.find(img => img.id === id);
+    //   if (!image || image.locked) return;
 
+
+
+    //   if (changes?.loading || changes?.loadingText) {
+    //     console.log("data temp store..", changes);
+    //     console.log("we are storing present data to past when laoding true ", JSON.parse(JSON.stringify(state.present[side])))
+    //     state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    //   }
+    //   // Buffer changes until operation is done
+
+    //   if (!state.imageChangeBuffer[side][id]) {
+    //     state.imageChangeBuffer[side][id] = [];
+    //   }
+    //   state.imageChangeBuffer[side][id].push(changes);
+
+    //   // Apply changes immediately so UI updates
+    //   Object.assign(image, changes);
+
+    //   // ✅ Only commit snapshot when loading:false
+    //   if (changes.loading === false || changes.loadingText === false) {
+    //     const combined = state.imageChangeBuffer[side][id].reduce(
+    //       (acc, curr) => ({ ...acc, ...curr, loading: false }),
+    //       {}
+    //     );
+    //     // Save history
+    //     console.log("we are storing present data to past when laoding false ", JSON.parse(JSON.stringify(state.present[side])))
+    //     // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    //     const snapshot = JSON.stringify(state.present[side]);
+    //     const last = state.past[side].length
+    //       ? JSON.stringify(state.past[side][state.past[side].length - 1])
+    //       : null;
+
+    //     if (snapshot !== last) {
+    //       state.past[side].push(JSON.parse(snapshot));
+    //     }
+
+    //     Object.assign(image, combined);
+
+    //     // cleanup
+    //     delete state.imageChangeBuffer[side][id];
+    //     state.future[side] = [];
+    //   }
+
+    //   // skip undo history if rendering-only
+    //   if (isRenderOrNot) {
+    //     if (!state.present[side].renderVersion) state.present[side].renderVersion = 0;
+    //     state.present[side].renderVersion++;
+    //   }
+    // },
     updateImageState: (state, action) => {
       const { id, changes, side = state.activeSide, isRenderOrNot } = action.payload;
       const image = state.present[side]?.images?.find(img => img.id === id);
@@ -831,7 +969,66 @@ const TextFrontendDesignSlice = createSlice({
 
 
 
+    // updateImageState: (state, action) => {
+    //   const {
+    //     id,
+    //     changes,
+    //     side = state.activeSide,
+    //     isRenderOrNot,
+    //   } = action.payload;
+    //   // console.log("id", id, "changes........................", changes);
+    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    //   const image = state.present[side]?.images?.find((img) => img.id === id);
+    //   if (image && !image.locked) Object.assign(image, changes);
+    //   if (isRenderOrNot) {
+    //     state.present[side].setRendering = !state.present[side].setRendering;
+    //   }
+    //   state.future[side] = [];
+    // },
+    // duplicateImageState: (state, action) => {
+    //   const side = state.activeSide;
+    //   const idToDuplicate = action.payload;
 
+    //   if (!state.present[side]?.images) {
+    //     return;
+    //   }
+
+    //   const imageToDuplicate = state.present[side].images.find(
+    //     (img) => img.id === idToDuplicate
+    //   );
+
+    //   if (!imageToDuplicate) {
+    //     return;
+    //   }
+
+    //   if (imageToDuplicate.locked) {
+    //     return;
+    //   }
+
+
+    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+
+    //   const newPosition = {
+    //     x: imageToDuplicate.position.x + 20,
+    //     y: imageToDuplicate.position.y + 20,
+    //   };
+
+    //   const newImage = {
+    //     ...JSON.parse(JSON.stringify(imageToDuplicate)),
+    //     id: nanoid(),
+    //     position: newPosition,
+    //     left: newPosition.x,
+    //     top: newPosition.y,
+    //     layerIndex: state.present[side].images.length,
+    //   };
+
+    //   // console.log("New duplicated image:", newImage);
+
+    //   state.present[side].images.push(newImage);
+    //   state.present[side].selectedImageId = newImage.id;
+    //   state.future[side] = [];
+    //   state.present[side].setRendering = !state.present[side].setRendering;
+    // },
 
     // deleteeee reducers
     deleteTextState: (state, action) => {
@@ -913,7 +1110,14 @@ const TextFrontendDesignSlice = createSlice({
       state.present[side].setRendering = !state.present[side].setRendering;
     },
 
-
+    // deleteImageState: (state, action) => {
+    //   const side = state.activeSide;
+    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+    //   state.present[side].images = state.present[side].images.filter(
+    //     (img) => img.id !== action.payload
+    //   );
+    //   state.future[side] = [];
+    // },
 
     restoreDesignFromSavedState(state, action) {
       return { ...state, ...action.payload };
@@ -948,8 +1152,8 @@ const TextFrontendDesignSlice = createSlice({
         ...JSON.parse(JSON.stringify(elementToCopy)),
         id: nanoid(),
         position: {
-          x: elementToCopy.position.x + 20, // Offset to avoid overlap
-          y: elementToCopy.position.y + 20,
+          x: elementToCopy.position.x + 4, // Offset to avoid overlap
+          y: elementToCopy.position.y + 4,
         },
         layerIndex: totalElements,
       };
@@ -975,7 +1179,34 @@ const TextFrontendDesignSlice = createSlice({
       state.present[toSide].setRendering = !state.present[toSide].setRendering;
       state.future[toSide] = [];
     },
+    // copyTextToSide: (state, action) => {
+    //   const { fromSide, toSide, textId } = action.payload;
+    //   const imageToCopy = state.present[fromSide]?.images.find((i) => i.id === textId);
+    //   const textToCopy = state.present[fromSide]?.texts.find(
+    //     (t) => t.id === textId
+    //   );
 
+    //   if (!textToCopy) return;
+
+    //   state.past[toSide].push(
+    //     JSON.parse(JSON.stringify(state.present[toSide]))
+    //   );
+
+    //   const newText = {
+    //     ...JSON.parse(JSON.stringify(textToCopy)),
+    //     id: nanoid(),
+    //     position: {
+    //       x: textToCopy.position.x + 20, // Offset to avoid overlap
+    //       y: textToCopy.position.y + 20,
+    //     },
+    //     layerIndex: state.present[toSide].texts.length,
+    //   };
+
+    //   state.present[toSide].texts.push(newText);
+    //   state.present[toSide].selectedTextId = newText.id;
+    //   state.present[toSide].setRendering = !state.present[toSide].setRendering;
+    //   state.future[toSide] = [];
+    // },
     // -------------layering new
     moveElementForwardState: (state, action) => {
       const side = state.activeSide;

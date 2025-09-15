@@ -247,27 +247,91 @@ function App() {
 
 
   // Save Redux state to localStorage (iOS-friendly)
+
+  function transformReduxState(state) {
+    try {
+      if (!state || typeof state !== "object") return state;
+
+      const sides = ["front", "back", "leftSleeve", "rightSleeve"];
+      const newState = { ...state };
+
+      if (!newState.TextFrontendDesignSlice || typeof newState.TextFrontendDesignSlice !== "object") {
+        return newState;
+      }
+
+      const slice = { ...newState.TextFrontendDesignSlice };
+
+      const safeMapImages = (images = []) =>
+        Array.isArray(images)
+          ? images.map((img) => {
+            if (img && typeof img === "object" && img.base64CanvasImage) {
+              const { base64CanvasImage, src, ...rest } = img;
+              return {
+                ...rest,
+                base64CanvasImage: src, // ✅ move base64 → src
+              };
+            }
+            return img;
+          })
+          : images;
+
+      sides.forEach((side) => {
+        if (slice.present?.[side]?.images) {
+          slice.present = { ...slice.present };
+          slice.present[side] = { ...slice.present[side] };
+          slice.present[side].images = safeMapImages(slice.present[side].images);
+        }
+      });
+
+      newState.TextFrontendDesignSlice = slice;
+      return newState;
+    } catch (err) {
+      console.error("transformReduxState error:", err);
+      return state; // fallback
+    }
+  }
+
+
+  useEffect(() => {
+    if (!reduxState) return
+
+    const handleSaveState = () => {
+      try {
+        // const transformedState = transformReduxState(reduxState);
+        // console.log("transformedState", transformedState);
+        localStorage.setItem("savedReduxState", JSON.stringify(reduxState));
+      } catch (e) {
+        console.error("Error saving Redux state to localStorage:", e);
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        handleSaveState();
+      }
+    };
+
+    window.addEventListener("pagehide", handleSaveState);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("pagehide", handleSaveState);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [reduxState]);
+  // Save whenever reduxState changes
   // useEffect(() => {
-  //   const handleSaveState = () => {
-  //     try {
-  //       // localStorage.setItem("savedReduxState", JSON.stringify(reduxState));
-  //     } catch (e) {
-  //       console.error("Error saving Redux state to localStorage:", e);
-  //     }
-  //   };
+  //   if (!reduxState || !setWillRenderContinue) return;
 
-  //   window.addEventListener("pagehide", handleSaveState);
-  //   document.addEventListener("visibilitychange", () => {
-  //     if (document.visibilityState === "hidden") {
-  //       handleSaveState();
-  //     }
-  //   });
-
-  //   return () => {
-  //     window.removeEventListener("pagehide", handleSaveState);
-  //     document.removeEventListener("visibilitychange", handleSaveState);
-  //   };
+  //   try {
+  //     const transformedState = transformReduxState(reduxState);
+  //     console.log("Saving Redux state to localStorage...", transformedState);
+  //     localStorage.setItem("savedReduxState", JSON.stringify(transformedState));
+  //   } catch (e) {
+  //     console.error("Error saving Redux state:", e);
+  //   }
   // }, [reduxState]);
+
 
   // Fetch product list on mount
   useEffect(() => {

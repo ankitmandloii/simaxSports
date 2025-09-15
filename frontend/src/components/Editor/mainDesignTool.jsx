@@ -28,6 +28,7 @@ import {
   updateImageState,
   updateNameAndNumberDesignState,
   updateTextState,
+
 } from "../../redux/FrontendDesign/TextFrontendDesignSlice";
 import { useLocation, useNavigate } from "react-router-dom";
 import LayerModal from "../CommonComponent/layerComponent/layerComponent";
@@ -50,7 +51,8 @@ const MainDesignTool = ({
   setLeftSleevePreviewImage,
   setRightSleevePreviewImage,
   setPreviewForCurrentSide,
-  activeProductTitle
+  activeProductTitle,
+  isZoomedIn
 }) => {
   const warningColor = "skyblue"
 
@@ -317,7 +319,8 @@ const MainDesignTool = ({
       globalDispatch,
       activeSide,
       bringPopup,
-      productCategory
+      productCategory,
+      isZoomedIn
 
     )
   }
@@ -341,7 +344,8 @@ const MainDesignTool = ({
       updateNameAndNumberDesignState,
       bringPopup,
       getProductType(activeProductTitle),
-      activeNameAndNumberPrintSide
+      activeNameAndNumberPrintSide,
+      isZoomedIn
     );
   }
   const renderAllImageObjectsHelper = (openAieditorPopup, setOpenAieditorPopup) => {
@@ -363,7 +367,8 @@ const MainDesignTool = ({
       bringPopup,
       getProductType(activeProductTitle),
       openAieditorPopup,
-      setOpenAieditorPopup
+      setOpenAieditorPopup,
+      isZoomedIn
     )
   }
   // useEffect(() => {
@@ -2370,7 +2375,7 @@ const MainDesignTool = ({
     };
 
     window.addEventListener("resize", handleResize);
- 
+
     return () => {
       window.removeEventListener("resize", handleResize);
 
@@ -2419,7 +2424,7 @@ const MainDesignTool = ({
   useEffect(() => {
     // renderAllImageObjects();
     renderAllElements();
-  }, [imageContaintObject, textContaintObject, activeSide, isRender]); // 👈 Reacts to previewUrl change
+  }, [imageContaintObject, textContaintObject, activeSide, isRender, isZoomedIn]); // 👈 Reacts to previewUrl change
 
   const renderAllElements = () => {
     const canvas = fabricCanvasRef.current;

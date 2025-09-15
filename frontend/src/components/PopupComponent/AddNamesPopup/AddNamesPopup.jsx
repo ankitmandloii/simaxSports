@@ -106,9 +106,11 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
     if (!selectedProducts || selectedProducts.length === 0) return;
 
     const newAllProducts = [];
+    console.log("selectedProducts useEffect", selectedProducts);
 
     selectedProducts.forEach((product) => {
       const addedColors = product.addedColors || [];
+      const selectedColor = [product.selectedColor] || [];
       const consistentTitle = product?.title || product?.name || product?.handle || 'Product';
 
       const extraProducts = addedColors.map((variantProduct) => ({
@@ -123,21 +125,41 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
         swatchImg: variantProduct?.swatchImg
       }));
 
-      const mainProduct = {
-        name: product.name || product.title,
-        id: product.id.split("/").reverse()[0],
-        imgurl: product?.imgurl,
-        color: product?.selectedColor?.name,
-        size: product.selectedColor?.variant?.selectedOptions[1]?.value,
-        sizes: getSizeOptions(product), // assume this is a valid function in scope
-        title: consistentTitle,
-        swatchImg: product?.swatchImg || product?.selectedColor?.swatchImg,
-        selections: [],
-      };
+      // const mainProduct = {
+      //   name: product.name || product.title,
+      //   id: product.id.split("/").reverse()[0],
+      //   imgurl: product?.imgurl,
+      //   color: product?.selectedColor?.name,
+      //   size: product.selectedColor?.variant?.selectedOptions[1]?.value,
+      //   sizes: getSizeOptions(product), // assume this is a valid function in scope
+      //   title: consistentTitle,
+      //   swatchImg: product?.swatchImg || product?.selectedColor?.swatchImg,
+      //   selections: [],
+      // };
+      console.log(selectedColor, "selectedColor");
+
+      const extraProducts2 = selectedColor?.map((variantProduct) => {
+        console.log("----variantProduct", variantProduct)
+        const prod = {
+          id: variantProduct?.variant?.id?.split("/")?.reverse()[0],
+          imgurl: variantProduct?.img,
+          color: variantProduct?.name,
+          size: variantProduct?.variant?.selectedOptions[1]?.value,
+          sizes: variantProduct?.sizes?.map(size => ({ size: size.size, variantId: size?.variant?.id })) || [],
+          name: product?.name,
+          title: consistentTitle,
+          selections: [],
+          swatchImg: variantProduct?.swatchImg,
+        };
+        // console.log(prod, "prod");
+        return prod;
+      });
       // console.log("mainProduct", mainProduct);
-      // console.log("extraProducts", extraProducts);
+      console.log("addedColor", extraProducts2);
+      console.log("selectedColor", extraProducts);
       // Add main product and its variants
-      newAllProducts.push(mainProduct, ...extraProducts);
+      newAllProducts.push(...extraProducts, ...extraProducts2);
+      console.log("newAllProducts", newAllProducts);
     });
 
     setAllProducts(newAllProducts);
@@ -276,24 +298,27 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
                     <span></span>
                   </div>
 
-                  {(rowsByKey[product.id] || []).map((row) => (
+                  {(rowsByKey[product.id] || [])?.map((row) => (
                     <div key={row.selectionId} className={styles.tableRow}>
                       <select
                         value={row.size}
                         onChange={e => {
-                          const newId = product.sizes.find(s => s.size === e.target.value)?.variantId || row.selectionId;
-                          // console.log("newId", newId);
+                          console.log("selected size", e.target.value);
+                          const productSize = product.sizes.find(s => s.size === e.target.value);
+                          console.log("productSize", productSize);
+                          const newId = productSize?.variantId || row.selectionId;
+                          console.log("newId", newId);
                           updateRow(`${product.id}`, row.selectionId, 'size', e.target.value, newId)
                         }
                         }
-                        disabled={product.sizes.length === 0}
+                        disabled={product?.sizes?.length === 0}
                       >
                         {product.sizes.length === 0 ? (
                           <option value="">Not Available</option>
                         ) : (
                           <>
                             <option value="" disabled>Size</option>
-                            {product.sizes.map((s, indx) => {
+                            {product?.sizes?.map((s, indx) => {
                               const sizeValue = typeof s === 'object' ? s.size : s;
                               return (
                                 <option key={indx} value={sizeValue}>{sizeValue}</option>

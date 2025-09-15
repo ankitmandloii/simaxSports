@@ -606,6 +606,7 @@ function ProductContainer() {
             toggleZoom={toggleZoom}
             logo={logo}
             settingsForsides={settingsForsides}
+
           />
           {/* <DynamicDimensionBox /> */}
         </div>
@@ -622,6 +623,7 @@ function ProductContainer() {
             setLeftSleevePreviewImage={() => { }}
             setRightSleevePreviewImage={() => { }}
             activeProductTitle={activeProductTitle}
+            isZoomedIn={isZoomedIn}
           />
         </div>
 
@@ -637,6 +639,7 @@ function ProductContainer() {
             setLeftSleevePreviewImage={() => { }}
             setRightSleevePreviewImage={() => { }}
             activeProductTitle={activeProductTitle}
+            isZoomedIn={isZoomedIn}
 
           />
         </div>
@@ -653,7 +656,7 @@ function ProductContainer() {
             setLeftSleevePreviewImage={() => { }}
             setRightSleevePreviewImage={setRightSleevePreviewImage}
             activeProductTitle={activeProductTitle}
-
+            isZoomedIn={isZoomedIn}
           />
         </div>
 
@@ -669,7 +672,7 @@ function ProductContainer() {
             setRightSleevePreviewImage={() => { }}
             setLeftSleevePreviewImage={setLeftSleevePreviewImage}
             activeProductTitle={activeProductTitle}
-
+            isZoomedIn={isZoomedIn}
           />
         </div>
 
