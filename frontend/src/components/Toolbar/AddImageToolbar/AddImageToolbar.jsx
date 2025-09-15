@@ -44,6 +44,7 @@ const AddImageToolbar = () => {
   const { data: settings } = useSelector((state) => state.settingsReducer);
   const AdminSettingsforAioperation = settings?.artworkEditorSettings || {};
   const img = allImageData?.find((img) => img.id == selectedImageId);
+  // console.log("----img", img)
   const isLocked = img?.locked;
   const [rangeValuesSize, setRangeValuesSize] = useState(0);
   const [rangeValuesRotate, setRangeValuesRotate] = useState(0);
@@ -71,6 +72,7 @@ const AddImageToolbar = () => {
   const [bgColorPopup, setBGColorPopup] = useState(false);
   const [ColorPopup, setColorPopup] = useState(false);
   const [replacebgwithAi, setreplaceBgwithAi] = useState(true);
+  const [targetDpi, setTargetDpi] = useState(img?.dpi)
   //  const [activeFilter, setActiveFilter] = useState(filters[0]);
 
 
@@ -87,6 +89,21 @@ const AddImageToolbar = () => {
 
 
   // console.log("-----------imggg", imageContaintObject);
+  const DEFAULT_TARGET_DPI = 300;
+
+  function calcByTargetDpi({ originalWidthPx, originalHeightPx, scale, targetDpi }) {
+    const widthPixels = Math.round((originalWidthPx ?? 0) * (scale ?? 1));
+    const heightPixels = Math.round((originalHeightPx ?? 0) * (scale ?? 1));
+
+    return {
+      pixels: { width: widthPixels, height: heightPixels },
+      inches: {
+        width: (widthPixels / targetDpi).toFixed(2),
+        height: (heightPixels / targetDpi).toFixed(2),
+      },
+      dpi: targetDpi,
+    };
+  }
 
   useEffect(() => {
 
@@ -125,6 +142,39 @@ const AddImageToolbar = () => {
       setSolidColor(img.solidColor);
     } catch { }
   }, [img, selectedImageId, resetDefault, img?.loading]);
+  useEffect(() => {
+    if (!img?.src || (img?.originalWidth && img?.originalHeight)) return;
+    const probe = new Image();
+    probe.crossOrigin = "anonymous";
+    probe.src = img.src.split("?")[0];
+    probe.onload = () => {
+      dispatch(updateImageState({
+        id: selectedImageId,
+        changes: {
+          originalWidth: probe.width,
+          originalHeight: probe.height,
+        },
+        isRenderOrNot: true,
+      }));
+    };
+  }, [img?.src, img?.originalWidth, img?.originalHeight, dispatch, selectedImageId]);
+  const getDisplayDimensions = () => {
+    if (!img?.originalWidth || !img?.originalHeight) {
+      return {
+        pixels: { width: 0, height: 0 },
+        inches: { width: '0.00', height: '0.00' },
+        dpi: targetDpi,
+      };
+    }
+    const scale = img?.scaledValue ?? 1;
+    return calcByTargetDpi({
+      originalWidthPx: img.originalWidth,
+      originalHeightPx: img.originalHeight,
+      scale,
+      targetDpi,
+    });
+  };
+
 
   async function processAndReplaceColors(imageSrc, color, editColor = false, extractedColors = []) {
     try {
@@ -363,7 +413,7 @@ const AddImageToolbar = () => {
   }
 
   function replaceBgHandler(imageSrc) {
-    console.log("--------------------replace call", imageSrc)
+    // console.log("--------------------replace call", imageSrc)
     // const changes = {
     //   scaleX: 1,
     //   removeBg: false,
@@ -429,42 +479,117 @@ const AddImageToolbar = () => {
     // console.log(filters, "&&&&&&&&&&&&")
   }, [activeEffects, selectedImageId, img?.src]);
 
-  const handleRangeInputSizeChange = (e) => {
+  // const handleRangeInputSizeChange = (e) => {
 
+  //   const rawValue = e.target.value;
+  //   // console.log("------value", rawValue)
+  //   setRangeValuesSize(rawValue);
+
+  //   const parsed = parseFloat(rawValue);
+  //   if (isNaN(parsed) || parsed < 0.2 || parsed > 10) return;
+
+  //   const scaleX = img?.scaleX;
+  //   const scaleY = img?.scaleY;
+
+  //   // Use average of current X and Y scale as "prev size"
+  //   const currentAvg = (scaleX + scaleY) / 2;
+
+  //   const scaleRatio = parsed / currentAvg;
+  //   globalDispatch("loadingText", true);
+  //   globalDispatch("scaleX", scaleX * scaleRatio);
+  //   globalDispatch("scaleY", scaleY * scaleRatio);
+  //   globalDispatch("scaledValue", parsed);
+  //   globalDispatch("loadingText", true);
+  //   setResetDefault(false);
+  // };
+  const handleRangeInputSizeChange = (e) => {
     const rawValue = e.target.value;
-    // console.log("------value", rawValue)
     setRangeValuesSize(rawValue);
 
     const parsed = parseFloat(rawValue);
     if (isNaN(parsed) || parsed < 0.2 || parsed > 10) return;
 
-    const scaleX = img?.scaleX;
-    const scaleY = img?.scaleY;
-
-    // Use average of current X and Y scale as "prev size"
+    const scaleX = img?.scaleX ?? 1;
+    const scaleY = img?.scaleY ?? 1;
     const currentAvg = (scaleX + scaleY) / 2;
-
     const scaleRatio = parsed / currentAvg;
-    globalDispatch("loadingText", true);
-    globalDispatch("scaleX", scaleX * scaleRatio);
-    globalDispatch("scaleY", scaleY * scaleRatio);
-    globalDispatch("scaledValue", parsed);
-    globalDispatch("loadingText", true);
+
+    const dims = img?.originalWidth && img?.originalHeight
+      ? calcByTargetDpi({
+        originalWidthPx: img.originalWidth,
+        originalHeightPx: img.originalHeight,
+        scale: parsed,
+        targetDpi,
+      })
+      : { pixels: { width: 0, height: 0 }, inches: { width: '0.00', height: '0.00' }, dpi: targetDpi };
+
+    dispatch(updateImageState({
+      id: selectedImageId,
+      changes: {
+        loadingText: true,
+        scaleX: scaleX * scaleRatio,
+        scaleY: scaleY * scaleRatio,
+        scaledValue: parsed,
+
+        // keep everything in sync with Model A
+        widthPixels: dims.pixels.width,
+        heightPixels: dims.pixels.height,
+        widthInches: dims.inches.width,
+        heightInches: dims.inches.height,
+        dpi: dims.dpi, // = targetDpi
+        loadingText: false,
+      },
+      isRenderOrNot: true,
+    }));
     setResetDefault(false);
   };
 
   const DPI = 300; // dots per inch
 
+  // const handleBlur = () => {
+  //   const parsed = parseFloat(rangeValuesSize);
+  //   if (isNaN(parsed) || parsed < 0.2 || parsed > 10) {
+  //     setRangeValuesSize("1");
+  //     globalDispatch("loadingText", true);
+
+  //     globalDispatch("scaleX", 1);
+  //     globalDispatch("scaleY", 1);
+  //     globalDispatch("scaledValue", 1);
+  //     globalDispatch("loadingText", false);
+  //   }
+  //   setResetDefault(false);
+  // };
   const handleBlur = () => {
     const parsed = parseFloat(rangeValuesSize);
     if (isNaN(parsed) || parsed < 0.2 || parsed > 10) {
+      const fallbackScale = 1;
       setRangeValuesSize("1");
-      globalDispatch("loadingText", true);
 
-      globalDispatch("scaleX", 1);
-      globalDispatch("scaleY", 1);
-      globalDispatch("scaledValue", 1);
-      globalDispatch("loadingText", false);
+      const dims = img?.originalWidth && img?.originalHeight
+        ? calcByTargetDpi({
+          originalWidthPx: img.originalWidth,
+          originalHeightPx: img.originalHeight,
+          scale: fallbackScale,
+          targetDpi,
+        })
+        : { pixels: { width: 0, height: 0 }, inches: { width: '0.00', height: '0.00' }, dpi: targetDpi };
+
+      dispatch(updateImageState({
+        id: selectedImageId,
+        changes: {
+          loadingText: true,
+          scaleX: 1,
+          scaleY: 1,
+          scaledValue: 1,
+          widthPixels: dims.pixels.width,
+          heightPixels: dims.pixels.height,
+          widthInches: dims.inches.width,
+          heightInches: dims.inches.height,
+          dpi: dims.dpi,
+          loadingText: false,
+        },
+        isRenderOrNot: true,
+      }));
     }
     setResetDefault(false);
   };
@@ -701,7 +826,7 @@ const AddImageToolbar = () => {
   const hasMounted = useRef(false); // ✅ move to top level
 
   useEffect(() => {
-    console.log("hasmounted", hasMounted)
+    // console.log("hasmounted", hasMounted)
     if (!hasMounted.current) {
       hasMounted.current = true;
       return; // ⛔ skip on first render
@@ -713,7 +838,7 @@ const AddImageToolbar = () => {
   function removeBackgroundHandler(e) {
     // update local state
     globalDispatch("loading", true);
-    console.log("clicked on backgournd remove button");
+    // console.log("clicked on backgournd remove button");
     const checked = !removeBackground;
     const canvasToggle = document.querySelector(`[id^="canvas-"] input[type="checkbox"]`);
     if (canvasToggle && canvasToggle.checked !== checked) {
@@ -743,7 +868,7 @@ const AddImageToolbar = () => {
     // update local state
     // const value = isActive('invert=true');
     // toggle('invert=true', value)
-    console.log("invert color funciton called");
+    // console.log("invert color funciton called");
     setInvertColor(!invertColor);
     // // update redux store
     globalDispatch("invertColor", !invertColor);
@@ -756,7 +881,7 @@ const AddImageToolbar = () => {
     else {
       globalDispatch("loading", true);
       Newbase64image = await invertColorsAndGetUrl(img.getBase64CanvasImage || base64Image || previewUrl);
-      console.log("inverted image in base64", Newbase64image);
+      // console.log("inverted image in base64", Newbase64image);
       globalDispatch("base64CanvasImage", Newbase64image);
       globalDispatch("base64CanvasImageForSinglelColor", String(Newbase64image));
       globalDispatch("loading", false);
@@ -773,7 +898,7 @@ const AddImageToolbar = () => {
     // setSolidColor(!solidColor);
     globalDispatch("solidColor", !solidColor);
     globalDispatch("loading", true);
-    console.log("solid color funciton called")
+    // console.log("solid color funciton called")
 
     // handleImage(previewUrl, color);
     const newBase64Image = await makeSolid(base64Image, threshold);
@@ -1124,7 +1249,7 @@ const AddImageToolbar = () => {
     setSingleColor(color);
 
     // handleImage(previewUrl, color);
-    console.log("color cahnges funcitonc called", color, previewUrl);
+    // console.log("color cahnges funcitonc called", color, previewUrl);
     const newBase64Image = await handleImage(img.src || previewUrl, color, selectedFilter, invertColor.editColor);
     // setPreviewUrl(String(newImgUrl));
     // setBase64Image(newBase64Image)
@@ -1293,7 +1418,7 @@ const AddImageToolbar = () => {
 
     globalDispatch("loading", true);
     globalDispatch("thresholdValue", threshold);
-    console.log("solid color funciton called")
+    // console.log("solid color funciton called")
 
     // handleImage(previewUrl, color);
     const newBase64Image = await makeSolid(base64Image, threshold);
@@ -1315,7 +1440,7 @@ const AddImageToolbar = () => {
   }
 
   function replaceColorAndGetBase64(imageSrc, targetHex, newHex, tolerance = 50) {
-    console.log(targetHex, newHex, "replaceColorAndGetBase64 functiion", imageSrc)
+    // console.log(targetHex, newHex, "replaceColorAndGetBase64 functiion", imageSrc)
     return new Promise(async (resolve, reject) => {
       const canvas = document.getElementById('HelperCanvas');
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -1395,7 +1520,7 @@ const AddImageToolbar = () => {
 
 
   const applyColorBlend = async (originalColor, newColor, index) => {
-    console.log("apply color blend fucntion called", originalColor, newColor, previewUrl);
+    // console.log("apply color blend fucntion called", originalColor, newColor, previewUrl);
     globalDispatch("loading", true);
     setLoading(true);
     const cuurentBase64Image = await replaceColorAndGetBase64(img.base64CanvasImage || base64Image || previewUrl, originalColor, newColor);
@@ -1416,11 +1541,17 @@ const AddImageToolbar = () => {
 
 
   };
+  // function getDPILabel(dpi) {
+  //   if (dpi <= 72) return 'Web';
+  //   if (dpi <= 150) return 'Print';
+  //   return 'High Print';
+  // }
   // console.log("previewUrl", previewUrl, "image src", img?.src);
   //  if(loading) return <div className={styles.loadingOverlay}><div className={styles.loadingSpinner} /><p>Applying changes...</p></div>;
   return (
 
     <div className="toolbar-main-container ">
+
       {replacebgwithAi ? (
         <>
           <div className='toolbar-main-heading'>
@@ -1551,6 +1682,8 @@ const AddImageToolbar = () => {
                       </div>
                     </>
                   )}
+
+
 
                   {selectedFilter === "Black/Whte" && null}
 
@@ -1737,6 +1870,42 @@ const AddImageToolbar = () => {
                   )
                   }
 
+
+                  <hr />
+                  <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                    {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Dimensions & DPI :    </div> */}
+
+                    {(() => {
+                      const dims = getDisplayDimensions();
+                      return (
+                        <div className={styles.toolbarBoxFontValueSetInnerActioninch}>
+                          <p><span>Width: </span> {dims.inches.width} IN</p>
+                          <p><span>Height:</span> {dims.inches.height} IN</p>
+                          {/* <p><span>Pixels: </span>{dims.pixels.width} × {dims.pixels.height}</p> */}
+                          {/* <p>DPI: {targetDpi} ({getDPILabel(targetDpi)})</p>
+                            <p>Pixels: {dims.pixels.width} × {dims.pixels.height}</p> */}
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  <hr />
+                  <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                    {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Dimensions & DPI :    </div> */}
+
+                    {(() => {
+                      const dims = getDisplayDimensions();
+                      return (
+                        <div className={styles.toolbarBoxFontValueSetInnerActioninch}>
+                          {/* <p><span>Width: </span> {dims.inches.width} IN</p>
+                          <p><span>Height:</span> {dims.inches.height} IN</p> */}
+                          <p><span>Pixels: </span>{dims.pixels.width} × {dims.pixels.height}</p>
+                          <p>DPI: {targetDpi} </p>
+                          {/* <p>Pixels: {dims.pixels.width} × {dims.pixels.height}</p>  */}
+                        </div>
+                      );
+                    })()}
+                  </div>
 
                   <hr />
 

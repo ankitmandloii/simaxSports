@@ -381,10 +381,10 @@ const AddTextToolbar = () => {
     // dispatch(moveTextBackwardState(selectedTextId));
     // dispatch(moveElementBackwardState(selectedTextId));
     if (selectedTextId) {
-      console.log('Button clicked: Send to Back', {
-        selectedTextId,
-        timestamp: Date.now()
-      });
+      //  console.log ('Button clicked: Send to Back', {
+      //     selectedTextId,
+      //     timestamp: Date.now()
+      //   });
       dispatch(moveElementBackwardState(selectedTextId));
     }
 

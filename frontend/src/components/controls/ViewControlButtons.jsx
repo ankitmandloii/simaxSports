@@ -27,7 +27,7 @@ const ViewControlButtons = ({
             setToggleTitle("back");
             ShowFront();
         }
-        console.log('Toggle Front/Back View');
+        // console.log('Toggle Front/Back View');
     };
 
     const handleLeftRightToggle = () => {

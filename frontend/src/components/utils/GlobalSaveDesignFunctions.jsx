@@ -13,7 +13,7 @@ export const fetchDesign = async (customerEmail) => {
         );
 
         const data = response.data;
-        console.log("Fetched designs:", data);
+        // console.log("Fetched designs:", data);
         return data;
 
         // Check if the design with the given designId exists
@@ -122,7 +122,7 @@ export const uploadBlobData = async (blobDataArray) => {
 // Save design to the backend
 export const saveDesignFunction = async (payload) => {
     try {
-        console.log("desing payload", payload)
+        // console.log("desing payload", payload)
         const response = await apiConnecter(
             "POST",
             "design/save-designfrontEnd",
@@ -130,7 +130,7 @@ export const saveDesignFunction = async (payload) => {
         );
 
         const responseData = response.data;
-        console.log("Design saved successfully:", responseData);
+        // console.log("Design saved successfully:", responseData);
         return responseData;
     } catch (error) {
         console.error("Error saving design:", error);
@@ -145,7 +145,7 @@ export const sendEmailDesign = async (payload) => {
             "design/send-email-design",
             payload
         );
-        console.log("Email sent successfully:", response.data);
+        // console.log("Email sent successfully:", response.data);
         return response.data;
     } catch (error) {
         console.error("Error sending email:", error);
@@ -164,7 +164,7 @@ export const updateDesignFunction = async (payload) => {
         //     },
         //     body: JSON.stringify(payload),
         // });
-        console.log("Payload for updating design:", payload);
+        // console.log("Payload for updating design:", payload);
         const response = await apiConnecter(
             "PATCH",
             "design/updateDesignFromFrontEnd",
@@ -172,7 +172,7 @@ export const updateDesignFunction = async (payload) => {
         );
 
         const responseData = response.data;
-        console.log("Design updated successfully:", responseData);
+        // console.log("Design updated successfully:", responseData);
         return responseData;
     } catch (error) {
         throw new Error(`Failed to update design: ${error.message}`);

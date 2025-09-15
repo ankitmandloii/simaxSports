@@ -29,6 +29,12 @@ textarea {
   /* Show vertical scrollbar when needed */
 }
 
+.inches {
+  display: flex;
+  gap: 1rem;
+  margin-left: 4rem;
+}
+
 
 
 .addTextFirstToolbarBoxContainer {
@@ -175,12 +181,40 @@ textarea {
   padding: 0 10px;
 }
 
+.toolbarBoxFontValueSetInnerContainerr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+}
+
 .toolbarBoxFontValueSetInnerActionlogo {
   position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
+.toolbarBoxFontValueSetInnerActioninch {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  gap: 2rem;
+  /* Explicitly set if needed */
+}
+
+.toolbarBoxFontValueSetInnerActioninch p {
+  font-size: 12px;
+}
+
+/* .toolbarBoxFontValueSetInnerActioninch span {
+  font-weight: bold;
+  font-size: 13px;
+} */
+
 
 .toolbarBoxFontValueSetInnerActionlogo span {
   /* margin-left: 11px; */
@@ -212,6 +246,10 @@ textarea {
   display: flex;
   align-items: center;
   gap: 7px;
+}
+
+.inchRow {
+  display: flex;
 }
 
 .noneSvgIcon {

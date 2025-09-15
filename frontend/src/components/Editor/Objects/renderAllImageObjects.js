@@ -380,6 +380,7 @@ const renderAllImageObjects = (
   const MAX_HEIGHT = 180;
 
   const getScaled = (img, userScaleX = 1, userScaleY = 1) => {
+    console.log("actual image width and height ", img.width, img.height)
     const scale = Math.min(MAX_WIDTH / img.width, MAX_HEIGHT / img.height);
     return {
       scaleX: scale * userScaleX,
@@ -666,6 +667,14 @@ const renderAllImageObjects = (
             const center = obj.getCenterPoint();
             obj.setPositionByOrigin(center, "center", "center");
             obj.setCoords();
+            const imageWidthPx = newImg?.getScaledWidth();
+            const imageHeightPx = newImg?.getScaledHeight();
+            // console.log("---------------- imageWidthPx", imageWidthPx)
+            // console.log("---------------- imageHeightPx", imageHeightPx)
+
+
+            globalDispatch("width", imageWidthPx, id);
+            globalDispatch("height", imageHeightPx, id);
             globalDispatch("position", { x: obj.left, y: obj.top }, id);
             globalDispatch("angle", obj.angle, id);
             handleScale(e);
@@ -968,7 +977,15 @@ const renderAllImageObjects = (
             const center = obj.getCenterPoint();
             obj.setPositionByOrigin(center, "center", "center");
             obj.setCoords();
+            const imageWidthPx = img?.getScaledWidth();
+            const imageHeightPx = img?.getScaledHeight();
             globalDispatch("position", { x: obj.left, y: obj.top }, id);
+
+            globalDispatch("width", imageWidthPx, id);
+            globalDispatch("height", imageHeightPx, id);
+
+
+
             globalDispatch("angle", obj.angle, id);
             handleScale(e);
             canvas.renderAll();

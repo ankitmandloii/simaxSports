@@ -39,20 +39,30 @@ const UploadArtToolbar = () => {
     try {
       const arrayBuffer = await file.arrayBuffer();
       const tags = ExifReader.load(arrayBuffer);
+      // console.log("Full EXIF tags:", tags);
+      let dpi = null;
       const xDpi = tags.XResolution?.value;
       const yDpi = tags.YResolution?.value;
+      const resolutionUnit = tags.ResolutionUnit?.value;
 
-      let isDpiValid = false;
-      let isLowDpiWarning = false;
+      // console.log("XResolution:", xDpi, "YResolution:", yDpi, "ResolutionUnit:", resolutionUnit);
 
-      if (xDpi && yDpi) {
-        const dpi = Math.max(xDpi, yDpi);
-        if (dpi >= 300) {
-          isDpiValid = true;
-        } else if (dpi >= 100) {
-          isDpiValid = true;
-          isLowDpiWarning = true;
-        }
+      // Only use EXIF DPI if ResolutionUnit is 2 (inches) and values are reasonable
+      if (xDpi && yDpi && resolutionUnit === 2 && Math.max(xDpi, yDpi) > 1) {
+        dpi = Math.max(xDpi, yDpi);
+        // console.log("Calculated DPI from EXIF:", dpi);
+      } else {
+        console.log("Invalid or missing EXIF DPI data, using fallback estimation");
+        // Fallback to estimateDPI logic
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        await new Promise((resolve) => {
+          img.onload = resolve;
+          img.src = url;
+        });
+        dpi = estimateDPI(file, img.width, img.height);
+        URL.revokeObjectURL(url); // Clean up
+        console.log("Estimated DPI:", dpi);
       }
 
       const imageBitmap = await createImageBitmap(file);
@@ -60,29 +70,55 @@ const UploadArtToolbar = () => {
       const isHighRes = width >= 1000 || height >= 1000;
       const isPrintReady = width >= 1200 && height >= 1200;
 
-      if (!isDpiValid && !isHighRes) {
+      if (!dpi && !isHighRes) {
+        // console.log(`${file.name} flagged as low quality due to no DPI and small size`);
         return {
           valid: true,
-          warning: `${file.name} is low quality (DPI < 100 and small size). Consider using super resolution to enhance quality.`,
+          warning: `${file.name} is low quality (no DPI data and small size). Consider using super resolution to enhance quality.`,
+          dpi
         };
       }
 
-      if (isLowDpiWarning || !isPrintReady) {
+      if (dpi && dpi < 300 && !isPrintReady) {
+        // console.log(`${file.name} flagged as not print-ready due to DPI < 300 or small dimensions`);
         return {
           valid: true,
           warning: `${file.name} may not be print-ready (DPI < 300 or small dimensions). Consider using super resolution to enhance quality.`,
+          dpi
         };
       }
 
-      return { valid: true };
-    } catch {
-      return { valid: true };
+      // console.log(`${file.name} DPI validated as:`, dpi);
+      return { valid: true, dpi };
+    } catch (error) {
+      console.error("Error reading EXIF data:", error);
+      console.log("Falling back to DPI estimation due to error");
+      // Fallback to estimateDPI logic on error
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      await new Promise((resolve) => {
+        img.onload = resolve;
+        img.src = url;
+      });
+      const dpi = estimateDPI(file, img.width, img.height);
+      URL.revokeObjectURL(url); // Clean up
+      console.log("Estimated DPI on error:", dpi);
+      return { valid: true, dpi };
     }
+  };
+
+  const estimateDPI = (file, width, height) => {
+    const fileSizeKB = file.size / 1024;
+    const megapixels = (width * height) / 1000000;
+    if (fileSizeKB > megapixels * 800) return 300;
+    if (fileSizeKB > megapixels * 300) return 150;
+    return 72;
   };
 
   const handleFiles = async (files) => {
     const BASE_URL = process.env.REACT_APP_BASE_URL;
     const stateForSuperResolution = [];
+    const dpiValues = [];
     if (!files.length) return;
 
     const formData = new FormData();
@@ -93,6 +129,7 @@ const UploadArtToolbar = () => {
         if (result.warning) {
           stateForSuperResolution[i] = true;
         }
+        dpiValues[i] = result.dpi;
       }
       formData.append("images", file);
     }
@@ -107,8 +144,8 @@ const UploadArtToolbar = () => {
 
       response.data.files.forEach((fileObj, index) => {
         dispatch(addImageState({
-          // src: `${fileObj.url}${stateForSuperResolution[index] ? "?auto=enhance&sharp=80&upscale=true" : ""}`
-          src: `${fileObj.url}`
+          src: `${fileObj.url}`,
+          dpi: dpiValues[index] || null
         }));
       });
 
@@ -164,14 +201,6 @@ const UploadArtToolbar = () => {
   }, []);
 
   const handleClick = () => inputRef.current.click();
-  // const handleDrop = async (e) => {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-  //   if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-  //     await handleFiles(e.dataTransfer.files);
-  //     e.dataTransfer.clearData();
-  //   }
-  // };
 
   const handleOpenGoogleDrivePicker = () => {
     openPicker({
@@ -237,10 +266,6 @@ const UploadArtToolbar = () => {
               <p>Your artwork will be centered within your product</p>
               <p>You can adjust the placement after upload</p>
             </div>
-            {/* <button className={style.uploadFileBtn}>
-              <ChooseFileIcon />
-              CHOOSE FILE(S)
-            </button> */}
           </div>
         </div>
       )}
@@ -255,7 +280,6 @@ const UploadArtToolbar = () => {
         <div className={style.toolbarBox}>
           <div
             className={style.dropZone}
-            // onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
           >
             <p>Drag & Drop Artwork Files </p>
@@ -283,7 +307,6 @@ const UploadArtToolbar = () => {
               </div>
             )}
 
-
             <DropboxPicker
               onFilesSelected={async (files) => {
                 if (files && files.length > 0) {
@@ -306,16 +329,12 @@ const UploadArtToolbar = () => {
                 }
               }}
             >
-              {
-                settingsForUploadSection?.enableDropbox && (
-                  <div className={style.uploadOptionBtn}>
-                    <img src={dropBox} alt="Dropbox" />
-                    <p>USE DROPBOX</p>
-                  </div>
-                )
-
-              }
-
+              {settingsForUploadSection?.enableDropbox && (
+                <div className={style.uploadOptionBtn}>
+                  <img src={dropBox} alt="Dropbox" />
+                  <p>USE DROPBOX</p>
+                </div>
+              )}
             </DropboxPicker>
           </div>
 

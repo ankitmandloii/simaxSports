@@ -48,7 +48,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
       count: imagesPerPage
     };
 
-    console.log('Request Body:', requestBody);
+    // console.log('Request Body:', requestBody);
     setLoading(true);
 
     try {
@@ -71,7 +71,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
       //   throw new Error(`Server returned non-JSON: ${text}`);
       // }
 
-      console.log('API Response:', data);
+      // console.log('API Response:', data);
       // if (data.errors?.[0].error?.error?.message) {
       //   throw new Error(data.errors[0].error.error.message);
       // }
@@ -91,7 +91,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
 
     } catch (err) {
       if (err.name === 'AbortError') {
-        console.log('Image generation aborted'); // 👈 silent cancel (no toast)
+        // console.log('Image generation aborted'); // 👈 silent cancel (no toast)
       } else {
         console.error('API error:', err.message);
         toast.error(err.message ?? 'Failed to generate images');
@@ -155,7 +155,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
 
     try {
       const fetchUrl = `${BASE_URL}imageOperation/fetch-image?url=${encodeURIComponent(img.urls.full)}`;
-      console.log("fetchhhhh", fetchUrl);
+      // console.log("fetchhhhh", fetchUrl);
       const response = await fetch(fetchUrl, { signal: controller.signal });
 
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);

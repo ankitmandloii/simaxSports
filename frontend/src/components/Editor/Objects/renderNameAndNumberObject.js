@@ -135,7 +135,7 @@ const renderNameAndNumber = (
   group._calcBounds();
   group._updateObjectsCoords();
   group.set({
-    width: fontSize === "small" ? 60 : 190,
+    width: fontSize === "small" ? 60 : 250,
     left: position?.x || canvas.getWidth() / 2,
     top: position?.y || canvas.getHeight() / 2,
 

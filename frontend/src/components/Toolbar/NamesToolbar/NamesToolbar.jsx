@@ -105,7 +105,7 @@ const NamesToolbar = () => {
       <div className="toolbar-main-heading">
         <h5 className="Toolbar-badge">Names And Numbers</h5>
         <h2>Names & Numbers Tools</h2>
-        <h2 className='fonttest'>NAME</h2>
+
       </div>
 
       <div className="toolbar-box">

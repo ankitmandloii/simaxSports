@@ -50,8 +50,8 @@ a.step:first-child:after {
   top: 31%;
   position: absolute;
   transform: translateY(-50%);
-  left: 78.8%;
-  max-width: 298px;
+  left: 80%;
+  max-width: 290px;
 }
 
 .leftSection {

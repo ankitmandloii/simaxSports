@@ -550,7 +550,7 @@ async function renderDesignOnCanvas(canvasWidth, canvasHeight, canvas, backgroun
   addNumber) {
   // Clear the canvas before rendering new design
   canvas.clear();
-  console.log("nameAndNumberDesignState in renderDesignOnCanvas step 2", nameAndNumberDesignState)
+  // console.log("nameAndNumberDesignState in renderDesignOnCanvas step 2", nameAndNumberDesignState)
 
   // Add background image (if provided)
   if (backgroundImageSrc) {
@@ -594,7 +594,7 @@ async function renderDesignOnCanvas(canvasWidth, canvasHeight, canvas, backgroun
   }
 
   // Render text elements (synchronous)
-  console.log("nameAndNumberDesignState before desing", nameAndNumberDesignState)
+  // console.log("nameAndNumberDesignState before desing", nameAndNumberDesignState)
   {
 
     nameAndNumberDesignState && renderNameAndNumberObjectHeloper(nameAndNumberDesignState, canvas, addName,
@@ -628,7 +628,7 @@ function exportCanvasAsPNG(canvas) {
 export async function generateDesigns(backgrounds, texts, images, nameAndNumberDesignState, activeSide, canvasWidth, canvasHeight, addName,
   addNumber) {
   const exportedImages = [];
-  console.log("nameAndNumberDesignState in generateDesigns step 1", nameAndNumberDesignState)
+  // console.log("nameAndNumberDesignState in generateDesigns step 1", nameAndNumberDesignState)
 
   // Define a consistent size for the off-screen canvases
   const OFFSCREEN_CANVAS_WIDTH = 500;

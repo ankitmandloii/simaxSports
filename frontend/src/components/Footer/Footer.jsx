@@ -332,7 +332,7 @@ const Footer = () => {
       //   return { front: frontDesignImages[0], back: backDesignImages[0] };
       // });
       const designPromises = reviewItems.map(async (item) => {
-        console.log("-------------itemm", item)
+        // console.log("-------------itemm", item)
         // const front = (await generateDesigns([item.allImages[0]], present.front.texts, present.front.images, activeSide, canvasWidth, canvasHeight))[0];
         let front, back;
 

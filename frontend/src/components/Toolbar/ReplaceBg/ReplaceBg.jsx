@@ -9,7 +9,7 @@ import UploadBox from '../../utils/UploadBox';
 import { useNavigate } from 'react-router-dom';
 
 const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler }) => {
-    console.log("========img", img);
+    // console.log("========img", img);
     const [prompt, setPrompt] = useState('');
     const [loading, setLoading] = useState(false);
     const [resultImage, setResultImage] = useState(null);
@@ -33,9 +33,9 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
     // Convert image URL to File object
     const urlToFile = async (url, filename, mimeType) => {
         try {
-            console.log('Fetching URL:', url);
+            // console.log('Fetching URL:', url);
             const res = await fetch(url, { mode: 'cors' });
-            console.log('Fetch response:', res.status, res.statusText);
+            // console.log('Fetch response:', res.status, res.statusText);
             if (!res.ok) {
                 const text = await res.text();
                 throw new Error(`Failed to fetch image: ${res.status} ${res.statusText} - ${text}`);
@@ -104,7 +104,7 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
         const controller = new AbortController();
         setGenerateAbortController(controller);
         try {
-            console.log('Generating with img.src:', img.src);
+            // console.log('Generating with img.src:', img.src);
             const file = await urlToFile(img.src, 'image.jpg', 'image/jpeg');
             const formData = new FormData();
             const resizedImage = await resizeImage(img.src, 1024);
@@ -122,7 +122,7 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
                 body: formData,
                 signal: controller.signal,
             });
-            console.log('editImageByAi response:', res.status, res.statusText);
+            // console.log('editImageByAi response:', res.status, res.statusText);
 
             if (!res.ok) {
                 const errorText = await res.text();
@@ -163,14 +163,14 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
         try {
             let file;
             if (imageUrl === resultImage && resultBlob) {
-                console.log('Using stored resultBlob for upload');
+                // console.log('Using stored resultBlob for upload');
                 file = new File([resultBlob], `generated-image-${Date.now()}.jpg`, { type: resultBlob.type });
             } else {
-                console.log('Fetching image via fetch-image endpoint:', imageUrl);
+                // console.log('Fetching image via fetch-image endpoint:', imageUrl);
                 const fetchUrl = `${BASE_URL}imageOperation/fetch-image?url=${encodeURIComponent(imageUrl)}`;
                 const response = await fetch(fetchUrl, { signal: controller.signal, mode: 'cors' });
 
-                console.log('fetch-image response:', response.status, response.statusText);
+                // console.log('fetch-image response:', response.status, response.statusText);
                 if (!response.ok) {
                     const text = await response.text();
                     throw new Error(`HTTP error! status: ${response.status} - ${text}`);
@@ -206,7 +206,7 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
                 }
             );
 
-            console.log('Upload response:', uploadResponse.data);
+            // console.log('Upload response:', uploadResponse.data);
             if (!Array.isArray(uploadResponse.data.files)) {
                 throw new Error('Invalid upload response structure');
             }
@@ -283,7 +283,7 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
                         <span
                             className={styles.crossIcon}
                             onClick={(e) => {
-                                console.log("---------------------crosssss");
+                                // console.log("---------------------crosssss");
                                 e.stopPropagation();
                                 setreplaceBgwithAi(true);
                             }}

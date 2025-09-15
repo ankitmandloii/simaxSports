@@ -171,14 +171,14 @@ const Review = () => {
         printSide: activeNameAndNumberPrintSide || "back",
       }))
     );
-    console.log("NamesAndNumberPrintAreas", areas)
+    // console.log("NamesAndNumberPrintAreas", areas)
     return areas;
 
   }
 
   const AddToCartClick = (overrideEmail = null) => {
     const effectiveEmail = overrideEmail || customerEmail;
-    console.log("----------effectiveEmail", effectiveEmail);
+    // console.log("----------effectiveEmail", effectiveEmail);
     if (!effectiveEmail) {
       setShowEmailPopup(true);
       return;
@@ -214,7 +214,7 @@ const Review = () => {
         setShowPopup(true);
       }
     }
-    console.log("---------addnamedesignSlice", nameAndNumberDesign, nameAndNumberProductList)
+    // console.log("---------addnamedesignSlice", nameAndNumberDesign, nameAndNumberProductList)
   }, [isFetchingDesign, retrieveLoader, designExists]);
 
   const reviewItems = Object.entries(productState).map(([id, product]) => {
@@ -222,7 +222,7 @@ const Review = () => {
       if (qty > 0) acc[size] = qty;
       return acc;
     }, {});
-    console.log("sizes", sizes);
+    // console.log("sizes", sizes);
     return {
       name: product?.name,
       color: product?.color,
@@ -311,7 +311,7 @@ const Review = () => {
   }
 
   async function makeVariantDataForShopify(reviewItems, CloudinaryImages) {
-    console.log("variantttttttttttttt")
+    // console.log("variantttttttttttttt")
     try {
       const splitIntoPairs = (arr) => {
         const result = [];
@@ -323,7 +323,7 @@ const Review = () => {
 
       const ShopifyData = [];
       const groupedImages = splitIntoPairs(CloudinaryImages.files);
-      console.log("CloudinaryImages", CloudinaryImages);
+      // console.log("CloudinaryImages", CloudinaryImages);
 
       for (let index = 0; index < reviewItems.length; index++) {
         const product = reviewItems[index];
@@ -331,7 +331,7 @@ const Review = () => {
 
         const sizeskey = Object.entries(product?.sizes);
         const color = product?.color;
-        console.log("sizeskey", sizeskey);
+        // console.log("sizeskey", sizeskey);
 
         const variantTitles = sizeskey.map(([size, count]) => {
           return { title: `${color} / ${size}`, inventory_quantity: count };

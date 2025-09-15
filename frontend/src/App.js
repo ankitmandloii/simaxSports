@@ -321,7 +321,7 @@ function App() {
 
       // console.log(designStateDb);
       const response = await apiConnecter("get", "design/getDesignsFromFrontEndById", "", "", { designId });
-      console.log(response);
+      // console.log(response);
 
       const matchedDesigns = response.data.userDesigns.designs;
 
@@ -338,7 +338,7 @@ function App() {
         console.log(restorePresentFromData(apiData.present));
         dispatch(restoreEditDesigns(restorePresentFromData(apiData.present)))
 
-        console.log(restoredState);
+        // console.log(restoredState);
       }
 
     }

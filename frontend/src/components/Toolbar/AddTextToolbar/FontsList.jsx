@@ -2,7 +2,7 @@ import React from "react";
 import style from './FontCollectionList.module.css'
 
 function FontsList({ selectedSubCategory, onSelect }) {
-    console.log(selectedSubCategory, "selectedSubCategory")
+    // console.log(selectedSubCategory, "selectedSubCategory")
     return (
         <div className={style.subcategoryBlock}>
             {selectedSubCategory && selectedSubCategory.map((font) => (

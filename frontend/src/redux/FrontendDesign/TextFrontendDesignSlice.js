@@ -42,7 +42,7 @@ const createNewText = ({ value, id, centerX, centerY }, totalElements) => ({
 });
 
 const createNewImage = (
-  { src },
+  { src, dpi },
   totalElements,
   centerX,
   centerY
@@ -89,7 +89,8 @@ const createNewImage = (
   editColor: false,
   extractedColors: [],
   removeBgImagebtn: false,
-  loadingText: false
+  loadingText: false,
+  dpi: dpi || 300,
 });
 
 const initialState = {
@@ -727,7 +728,8 @@ const TextFrontendDesignSlice = createSlice({
 
 
     addImageState: (state, action) => {
-      const { src, id = nanoid(), side = state.activeSide, isRenderOrNot } = action.payload;
+      console.log("---------actionnn", action.payload)
+      const { src, id = nanoid(), side = state.activeSide, isRenderOrNot, dpi } = action.payload;
 
       const snapshot = JSON.stringify(state.present[side]);
       const last = JSON.stringify(state.past[side][state.past[side].length - 1]);
@@ -748,7 +750,7 @@ const TextFrontendDesignSlice = createSlice({
       const centerY = rect.height / 2;
 
       const newImage = createNewImage(
-        { src: src },
+        { src, dpi },
         totalElements,
         centerX,
         centerY
