@@ -354,7 +354,8 @@ function App() {
     if (!willRenderContinue && rawProducts.length > 0) {
       let savedState = null;
       try {
-        savedState = JSON.parse(localStorage.getItem("savedReduxState"));
+        localStorage.removeItem("savedReduxState");
+        // savedState = JSON.parse(localStorage.getItem("savedReduxState"));
       } catch (e) {
         console.error("Error parsing saved Redux state:", e);
         return;
