@@ -813,7 +813,7 @@ const TextFrontendDesignSlice = createSlice({
     //   // state.present[side].setRendering = !state.present[side].setRendering;
     // },
     addImageState: (state, action) => {
-      console.log("---------actionnn", action.payload)
+      // console.log("---------actionnn", action.payload)
       const { src, id = nanoid(), side = state.activeSide, isRenderOrNot, dpi } = action.payload;
 
       const snapshot = JSON.stringify(state.present[side]);

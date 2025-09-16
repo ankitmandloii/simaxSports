@@ -413,7 +413,18 @@ const QuantityToolbar = () => {
                         <h4>{product.title}</h4>
                         <div className={style.rightProductTitleQty}>
                           {product.color && (
-                            <p className={style.toolbarSpan}>{product.color}</p>
+                            // <p className={style.toolbarSpan}>{product.color}</p>
+                            <button
+                              className={style.toolbarSpan}
+
+                            >
+                              <img
+                                src={product?.swatchImg || product?.img}
+                                alt={product?.color}
+                                className={style.swatchImage}
+                              />
+                              {product.color}
+                            </button>
                           )}
                           <p className={style.totalQtyitems}>
                             {getTotalQuantityForProduct(product)} items

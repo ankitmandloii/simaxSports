@@ -275,7 +275,7 @@
   background: var(--blue-light);
 }
 
-h3 {
+.container h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
 }

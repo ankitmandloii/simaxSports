@@ -340,7 +340,7 @@ canvas#mirrorCanvasBack {
     /* margin-top: 80px; */
     /* align-items: center; */
     align-items: start;
-    justify-content: start;
+    /* justify-content: start; */
   }
 }
 

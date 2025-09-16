@@ -91,9 +91,14 @@ const AddImageToolbar = () => {
   // console.log("-----------imggg", imageContaintObject);
   const DEFAULT_TARGET_DPI = 300;
 
-  function calcByTargetDpi({ originalWidthPx, originalHeightPx, scale, targetDpi }) {
-    const widthPixels = Math.round((originalWidthPx ?? 0) * (scale ?? 1));
-    const heightPixels = Math.round((originalHeightPx ?? 0) * (scale ?? 1));
+  function calcByTargetDpi({ originalWidthPx, originalHeightPx, scaleX, scaleY, targetDpi }) {
+    // console.log("-----------originalwidth", originalWidthPx);
+    // console.log("-----------originalHeightPx", originalHeightPx)
+
+    // const widthPixels = Math.round((originalWidthPx ?? 0) * (scale ?? 1));
+    // const heightPixels = Math.round((originalHeightPx ?? 0) * (scale ?? 1));
+    const widthPixels = Math.round((originalWidthPx ?? 0) * (scaleX ?? 1));
+    const heightPixels = Math.round((originalHeightPx ?? 0) * (scaleY ?? 1));
 
     return {
       pixels: { width: widthPixels, height: heightPixels },
@@ -159,17 +164,24 @@ const AddImageToolbar = () => {
   }, [img?.src, img?.originalWidth, img?.originalHeight, dispatch, selectedImageId]);
   const getDisplayDimensions = () => {
     if (!img?.originalWidth || !img?.originalHeight) {
+      // console.log("img originalWidth not present");
       return {
         pixels: { width: 0, height: 0 },
         inches: { width: '0.00', height: '0.00' },
         dpi: targetDpi,
       };
     }
-    const scale = img?.scaledValue ?? 1;
+    // const scale = img?.scaledValue ?? 1;
+    const scaleX = img?.scaleX ?? 1;
+    const scaleY = img?.scaleY ?? 1;
+    // console.log("img originalWidth present");
+
     return calcByTargetDpi({
       originalWidthPx: img.originalWidth,
       originalHeightPx: img.originalHeight,
-      scale,
+      scaleX,
+      scaleY,
+      // scale,
       targetDpi,
     });
   };
@@ -293,10 +305,10 @@ const AddImageToolbar = () => {
         } else {
           console.warn("Palette API did not return JSON, skipping color replacement.");
         }
-        console.log("res", res);
+        // console.log("res", res);
 
         const json = await res.json();
-        console.log(json, "json");
+        // console.log(json, "json");
 
         const colors = json?.colors?.map(c => `${c.hex}`) || [];
         const updateColors = [...extractedColors];
@@ -350,13 +362,13 @@ const AddImageToolbar = () => {
 
       // globalDispatch("editColor", false);
       // globalDispatch("loading", true); // Corrected the typo here
-      console.log("handle image function called with src", imageSrc, color, selectedFilter, invertColor, editColor);
-      console.log(img.editColor, "img.editColor")
+      // console.log("handle image function called with src", imageSrc, color, selectedFilter, invertColor, editColor);
+      // console.log(img.editColor, "img.editColor")
 
       // Await the base64 image after processing the image
 
       let currentBase64Image;
-      console.log("curent seleteced filter is ", selectedFilter, img.selectedFilter)
+      // console.log("curent seleteced filter is ", selectedFilter, img.selectedFilter)
 
 
       if (selectedFilter == "Single Color") {
@@ -369,7 +381,7 @@ const AddImageToolbar = () => {
         }
       }
       else if (selectedFilter == "Normal") {
-        console.log("edit color state is: ", editColor)
+        // console.log("edit color state is: ", editColor)
         if (editColor) {
           currentBase64Image = await processAndReplaceColors(imageSrc, color, editColor, extractedColors);
         }
@@ -644,7 +656,7 @@ const AddImageToolbar = () => {
 
 
   const buildUrl = useCallback((transform, resetAll, filterName) => {
-    console.log(transform, filterName, selectedFilter, "<<<<<<<<<<<<<<<<<<<<<<")
+    // console.log(transform, filterName, selectedFilter, "<<<<<<<<<<<<<<<<<<<<<<")
     const base = img?.src?.split('?')[0] || '';
     if (resetAll) {
       return base;
@@ -669,7 +681,7 @@ const AddImageToolbar = () => {
     async (transform, resetAll, editColor) => {
       if (!img?.src) return;
 
-      console.log("aply tranform call with tranform", transform);
+      // console.log("aply tranform call with tranform", transform);
 
       const newUrl = buildUrl(transform, resetAll);
       const loadingPlaceholder = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s'; // or any placeholder image
@@ -842,7 +854,7 @@ const AddImageToolbar = () => {
       hasMounted.current = true;
       return; // ⛔ skip on first render
     }
-    console.log("remove background is calling");
+    // console.log("remove background is calling");
     removeBackgroundHandler(); // ✅ run on subsequent changes only
   }, [img?.removeBgImagebtn]);
 
@@ -1076,7 +1088,7 @@ const AddImageToolbar = () => {
   }, [img?.src]);
 
   function applyFilterAndGetUrl(imageSrc, color) {
-    console.log("apply filter call with color", color, imageSrc);
+    // console.log("apply filter call with color", color, imageSrc);
     imageSrc = String(imageSrc);
     if (imageSrc.includes("monochrome=black")) {
       imageSrc = imageSrc.replace("monochrome=black", "");
@@ -1555,12 +1567,16 @@ const AddImageToolbar = () => {
     globalDispatch("editColor", true);
     setResetDefault(false);
 
-
   };
+  const [dims, setDims] = useState(null)
+  useEffect(() => {
+    const dims = getDisplayDimensions();
+    setDims(dims)
+  }, [img, img?.width, img?.height, img?.scale, img?.scaleX, img?.scaleY])
   const rf = useRef(null);
   useEffect(() => {
     if (img?.base64CanvasImageForSinglelColor) {
-      console.log("base64CanvasImageForSinglelColor already exists", img?.base64CanvasImageForSinglelColor);
+      // console.log("base64CanvasImageForSinglelColor already exists", img?.base64CanvasImageForSinglelColor);
       return;
     }
     // console.log(img.base64CanvasImageForSinglelColor, "base64CanvasImageForSinglelColor");
@@ -1569,7 +1585,7 @@ const AddImageToolbar = () => {
     rf.current = true;
     (async () => {
       const applyFilterURL = await applyFilterAndGetUrl(img.src ?? previewUrl, singleColor);
-      console.log("applied filter url ", applyFilterURL);
+      // console.log("applied filter url ", applyFilterURL);
       globalDispatch("base64CanvasImageForSinglelColor", String(applyFilterURL));
       setFilters(fs => fs.map(f => {
         if (f.name === "Single Color") {
@@ -1911,36 +1927,31 @@ const AddImageToolbar = () => {
                   <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                     {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Dimensions & DPI :    </div> */}
 
-                    {(() => {
-                      const dims = getDisplayDimensions();
-                      return (
-                        <div className={styles.toolbarBoxFontValueSetInnerActioninch}>
-                          <p><span>Width: </span> {dims.inches.width} IN</p>
-                          <p><span>Height:</span> {dims.inches.height} IN</p>
-                          {/* <p><span>Pixels: </span>{dims.pixels.width} × {dims.pixels.height}</p> */}
-                          {/* <p>DPI: {targetDpi} ({getDPILabel(targetDpi)})</p>
+                    <div className={styles.toolbarBoxFontValueSetInnerActioninch}>
+                      <p><span>Width: </span> {dims?.inches.width} IN</p>
+                      <p><span>Height:</span> {dims?.inches.height} IN</p>
+                      {/* <p><span>Pixels: </span>{dims.pixels.width} × {dims.pixels.height}</p> */}
+                      {/* <p>DPI: {targetDpi} ({getDPILabel(targetDpi)})</p>
                             <p>Pixels: {dims.pixels.width} × {dims.pixels.height}</p> */}
-                        </div>
-                      );
-                    })()}
+                    </div>
                   </div>
 
                   <hr />
                   <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                     {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Dimensions & DPI :    </div> */}
 
-                    {(() => {
-                      const dims = getDisplayDimensions();
-                      return (
-                        <div className={styles.toolbarBoxFontValueSetInnerActioninch}>
-                          {/* <p><span>Width: </span> {dims.inches.width} IN</p>
+                    {/* return ( */}
+                    <div className={styles.toolbarBoxFontValueSetInnerActioninch}>
+                      {/* <p><span>Width: </span> {dims.inches.width} IN</p>
                           <p><span>Height:</span> {dims.inches.height} IN</p> */}
-                          <p><span>Pixels: </span>{dims.pixels.width} × {dims.pixels.height}</p>
-                          <p>DPI: {targetDpi} </p>
-                          {/* <p>Pixels: {dims.pixels.width} × {dims.pixels.height}</p>  */}
-                        </div>
+                      <p><span>Pixels: </span>{dims?.pixels.width} × {dims?.pixels.height}</p>
+                      <p>DPI: {targetDpi} </p>
+                      {/* <p>Pixels: {dims.pixels.width} × {dims.pixels.height}</p>  */}
+                    </div>
+                    {/* {(() => {
+
                       );
-                    })()}
+                    })()} */}
                   </div>
 
                   <hr />

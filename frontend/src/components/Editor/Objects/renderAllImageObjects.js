@@ -381,7 +381,7 @@ const renderAllImageObjects = (
   const MAX_HEIGHT = 180;
 
   const getScaled = (img, userScaleX = 1, userScaleY = 1) => {
-    console.log("actual image width and height ", img.width, img.height)
+    // console.log("actual image width and height ", img.width, img.height)
     const scale = Math.min(MAX_WIDTH / img.width, MAX_HEIGHT / img.height);
     return {
       scaleX: scale * userScaleX,
@@ -728,7 +728,7 @@ const renderAllImageObjects = (
           const widthInches = (widthPixels / DPI).toFixed(2);
           const heightInches = (heightPixels / DPI).toFixed(2);
 
-          console.log(`Print Size: ${widthInches} in × ${heightInches} in`);
+          // console.log(`Print Size: ${widthInches} in × ${heightInches} in`);
 
           try {
             canvas.renderAll();
@@ -847,7 +847,7 @@ const renderAllImageObjects = (
       const printSize = getPrintSizeFromCanvasBackground(existingObj, fabricCanvasRef.current, 19);
 
       if (printSize) {
-        console.log(`Print Area: ${printSize.width} in × ${printSize.height} in`);
+        // console.log(`Print Area: ${printSize.width} in × ${printSize.height} in`);
       }
 
       existingObj.controls = createControls(bringPopup, dispatch);
