@@ -152,6 +152,20 @@ const FlipFirstWhiteColorIcon = () => (
   </svg>
 );
 
+const BoldIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z" />
+    <path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z" />
+  </svg>
+)
+const ItalicIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="19" y1="4" x2="10" y2="4" />
+    <line x1="14" y1="20" x2="5" y2="20" />
+    <line x1="15" y1="4" x2="9" y2="20" />
+  </svg>
+)
+
 
 const FlipSecondIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="15" viewBox="0 0 14 15" fill="none">
@@ -509,4 +523,4 @@ const deleteSvgg = () => (
 );
 
 
-export { deleteSvgg, AddColorSvgIcon, AngleActionIconBlack, LayeringSecondIconWithBlackBg, LayeringFirstIconWithBlackBg, SettingsIcon, UmbrellaIcon, ShapesIcon, ReligionIcon, BearIcon, DumbbellIcon, RestaurantIcon, MusieumIcon, BuildingIcon, PawIcon, VectorIcon, MusicIcon, MilitaryIcon, FlipSecondWhiteColorIcon, FlipFirstWhiteColorIcon, GoogleIcon, DeleteIcon, CrossIcon, ChooseFileIcon, SearchIcon, NatureSvg, FlagIcon, AddProductIcon, NumberIcon, AddArtIcon, AlignCenterIcon, LayeringFirstIcon, LayeringSecondIcon, FlipFirstIcon, FlipSecondIcon, LockIcon, DuplicateIcon, AngleActionIcon, NoneIcon };
+export { ItalicIcon, BoldIcon, deleteSvgg, AddColorSvgIcon, AngleActionIconBlack, LayeringSecondIconWithBlackBg, LayeringFirstIconWithBlackBg, SettingsIcon, UmbrellaIcon, ShapesIcon, ReligionIcon, BearIcon, DumbbellIcon, RestaurantIcon, MusieumIcon, BuildingIcon, PawIcon, VectorIcon, MusicIcon, MilitaryIcon, FlipSecondWhiteColorIcon, FlipFirstWhiteColorIcon, GoogleIcon, DeleteIcon, CrossIcon, ChooseFileIcon, SearchIcon, NatureSvg, FlagIcon, AddProductIcon, NumberIcon, AddArtIcon, AlignCenterIcon, LayeringFirstIcon, LayeringSecondIcon, FlipFirstIcon, FlipSecondIcon, LockIcon, DuplicateIcon, AngleActionIcon, NoneIcon };

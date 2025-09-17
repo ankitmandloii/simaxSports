@@ -108,8 +108,8 @@ const PromptGuide = ({ onClose }) => {
           <div className="prompt-box">
             <span className="prompt-style">A logo</span> of a{" "}
             <span className="prompt-subject">
-              rabbit playing basketball wearing a royal blue and white jersey
-              dunking
+              rabbit playing basketball wearing a royal blue and white
+              jersey dunking
             </span>{" "}
             with{" "}
             <span className="prompt-text">

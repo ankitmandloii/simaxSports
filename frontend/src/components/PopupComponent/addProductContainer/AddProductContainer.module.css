@@ -24,10 +24,10 @@
   margin-bottom: 0;
 }
 
-.hrUnderline {
+/* .hrUnderline {
   opacity: 0.5;
   margin: 10px 0;
-}
+} */
 
 .loaderWrapper {
   display: flex;
@@ -39,7 +39,7 @@
   /* Allow loader to take available space */
 }
 
-.modalContent {
+/* .modalContent {
   background: white;
   padding: 20px;
   padding-bottom: 105px;
@@ -48,9 +48,35 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   position: relative;
   max-height: 90vh;
+  /* overflow-y: auto; */
+/* top: 8%; */
+/* min-height: 600px;
+}
+
+.modalContentInner {
   overflow-y: auto;
-  /* top: 8%; */
+} */
+.modalContent {
+  background: white;
+  padding: 20px;
+  /* padding-bottom: 105px; */
+  width: 70%;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  max-height: 90vh;
   min-height: 600px;
+  overflow: hidden;
+  /* Prevent the outer div from showing scrollbars */
+}
+
+.modalContentInner {
+  padding-bottom: 105px;
+  max-height: 90vh;
+  /* Adjust based on padding and other elements */
+  overflow-y: auto;
+  padding-right: 10px;
+  /* Space for scrollbar to avoid clipping content */
 }
 
 .modalHeader {
@@ -59,13 +85,15 @@
   /* gap: 3rem; */
   align-items: center;
   margin-bottom: 10px;
-  /* flex-wrap: wrap; */
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd
+    /* flex-wrap: wrap; */
 }
 
 .modalClose {
   background: transparent;
   border: none;
-  font-size: 24px;
+  font-size: 2rem;
   cursor: pointer;
 }
 
@@ -204,7 +232,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  /* margin-bottom: 4rem; */
+  margin-bottom: 4rem;
 
 }
 
@@ -475,12 +503,12 @@
   .modalClose {
     background: #f1f1f1;
     /* border: 2px solid black; */
-    font-size: 18px;
-    height: 20px;
-    width: 20px;
+    font-size: 20px;
+    height: 25px;
+    width: 25px;
     align-items: center;
     justify-content: center;
-    display: flex;
+    display: inline-flex;
     cursor: pointer;
     position: absolute;
     top: 0;

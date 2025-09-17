@@ -329,3 +329,18 @@
     transform: rotate(360deg);
   }
 }
+
+@media screen and (max-width: 750px) {
+  .toolbarBox {
+    width: 22rem;
+    height: 22rem;
+    /* height: 500px; */
+    background-color: #fff;
+    padding: 10px 15px 7rem;
+    margin-bottom: 100px;
+    overflow-y: auto;
+
+    /* margin-top: 15px; */
+    border-radius: 10px;
+  }
+}

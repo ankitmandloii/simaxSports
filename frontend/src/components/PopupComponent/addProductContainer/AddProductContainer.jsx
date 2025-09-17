@@ -323,165 +323,168 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
             &times;
           </button>
         </div>
-        <hr className={styles.hrUnderline} />
+        <div className={styles.modalContentInner}>
 
-        {loading || searchLoading ? (
-          <div className={styles.loaderWrapper}>
-            <div className="loader" /> {/* Your existing CSS spinner */}
-          </div>
-        ) : (
-          <>
-            <p>Select From Our Most Popular Products</p>
+          {/* <hr className={styles.hrUnderline} /> */}
 
-            {error || searchError ? (
-              <p style={{ color: "red" }}>{error || searchError}</p>
-            ) : products.length === 0 && searchQuery ? (
-              <p style={{ color: "gray", textAlign: 'center', fontSize: '1rem', marginTop: '3rem', marginBottom: '3rem' }}>No matching products found.</p>
-            ) : products.length === 0 && !searchQuery ? (
-              <p style={{ color: "gray" }}>No products available.</p>
-            ) : (
-              <ul className={styles.productList}>
-                {products.map((product) => {
-                  const { productKey, name, colors = [], imgurl, vendor } = product;
-                  // console.log("-------vendor", product)
-                  const state = productStates[productKey] || {};
-                  const displayImage =
-                    state.selectedColor?.img || state.hoverImage || imgurl;
-                  const imageLoaded = imageLoadStates[productKey];
-                  const isAlreadySelected = selectedProduct.some(
-                    (p) => p.id === product.id
-                  );
+          {loading || searchLoading ? (
+            <div className={styles.loaderWrapper}>
+              <div className="loader" /> {/* Your existing CSS spinner */}
+            </div>
+          ) : (
+            <>
+              <p>Select From Our Most Popular Products</p>
 
-                  return (
-                    <li key={productKey} className={styles.modalProduct}>
-                      <div
-                        className={styles.productMain}
-                        onClick={(e) =>
-                          toggleColorPopup(e, productKey, product)
-                        }
-                      >
-                        <div className={styles.imageWrapper}>
-                          {!imageLoaded && (
-                            <div className={styles.imagePlaceholder}></div>
-                          )}
-                          <img
-                            src={displayImage}
-                            alt={name}
-                            loading="lazy"
-                            className={`${styles.modalProductImg} ${imageLoaded ? styles.visible : styles.hidden
-                              }`}
-                            onLoad={() => handleImageLoad(productKey)}
-                          />
-                        </div>
-                        <p className={styles.vendorspan}>{vendor}</p>
-                        <p className={styles.addProductPara}>{name}</p>
-                      </div>
+              {error || searchError ? (
+                <p style={{ color: "red" }}>{error || searchError}</p>
+              ) : products.length === 0 && searchQuery ? (
+                <p style={{ color: "gray", textAlign: 'center', fontSize: '1rem', marginTop: '3rem', marginBottom: '3rem' }}>No matching products found.</p>
+              ) : products.length === 0 && !searchQuery ? (
+                <p style={{ color: "gray" }}>No products available.</p>
+              ) : (
+                <ul className={styles.productList}>
+                  {products.map((product) => {
+                    const { productKey, name, colors = [], imgurl, vendor } = product;
+                    // console.log("-------vendor", product)
+                    const state = productStates[productKey] || {};
+                    const displayImage =
+                      state.selectedColor?.img || state.hoverImage || imgurl;
+                    const imageLoaded = imageLoadStates[productKey];
+                    const isAlreadySelected = selectedProduct.some(
+                      (p) => p.id === product.id
+                    );
 
-                      {colors.length > 0 && (
+                    return (
+                      <li key={productKey} className={styles.modalProduct}>
                         <div
-                          className={styles.modalProductColorContainer}
+                          className={styles.productMain}
                           onClick={(e) =>
                             toggleColorPopup(e, productKey, product)
                           }
                         >
-                          <img
-                            src={colorwheel1}
-                            alt="colors"
-                            className={styles.modalProductColorImg}
-                          />
-                          <p>{colors.length} Colors</p>
-
-                          {state.isPopupOpen && (
-                            <div className={styles.colorPopup}>
-                              <div className={styles.colorPopupHeader}>
-                                <button
-                                  className={styles.closePopupBtn}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    updateProductState(productKey, {
-                                      isPopupOpen: false,
-                                      hoverImage: null,
-                                    });
-                                  }}
-                                >
-                                  <CrossIcon />
-                                </button>
-                              </div>
-
-
-                              <div className="color-swatch-list">
-                                {colors.map((color) => {
-                                  const isSelected = state.selectedColor?.name === color.name;
-                                  const swatchImage = color.swatchImg;
-
-                                  return (
-                                    <React.Fragment key={`${productKey}-${color.name}`}>
-                                      {!swatchLoaded && <ColorSwatchPlaceholder size={30} />}
-                                      <img
-                                        src={swatchImage}
-                                        alt={color.name}
-                                        title={color.name}
-                                        className={`color-swatch ${isSelected ? "selected" : ""}`}
-                                        style={{
-                                          display: swatchLoaded ? "inline-block" : "none",
-                                        }}
-                                        onLoad={() => setSwatchLoaded(true)}
-                                        onMouseEnter={() => {
-                                          if (!state.selectedColor) {
-                                            updateProductState(productKey, { hoverImage: color.img });
-                                          }
-                                        }}
-                                        onMouseLeave={() => {
-                                          if (!state.selectedColor) {
-                                            updateProductState(productKey, { hoverImage: null });
-                                          }
-                                        }}
-                                        onClick={(e) => handleColorSelect(e, productKey, color)}
-                                      />
-                                    </React.Fragment>
-                                  );
-                                })}
-                              </div>
-
-
-                              <div className={styles.popupActions}>
-                                <button
-                                  className={styles.addProductBtnPopup}
-                                  onClick={(e) =>
-                                    handleAddProduct(e, product, productKey)
-                                  }
-                                  disabled={
-                                    !state.selectedColor || isAlreadySelected
-                                  }
-                                >
-                                  {isAlreadySelected
-                                    ? "Product Already Selected"
-                                    : "Add Product"}
-                                </button>
-                              </div>
-                            </div>
-                          )}
+                          <div className={styles.imageWrapper}>
+                            {!imageLoaded && (
+                              <div className={styles.imagePlaceholder}></div>
+                            )}
+                            <img
+                              src={displayImage}
+                              alt={name}
+                              loading="lazy"
+                              className={`${styles.modalProductImg} ${imageLoaded ? styles.visible : styles.hidden
+                                }`}
+                              onLoad={() => handleImageLoad(productKey)}
+                            />
+                          </div>
+                          <p className={styles.vendorspan}>{vendor}</p>
+                          <p className={styles.addProductPara}>{name}</p>
                         </div>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
 
-            <div className={styles.modalAllProductButtonContainer}>
-              <button
-                className={styles.modalAllProductButton}
-                onClick={() => {
-                  openChangeProductPopup(true, null);
-                  onClose();
-                }}
-              >
-                BROWSE ALL PRODUCTS
-              </button>
-            </div>
-          </>
-        )}
+                        {colors.length > 0 && (
+                          <div
+                            className={styles.modalProductColorContainer}
+                            onClick={(e) =>
+                              toggleColorPopup(e, productKey, product)
+                            }
+                          >
+                            <img
+                              src={colorwheel1}
+                              alt="colors"
+                              className={styles.modalProductColorImg}
+                            />
+                            <p>{colors.length} Colors</p>
+
+                            {state.isPopupOpen && (
+                              <div className={styles.colorPopup}>
+                                <div className={styles.colorPopupHeader}>
+                                  <button
+                                    className={styles.closePopupBtn}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      updateProductState(productKey, {
+                                        isPopupOpen: false,
+                                        hoverImage: null,
+                                      });
+                                    }}
+                                  >
+                                    <CrossIcon />
+                                  </button>
+                                </div>
+
+
+                                <div className="color-swatch-list">
+                                  {colors.map((color) => {
+                                    const isSelected = state.selectedColor?.name === color.name;
+                                    const swatchImage = color.swatchImg;
+
+                                    return (
+                                      <React.Fragment key={`${productKey}-${color.name}`}>
+                                        {!swatchLoaded && <ColorSwatchPlaceholder size={30} />}
+                                        <img
+                                          src={swatchImage}
+                                          alt={color.name}
+                                          title={color.name}
+                                          className={`color-swatch ${isSelected ? "selected" : ""}`}
+                                          style={{
+                                            display: swatchLoaded ? "inline-block" : "none",
+                                          }}
+                                          onLoad={() => setSwatchLoaded(true)}
+                                          onMouseEnter={() => {
+                                            if (!state.selectedColor) {
+                                              updateProductState(productKey, { hoverImage: color.img });
+                                            }
+                                          }}
+                                          onMouseLeave={() => {
+                                            if (!state.selectedColor) {
+                                              updateProductState(productKey, { hoverImage: null });
+                                            }
+                                          }}
+                                          onClick={(e) => handleColorSelect(e, productKey, color)}
+                                        />
+                                      </React.Fragment>
+                                    );
+                                  })}
+                                </div>
+
+
+                                <div className={styles.popupActions}>
+                                  <button
+                                    className={styles.addProductBtnPopup}
+                                    onClick={(e) =>
+                                      handleAddProduct(e, product, productKey)
+                                    }
+                                    disabled={
+                                      !state.selectedColor || isAlreadySelected
+                                    }
+                                  >
+                                    {isAlreadySelected
+                                      ? "Product Already Selected"
+                                      : "Add Product"}
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+
+              <div className={styles.modalAllProductButtonContainer}>
+                <button
+                  className={styles.modalAllProductButton}
+                  onClick={() => {
+                    openChangeProductPopup(true, null);
+                    onClose();
+                  }}
+                >
+                  BROWSE ALL PRODUCTS
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

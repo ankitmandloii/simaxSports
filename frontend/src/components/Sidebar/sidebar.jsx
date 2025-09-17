@@ -62,7 +62,7 @@ const AdminSidebar = () => {
     {
       path: "/design/uploadArt",
       icon: <AddArtIcon />,
-      label: "Upload",
+      label: "Upload Art",
       visible: settings?.uploadSettings?.sideBarImageUploadSection,
     },
     {

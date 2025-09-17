@@ -14,8 +14,8 @@
   text-align: center;
 }
 
-textarea {
-  font-family: "Montserrat", sans-serif;
+.toolbarBox textarea {
+  /* font-family: "Montserrat", sans-serif; */
   width: 100%;
   height: 100px;
   /* Set a fixed height */

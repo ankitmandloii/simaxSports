@@ -6,6 +6,7 @@
   background: var(--white-color);
   padding: 10px;
   max-height: 556px;
+  border-radius: 10px;
 }
 
 .toolbarBoxTextarea {
@@ -36,7 +37,7 @@
   white-space: nowrap;
   /* prevent child items from wrapping */
 
-  padding: 10px;
+  /* padding: 10px; */
   /* optional: spacing inside the container */
 }
 
@@ -299,6 +300,8 @@
   background-color: black;
 }
 
+
+
 .toolbarIcon {
   background-color: transparent;
   color: black;
@@ -308,6 +311,16 @@
   cursor: pointer;
   margin-bottom: 5px;
   transition: all 0.2s ease;
+}
+
+.toolbarIcon span svg {
+  width: 16px;
+  height: 15px;
+}
+
+.toolbarIconActive span svg {
+  width: 16px;
+  height: 15px;
 }
 
 .toolbarIcon:hover {
@@ -362,3 +375,5 @@
 }
    */
 }
+
+/* ----hide incremenet decrement of input type number */

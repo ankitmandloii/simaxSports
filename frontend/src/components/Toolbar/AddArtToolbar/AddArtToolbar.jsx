@@ -40,7 +40,7 @@ const AddArtToolbar = () => {
       <div className="toolbar-main-heading ai-relative">
         <h5 className="Toolbar-badge">Art Powered By AI</h5>
         <h2>Generate Art</h2>
-        <p>Add your own artwork or choose from our library to personalize your design.</p>
+        <p>Use our AI image generator to create stunning logos and designs. Short or long prompts, just try it.</p>
 
       </div>
 

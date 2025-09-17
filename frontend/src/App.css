@@ -178,16 +178,31 @@ h4 {
   font-weight: 700;
  
 } */
+
+/* .toolbar-main-heading .Toolbar-badge {
+  background-color: var(--blue-color);
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  width: fit-content;
+  height: 21px;
+  border-radius: 100px;
+  padding: 2px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
+} */
+
 .toolbar-main-heading .Toolbar-badge {
   background-color: var(--blue-color);
   font-size: 14px;
   font-weight: 500;
   color: white;
   width: fit-content;
-  /* width: 78px;s */
-  height: 21px;
+  /* height: 29px; */
   border-radius: 100px;
-  padding: 2px 8px;
+  padding: 0px 16px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -285,7 +300,7 @@ input[type="range"]::-moz-range-track {
   /* height: 22rem; */
   /* height: 465px; */
   background-color: var(--white-color);
-  padding: 10px 15px;
+  padding: 15px 15px;
   /* overflow-y: auto; */
 
   /* margin-top: 15px; */

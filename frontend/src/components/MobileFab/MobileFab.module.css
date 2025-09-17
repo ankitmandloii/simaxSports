@@ -24,7 +24,8 @@
   justify-content: center;
   transition: transform 0.3s ease;
   position: fixed;
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem;s */
+  /* right: 78px; */
 }
 
 .disabledWrapper {

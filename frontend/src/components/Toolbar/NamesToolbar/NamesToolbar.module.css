@@ -18,7 +18,7 @@
 } */
 
 @font-face {
-  font-family: "PornStarAcademy";
+  font-family: "Collegiate";
   font-weight: normal;
   font-style: normal;
 
@@ -67,6 +67,7 @@
   background: transparent;
   border: 1px solid var(--borderColor);
   padding: 9px 10px;
+  cursor: pointer;
 }
 
 .namesToolbarButtonActive {
@@ -85,6 +86,7 @@
 .namescheckboxDiv input[type='checkbox'] {
   accent-color: #0000;
   margin-right: 5px;
+  cursor: pointer;
 }
 
 .namesButtonMainContainer .colorNamesBox {
@@ -149,8 +151,10 @@
   background-color: var(--black-color);
   color: white;
   border: none;
-  height: 27px;
-  margin-top: 10px;
+  height: 30px;
+  margin: 15px 0;
+  /* margin-top: 10px;
+  margin-bottom: 10px; */
   width: 100%;
   padding: 10px;
   display: flex;
@@ -159,6 +163,7 @@
   align-items: center;
   padding: 6px 10px;
   cursor: pointer;
+  /* animation: blink 1s infinite alternate; */
 }
 
 /* ---- */
@@ -215,5 +220,54 @@ input:checked+.slider:before {
 
   .namescheckboxDiv span {
     font-size: 10px;
+  }
+}
+
+
+/*  */
+
+/* Add this new animation */
+
+
+
+
+/* Stop blinking when clicked (e.g., when showAddnamesPopup is true) */
+/* s */
+
+/* Existing font-face and other styles remain unchanged */
+
+/* Animation control based on Active/Deactive and clicked state */
+/* .Active .blackButton {
+  animation: blink 1s infinite alternate;
+} */
+
+.Active .blackButton.clicked {
+  animation: none !important;
+  /* Override blink when clicked */
+  opacity: 1;
+}
+
+.Deactive .blackButton {
+  animation: none;
+  /* No animation in Deactive state */
+}
+
+/* Ensure disabled state stops animation */
+.blackButton:disabled {
+  animation: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  gap: 10px;
+}
+
+/* Define the blink animation */
+@keyframes blink {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.3;
   }
 }

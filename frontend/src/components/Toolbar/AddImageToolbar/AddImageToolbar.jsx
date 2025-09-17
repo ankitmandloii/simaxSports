@@ -1087,6 +1087,7 @@ const AddImageToolbar = () => {
     }
   }, [img?.src]);
 
+
   function applyFilterAndGetUrl(imageSrc, color) {
     // console.log("apply filter call with color", color, imageSrc);
     imageSrc = String(imageSrc);

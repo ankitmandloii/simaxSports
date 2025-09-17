@@ -42,6 +42,7 @@ const Footer = () => {
   const { canvasWidth, canvasHeight } = useSelector((state) => state.canvasReducer);
   // console.log("---------------canvassss", canvasWidth, canvasHeight)
   const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.nameAndNumberDesignState)
+  // console.log("--------nameAndNumberDesign", nameAndNumberDesign)
   const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present["back"].nameAndNumberProductList);
   const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
@@ -300,7 +301,11 @@ const Footer = () => {
     return new Blob([bytes], { type: contentType });
   }
   const handleSaveDesign = async (payload) => {
-    console.log("handleSaveDesign payload:", payload);
+    if ((addName || addNumber) && nameAndNumberProductList.length === 0) {
+      toast.warning("You haven't added Name and Number, so they shouldn't appear in your finalDesign.");
+      // return;
+    }
+    // console.log("handleSaveDesign payload:", payload);
     setLoading(true);
     if (payload?.name) {
       const nameExists = userDesigns.some(
@@ -335,12 +340,16 @@ const Footer = () => {
       //   return { front: frontDesignImages[0], back: backDesignImages[0] };
       // });
       const designPromises = reviewItems.map(async (item) => {
+        // if ((addName || addNumber) && nameAndNumberProductList.length === 0) {
+        //   toast.error("Please enter name and number first to save design");
+        //   return;
+        // }
         // console.log("-------------itemm", item)
         // const front = (await generateDesigns([item.allImages[0]], present.front.texts, present.front.images, activeSide, canvasWidth, canvasHeight))[0];
         let front, back;
 
         // Handle front
-        if (activeNameAndNumberPrintSide === "front" && (addName || addNumber)) {
+        if (activeNameAndNumberPrintSide === "front" && (addName || addNumber) && nameAndNumberProductList.length !== 0) {
           front = (
             await generateDesigns(
               [item.allImages[0]],
@@ -371,7 +380,7 @@ const Footer = () => {
         }
 
         // Handle back
-        if (activeNameAndNumberPrintSide === "back" && (addName || addNumber)) {
+        if (activeNameAndNumberPrintSide === "back" && (addName || addNumber) && nameAndNumberProductList.length !== 0) {
           back = (
             await generateDesigns(
               [item.allImages[1]],

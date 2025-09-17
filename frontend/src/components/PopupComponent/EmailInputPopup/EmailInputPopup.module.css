@@ -14,11 +14,13 @@
 
 .popup {
     background: #fff;
-    border-radius: 8px;
+    /* border-radius: 8px; */
     width: 100%;
     max-width: 500px;
     position: relative;
     z-index: 1000;
+    overflow: hidden;
+    border-radius: 8px;
 }
 
 .content {

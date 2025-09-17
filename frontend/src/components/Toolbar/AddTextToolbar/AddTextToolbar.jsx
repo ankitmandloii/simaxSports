@@ -11,6 +11,8 @@ import {
   AngleActionIcon,
   FlipFirstWhiteColorIcon,
   FlipSecondWhiteColorIcon,
+  BoldIcon,
+  ItalicIcon
   // LayeringFirstIconWithBlackBg,
   // LayeringSecondIconWithBlackBg,
 } from '../../iconsSvg/CustomIcon';
@@ -265,7 +267,7 @@ const AddTextToolbar = () => {
   const handleShowContent = (e) => {
     const { value } = e.target;
     setShowContent(value.trim().length > 0);
-    console.log("value", value, value.length);
+    // console.log("value", value, value.length);
     if (value.trim().length == 0 && value.trim() == "") {
       setText("");
       globalDispatch("content", '');
@@ -478,6 +480,7 @@ const AddTextToolbar = () => {
               onInput={handleShowContent}
               value={text || ''}
               maxLength={250}
+              className={style.toolbarBoxTextarea}
             />
 
             {showContent && (

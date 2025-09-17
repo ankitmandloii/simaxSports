@@ -36,7 +36,7 @@
   padding: 10px;
   background: linear-gradient(90deg, var(--blue-color) 0%, #C183FF 100%);
   cursor: pointer;
-
+  margin: 15px 0;
   /* background: linear-gradient(90deg, #35d8f8 0, #ae7cf3 50%, #ae7cf3 50%, #35d8f8 100%); */
   color: white;
   border-radius: 100px;
@@ -89,7 +89,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px 10px;
+  padding: 20px 10px 0;
   /* Adjust padding as needed */
   background-color: #f6f6f6;
 

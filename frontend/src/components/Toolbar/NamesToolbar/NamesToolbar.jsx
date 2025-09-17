@@ -38,6 +38,8 @@ const NamesToolbar = () => {
   const [activeSize, setActiveSize] = useState(nameAndNumberDesign?.fontSize);
   const [activeFont, setActiveFont] = useState(nameAndNumberDesign?.fontFamily);
   const [activeColor, setActiveColor] = useState(nameAndNumberDesign?.fontColor);
+
+  const [isButtonClicked, setIsButtonClicked] = useState(false);
   console.log("-----------activeFont", activeFont)
 
   const showAddnamesPopupHandler = () => {
@@ -111,7 +113,7 @@ const NamesToolbar = () => {
       <div className="toolbar-box">
         {/* Step 1 */}
         <div className={style.addNamesNumberrsRow}>
-          <h5>Step 1</h5>
+          <h5>Step 1 :</h5>
           <label className={style.namescheckboxDiv}>
             <label className={style.switch}>
               <input
@@ -190,8 +192,8 @@ const NamesToolbar = () => {
                 <img src={InterStatebutton} alt="Interstate" />
               </button>
               <button
-                className={`${style.namesToolbarButton} ${activeFont === 'PornStarAcademy' ? style.namesToolbarButtonActive : ''}`}
-                onClick={() => fontHandler('PornStarAcademy')}
+                className={`${style.namesToolbarButton} ${activeFont === 'Collegiate' ? style.namesToolbarButtonActive : ''}`}
+                onClick={() => fontHandler('Collegiate')}
               >
                 <img src={Collegiatebutton} alt="Collegiate" />
               </button>
@@ -216,8 +218,11 @@ const NamesToolbar = () => {
               )}
             </div>
           </div>
-          <button className={style.blackButton} onClick={showAddnamesPopupHandler}>
-            Add Names/Numbers
+          {/* <button className={style.blackButton} onClick={showAddnamesPopupHandler}>
+            Step 2: Enter Names/Numbers
+          </button> */}
+          <button className={`${style.blackButton} ${isButtonClicked ? style.clicked : ''}`} onClick={showAddnamesPopupHandler}>
+            Step 2: Enter Names/Numbers
           </button>
         </div>
       </div>
