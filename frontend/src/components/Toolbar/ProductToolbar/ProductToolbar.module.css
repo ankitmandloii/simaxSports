@@ -107,8 +107,9 @@
   padding: inherit;
   margin: 1rem 0;
   font-size: 14px;
-  color: #8D9095;
-  border: 1.5px dashed #8D9095;
+  font-weight: 500;
+  color: #000;
+  border: 1.5px dashed #000;
   background: transparent;
   border-radius: 100px;
   padding-block: 15px;
@@ -117,6 +118,18 @@
   align-items: center;
   gap: 2px;
   cursor: pointer;
+  height: 2.8rem;
+}
+
+.addProductBtn span {
+  display: inline-block;
+  margin-right: 5px;
+  /* font-size: 1.4rem; */
+}
+
+.addProductBtn span svg {
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .center {

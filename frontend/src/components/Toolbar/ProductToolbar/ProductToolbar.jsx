@@ -722,7 +722,7 @@ const ProductToolbar = () => {
             </div>
           ))}
           <button className={style.addProductBtn} onClick={addProductPopup}>
-            <IoAdd /> Add Products
+            <span><IoAdd /></span>  Add Products
           </button>
         </div>
 

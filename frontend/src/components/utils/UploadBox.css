@@ -5,11 +5,13 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Semi-transparent background */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Make sure it's on top */
+  z-index: 1000;
+  /* Make sure it's on top */
 }
 
 /* The main upload box container */
@@ -20,7 +22,7 @@
   width: 90%;
   max-width: 500px;
   padding: 25px;
-  font-family: Arial, sans-serif;
+  /* font-family: Arial, sans-serif; */
   color: #333;
 }
 
@@ -34,7 +36,8 @@
 .upload-box-header h3 {
   margin: 0;
   font-size: 1.2em;
-  color: #005bff; /* Red color as in the image */
+  color: #005bff;
+  /* Red color as in the image */
 }
 
 .close-button {
@@ -73,16 +76,17 @@
   border-radius: 4px;
   overflow: hidden;
   margin-right: 15px;
-  background-color: #eee; /* Placeholder background */
+  background-color: #eee;
+  /* Placeholder background */
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .file-preview-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .file-thumbnail img {
@@ -99,7 +103,8 @@
   font-weight: bold;
   font-size: 0.9em;
   margin-bottom: 5px;
-  word-break: break-all; /* Helps with long file names */
+  word-break: break-all;
+  /* Helps with long file names */
 }
 
 .upload-progress-container {
@@ -107,13 +112,15 @@
   background-color: #e0e0e0;
   border-radius: 5px;
   height: 8px;
-  overflow: hidden; /* Ensures the progress bar stays within bounds */
+  overflow: hidden;
+  /* Ensures the progress bar stays within bounds */
   margin-top: 5px;
 }
 
 .upload-progress-bar {
   height: 100%;
-  background-color: var(--blue-color); /* Green color for progress */
+  background-color: var(--blue-color);
+  /* Green color for progress */
   border-radius: 5px;
   transition: width 0.3s ease-in-out;
 }
@@ -126,8 +133,9 @@
 }
 
 .upload-status-text.complete {
-    color: #5cb85c; /* Green for complete status */
-    font-weight: bold;
+  color: #5cb85c;
+  /* Green for complete status */
+  font-weight: bold;
 }
 
 

@@ -35,7 +35,8 @@
 
 .bearImg {
   max-width: 100%;
-  height: auto; /* Changed for better responsiveness */
+  height: auto;
+  /* Changed for better responsiveness */
   display: block;
 }
 
@@ -46,27 +47,34 @@
 }
 
 .popup {
-  background: #f8f9fa; /* Lighter background for the popup */
-  border: 1px solid #dee2e6; /* subtle border */
-  padding: 20px; /* More padding inside the popup */
+  background: #f8f9fa;
+  /* Lighter background for the popup */
+  border: 1px solid #dee2e6;
+  /* subtle border */
+  padding: 20px;
+  /* More padding inside the popup */
 }
 
 /* Styles for the prompt wrapper and sections */
-.prompt-wrapper {
-  font-family: Arial, sans-serif; /* A more modern font */
-}
+/* .prompt-wrapper {
+  font-family: Arial, sans-serif; 
+} */
 
 .prompt-header {
-  font-size: 2rem; /* Larger header */
+  font-size: 2rem;
+  /* Larger header */
   font-weight: 700;
-  color: #343a40; /* Darker text color */
+  color: #343a40;
+  /* Darker text color */
   margin-bottom: 20px;
-  border-bottom: 2px solid #007bff; /* A blue line to highlight the header */
+  border-bottom: 2px solid #007bff;
+  /* A blue line to highlight the header */
   padding-bottom: 10px;
 }
 
 .prompt-box {
-  background: #e9ecef; /* Light gray background for the prompt box */
+  background: #e9ecef;
+  /* Light gray background for the prompt box */
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 15px;
@@ -79,16 +87,22 @@
   color: #d35400;
   font-weight: bold;
 }
+
 .prompt-subject {
-  color: #2874a6; /* Cyan/blue */
+  color: #2874a6;
+  /* Cyan/blue */
   font-weight: bold;
 }
+
 .prompt-background {
-  color:  #1e8449; /* Green */
+  color: #1e8449;
+  /* Green */
   font-weight: bold;
 }
+
 .prompt-text {
-  color:#6c3483; /* Purple */
+  color: #6c3483;
+  /* Purple */
   font-weight: bold;
 }
 
@@ -97,22 +111,32 @@
   justify-content: space-around;
   margin-bottom: 20px;
 }
-.prompt-labels > div {
+
+.prompt-labels>div {
   padding: 5px 10px;
   border-radius: 5px;
   font-weight: 600;
 }
+
 .prompt-labels .prompt-style {
-  background-color:   #fdebd0;; /* Light red background */
+  background-color: #fdebd0;
+  ;
+  /* Light red background */
 }
+
 .prompt-labels .prompt-subject {
-  background-color:  #d6eaf8; /* Light cyan background */
+  background-color: #d6eaf8;
+  /* Light cyan background */
 }
+
 .prompt-labels .prompt-background {
-  background-color: #d5f5e3; /* Light green background */
+  background-color: #d5f5e3;
+  /* Light green background */
 }
+
 .prompt-labels .prompt-text {
-  background-color: #e8daef; /* Light purple background */
+  background-color: #e8daef;
+  /* Light purple background */
 }
 
 .output-section {
@@ -129,19 +153,24 @@
 .bearImg {
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease-in-out; /* Smooth transition for hover effect */
+  transition: transform 0.3s ease-in-out;
+  /* Smooth transition for hover effect */
 }
 
 .bearImg:hover {
-  transform: scale(1.05); /* Enlarge the image on hover */
+  transform: scale(1.05);
+  /* Enlarge the image on hover */
 }
 
 .close {
   top: 15px;
   right: 20px;
-  color: #6c757d; /* Darker gray color for the close button */
+  color: #6c757d;
+  /* Darker gray color for the close button */
   transition: color 0.2s;
 }
+
 .close:hover {
-  color: #dc3545; /* Red on hover */
+  color: #dc3545;
+  /* Red on hover */
 }

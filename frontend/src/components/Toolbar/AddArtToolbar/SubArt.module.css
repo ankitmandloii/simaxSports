@@ -1,7 +1,7 @@
 .clipartGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 18px;
   justify-content: center;
 }
 
@@ -18,7 +18,7 @@
 }
 
 .marginBottom {
-  margin: 20px 0;
+  margin: 20px 12px;
 }
 
 .uploadButton {
@@ -194,6 +194,7 @@
 
 .loadMoreButton {
   margin-top: 20px;
+  margin-left: 12px;
   padding: 10px 20px;
   background: #0070f3;
   color: white;
