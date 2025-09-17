@@ -6,6 +6,9 @@
     border-radius: 6px;
     outline: none;
     box-shadow: 0 0 4px #007BFF;
+    font-family: "Helvetica", "Roboto-Regular", sans-serif;
+
+    /* font-family: 'H'; */
     /* Blue glow like your image */
     color: #333;
 }

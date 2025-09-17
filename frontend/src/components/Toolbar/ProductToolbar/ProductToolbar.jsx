@@ -343,7 +343,8 @@ const ProductToolbar = () => {
 
   }
   return (
-    <div className={style.toolbarMainContainer}>
+    // <div className={style.toolbarMainContainer}>
+    <div className='toolbar-main-container'>
       <div className={style.productToolbar}>
         <div className="toolbar-main-heading">
           <h5 className="Toolbar-badge">Products</h5>

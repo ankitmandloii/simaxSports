@@ -362,7 +362,7 @@ const AddImageToolbar = () => {
 
       // globalDispatch("editColor", false);
       // globalDispatch("loading", true); // Corrected the typo here
-      // console.log("handle image function called with src", imageSrc, color, selectedFilter, invertColor, editColor);
+      console.log("handle image function called with src", imageSrc, color, selectedFilter, invertColor, editColor);
       // console.log(img.editColor, "img.editColor")
 
       // Await the base64 image after processing the image

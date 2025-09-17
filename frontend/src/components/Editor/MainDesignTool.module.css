@@ -76,6 +76,9 @@
   text-transform: uppercase;
 }
 
+
+
+
 .canvaButton:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transform: translateY(1px);
@@ -100,4 +103,36 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.AddNotesButton {
+  width: 125px;
+  /* Ensures all buttons are same width */
+  height: 25px;
+  background-color: #fff;
+  border: none;
+  border-radius: 999px;
+  /* Full rounded */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 12px;
+  font-size: 10px;
+  font-weight: 500;
+  color: #333;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-transform: uppercase;
+}
+
+
+
+
+.AddNotesButton:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(1px);
+  border: 1px solid var(--blue-color);
+  color: var(--blue-color)
 }

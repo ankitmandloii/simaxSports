@@ -270,7 +270,7 @@
   /* font-family: sans-serif; */
   color: #333;
   height: 100vh;
-  overflow-y: scroll !important;
+  overflow-y: auto !important;
   padding-bottom: 11vh;
   background: var(--blue-light);
 }
@@ -616,7 +616,7 @@
 
 @media (max-width: 768px) {
   .review {
-    margin-bottom: 6rem;
+    margin-bottom: 16rem;
   }
 
   .itemName {

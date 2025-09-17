@@ -365,7 +365,7 @@ const QuantityToolbar = () => {
   }
 
   return (
-    <div className={` ${style.toolbarMainContainer} ${style.toolbarMargin}`}>
+    <div className={` toolbar-main-container ${style.toolbarMargin}`}>
       <div className="toolbar-main-heading">
         <h5 className="Toolbar-badge">Quantity And Sizes</h5>
         <div className={style.quantityHead}>

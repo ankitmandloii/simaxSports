@@ -680,7 +680,7 @@ hr {
     width: 300px;
     margin: 0 auto;
     position: relative;
-    overflow: hidden;
+    /* overflow: hidden; */
   }
 }
 

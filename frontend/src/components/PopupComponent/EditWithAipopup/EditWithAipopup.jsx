@@ -153,6 +153,7 @@ const EditWithAipopup = ({ onClose }) => {
             }
             const objectURL = URL.createObjectURL(blob);
             setResultImage(objectURL);
+            console.log("--------resultImage", resultImage);
             setResultBlob(blob);
             setShowResult(true);
         } catch (err) {

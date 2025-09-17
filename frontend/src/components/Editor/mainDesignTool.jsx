@@ -2648,7 +2648,7 @@ const MainDesignTool = ({
           <div className={style.notesroute}>
             <button
               onClick={() => setShowNotes(true)}
-              className={style.canvaButton}
+              className={style.AddNotesButton}
             >
               <span className={style.icon}><CgNotes /></span> Add Notes
             </button>
