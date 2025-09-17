@@ -100,12 +100,13 @@ exports.saveDesignsFromFrontEnd = async (req, res) => {
   try {
 
     const errors = validateCreateBody(req.body);
+    // console.log("bodyyyyyyy", req.body);
     if (errors.length) return res.status(400).json({ message: errors.join(', ') });
 
     const { ownerEmail, design } = req.body;
-    
+
     const toPush = pickDesignFields(design);
-    
+
 
     const doc = await UserDesigns.findOneAndUpdate(
       { ownerEmail },

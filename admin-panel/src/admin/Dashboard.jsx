@@ -626,6 +626,7 @@ export function Dashboard() {
 
     return (
       <div style={{ display: "grid", gap: "16px" }}>
+
         {images.length > 0 && (
           <>
             <Text variant="headingSm">Images</Text>
@@ -647,10 +648,17 @@ export function Dashboard() {
                         style={{ width: "100%", height: "100px", objectFit: "contain" }}
                       />
                     </div>
-                    <NoteRow label="Source" value={img.src} />
+                    <NoteRow label="Source" value={img?.previewImage} />
                     <NoteRow label="ID" value={img.id} />
                     <NoteRow label="Position" value={`X: ${img.position?.x ?? "-"}, Y: ${img.position?.y ?? "-"}`} />
-                    <NoteRow label="Dimensions" value={`W: ${img.width ?? "-"} × H: ${img.height ?? "-"}`} />
+                    <NoteRow label="DPI" value={img?.dpi} />
+
+                    <NoteRow label="Inch Dimensions" value={`W: ${img?.widthInches ?? "-"}IN × H: ${img?.heightInches ?? "-"}IN`} />
+
+                    <NoteRow label="Dimensions" value={`W: ${img?.widthPixels
+                      ?? "-"}px × H: ${img?.heightPixels ?? "-"}px`} />
+                    <NoteRow label="OriginalDimensions" value={`W: ${img?.originalWidth ?? "-"}px × H: ${img?.originalHeight ?? "-"}px`} />
+
                     <NoteRow label="Scale" value={`X: ${img.scaleX ?? "-"}, Y: ${img.scaleY ?? "-"}`} />
                     <NoteRow label="Flip" value={`X: ${img.flipX ? "true" : "false"}, Y: ${img.flipY ? "true" : "false"}`} />
                     <NoteRow label="Angle" value={img.angle ?? "-"} />

@@ -526,14 +526,20 @@ const AddImageToolbar = () => {
     const currentAvg = (scaleX + scaleY) / 2;
     const scaleRatio = parsed / currentAvg;
 
+    console.log('Scale calculation:', { scaleX, scaleY, currentAvg, scaleRatio, parsed });
+
+    const effectiveDpi = targetDpi || DEFAULT_TARGET_DPI;
     const dims = img?.originalWidth && img?.originalHeight
       ? calcByTargetDpi({
         originalWidthPx: img.originalWidth,
         originalHeightPx: img.originalHeight,
-        scale: parsed,
-        targetDpi,
+        scaleX: scaleX * scaleRatio,
+        scaleY: scaleY * scaleRatio,
+        targetDpi: effectiveDpi,
       })
-      : { pixels: { width: 0, height: 0 }, inches: { width: '0.00', height: '0.00' }, dpi: targetDpi };
+      : { pixels: { width: 0, height: 0 }, inches: { width: '0.00', height: '0.00' }, dpi: effectiveDpi };
+
+    console.log('Dispatching dims:', dims);
 
     dispatch(updateImageState({
       id: selectedImageId,
@@ -542,13 +548,11 @@ const AddImageToolbar = () => {
         scaleX: scaleX * scaleRatio,
         scaleY: scaleY * scaleRatio,
         scaledValue: parsed,
-
-        // keep everything in sync with Model A
         widthPixels: dims.pixels.width,
         heightPixels: dims.pixels.height,
         widthInches: dims.inches.width,
         heightInches: dims.inches.height,
-        dpi: dims.dpi, // = targetDpi
+        dpi: dims.dpi,
         loadingText: false,
       },
       isRenderOrNot: true,
@@ -1276,44 +1280,10 @@ const AddImageToolbar = () => {
     // handleImage(previewUrl, color);
     // console.log("color cahnges funcitonc called", color, previewUrl);
     const newBase64Image = await handleImage(img.src || previewUrl, color, selectedFilter, invertColor.editColor);
-    // setPreviewUrl(String(newImgUrl));
-    // setBase64Image(newBase64Image)
 
-    // globalDispatch("base64CanvasImage", String(newBase64Image));
-    // if (selectedFilter == "Normal") {
-    //   globalDispatch("base64CanvasImageForNormalColor", String(previewUrl));
-    // }
-    // else if (selectedFilter == "Single Color") {
-    //   globalDispatch("base64CanvasImageForSinglelColor", String(newBase64Image));
-    // }
-    // else {
-    //   globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(previewUrl));
-
-    // }
-    // globalDispatch("loading", false);
-    // globalDispatch("replaceBgParamValue", imgixParam);
   };
 
-  // const bGReplaceColorChangedFunctionCalled = (color) => {
-  //   // Get current toggle state (true/false)
-  //    const hex = color.replace('#', '');
-  //   const value = isActive(`bg-remove=true&bg=${hex}`);
 
-  //   // Toggle the param (enables/disables it)
-  //   toggle(`bg-remove=true&bg=${hex}`, value);
-
-  //   // Set local state
-  //   setBgColor(color);
-  //   setResetDefault(false);
-
-  //   // Remove '#' and build Imgix param
-
-  //   const imgixParam = `bg-remove=true&bg=${hex}`;
-
-  //   // Update Redux store
-  //   globalDispatch("replaceBackgroundColor", color);              // e.g. "#AABB22"
-  //   globalDispatch("replaceBgParamValue", imgixParam);            // e.g. "bg-remove=true&bg=AABB22"
-  // };
 
 
 
