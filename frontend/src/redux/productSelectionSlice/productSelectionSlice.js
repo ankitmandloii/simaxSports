@@ -24,7 +24,7 @@ const productSelectionSlice = createSlice({
   initialState,
   reducers: {
     addProduct(state, action) {
-      const { id, name, color, imgurl, sizes, title, allImages, allVariants, variantId, price, sku, inventory_quantity } = action.payload;
+      const { id, name, color, imgurl, sizes, title, allImages, allVariants, variantId, price, sku, inventory_quantity, vendor } = action.payload;
       if (!state.products[id]) {
         state.products[id] = {
           name,
@@ -38,7 +38,8 @@ const productSelectionSlice = createSlice({
           price,
           sku,
           inventory_quantity,
-          sizes
+          sizes,
+          vendor
         };
         // sizes.forEach(size => {
         //   state.products[id].selections[size.size] = 0;

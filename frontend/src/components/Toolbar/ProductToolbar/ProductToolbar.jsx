@@ -19,13 +19,14 @@ import {
 import { removeNameAndNumberProduct, setRendering } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSlice';
 import { removeProduct } from '../../../redux/productSelectionSlice/productSelectionSlice';
+import { CgLayoutGrid } from 'react-icons/cg';
 
 const ProductToolbar = () => {
 
   const dispatch = useDispatch();
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  // console.log("---selectedsProduct", selectedProducts);
+  console.log("---selectedsProduct", selectedProducts);
 
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
   // console.log("---activeProduct", activeProduct);
@@ -119,6 +120,7 @@ const ProductToolbar = () => {
   // };
   // Product selection
   const handleProductSelect = (product, selectedColor = null) => {
+    console.log("---------product", product)
     const fallbackImg = product?.img || product?.imgurl || product?.selectedImage || '';
     const clonedColor = selectedColor
       ? safeCloneColor(selectedColor, fallbackImg, product.allVariants)
@@ -134,6 +136,7 @@ const ProductToolbar = () => {
       imgurl: clonedColor?.img || fallbackImg,
       swatchImg: clonedColor?.swatchImg || fallbackImg, // Ensure swatchImg at product level
       allVariants: product.allVariants || [],
+      vendor: product?.vendor
     };
 
     if (isAddingProduct) {

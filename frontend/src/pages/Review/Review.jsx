@@ -68,84 +68,16 @@ const Review = () => {
         front: {
           texts: present.front.texts.map((t) => ({ ...t })),
           images: present.front.images.map((i) => ({ ...i }))
-          // texts: present.front.texts.map((text) => ({
-          //   id: text.id,
-          //   layerIndex: text.layerIndex,
-          //   position: text.position,
-          //   content: text.content,
-          //   fontWeight: text.fontWeight,
-          //   fontStyle: text.fontStyle,
-          //   fontFamily: text.fontFamily,
-          //   textColor: text.textColor,
-          // })),
-          // images: present.front.images.map((image) => ({
-          //   id: image.id,
-          //   layerIndex: image.layerIndex,
-          //   position: image.position,
-          //   src: image.src,
-          //   base64CanvasImage: image.src,
-          // })),
         },
         back: {
-          // texts: present.back.texts.map((text) => ({
-          //   id: text.id,
-          //   layerIndex: text.layerIndex,
-          //   position: text.position,
-          //   content: text.content,
-          //   fontWeight: text.fontWeight,
-          //   fontStyle: text.fontStyle,
-          //   fontFamily: text.fontFamily,
-          //   textColor: text.textColor,
-          // })),
-          // images: present.back.images.map((image) => ({
-          //   id: image.id,
-          //   layerIndex: image.layerIndex,
-          //   position: image.position,
-          //   src: image.base64CanvasImage,
-          //   base64CanvasImage: image.base64CanvasImage,
-          // })),
           texts: present.back.texts.map((t) => ({ ...t })),
           images: present.back.images.map((i) => ({ ...i }))
         },
         leftSleeve: {
-          // texts: present.leftSleeve.texts.map((text) => ({
-          //   id: text.id,
-          //   layerIndex: text.layerIndex,
-          //   position: text.position,
-          //   content: text.content,
-          //   fontWeight: text.fontWeight,
-          //   fontStyle: text.fontStyle,
-          //   fontFamily: text.fontFamily,
-          //   textColor: text.textColor,
-          // })),
-          // images: present.leftSleeve.images.map((image) => ({
-          //   id: image.id,
-          //   layerIndex: image.layerIndex,
-          //   position: image.position,
-          //   src: image.base64CanvasImage,
-          //   base64CanvasImage: image.src,
-          // })),
           texts: present.leftSleeve.texts.map((t) => ({ ...t })),
           images: present.leftSleeve.images.map((i) => ({ ...i }))
         },
         rightSleeve: {
-          // texts: present.rightSleeve.texts.map((text) => ({
-          //   id: text.id,
-          //   layerIndex: text.layerIndex,
-          //   position: text.position,
-          //   content: text.content,
-          //   fontWeight: text.fontWeight,
-          //   fontStyle: text.fontStyle,
-          //   fontFamily: text.fontFamily,
-          //   textColor: text.textColor,
-          // })),
-          // images: present.rightSleeve.images.map((image) => ({
-          //   id: image.id,
-          //   layerIndex: image.layerIndex,
-          //   position: image.position,
-          //   src: image.base64CanvasImage,
-          //   base64CanvasImage: image.src,
-          // })),
           texts: present.rightSleeve.texts.map((t) => ({ ...t })),
           images: present.rightSleeve.images.map((i) => ({ ...i }))
         },
@@ -248,8 +180,10 @@ const Review = () => {
       price: product?.price,
       sku: product?.sku,
       inventory_quantity: product?.inventory_quantity,
+      vendor: product?.vendor
     };
   });
+  console.log(reviewItems, "reviewItems");
 
   useEffect(() => {
     setDiscount(randomDiscount());
@@ -319,8 +253,9 @@ const Review = () => {
     return new Blob([bytes], { type: contentType });
   }
 
-  async function makeVariantDataForShopify(reviewItems, CloudinaryImages) {
+  async function makeCheckDataForShopify(reviewItems, cloudeImages) {
     // console.log("variantttttttttttttt")
+    reviewItems = reviewItems.filter((item) => Object.keys(item.sizes).length !== 0)
     try {
       const splitIntoPairs = (arr) => {
         const result = [];
@@ -331,7 +266,7 @@ const Review = () => {
       };
 
       const ShopifyData = [];
-      const groupedImages = splitIntoPairs(CloudinaryImages.files);
+      const groupedImages = splitIntoPairs(cloudeImages.files);
       // console.log("CloudinaryImages", CloudinaryImages);
 
       for (let index = 0; index < reviewItems.length; index++) {
@@ -360,7 +295,7 @@ const Review = () => {
             sku: variantData?.sku,
             designId: currentDesign?._id,
             quantity: Number(varianttitle.inventory_quantity),
-            vendor: "Addidas test",
+            vendor: product.vendor,
             custom: true,
             design: {
               front: groupedImages[index][0],
@@ -393,7 +328,7 @@ const Review = () => {
     return cloned;
   }
 
-  function makeVariantDataForDiscound(reviewItems) {
+  async function makeVariantDataForDiscound(reviewItems) {
     const discountData = [];
 
     const data = reviewItems.forEach((product, index) => {
@@ -408,19 +343,20 @@ const Review = () => {
 
       const data = variantTitles.map((varianttitle) => {
         const variantData = allVariants.find((v) => v.title == varianttitle.title);
-        // console.log(variantData, "variantdata");
+        // console.log(variantData, "variantdata"); 
         const size = varianttitle.title.split("/")[1].trim();
 
         const newData = {
           unitPrice: Number.parseFloat(variantData?.price),
-          printAreas: printAreaCount,
+          printAreas: 1,
           sku: variantData?.sku,
           name: variantData?.title,
           sizes: {
             [size]: Number(varianttitle.inventory_quantity)
           },
-          namePrint: "aaa",
-          number: "37432"
+          "nameAndNumberSurcharges": "nameSurcharge",
+          // "nameAndNumberSurcharges": "numberSurcharge",
+          // "nameAndNumberSurcharges": "nameAndNumberBothPrint",
         };
         discountData.push(newData);
         return newData;
@@ -436,11 +372,10 @@ const Review = () => {
     // console.log("data.....", dataForDiscountCheck);
     // console.log("totalItems", totalItems);
     if (totalItems == 0) return;
-    calculatePriceAndDiscount(dataForDiscountCheck);
-    const increasedData = getIncreasedData(dataForDiscountCheck, (totalItems * 0.7));
-    calculatePriceAndDiscountForFutureProduct(increasedData);
-    const increasedData2 = getIncreasedData(dataForDiscountCheck, (totalItems * 1.5));
-    calculatePriceAndDiscountForFutureProduct(increasedData2);
+    // Failed to calculate discount please try again later
+    setLoading(true)
+    await calculatePriceAndDiscount(dataForDiscountCheck);
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -474,7 +409,7 @@ const Review = () => {
 
   async function calculatePriceAndDiscount(variants) {
     try {
-      setLoading(true);
+
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}auth/calculatePrice`, {
         method: 'POST',
         headers: {
@@ -489,18 +424,26 @@ const Review = () => {
 
       const data = await response.json();
       setDiscountData(data);
-      // console.log("Success and get Discount:", data);
+      if (data?.summary?.discountTier?.percent < data?.maxDiscountRate) {
+        const increasedData = getIncreasedData(variants, (totalItems * 0.7));
+        await calculatePriceAndDiscountForFutureProduct(increasedData);
+        const increasedData2 = getIncreasedData(variants, (totalItems * 1.5));
+        await calculatePriceAndDiscountForFutureProduct(increasedData2);
+      }
+
+      console.log("Success and get Discount:", data);
     } catch (error) {
-      console.error("Error adding variants:", error);
-      toast.error("Failed to add variants.");
-    } finally {
+      console.error("Failed to calculate discount please try again later:", error);
+      toast.error("Failed to calculate discount please try again later");
       setLoading(false);
+    } finally {
+
     }
   }
 
   async function calculatePriceAndDiscountForFutureProduct(variants) {
     try {
-      setLoading(true);
+      // setLoading(true);
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}auth/calculatePrice`, {
         method: 'POST',
         headers: {
@@ -514,6 +457,7 @@ const Review = () => {
       }
 
       const data = await response.json();
+      // console.log("data....",data)
       const grandTotal = data.summary.grandTotal;
       const totalQuantity = data.summary.totalQuantity;
       const eachPerUnit = parseFloat(grandTotal / totalQuantity).toFixed(2);
@@ -524,9 +468,9 @@ const Review = () => {
       // console.log("Success and get Discount for future:", data);
     } catch (error) {
       console.error("Error adding variants:", error);
-      toast.error("Failed to add variants.");
+      toast.error("Failed to calculate discount please try again later");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   }
 
@@ -567,8 +511,10 @@ const Review = () => {
       const allBackTextElement = present.back.texts;
       const allLeftTextElement = present.leftSleeve.texts;
       const allRightTextElement = present.rightSleeve.texts;
+      const filteredReivewItems = reviewItems.filter((item) => Object.keys(item.sizes).length !== 0)
+      const designPromises = filteredReivewItems.map(async (item, index) => {
 
-      const designPromises = reviewItems.map(async (item, index) => {
+        console.log("item", item)
         console.log("----allImages", item.allImages)
         const frontBackground = item.allImages[0];
         const backBackground = item.allImages[1];
@@ -648,7 +594,7 @@ const Review = () => {
       });
 
       const results = await Promise.all(designPromises);
-      // console.log("All Generated Designs:", results);
+      console.log("All Generated Designs:", results);
 
       const blobData = results.reduce((arr, item) => {
         arr.push(base64toBlob(item.front, "image/png"));
@@ -659,10 +605,10 @@ const Review = () => {
       }, []);
 
       // console.log("blobData:", blobData);
-      const cloudinaryResponse = await uploadBlobData(blobData);
+      const cloudeImagesResponse = await uploadBlobData(blobData);
       // console.log("Cloudinary Response:", cloudinaryResponse);
 
-      designPayload.design.FinalImages = cloudinaryResponse?.files?.map((url) => url) || [];
+      designPayload.design.FinalImages = cloudeImagesResponse?.files?.map((url) => url) || [];
       // const allFrontImagesElement = designPayload.design.present.front.images;
       // const allBackImagesElement = designPayload.design.present.back.images;
       // const allLeftImagesElement = designPayload.design.present.leftSleeve.images;
@@ -765,7 +711,7 @@ const Review = () => {
         }, { replace: true });
       }
 
-      const checkoutData = await makeVariantDataForShopify(reviewItems, cloudinaryResponse);
+      const checkoutData = await makeCheckDataForShopify(reviewItems, cloudeImagesResponse);
 
       try {
         const url = new URL(window.location.href);
@@ -777,8 +723,8 @@ const Review = () => {
         const emailPayload = {
           email: customerEmail,
           companyEmail: "service@simaxsports.com",
-          frontSrc: cloudinaryResponse?.files?.[0] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786256753_download_4.png",
-          backSrc: cloudinaryResponse?.files?.[1] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786306809_download_5.png",
+          frontSrc: cloudeImagesResponse?.files?.[0] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786256753_download_4.png",
+          backSrc: cloudeImagesResponse?.files?.[1] || "https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755786306809_download_5.png",
           designname: lastDesing?.DesignName || "Untitled Design",
           phoneNumber: "",
           edit_design_link: edit_design_link,
@@ -788,7 +734,7 @@ const Review = () => {
         // console.log("emailPayload", emailPayload);
         await sendEmailDesign(emailPayload);
         if (checkoutData?.checkoutUrl) {
-          // window.location.href = checkoutData?.checkoutUrl;
+          window.location.href = checkoutData?.checkoutUrl;
         } else {
           throw new Error("No checkout URL returned");
         }
@@ -978,16 +924,22 @@ const Review = () => {
                   </div>
                 </div>
               </div>
-              <p className={styles.bulkDeal}>
-                <b>Buy More & Save:</b>{" "}
-                {extraInformation?.map((item, index) => (
-                  <span key={index}>
-                    {item.totalQuantity} items for{" "}
-                    <span className={styles.dollarText}>${item.eachPerUnit}</span>ea.
-                    {index !== extraInformation.length - 1 && <span> | </span>}
-                  </span>
-                ))}
-              </p>
+              {
+                discountData?.summary?.discountTier?.percent < discountData?.maxDiscountRate &&
+
+                <p className={styles.bulkDeal}>
+                  <b>Buy More &amp; Save:</b>{" "}
+
+                  {extraInformation?.map((item, index) => (
+                    <span key={index}>
+                      <b>{item.totalQuantity}</b> items for{" "}
+                      <span className={styles.dollarText}>${item.eachPerUnit}</span> ea.
+                      {index !== extraInformation.length - 1 && <b> | </b>}
+                    </span>
+                  ))}
+                </p>
+              }
+
               <div className={styles.summaryBlock}>
                 <p className={styles.summaryTitle}>
                   Summary <span>({totalItems} items)</span>

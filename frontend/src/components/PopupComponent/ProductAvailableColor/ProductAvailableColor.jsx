@@ -41,7 +41,7 @@ const ProductAvailableColor = ({
         <span onClick={onClose} className={style.crossProdIConn}>
           <CrossIcon />
         </span>
-        <p>Select a Color</p>
+        <p>Select a color</p>
         {colorsToShow.length > 0 ? (
           <div className={style.colorOptionsGrid}>
             {colorsToShow.map((color, idx) => (

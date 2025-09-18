@@ -1132,11 +1132,12 @@ function ProductContainer() {
       }
 
       const allVariants = productNode.variants.edges.map(({ node }) => node);
-
+      console.log("dessss", productNode)
       const initialProductWithColor = {
         id: productNode.id,
         name: productNode.title,
         tags: productNode.tags,
+        vendor: productNode?.vendor,
         images: productNode.images.edges.map((edge) => edge.node),
         colors: updatedColors,
         selectedColor,
@@ -1279,6 +1280,7 @@ function ProductContainer() {
         name: productNode.name,
         tags: productNode.tags || [],
         images: productNode.images || [],
+        vendor: productNode?.vendor,
         colors: updatedColors,
         selectedColor,
         selectedImage,

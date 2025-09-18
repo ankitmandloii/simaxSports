@@ -99,34 +99,13 @@ const QuantityToolbar = () => {
 
     // ------------------------Loop through each selected product---------------------
     selectedProducts?.forEach((product) => {
+      console.log("products ", product)
       const addedColors = product?.addedColors || [];
       const selectedColor = [product?.selectedColor] || [];
       const consistentTitle =
         product?.title || product?.name || product?.handle || 'Product';
 
-      // ----------------------- main product-----------------------------
-      const id = product.id.split("/").reverse()[0];
-      const mainProduct = {
-        uniqueKey: uuidv4(),
-        name: product.name || product.title,
-        id: id,
-        imgurl: product?.imgurl,
-        color: product?.selectedColor?.name,
-        size: product?.selectedColor?.variant?.selectedOptions[1]?.value,
-        sizes: getSizeOptions(product, product?.selectedColor?.name),
-        title: consistentTitle,
-        selections: [],
-        allImages: getVariantImagesFromMetafields(
-          product?.selectedColor?.variant?.metafields
-        ),
-        allVariants: product?.allVariants,
-        swatchImg: product?.selectedColor?.swatchImg,
-      };
-      // console.log(mainProduct, "mainProduct");
 
-      // dispatch(addProduct(mainProduct));
-      // newAllProducts.push(mainProduct);
-      // newExpandedProducts[mainProduct.uniqueKey] = true;
 
       // ---------------------- extra variants----------------------
       const extraProducts = addedColors?.map((variantProduct) => {
@@ -152,6 +131,7 @@ const QuantityToolbar = () => {
           inventory_quantity:
             variantProduct?.variant?.inventoryItem?.inventoryLevels?.edges?.[0]
               ?.node?.quantities?.[0]?.quantity,
+          vendor: product?.vendor
         };
         // console.log(prod, "prod");
 
@@ -182,6 +162,7 @@ const QuantityToolbar = () => {
           inventory_quantity:
             variantProduct?.variant?.inventoryItem?.inventoryLevels?.edges?.[0]
               ?.node?.quantities?.[0]?.quantity,
+          vendor: product?.vendor
         };
         // console.log(prod, "prod");
 
@@ -193,7 +174,7 @@ const QuantityToolbar = () => {
       newAllProducts.push(...extraProducts);
       newAllProducts.push(...extraProducts2);
     });
-
+    console.log(newAllProducts, "newAllProducts")
     setAllProducts(newAllProducts);
     fetchSizes(newAllProducts);
     setExpandedProducts(newExpandedProducts);
