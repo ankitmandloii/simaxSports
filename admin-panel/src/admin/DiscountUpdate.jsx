@@ -6,9 +6,14 @@ import {
   SkeletonBodyText,
   SkeletonDisplayText,
   Card,
+  Icon,
+  Modal,
+  Text,
 } from "@shopify/polaris";
-import { DeleteIcon } from "@shopify/polaris-icons";
-import "./DiscountUpdate.css"; // ⟵ add this line
+
+import { ChartHistogramSecondLastIcon, DeleteIcon, InventoryUpdatedIcon, SmileySadIcon, DiscountIcon } from "@shopify/polaris-icons";
+import "./DiscountUpdate.css";
+import { useToast } from '../admin/ToastContext';
 
 // ---------- helpers ----------
 const toPercent = (d) => (d != null ? Math.round(d * 100 * 100) / 100 : 0);
@@ -30,9 +35,13 @@ function joinUrl(base, path) {
 export default function DiscountUpdate() {
   // -------- server-backed state --------
   const [tiers, setTiers] = useState([{ minQty: 1, ratePercent: 0 }]);
-  const [surcharges, setSurcharges] = useState({ XL: 1, "2XL": 2, "3XL": 3 });
+  const [surcharges, setSurcharges] = useState({ "XL": 1, "2XL": 2, "3XL": 3 });
   const [licenseFee, setLicenseFee] = useState(25);
   const [printAreas, setPrintAreas] = useState({ "1": 0.23, "2": 0.46, "3": 12.68, "4": 18.92 });
+  const [nameAndNumberSurcharges, setNameAndNumberSurcharges] = useState({ "nameSurcharge": 3, "numberSurcharge": 4, "nameAndNumberBothPrint": 5 })
+
+
+  const { showToast } = useToast();
 
   // ui state
   const [loading, setLoading] = useState(true);
@@ -62,6 +71,7 @@ export default function DiscountUpdate() {
           body: JSON.stringify({}),
         });
         const data = await res.json();
+        console.log("dzdfsdafdsafsafata", data)
         if (!res.ok) throw new Error(data.error || "Failed to load");
 
         const uiTiers = (data.tiers || []).map(t => ({
@@ -69,7 +79,7 @@ export default function DiscountUpdate() {
           ratePercent: toPercent(Number(t.rate)),
         }));
         setTiers(uiTiers.length ? uiTiers : [{ minQty: 1, ratePercent: 0 }]);
-        setSurcharges(data.sizeSurcharges || { XL: 1, "2XL": 2, "3XL": 3 });
+        setSurcharges(data.sizeSurcharges || { "XL": 1, "2XL": 2, "3XL": 3 });
         setLicenseFee(data.licenseFeeFlat ?? 25);
 
         const pa = data.printAreaSurcharges || {};
@@ -79,13 +89,18 @@ export default function DiscountUpdate() {
           "3": Number(pa["3"] ?? 12.68),
           "4": Number(pa["4"] ?? 18.92),
         });
+
+        setNameAndNumberSurcharges(data.nameAndNumberSurcharges || { "nameSurcharge": 3, "numberSurcharge": 4, "nameAndNumberBothPrint": 5 });
+        // setNameSurcharge(data.nameSurcharge || 3);
+        // setNumberSurcharge(data.numberSurcharge || 4);
+        // setNameAndNumberBothPrint(data.nameAndNumberBothPrint || 5);
       } catch (e) {
-        setError(e.message || "Failed to load settings");
+        showToast({ content: `Failed to load settings`, error: true });
+        // setError(e.message || "Failed to load settings");
       } finally {
         setLoading(false);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [GET_TIERS_URL]);
 
   // -------- table handlers --------
@@ -144,13 +159,30 @@ export default function DiscountUpdate() {
             "3": Number(printAreas["3"] ?? 0),
             "4": Number(printAreas["4"] ?? 0),
           },
+          nameAndNumberSurcharges: {
+            "nameSurcharge": Number(nameAndNumberSurcharges["nameSurcharge"] ?? 0),
+            "numberSurcharge": Number(nameAndNumberSurcharges["numberSurcharge"] ?? 0),
+            "nameAndNumberBothPrint": Number(nameAndNumberSurcharges["nameAndNumberBothPrint"] ?? 0)
+          }
+          // nameSurcharge: Number(nameSurcharge),
+          // numberSurcharge: Number(numberSurcharge),
+          // nameAndNumberBothPrint: Number(nameAndNumberBothPrint),
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to save");
-      setOkMsg("Settings saved");
+      // setOkMsg("Settings saved");
+      showToast({
+        content: `Settings Updated`,
+        icon: <Icon source={InventoryUpdatedIcon} tone="success" />
+      });
     } catch (e) {
-      setError(e.message || "Save failed");
+      // setError(e.message || "Save failed");
+      showToast({
+        content: `${"Settings Save failed"}`,
+        icon: <Icon source={SmileySadIcon} />,
+        error: true
+      });
     } finally {
       setSaving(false);
     }
@@ -183,6 +215,7 @@ export default function DiscountUpdate() {
     }
     return chosen;
   }
+
   function futureLocalTiers(tiersDec, qty) {
     return tiersDec.filter(t => t.minQty > qty).slice(0, 2)
       .map(t => ({ threshold: t.minQty, rate: t.rate, percent: pct(t.rate) }));
@@ -193,132 +226,144 @@ export default function DiscountUpdate() {
   const [testUnit, setTestUnit] = useState(20);
   const [testLicense, setTestLicense] = useState(false);
 
+  const [nameChecked, setNameChecked] = useState(false);
+  const [numberChecked, setNumberChecked] = useState(false);
+
+  // function simulate() {
+  //   const tiersDec = tiers.map(t => ({ minQty: Number(t.minQty), rate: dec(Number(t.ratePercent || 0)) }));
+  //   const tier = pickLocalTier(tiersDec, Number(testQty || 0));
+  //   const sizeUp = Number(surcharges[testSize] || 0);
+  //   const unitBefore = Number(testUnit) + sizeUp;
+  //   const eachBefore = unitBefore;
+  //   const eachAfter = Math.round(unitBefore * (1 - tier.rate) * 100) / 100;
+  //   const subtotalBefore = Math.round(eachBefore * testQty * 100) / 100;
+  //   const discountedSubtotal = Math.round(eachAfter * testQty * 100) / 100;
+  //   const licenseAdd = testLicense ? Number(licenseFee || 0) : 0;
+  //   const paFee = Number(printAreas[String(testAreas)] || 0);
+  //   const grand = Math.round((discountedSubtotal + licenseAdd + paFee) * 100) / 100;
+  //   return {
+  //     tier, eachBefore, eachAfter, subtotalBefore, discountedSubtotal,
+  //     licenseFee: licenseAdd, printAreaFee: paFee, grand,
+  //     ladder: futureLocalTiers(tiersDec, Number(testQty || 0)).map(ft => ({
+  //       ...ft, eachAtTier: Math.round((unitBefore * (1 - ft.rate)) * 100) / 100,
+  //     })),
+  //   };
+  // }
+
   function simulate() {
+    // Prepare the tiers and apply discount based on quantity
     const tiersDec = tiers.map(t => ({ minQty: Number(t.minQty), rate: dec(Number(t.ratePercent || 0)) }));
     const tier = pickLocalTier(tiersDec, Number(testQty || 0));
+
+    // Calculate the unit price, including the size surcharge
     const sizeUp = Number(surcharges[testSize] || 0);
-    const unitBefore = Number(testUnit) + sizeUp;           // print-area is flat, not per unit
+    const unitBefore = Number(testUnit) + sizeUp;
     const eachBefore = unitBefore;
+
+    // Calculate the discount after applying the tier rate
     const eachAfter = Math.round(unitBefore * (1 - tier.rate) * 100) / 100;
     const subtotalBefore = Math.round(eachBefore * testQty * 100) / 100;
     const discountedSubtotal = Math.round(eachAfter * testQty * 100) / 100;
+
+    // Calculate any additional fees like the license fee
     const licenseAdd = testLicense ? Number(licenseFee || 0) : 0;
-    const paFee = Number(printAreas[String(testAreas)] || 0); // flat fee
-    const grand = Math.round((discountedSubtotal + licenseAdd + paFee) * 100) / 100;
+
+    // Calculate the print area fee
+    const paFee = Number(printAreas[String(testAreas)] || 0);
+
+    // Calculate the surcharge for Name, Number, or both
+    let nameNumberFee = 0;
+
+    if (nameChecked && numberChecked) {
+      nameNumberFee = nameAndNumberSurcharges["nameAndNumberBothPrint"];  // Both name and number
+    } else if (nameChecked) {
+      nameNumberFee = nameAndNumberSurcharges["nameSurcharge"];  // Only name
+    } else if (numberChecked) {
+      nameNumberFee = nameAndNumberSurcharges["numberSurcharge"];  // Only number
+    }
+
+    // Calculate the grand total, including the applicable surcharges
+    const grand = Math.round((discountedSubtotal + licenseAdd + paFee + nameNumberFee) * 100) / 100;
+
     return {
-      tier, eachBefore, eachAfter, subtotalBefore, discountedSubtotal,
-      licenseFee: licenseAdd, printAreaFee: paFee, grand,
+      tier,
+      eachBefore,
+      eachAfter,
+      subtotalBefore,
+      discountedSubtotal,
+      licenseFee: licenseAdd,
+      printAreaFee: paFee,
+      nameNumberFee,
+      grand,
       ladder: futureLocalTiers(tiersDec, Number(testQty || 0)).map(ft => ({
-        ...ft, eachAtTier: Math.round((unitBefore * (1 - ft.rate)) * 100) / 100,
+        ...ft,
+        eachAtTier: Math.round((unitBefore * (1 - ft.rate)) * 100) / 100,
       })),
     };
   }
 
-if (loading) {
-  return (
-    <div className="pricing__container">
-      {/* Page title */}
-      <div className="skel skel-title" />
+  // When the page is loading, display skeleton screens
+  if (loading) {
+    return (
+      <div className="pricing__container">
+        {/* Page title */}
+        <div className="skel skel-title" />
 
-      {/* How it works + sandbox */}
-      <section style={{ marginTop: 16, padding: 16, border: "1px solid #e5e5e5", borderRadius: 12, background: "#fafafa" }}>
-        <div className="skel skel-line" style={{ width: 260 }} />
-        <div style={{ marginTop: 12, lineHeight: 1.5 }}>
-          <div className="skel skel-line" style={{ width: "90%", marginBottom: 6 }} />
-          <div className="skel skel-line" style={{ width: "80%", marginBottom: 6 }} />
-          <div className="skel skel-line" style={{ width: "70%", marginBottom: 6 }} />
-        </div>
+        {/* How it works + sandbox */}
+        <section style={{ marginTop: 16, padding: 16, border: "1px solid #e5e5e5", borderRadius: 12, background: "#fafafa" }}>
+          <div className="skel skel-line" style={{ width: 260 }} />
+          <div style={{ marginTop: 12, lineHeight: 1.5 }}>
+            <div className="skel skel-line" style={{ width: "90%", marginBottom: 6 }} />
+            <div className="skel skel-line" style={{ width: "80%", marginBottom: 6 }} />
+            <div className="skel skel-line" style={{ width: "70%", marginBottom: 6 }} />
+          </div>
 
-        {/* sandbox grid (same grid-5 as live) */}
-        <div className="grid-5" style={{ marginTop: 16 }}>
-          {[...Array(5)].map((_, i) => (
-            <div key={i} style={{ minWidth: 0 }}>
-              <div className="skel skel-line" style={{ width: 90, marginBottom: 8 }} />
-              <div className="skel skel-input" />
-            </div>
-          ))}
-        </div>
-
-        {/* sandbox results */}
-        <div style={{ marginTop: 12 }}>
-          <div className="skel skel-line" style={{ width: "60%", marginBottom: 6 }} />
-          <div className="skel skel-line" style={{ width: "65%", marginBottom: 6 }} />
-          <div className="skel skel-line" style={{ width: "55%", marginBottom: 6 }} />
-          <div className="skel skel-line" style={{ width: "50%", marginBottom: 6 }} />
-        </div>
-      </section>
-
-      {/* Discount Tiers */}
-      <section style={{ marginTop: 16 }}>
-        <div className="skel skel-line" style={{ width: 180, marginBottom: 8 }} />
-        <div className="skel skel-line" style={{ width: 260, height: 10, marginBottom: 12, borderRadius: 4 }} />
-
-        <div className="table-wrap">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 60px", gap: 12 }}>
-            {/* Header mimic */}
-            <div className="skel skel-line" style={{ width: "80%", height: 12 }} />
-            <div className="skel skel-line" style={{ width: "80%", height: 12 }} />
-            <div className="skel skel-line" style={{ width: 40, height: 12, justifySelf: "end" }} />
-            {/* 3 rows */}
-            {[...Array(3)].map((_, i) => (
-              <React.Fragment key={i}>
+          {/* sandbox grid (same grid-5 as live) */}
+          <div className="grid-5" style={{ marginTop: 16 }}>
+            {[...Array(5)].map((_, i) => (
+              <div key={i} style={{ minWidth: 0 }}>
+                <div className="skel skel-line" style={{ width: 90, marginBottom: 8 }} />
                 <div className="skel skel-input" />
-                <div className="skel skel-input" />
-                <div className="skel skel-btn" style={{ justifySelf: "end", width: 36 }} />
-              </React.Fragment>
+              </div>
             ))}
           </div>
-        </div>
 
-        <div className="skel skel-btn" style={{ marginTop: 10, width: 110 }} />
-      </section>
+          {/* sandbox results */}
+          <div style={{ marginTop: 12 }}>
+            <div className="skel skel-line" style={{ width: "60%", marginBottom: 6 }} />
+            <div className="skel skel-line" style={{ width: "65%", marginBottom: 6 }} />
+            <div className="skel skel-line" style={{ width: "55%", marginBottom: 6 }} />
+            <div className="skel skel-line" style={{ width: "50%", marginBottom: 6 }} />
+          </div>
+        </section>
 
-      {/* Size Surcharges */}
-      <section style={{ marginTop: 24 }}>
-        <div className="skel skel-line" style={{ width: 210, marginBottom: 8 }} />
-        <div className="skel skel-line" style={{ width: 280, height: 10, marginBottom: 12, borderRadius: 4 }} />
+        {/* Discount Tiers */}
+        <section style={{ marginTop: 16 }}>
+          <div className="skel skel-line" style={{ width: 180, marginBottom: 8 }} />
+          <div className="skel skel-line" style={{ width: 260, height: 10, marginBottom: 12, borderRadius: 4 }} />
 
-        <div className="grid-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", minWidth: 0 }}>
-              <div className="skel skel-input" style={{ width: "100%" }} />
-              <div className="skel skel-input" style={{ width: "100%" }} />
+          <div className="table-wrap">
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 60px", gap: 12 }}>
+              {/* Header mimic */}
+              <div className="skel skel-line" style={{ width: "80%", height: 12 }} />
+              <div className="skel skel-line" style={{ width: "80%", height: 12 }} />
+              <div className="skel skel-line" style={{ width: 40, height: 12, justifySelf: "end" }} />
+              {/* 3 rows */}
+              {[...Array(3)].map((_, i) => (
+                <React.Fragment key={i}>
+                  <div className="skel skel-input" />
+                  <div className="skel skel-input" />
+                  <div className="skel skel-btn" style={{ justifySelf: "end", width: 36 }} />
+                </React.Fragment>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
 
-        <div className="skel skel-btn" style={{ marginTop: 10, width: 110 }} />
-      </section>
-
-      {/* Print-Area Surcharges */}
-      <section style={{ marginTop: 24 }}>
-        <div className="skel skel-line" style={{ width: 270, marginBottom: 8 }} />
-        <div className="skel skel-line" style={{ width: 320, height: 10, marginBottom: 12, borderRadius: 4 }} />
-
-        <div className="grid-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", minWidth: 0 }}>
-              <div className="skel skel-input" style={{ width: "100%" }} />
-              <div className="skel skel-input" style={{ width: "100%" }} />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* License fee */}
-      <section style={{ marginTop: 24 }}>
-        <div className="skel skel-line" style={{ width: 220, marginBottom: 8 }} />
-        <div className="skel skel-input" style={{ maxWidth: 220 }} />
-      </section>
-
-      {/* Actions */}
-      <div style={{ marginTop: 24 }}>
-        <div className="skel skel-btn" style={{ width: 150 }} />
+          <div className="skel skel-btn" style={{ marginTop: 10, width: 110 }} />
+        </section>
       </div>
-    </div>
-  );
-}
-
+    );
+  }
 
   return (
     <div className="pricing__container">
@@ -400,7 +445,7 @@ if (loading) {
                   </select>
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <label style={{ fontSize: 12 }}>Print areas (1–4)</label>
+                  <label style={{ fontSize: 12 }}>Print areas</label>
                   <select
                     value={testAreas}
                     onChange={e => setTestAreas(Number(e.target.value))}
@@ -422,6 +467,33 @@ if (loading) {
                 </div>
               </div>
 
+              {/* Name and Number Surcharge Section */}
+              <div style={{ marginTop: 16 }}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={nameChecked}
+                    onChange={() => setNameChecked(!nameChecked)}
+                  />
+                  Add Name Printing Surcharge (${nameAndNumberSurcharges["nameSurcharge"]})
+                </label>
+                <br />
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={numberChecked}
+                    onChange={() => setNumberChecked(!numberChecked)}
+                  />
+                  Add Number Printing Surcharge (${nameAndNumberSurcharges["numberSurcharge"]})
+                </label>
+              </div>
+
+              {/* Showing total surcharge if both name and number are selected */}
+              {nameChecked && numberChecked && (
+                <div style={{ marginTop: 8 }}>
+                  <strong>Add ${nameAndNumberSurcharges["nameAndNumberBothPrint"]} surcharge for both name and number printing.</strong>
+                </div>
+              )}
               {(() => {
                 const r = simulate();
                 return (
@@ -457,8 +529,10 @@ if (loading) {
         </details>
       </section>
 
+
       {/* Tiers */}
       <section style={{ marginTop: 16 }}>
+
         <h3>Discount Tiers</h3>
         <p style={{ fontSize: "0.7rem", color: "#555", marginTop: 4 }}>
           Quantity-based discount (%)
@@ -509,6 +583,59 @@ if (loading) {
         <Button style={{ marginTop: 8 }} onClick={addRow}>+ Add Tier</Button>
       </section>
 
+<section style={{ marginTop: 24 }}>
+  <h3>Name and Number Surcharges</h3>
+  <p style={{ fontSize: "0.7rem", color: "#555", marginTop: 4 }}>
+    As per depend on Customer Selection Ex. Only Name or Number or Both
+  </p>
+  
+  {/* Name Surcharge */}
+  <div style={{ marginTop: 8 }}>
+    <label>Name Surcharge ($):</label>
+    <input
+      type="number"
+      step="0.01"
+      min={0}
+      value={nameAndNumberSurcharges.nameSurcharge}
+      onChange={e => setNameAndNumberSurcharges(prev => ({
+        ...prev, nameSurcharge: Number(e.target.value)
+      }))}
+      style={{ width: "100%", maxWidth: 220 }}
+    />
+  </div>
+
+  {/* Number Surcharge */}
+  <div style={{ marginTop: 8 }}>
+    <label>Number Surcharge ($):</label>
+    <input
+      type="number"
+      step="0.01"
+      min={0}
+      value={nameAndNumberSurcharges.numberSurcharge}
+      onChange={e => setNameAndNumberSurcharges(prev => ({
+        ...prev, numberSurcharge: Number(e.target.value)
+      }))}
+      style={{ width: "100%", maxWidth: 220 }}
+    />
+  </div>
+
+  {/* Name & Number Surcharge */}
+  <div style={{ marginTop: 8 }}>
+    <label>Name & Number Surcharge ($):</label>
+    <input
+      type="number"
+      step="0.01"
+      min={0}
+      value={nameAndNumberSurcharges.nameAndNumberBothPrint}
+      onChange={e => setNameAndNumberSurcharges(prev => ({
+        ...prev, nameAndNumberBothPrint: Number(e.target.value)
+      }))}
+      style={{ width: "100%", maxWidth: 220 }}
+    />
+  </div>
+</section>
+
+
       {/* Size Surcharges */}
       <section style={{ marginTop: 24 }}>
         <h3>Size Surcharges ($)</h3>
@@ -519,10 +646,10 @@ if (loading) {
         <div className="grid-4" style={{ marginTop: 8 }}>
           {Object.entries(surcharges).map(([size, val]) => (
             <div key={size} style={{ display: "flex", gap: 8, alignItems: "center", minWidth: 0 }}>
-              <input
+              {/* <input
                 value={size}
                 onChange={e => {
-                  const newKey = e.target.value;
+                  const newKey = e.target.value.toString();
                   setSurcharges(prev => {
                     const copy = { ...prev };
                     const v = copy[size];
@@ -532,7 +659,8 @@ if (loading) {
                   });
                 }}
                 style={{ width: "100%" }}
-              />
+              /> */}
+              <input value={size} disabled style={{ width: "100%", background: "#f3f3f3" }} />
               <input
                 type="number"
                 step="0.01"
@@ -544,9 +672,15 @@ if (loading) {
             </div>
           ))}
         </div>
-        <Button style={{ marginTop: 8 }} onClick={() => setSurcharges(prev => ({ ...prev, "": 0 }))}>
+        {/* const addRow = () => setTiers(prev => [...prev, { minQty: 1, ratePercent: 0 }]); */}
+
+        {/* <Button style={{ marginTop: 8 }} onClick={() => setSurcharges(prev => ({ ...prev, "": 0 }))}> */}
+        {/* <Button style={{ marginTop: 8 }} onClick={() => {
+          const newSizeKey = `Size${Object.keys(surcharges).length + 1}`;  // Create a unique size key
+          setSurcharges(prev => ({ ...prev, [newSizeKey]: 0 }));  // Add new key with a default value of 0
+        }}>
           + Add Size
-        </Button>
+        </Button> */}
       </section>
 
       {/* Print-Area flat fees */}
@@ -598,7 +732,7 @@ if (loading) {
           {okMsg && <span style={{ color: "green" }}>{okMsg}</span>}
         </div>
 
-        {confirmOpen && (
+        {/* {confirmOpen && (
           <>
             <div
               onClick={() => !saving && setConfirmOpen(false)}
@@ -635,7 +769,37 @@ if (loading) {
               </div>
             </div>
           </>
+        )} */}
+
+
+
+
+        {confirmOpen && (
+          <Modal
+            open={confirmOpen}
+            onClose={() => setConfirmOpen(false)}
+            title="Confirm Save?"
+            primaryAction={{
+              content: saving ? "Saving…" : "Yes, Save",
+              onAction: handleConfirmYes,
+              loading: saving,
+            }}
+            secondaryActions={[
+              {
+                content: "No, Cancel",
+                onAction: () => setConfirmOpen(false),
+                disabled: saving,
+              },
+            ]}
+          >
+            <Modal.Section>
+              <Text>
+                Save these pricing settings? Changes will apply immediately to discount calculations.
+              </Text>
+            </Modal.Section>
+          </Modal>
         )}
+
       </div>
     </div>
   );

@@ -1,45 +1,192 @@
-/* guardrail: never let the page overflow horizontally */
-html, body, #root { max-width: 100%; overflow-x: hidden; }
+Global Styles
+html, body, #root {
+  max-width: 100%;
+  overflow-x: hidden;
+  font-family: 'Roboto', sans-serif;
+}
 
-/* page wrapper */
-.pricing__container { max-width: 880px; margin: 20px auto; padding: 0 12px; }
+.pricing__container {
+  max-width: 880px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
 
-/* grids */
-.grid-5, .grid-4 { display: grid; gap: 8px; }
-.grid-5 { grid-template-columns: repeat(5, 1fr); }
-.grid-4 { grid-template-columns: repeat(4, 1fr); }
+/* Grid layout */
+.grid-5, .grid-4 {
+  display: grid;
+  gap: 16px;
+}
 
-/* let children shrink */
-.grid-5 > *, .grid-4 > * { min-width: 0; }
+.grid-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
 
-/* responsive tweaks for mobile */
+.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.grid-5 > *, .grid-4 > * {
+  min-width: 0;
+}
+
 @media (max-width: 640px) {
-  .grid-5 { grid-template-columns: 1fr 1fr; }   /* from 5 cols → 2 cols */
-  .grid-4 { grid-template-columns: 1fr 1fr; }   /* from 4 cols → 2 cols */
-  .table-wrap { overflow-x: auto; }             /* contain wide tables */
+  .grid-5 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .grid-4 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
 }
 
-/* safer modal width on small screens */
-.confirm-modal {
-  width: min(92vw, 480px);
-  max-width: 92vw;
+/* Inputs styling */
+input[type="number"],
+input[type="text"],
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
 }
 
+input[type="number"]:focus,
+input[type="text"]:focus,
+select:focus {
+  border-color: #007bff;
+  outline: none;
+}
 
-/* Existing layout rules from before…  */
+input:disabled {
+  background-color: #f3f3f3;
+  cursor: not-allowed;
+}
 
-/* Skeleton shimmer */
+/* Buttons */
+button,
+.Button {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover, .Button:hover {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+button:disabled, .Button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Toast Error and Success Styling */
+.toast-error {
+  color: #d9534f;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.toast-success {
+  color: #28a745;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+/* Skeleton Styles */
 .skel {
   background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%);
   background-size: 400% 100%;
   animation: skel 1.4s ease infinite;
   border-radius: 8px;
 }
-@keyframes skel { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
 
-.skel-line { height: 14px; }
-.skel-title { height: 26px; width: 240px; }
-.skel-input { height: 36px; }
-.skel-btn { height: 36px; width: 140px; }
+@keyframes skel {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
 
-/* Keep the responsive grid + overflow fixes you already added */
+.skel-line {
+  height: 14px;
+}
+
+.skel-title {
+  height: 26px;
+  width: 240px;
+}
+
+.skel-input {
+  height: 36px;
+}
+
+.skel-btn {
+  height: 36px;
+  width: 140px;
+}
+
+/* Confirm Modal */
+.confirm-modal {
+  width: min(92vw, 480px);
+  max-width: 92vw;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  z-index: 1001;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.confirm-modal button {
+  /* padding: 12px 20px; */
+  /* border-radius: 8px; */
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #007bff;
+  color: #000000;
+  /* border: none; */
+  transition: all 0.3s ease;
+}
+
+.confirm-modal button:first-child {
+  background-color: #28a745; /* Green for confirm */
+}
+
+.confirm-modal button:last-child {
+  background-color: #be0013; /* Red for cancel */
+}
+
+.confirm-modal button:first-child:hover {
+  background-color: #218838;
+}
+
+.confirm-modal button:last-child:hover {
+  background-color: #be0013;
+}
+
+.confirm-modal button:hover {
+  transform: scale(1.02); /* Slight scaling effect on hover */
+}
+/* Error Image Styling */
+.error-image {
+  max-width: 300px;
+  margin-top: 50px;
+  margin-bottom: 20px;
+}
+
+
+
+
