@@ -224,6 +224,13 @@ const NamesToolbar = () => {
           <button className={`${style.blackButton} ${isButtonClicked ? style.clicked : ''}`} onClick={showAddnamesPopupHandler}>
             Step 2: Enter Names/Numbers
           </button>
+          <hr />
+          <div className={style.namePricingpara}>
+            <p>Complete list required for accurate pricing</p>
+            <p>Names = $4.00 | Numbers = $3.00</p>
+            <p>Names & Numbers = $6.00</p>
+
+          </div>
         </div>
       </div>
       {showAddnamesPopup && <AddNamesPopup showAddnamesPopupHandler={showAddnamesPopupHandler} />}

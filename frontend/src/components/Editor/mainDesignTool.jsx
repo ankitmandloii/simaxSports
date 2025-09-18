@@ -106,6 +106,9 @@ const MainDesignTool = ({
   const [showNotes, setShowNotes] = useState(false);
   const [openAieditorPopup, setOpenAieditorPopup] = useState(false);
   const [size, setSize] = useState();
+  const [Sleeve, setSleeve] = useState(getProductSleeveType(activeProductTitle));
+  // console.log("--------sleeve", Sleeve);
+
   // console.log(openAieditorPopup);
   // **********************************************************************************************************************************************************
   //                                                                                    USE DISPTACHS AREA
@@ -198,36 +201,66 @@ const MainDesignTool = ({
 
     return "Unknown";
   }
+
   function getProductSleeveType(title) {
+    // console.log("-----titleee", title);
 
     const keywords = [
       "Sleeveless",
       "Long Sleeve",
-      // "T-shirt",
-      // "Hoodie",
-      // "Women's Sweatshirt",
-      // "Unisex Sweatshirt",
-      // "Hooded Sweatshirt",
-      // "Pullover Hoodie",
-      // "Polo",
-      // "Zip(?: Pullover)?", // handles both "Zip" and "Zip Pullover"
-      // "Tee",
-      // "Jacket",
-      // "Sweatshirt",
-      // "Tank"
     ];
 
-    const lowerTitle = title?.toLowerCase();
+    if (!title) {
+      // console.log("Title is undefined or null");
+      return "Unknown";
+    }
+
+    const lowerTitle = title.toLowerCase();
+    // console.log("Lowercase title:", lowerTitle);
 
     for (let key of keywords) {
-      const regex = new RegExp(`\\b${key}\\b`, "i"); // \b ensures whole word match
-      if (regex.test(title)) {
+      const regex = new RegExp(`\\b${key}\\b`, "i");
+      // console.log(`Testing regex: ${regex} against title: ${lowerTitle}`);
+      if (regex.test(lowerTitle)) {
+        // console.log(`Match found for keyword: ${key}`);
         return key;
       }
     }
 
+    // console.log("No match found, returning Unknown");
     return "Unknown";
   }
+  // function getProductSleeveType(title) {
+  //   console.log("-----titleee", title)
+
+  //   const keywords = [
+  //     "Sleeveless",
+  //     "Long Sleeve",
+  //     // "T-shirt",
+  //     // "Hoodie",
+  //     // "Women's Sweatshirt",
+  //     // "Unisex Sweatshirt",
+  //     // "Hooded Sweatshirt",
+  //     // "Pullover Hoodie",
+  //     // "Polo",
+  //     // "Zip(?: Pullover)?", // handles both "Zip" and "Zip Pullover"
+  //     // "Tee",
+  //     // "Jacket",
+  //     // "Sweatshirt",
+  //     // "Tank"
+  //   ];
+
+  //   const lowerTitle = title?.toLowerCase();
+
+  //   for (let key of keywords) {
+  //     const regex = new RegExp(`\\b${key}\\b`, "i"); // \b ensures whole word match
+  //     if (regex.test(lowerTitle)) {
+  //       return key;
+  //     }
+  //   }
+
+  //   return "Unknown";
+  // }
   // function getProductType(title) {
   //   const keywords = [
   //     "Unisex",
@@ -2357,7 +2390,7 @@ const MainDesignTool = ({
       const btn = document.getElementById(`canvas-${id}-ai`);
       if (btn) {
         btn.removeEventListener("click", () => {
-          console.log("event removed");
+          // console.log("event removed");
         })
       }
       // Dispose of the canvas to prevent memory leaks
@@ -2514,14 +2547,10 @@ const MainDesignTool = ({
   }, [isRender, addName, addNumber, nameAndNumberDesignState, activeSide]);
 
   useEffect(() => {
-    // const buttonId = `canvas-${id}-ai`;
-    // if(!buttonId) return
-    // buttonId?.addEventListener("click", (event) => {
-    //   setOpenAieditorPopup(!openAieditorPopup);
-    //   // console.log("clicked ai btn",openAieditorPopup);
-    //   // event.stopPropagation();
-    // })
-  }, [])
+    const sleeveType = getProductSleeveType(activeProductTitle);
+    setSleeve(sleeveType);
+  }, [activeProductTitle]);
+
 
 
   // **********************************************************************************************************************************************************
@@ -2663,6 +2692,7 @@ const MainDesignTool = ({
         onClose={() => setIsModalOpen(false)}
         onLayerAction={handleLayerAction}
         fabricCanvas={fabricCanvasRef.current}
+        Sleeve={Sleeve}
       />
       {
         openAieditorPopup && <EditWithAipopup onClose={() => {

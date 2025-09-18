@@ -18,7 +18,7 @@ const ChangePopup = ({ onClose, onProductSelect }) => {
     <div className={styles.popupOverlay}>
       <div className={styles.popupContainer}>
         <div className={styles.popupHeader}>
-          <h2>Select a Collection</h2>
+          <h2 className={styles.title}>Select a Collection</h2>
           <button
             className={styles.closeBtn}
             onClick={onClose}

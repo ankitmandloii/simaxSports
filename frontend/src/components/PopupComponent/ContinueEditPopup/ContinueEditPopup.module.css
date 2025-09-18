@@ -26,7 +26,7 @@
 }
 
 /* Close (X) button */
-.closeButton {
+/* .closeButton {
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -40,7 +40,7 @@
 
 .closeButton:hover {
   color: #0a63d8;
-}
+} */
 
 /* Modal content */
 .content {
@@ -51,11 +51,9 @@
 
 /* Title */
 .title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #0a63d8;
-  /* same blue as ENTER EMAIL */
-  /* margin-bottom: 1rem; */
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--blue-color);
   text-transform: uppercase;
 }
 
@@ -202,17 +200,13 @@
 
 /* Header */
 .header {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--blue-color);
-  text-transform: uppercase;
-  margin: 0;
-  padding: 14px 16px;
+  padding: 13px 24px;
   border-bottom: 1px solid #ddd;
-  background-color: #f9fafc;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  background-color: #f9fafc;
 }
 
 .headerTitle {
@@ -222,14 +216,17 @@
 }
 
 .closeButton {
+  /* position: absolute;
+    top: 14px;
+    right: 20px; */
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 26px;
   cursor: pointer;
   color: #aaa;
   transition: color 0.2s ease;
 }
 
 .closeButton:hover {
-  color: #333;
+  color: #000;
 }

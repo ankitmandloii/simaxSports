@@ -6,7 +6,7 @@ import CopyImg from '../../images/copyPng.png'
 import { useDispatch, useSelector } from 'react-redux';
 import { copyElementToSide } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
-const LayerModal = ({ isOpen, onClose, onLayerAction }) => {
+const LayerModal = ({ isOpen, onClose, onLayerAction, Sleeve }) => {
   const dispatch = useDispatch();
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const selectedTextId = useSelector(
@@ -79,13 +79,13 @@ const LayerModal = ({ isOpen, onClose, onLayerAction }) => {
             </button>
           )}
 
-          {activeSide !== 'leftSleeve' && (
+          {activeSide !== 'leftSleeve' && Sleeve !== 'Sleeveless' && (
             <button onClick={() => handleCopyToSide('leftSleeve')}>
               <img src={CopyImg} alt="Copy to Left Sleeve" title="Copy to Left Sleeve" />Copy to Left
             </button>
           )}
 
-          {activeSide !== 'rightSleeve' && (
+          {activeSide !== 'rightSleeve' && Sleeve !== 'Sleeveless' && (
             <button onClick={() => handleCopyToSide('rightSleeve')}>
               <img src={CopyImg} alt="Copy to Right Sleeve" title="Copy to Right Sleeve" />Copy to Right
             </button>

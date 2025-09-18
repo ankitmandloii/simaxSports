@@ -1448,6 +1448,7 @@ const AddImageToolbar = () => {
                   </div>
 
                   )}
+                  {!AdminSettingsforAioperation?.removeBackgroundAI && selectedFilter === "Single Color" && <hr />}
                   {/* {
                     selectedFilter === "Single Color" &&
                     <hr />
@@ -1538,7 +1539,6 @@ const AddImageToolbar = () => {
 
 
 
-
                   <hr />
                   <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                     <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
@@ -1584,8 +1584,8 @@ const AddImageToolbar = () => {
                   )
                   }
 
-
-                  <hr />
+                  {AdminSettingsforAioperation?.replaceBackgroundAI && <hr />}
+                  {/* <hr /> */}
                   <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                     {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Dimensions & DPI :    </div> */}
 

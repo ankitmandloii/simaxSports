@@ -17,20 +17,26 @@
 /* popup-content: The main popup box */
 .popupContent {
   background-color: white;
-  border-radius: 8px;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   width: 90%;
   /* Adjust as needed */
   max-width: 700px;
   /* Max width for larger screens */
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  /* padding: 20px; */
+
   position: relative;
   /* For positioning the close button */
   box-sizing: border-box;
+  overflow: hidden;
   /* Include padding in width/height */
+}
+
+.popupMainContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
 }
 
 /* popup-header: Top section with title and close button */
@@ -126,10 +132,11 @@
   transform: scale(0.9);
   /* Darker orange on hover */
 }
+
 .addDesignButton:disabled {
-     opacity: 0.5;
-     cursor: not-allowed;
-     /* pointer-events: none; */
+  opacity: 0.5;
+  cursor: not-allowed;
+  /* pointer-events: none; */
   /* Darker orange on hover */
 }
 
@@ -147,4 +154,37 @@
 .noThanksButton:hover {
   color: var(--black-color);
   /* Darker on hover */
+}
+
+/* header */
+.header {
+  padding: 13px 24px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  background-color: #f9fafc;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--blue-color);
+}
+
+.closeButton {
+  /* position: absolute;
+    top: 14px;
+    right: 20px; */
+  background: none;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  color: #aaa;
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: #000;
 }

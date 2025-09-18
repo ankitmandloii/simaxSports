@@ -14,22 +14,54 @@ import style from './ProductContainer.module.css';
 import RedoundoComponent from './RedoundoComponent/redoundo';
 import ViewControlButtons from './controls/ViewControlButtons';
 import DynamicDimensionBox from './DynamicDimensionBox/DynamicDimensionBox';
+// function getProductSleeveType(title) {
+
+//   const keywords = [
+//     "Sleeveless",
+//     "Long Sleeve",
+//     "Tank Top"
+//   ];
+
+//   const lowerTitle = title?.toLowerCase();
+
+//   for (let key of keywords) {
+//     const regex = new RegExp(`\\b${key}\\b`, "i"); // \b ensures whole word match
+//     if (regex.test(lowerTitle)) {
+//       return key;
+//     }
+//   }
+
+//   return "Unknown";
+// }\
 function getProductSleeveType(title) {
+  // console.log("-----titleee", title);
 
   const keywords = [
     "Sleeveless",
     "Long Sleeve",
+    "Tank Top",
   ];
 
   const lowerTitle = title?.toLowerCase();
+  // console.log("Lowercase title:", lowerTitle);
+
+  if (!lowerTitle) {
+    // console.log("Title is undefined or null");
+    return "Unknown";
+  }
 
   for (let key of keywords) {
-    const regex = new RegExp(`\\b${key}\\b`, "i"); // \b ensures whole word match
-    if (regex.test(title)) {
+    // Escape spaces in the keyword for regex
+    const escapedKey = key.replace(/\s+/g, "\\s+");
+    const regex = new RegExp(`\\b${escapedKey}\\b`, "i");
+    // console.log(`Testing regex: ${regex} against title: ${lowerTitle}`);
+    if (regex.test(lowerTitle)) {
+      // console.log(`Match found for keyword: ${key}`);
       return key;
     }
   }
 
+  // console.log("No match found, returning Unknown");
   return "Unknown";
 }
 
@@ -468,14 +500,27 @@ function ProductContainer() {
     }
   }, [rawProducts, dispatch, selectedProducts, searchParams]);
 
+  // Navigate to front if sleeve not present
   useEffect(() => {
-    if (getProductSleeveType(activeProductTitle) == "Sleeveless") {
-      setHidden(true)
+    const sleeveType = getProductSleeveType(activeProductTitle);
+
+    if (sleeveType === "Sleeveless" || sleeveType === "Tank Top") {
+      setHidden(true);
+    } else {
+      setHidden(false);
     }
-    else {
-      setHidden(false)
+  }, [activeProductTitle]);
+
+
+  useEffect(() => {
+    // Check if the product is "Sleeveless"
+    const sleeveType = getProductSleeveType(activeProductTitle);
+
+    if ((activeSide === "rightSleeve" || activeSide === "leftSleeve") && (sleeveType === "Sleeveless" || sleeveType === "Tank Top")) {
+      dispatch(setActiveSide("front"));
+      setTimeout(() => dispatch(setRendering()), 100);  // Re-render after switching to front
     }
-  }, [activeProductTitle])
+  }, [activeSide, activeProductTitle, dispatch]);
 
   // useEffect(() => {
   //   console.log("---fetchh")
@@ -493,7 +538,7 @@ function ProductContainer() {
     const variantId = searchParams.get("variantid");
 
     if (productId) {
-      console.log("fetch product id funciton callllllllll")
+      // console.log("fetch product id funciton callllllllll")
       fetchProductById(productId, variantId);
     }
   }, [searchParams]);
@@ -632,6 +677,7 @@ function ProductContainer() {
             toggleZoom={toggleZoom}
             logo={logo}
             settingsForsides={settingsForsides}
+            hidden={hidden}
 
           />
           {/* <DynamicDimensionBox /> */}
@@ -729,7 +775,7 @@ function ProductContainer() {
               )}
 
 
-              {addSleeves &&!hidden && (
+              {addSleeves && !hidden && (
                 <>
                   <div className={style.cornerImgCanvaContainer} onClick={ShowRightSleeve}>
                     <img
