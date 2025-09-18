@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './SleeveDesignPopup.module.css';
 // Import your image assets here. Replace with actual paths to your images.
 // For demonstration, I'm using placeholder names.
@@ -6,9 +6,32 @@ import printSampleDark from '../../images/sleeveImagePopup.png'
 import printSampleGrey from '../../images/sleeveImagePopup2.png';
 import printSampleGreen from '../../images/sleeveImagePopup3.png';
 import printSampleLight from '../../images/sleeveImagePopup4.png';
+function getProductSleeveType(title) {
 
+  const keywords = [
+    "Sleeveless",
+    "Long Sleeve",
+  ];
 
-const SleeveDesignPopup = ({ onClose, onAddDesign }) => {
+  const lowerTitle = title?.toLowerCase();
+
+  for (let key of keywords) {
+    const regex = new RegExp(`\\b${key}\\b`, "i"); // \b ensures whole word match
+    if (regex.test(title)) {
+      return key;
+    }
+  }
+
+  return "Unknown";
+}
+
+const SleeveDesignPopup = ({ onClose, onAddDesign, activeProductTitle }) => {
+  const [hidden, setHidden] = useState(false);
+  useEffect(() => {
+    if (getProductSleeveType(activeProductTitle) == "Sleeveless") {
+      setHidden(true)
+    }
+  }, [activeProductTitle])
   return (
     <div className={styles.popupOverlay}>
       <div className={styles.popupContent}>
@@ -38,7 +61,7 @@ const SleeveDesignPopup = ({ onClose, onAddDesign }) => {
           Enhance your product's appeal with a custom sleeve design
         </p>
 
-        <button className={styles.addDesignButton} onClick={onAddDesign}>
+        <button className={styles.addDesignButton} onClick={onAddDesign} disabled={hidden}>
           Add Sleeve Design
         </button>
 

@@ -14,6 +14,24 @@ import style from './ProductContainer.module.css';
 import RedoundoComponent from './RedoundoComponent/redoundo';
 import ViewControlButtons from './controls/ViewControlButtons';
 import DynamicDimensionBox from './DynamicDimensionBox/DynamicDimensionBox';
+function getProductSleeveType(title) {
+
+  const keywords = [
+    "Sleeveless",
+    "Long Sleeve",
+  ];
+
+  const lowerTitle = title?.toLowerCase();
+
+  for (let key of keywords) {
+    const regex = new RegExp(`\\b${key}\\b`, "i"); // \b ensures whole word match
+    if (regex.test(title)) {
+      return key;
+    }
+  }
+
+  return "Unknown";
+}
 
 function ProductContainer() {
   const FrontImgRef = useRef(null);
@@ -24,6 +42,7 @@ function ProductContainer() {
   const dispatch = useDispatch();
   const BASE_URL = process.env.REACT_APP_BASE_URL || "https://simax-sports-x93p.vercel.app/api/";
   const hasFetched = useRef(false);
+  const [hidden, setHidden] = useState(false);
 
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const sleevedesign = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
@@ -449,7 +468,14 @@ function ProductContainer() {
     }
   }, [rawProducts, dispatch, selectedProducts, searchParams]);
 
-
+  useEffect(() => {
+    if (getProductSleeveType(activeProductTitle) == "Sleeveless") {
+      setHidden(true)
+    }
+    else {
+      setHidden(false)
+    }
+  }, [activeProductTitle])
 
   // useEffect(() => {
   //   console.log("---fetchh")
@@ -703,7 +729,7 @@ function ProductContainer() {
               )}
 
 
-              {addSleeves && (
+              {addSleeves &&!hidden && (
                 <>
                   <div className={style.cornerImgCanvaContainer} onClick={ShowRightSleeve}>
                     <img
@@ -726,7 +752,7 @@ function ProductContainer() {
                 </>
               )}
 
-              {openSleeveDesignPopup && <SleeveDesignPopup onClose={onClose} onAddDesign={onAddDesign} />}
+              {openSleeveDesignPopup && <SleeveDesignPopup onClose={onClose} onAddDesign={onAddDesign} activeProductTitle={activeProductTitle} />}
             </div>
 
             {!addSleeves && settingsForsides?.enableSleevesShow && (

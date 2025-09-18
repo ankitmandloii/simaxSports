@@ -290,15 +290,15 @@ const renderAllImageObjectsHelper = (imageContentObjects, canvas) => {
       let finalSrc = src;
 
 
-      if (selectedFilter === "normal") {
-        finalSrc = base64CanvasImageForNormalColor || src;
-      }
-      else if (selectedFilter === "single") {
-        finalSrc = base64CanvasImageForSinglelColor || src;
-      }
-      else if (selectedFilter === "blackAndWhite") {
-        finalSrc = base64CanvasImageForBlackAndWhitelColor || src;
-      }
+      // if (selectedFilter === "Normal") {
+      //   finalSrc = base64CanvasImageForNormalColor || src;
+      // }
+      // else if (selectedFilter === "Single Colore") {
+      //   finalSrc = base64CanvasImageForSinglelColor || src;
+      // }
+      // else if (selectedFilter === "Black/White") {
+      //   finalSrc = base64CanvasImageForBlackAndWhitelColor || src;
+      // }
 
       // Ensure crossOrigin is set for all external images to prevent tainting
       fabric.Image.fromURL(base64CanvasImage, (img) => {
@@ -637,7 +637,7 @@ export async function generateDesigns(backgrounds, texts, images, nameAndNumberD
   // Create off-screen canvases and render the designs asynchronously
   for (let i = 0; i < backgrounds.length; i++) {
     // Create a new off-screen canvas element for each design
-    const canvasElement = document.getElementById('canvas-export');
+    const canvasElement = document.getElementById('canvas-export') ?? document.createElement('canvas');
     // const wrapperElement = document.getElementById('canvas-' + activeSide).parentNode;
 
     // const canvasWidth = wrapperElement.clientWidth;

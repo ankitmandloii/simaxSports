@@ -1,15 +1,18 @@
 import { restoreDesignFromSavedState } from "../../redux/FrontendDesign/TextFrontendDesignSlice";
-// import { restoreDesignCollectionSlice } from "../../redux/ProductSlice/CollectionSlice";
 import { restoreDesignSelectedProductSlice } from "../../redux/ProductSlice/SelectedProductSlice";
+import transformReduxState from "./transformReduxState";
 
+export const restoreAllSlicesFromLocalStorage = (dispatch, parsedState) => {
+  // const saved = localStorage.getItem("savedReduxState");
+  if (!parsedState) return;
 
-export const restoreAllSlicesFromLocalStorage = () => (dispatch) => {
-  // alert("hii")    
-  const saved = localStorage.getItem('savedReduxState');
-  if (!saved) return;
+  // let parsedState = JSON.parse(saved);
+  // parsedState = transformReduxState(parsedState);
 
-  const parsedState = JSON.parse(saved);
-
+  console.log(
+    "parsedState in restoreAllSlicesFromLocalStorage",
+    parsedState
+  );
 
   if (parsedState.TextFrontendDesignSlice) {
     dispatch(restoreDesignFromSavedState(parsedState.TextFrontendDesignSlice));
@@ -22,6 +25,4 @@ export const restoreAllSlicesFromLocalStorage = () => (dispatch) => {
   // if (parsedState.ui) {
   //   dispatch(restoreDesignSelectedProductSlice(parsedState.ui));
   // }
-
-  // Add others as needed...
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, use } from "react";
 import styles from "./Review.module.css";
+import axios from "axios";
 import { LuArrowLeft, LuArrowRight } from "react-icons/lu";
 import { RxCross2 } from "react-icons/rx";
 import { FaTshirt } from "react-icons/fa";
@@ -418,6 +419,8 @@ const Review = () => {
           sizes: {
             [size]: Number(varianttitle.inventory_quantity)
           },
+          namePrint: "aaa",
+          number: "37432"
         };
         discountData.push(newData);
         return newData;
@@ -660,6 +663,71 @@ const Review = () => {
       // console.log("Cloudinary Response:", cloudinaryResponse);
 
       designPayload.design.FinalImages = cloudinaryResponse?.files?.map((url) => url) || [];
+      // const allFrontImagesElement = designPayload.design.present.front.images;
+      // const allBackImagesElement = designPayload.design.present.back.images;
+      // const allLeftImagesElement = designPayload.design.present.leftSleeve.images;
+      // const allRightImagesElement = designPayload.design.present.rightSleeve.images;
+      const allImages = [
+        ...allFrontImagesElement,
+        ...allBackImagesElement,
+        ...allLeftImagesElement,
+        ...allRightImagesElement
+      ];
+      async function blobUrlToFile(blobUrl, filename = "canvas.png") {
+        const response = await fetch(blobUrl);   // fetch blob data
+        const blob = await response.blob();      // convert to blob
+        return new File([blob], filename, { type: blob.type });
+      }
+
+
+      const allFiles = [];
+      const formData = new FormData();
+      for (let i = 0; i < allImages.length; i++) {
+        const blobUrl = allImages[i].base64CanvasImage;
+        if (!blobUrl) continue;
+
+        // use the ID in the filename
+        const file = await blobUrlToFile(blobUrl, `${allImages[i].id}.png`);
+        formData.append("images", file);
+      }
+
+
+
+      // const file = await blobUrlToFile(base64CanvasImage);
+
+      // formData.append("file", file);
+      // console.log("all fils from blob ", formData)
+
+
+      if ([...formData.entries()].length > 0) {
+        const responseForblobToFiles = await axios.post(
+          `${process.env.REACT_APP_BASE_URL}imageOperation/upload`,
+          formData,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          }
+        );
+
+        // console.log("responseForblobToFiles ", responseForblobToFiles);
+        const uploadedImages = responseForblobToFiles.data.files;
+        // console.log("uploadedImages", uploadedImages)
+        const updateImages = (images) =>
+          images.map(img => {
+            const match = uploadedImages.find(
+              u => u.name.split(".")[0].toLowerCase() === img.id.toLowerCase()
+            );
+            return match ? { ...img, previewImage: match.url } : img;
+          });
+
+        designPayload.design.present.front.images = updateImages(designPayload.design.present.front.images);
+        designPayload.design.present.back.images = updateImages(designPayload.design.present.back.images);
+        designPayload.design.present.leftSleeve.images = updateImages(designPayload.design.present.leftSleeve.images);
+        designPayload.design.present.rightSleeve.images = updateImages(designPayload.design.present.rightSleeve.images);
+
+      }
+      else {
+        console.log("formdata is empty")
+      }
 
       let responseData;
       if (payload.type === "update" && payload.designId) {
@@ -720,7 +788,7 @@ const Review = () => {
         // console.log("emailPayload", emailPayload);
         await sendEmailDesign(emailPayload);
         if (checkoutData?.checkoutUrl) {
-          window.location.href = checkoutData?.checkoutUrl;
+          // window.location.href = checkoutData?.checkoutUrl;
         } else {
           throw new Error("No checkout URL returned");
         }

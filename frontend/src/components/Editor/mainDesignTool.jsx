@@ -77,11 +77,12 @@ const MainDesignTool = ({
   const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
-
   const isRender = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].setRendering);
   const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
   const loadingState = useSelector(state => state.TextFrontendDesignSlice.present[activeSide].loadingState);
   const { data: settings } = useSelector((state) => state.settingsReducer);
+  const allImageData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
+  const currentImageObject = allImageData?.find((img) => img.id == selectedImageId);
   // console.log("-------settings", settings)
 
   // console.log("loadingState redux ........", loadingState)
@@ -368,7 +369,8 @@ const MainDesignTool = ({
       getProductType(activeProductTitle),
       openAieditorPopup,
       setOpenAieditorPopup,
-      isZoomedIn
+      isZoomedIn,
+      currentImageObject
     )
   }
   // useEffect(() => {

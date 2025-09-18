@@ -1,6 +1,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './AddImageToolbar.module.css'
+import loadingImage from "../../images/Loading_icon.gif"
 import {
   AlignCenterIcon,
   LayeringFirstIcon,
@@ -24,11 +25,13 @@ import { duplicateImageState, moveElementBackwardState, moveElementForwardState,
 import { useNavigate } from 'react-router-dom';
 import ReplaceBackgroundColorPicker from '../../CommonComponent/ChooseColorBox/ReplaceBackgroundColorPicker.jsx';
 import ReplaceBg from '../ReplaceBg/ReplaceBg.jsx';
+import { applyFilterAndGetUrl, getBase64CanvasImage, invertColorsAndGetUrl, processAndReplaceColors, replaceColorAndGetBase64 } from '../../ImageOperation/CanvasImageOperations.js';
 
 
 
 
 const AddImageToolbar = () => {
+  const useFilterRef = useRef([]);
   const BASE_FILTERS = [
     { name: 'Normal', transform: '' },
     { name: 'Single Color', transform: '' },
@@ -41,9 +44,9 @@ const AddImageToolbar = () => {
   const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   const allImageData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
+  const img = allImageData?.find((img) => img.id == selectedImageId);
   const { data: settings } = useSelector((state) => state.settingsReducer);
   const AdminSettingsforAioperation = settings?.artworkEditorSettings || {};
-  const img = allImageData?.find((img) => img.id == selectedImageId);
   // console.log("----img", img)
   const isLocked = img?.locked;
   const [rangeValuesSize, setRangeValuesSize] = useState(0);
@@ -146,6 +149,7 @@ const AddImageToolbar = () => {
       setSolidColor(img.solidColor);
     } catch { }
   }, [img, selectedImageId, resetDefault, img?.loading]);
+
   useEffect(() => {
     if (!img?.src || (img?.originalWidth && img?.originalHeight)) return;
     const probe = new Image();
@@ -186,238 +190,116 @@ const AddImageToolbar = () => {
     });
   };
 
+  function updateFilter() {
 
-  // async function processAndReplaceColors(imageSrc, color, editColor = false, extractedColors = []) {
-  //   try {
-  //     const canvas = document.createElement("canvas");
-  //     const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  //     const img = new Image();
-
-  //     if (!imageSrc.startsWith("data:image")) {
-  //       img.crossOrigin = "anonymous";
-  //     }
-
-  //     img.src = imageSrc;
-
-  //     await new Promise((resolve, reject) => {
-  //       img.onload = resolve;
-  //       img.onerror = () => reject(new Error("Failed to load image"));
-  //     });
-
-  //     canvas.width = img.width;
-  //     canvas.height = img.height;
-  //     ctx.drawImage(img, 0, 0);
-
-  //     if (editColor) {
-  //       try {
-  //         const paletteUrl = imageSrc.split("?")[0] + "?palette=json";
-  //         const res = await fetch(paletteUrl);
-
-  //         if (res.ok && res.headers.get("content-type")?.includes("application/json")) {
-  //           const json = await res.json();
-  //           const colors = json?.colors?.map(c => `${c.hex}`) || [];
-  //           const updateColors = [...extractedColors];
-
-  //           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  //           const data = imageData.data;
-
-  //           const minLength = Math.min(colors.length, updateColors.length);
-  //           for (let i = 0; i < minLength; i++) {
-  //             const targetColor = hexToRgbForReplaceColor(colors[i]);
-  //             const newColor = hexToRgbForReplaceColor(updateColors[i]);
-
-  //             for (let j = 0; j < data.length; j += 4) {
-  //               const r = data[j], g = data[j + 1], b = data[j + 2];
-  //               if (colorsMatch([r, g, b], targetColor, 50)) {
-  //                 data[j] = newColor[0];
-  //                 data[j + 1] = newColor[1];
-  //                 data[j + 2] = newColor[2];
-  //               }
-  //             }
-  //           }
-
-  //           ctx.putImageData(imageData, 0, 0);
-  //         } else {
-  //           console.warn("Palette not found, returning normal image.");
-  //         }
-  //       } catch (paletteError) {
-  //         console.warn("Failed to fetch/parse palette, returning normal image:", paletteError.message);
-  //       }
-  //     }
-
-  //     // Always return something (normal image if no replacement was done)
-  //     const objectURL = await new Promise((resolve, reject) => {
-  //       canvas.toBlob(
-  //         (blob) => (blob ? resolve(URL.createObjectURL(blob)) : reject(new Error("Failed to convert canvas to blob"))),
-  //         "image/png",
-  //         0.92
-  //       );
-  //     });
-
-  //     canvas.width = 0;
-  //     canvas.height = 0;
-
-  //     return objectURL;
-  //   } catch (error) {
-  //     console.error("Error in processing the image:", error);
-  //     throw error;
-  //   }
-  // }
-
-  async function processAndReplaceColors(imageSrc, color, editColor = false, extractedColors = []) {
-    try {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      const img = new Image();
-
-      // Handle cross-origin
-      if (!imageSrc.startsWith("data:image")) {
-        img.crossOrigin = "anonymous";
+    const newFilters = BASE_FILTERS.map(filter => {
+      const newActiveEffects = activeEffects.filter((f) => f != "invert=true");
+      if (filter.name === 'Normal') {
+        return {
+          ...filter,
+          transform: activeEffects.length ? `?${newActiveEffects.join('&')}` : '',
+          image: img?.base64CanvasImageForNormalColor || buildUrl(activeEffects.length ? `?${newActiveEffects.join('&')}` : '', false, filter.name)
+        };
+      }
+      if (filter.name === "Black/White") {
+        const baseParams = filter.transform.replace('?', '').split('&').filter(Boolean);
+        const allParams = [...new Set([...baseParams, ...newActiveEffects])];
+        return {
+          ...filter,
+          transform: allParams.length ? `?${allParams.join('&')}` : '',
+          image: img?.base64CanvasImageForBlackAndWhitelColor || buildUrl(allParams.length ? `?${allParams.join('&')}` : '', false, filter.name)
+        };
       }
 
-      img.src = imageSrc;
-
-      // Wait for the image to load
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = () => reject(new Error("Failed to load image"));
-      });
-
-      // Draw image on canvas
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-
-      let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      let data = imageData.data;
-
-      if (editColor) {
-        const paletteUrl = imageSrc.split("?  ")[0] + "?palette=json";
-        const res = await fetch(paletteUrl);
-        const contentType = res.headers.get("content-type");
-
-
-
-        if (contentType && contentType.includes("application/json")) {
-          // const json = await res.json();
-          // const colors = json?.colors?.map(c => `${c.hex}`) || [];
-          // ... use colors
-        } else {
-          console.warn("Palette API did not return JSON, skipping color replacement.");
-        }
-        // console.log("res", res);
-
-        const json = await res.json();
-        // console.log(json, "json");
-
-        const colors = json?.colors?.map(c => `${c.hex}`) || [];
-        const updateColors = [...extractedColors];
-
-        const minLength = Math.min(colors.length, updateColors.length);
-        for (let i = 0; i < minLength; i++) {
-          const targetColor = hexToRgbForReplaceColor(colors[i]);
-          const newColor = hexToRgbForReplaceColor(updateColors[i]);
-
-          for (let j = 0; j < data.length; j += 4) {
-            const r = data[j], g = data[j + 1], b = data[j + 2];
-            if (colorsMatch([r, g, b], targetColor, 50)) {
-              data[j] = newColor[0];
-              data[j + 1] = newColor[1];
-              data[j + 2] = newColor[2];
-            }
-          }
-        }
-
-        ctx.putImageData(imageData, 0, 0);
-      }
-
-      // Convert canvas to blob and return object URL
-      const objectURL = await new Promise((resolve, reject) => {
-        canvas.toBlob((blob) => {
-          if (blob) {
-            resolve(URL.createObjectURL(blob));
-          } else {
-            reject(new Error("Failed to convert canvas to blob"));
-          }
-        }, "image/png", 0.92);
-      });
-
-      // Cleanup
-      canvas.width = 0;
-      canvas.height = 0;
-      // canvas.remove();
-
-      return objectURL;
-
-    } catch (error) {
-      console.error('Error in processing the image:', error);
-      throw error;
-    }
+      const baseParams = filter.transform.replace('?', '').split('&').filter(Boolean);
+      const allParams = [...new Set([...baseParams, ...activeEffects])];
+      return {
+        ...filter,
+        transform: allParams.length ? `?${allParams.join('&')}` : '',
+        image: img?.base64CanvasImageForSinglelColor || { loadingImage }
+      };
+    })
+    setFilters(newFilters);
+    return newFilters;
   }
-  async function handleImage(imageSrc, color = "#ffffff", selectedFilter, invertColor, editColor) {
+  useEffect(() => {
+    // console.log("%%%%%%%%%%%%%%%%Actiev efect", activeEffects)
+
+    // console.log(filters, "&&&&&&&&&&&&")
+    useFilterRef.current = updateFilter()
+    // console.log(useFilterRef.current, "filter updated>>>>>>>>>>>>>")
+  }, [activeEffects]);
+
+
+  async function handleImage(imageSrc, color = "#ffffff", selectedFilter, invertColor, editColor, activeEffectsParams) {
     try {
 
 
       setResetDefault(false);
-
+      globalDispatch("loading", true);
       // globalDispatch("editColor", false);
       // globalDispatch("loading", true); // Corrected the typo here
       console.log("handle image function called with src", imageSrc, color, selectedFilter, invertColor, editColor);
-      // console.log(img.editColor, "img.editColor")
-
-      // Await the base64 image after processing the image
 
       let currentBase64Image;
-      // console.log("curent seleteced filter is ", selectedFilter, img.selectedFilter)
 
+      let normalColorImage, singleColorImage, blackWhiteColorImage;
+      const newfilters = updateFilter();
 
-      if (selectedFilter == "Single Color") {
-        if (invertColor) {
-          const applyFilterURL = await applyFilterAndGetUrl(imageSrc, color);
-          currentBase64Image = await invertColorsAndGetUrl(applyFilterURL || previewUrl);
-        }
-        else {
-          currentBase64Image = await applyFilterAndGetUrl(imageSrc, color);
-        }
-      }
-      else if (selectedFilter == "Normal") {
-        // console.log("edit color state is: ", editColor)
-        if (editColor) {
-          currentBase64Image = await processAndReplaceColors(imageSrc, color, editColor, extractedColors);
-        }
-        else {
-          currentBase64Image = await getBase64CanvasImage(imageSrc, color)
+      const baseUrl = imageSrc.split("?")[0] || "";
+      const params = imageSrc.split("?")[1] || ""
+      const filteredParams = params.replace("sat=-100", "");
+      // console.log("params", params, "filteredParams", filteredParams)
 
-        }
+      const normalSrc = baseUrl + "?" + filteredParams
+      const singleSrc = baseUrl + "?" + filteredParams
+      const blackAndWhiteSrc = baseUrl + "?" + params + (!params.includes("sat=-100") ? "&sat=-100" : "")
+      const allTransformImage = [normalSrc, singleSrc, blackAndWhiteSrc];
+
+      // console.log("curent seleteced filter is ", selectedFilter)
+      // console.log("stored seletected filter is ", img.selectedFilter)
+
+      // for normal color image
+      if (editColor) {
+        normalColorImage = await processAndReplaceColors(allTransformImage[0], color, editColor, extractedColors);
       }
       else {
-        currentBase64Image = await getBase64CanvasImage(imageSrc, color)
+        normalColorImage = await getBase64CanvasImage(allTransformImage[0], color)
+      }
+
+      //for single color image
+      if (invertColor) {
+        const applyFilterURL = await applyFilterAndGetUrl(allTransformImage[1], color);
+        singleColorImage = await invertColorsAndGetUrl(applyFilterURL || previewUrl);
+      }
+      else {
+        singleColorImage = await applyFilterAndGetUrl(allTransformImage[1], color);
+      }
+
+      // for black and white image
+      blackWhiteColorImage = await getBase64CanvasImage(allTransformImage[2], color)
+
+      if (selectedFilter == "Single Color") {
+        currentBase64Image = singleColorImage;
+      }
+      else if (selectedFilter == "Normal") {
+        currentBase64Image = normalColorImage;
+      }
+      else {
+        currentBase64Image = blackWhiteColorImage;
       }
 
 
       // Set the base64 image and dispatch it to the global state
       setBase64Image(currentBase64Image);
-
       // Dispatch the base64 string to your global state (no need to convert it to a string again)
       globalDispatch("base64CanvasImage", currentBase64Image);
-      if (selectedFilter == "Normal") {
-        globalDispatch("base64CanvasImageForNormalColor", String(currentBase64Image));
-      }
-      else if (selectedFilter == "Single Color") {
-        globalDispatch("base64CanvasImageForSinglelColor", String(currentBase64Image));
-      }
-      else {
-        globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(imageSrc));
 
-      }
-
+      globalDispatch("base64CanvasImageForNormalColor", String(normalColorImage));
+      globalDispatch("base64CanvasImageForSinglelColor", String(singleColorImage));
+      globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(blackWhiteColorImage));
       // Set loading to false after the process is done
       globalDispatch("loading", false); // Corrected the typo here
-
-      // Log the base64 image string to the console
-      // console.log("base64CanvasImage:", base64Image.slice(0,5)); // Now you should see the actual base64 string
-
-      // Now you can use the base64Image with fabric.js or any other logic you need
     } catch (error) {
       globalDispatch("loading", false); // Ensure loading is stopped even in case of error
       console.error("Error:", error); // Log any errors that occur
@@ -448,7 +330,7 @@ const AddImageToolbar = () => {
     }
     tempImage.onerror = () => {
       console.error("Failed to load image:", img?.src);
-      setPreviewUrl("https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif");
+      setPreviewUrl({ loadingImage });
       setLoading(false);
       globalDispatch("loading", false);
     };
@@ -459,61 +341,8 @@ const AddImageToolbar = () => {
   }, [selectedImageId])
 
 
-  useEffect(() => {
-    // console.log("%%%%%%%%%%%%%%%%Actiev efect", activeEffects)
-    setFilters(BASE_FILTERS.map(filter => {
-      const newActiveEffects = activeEffects.filter((f) => f != "invert=true");
-      if (filter.name === 'Normal') {
-        return {
-          ...filter,
-          transform: activeEffects.length ? `?${newActiveEffects.join('&')}` : '',
-          image: img?.base64CanvasImageForNormalColor || buildUrl(activeEffects.length ? `?${newActiveEffects.join('&')}` : '', false, filter.name)
-        };
-      }
-      if (filter.name === "Black/White") {
-        const baseParams = filter.transform.replace('?', '').split('&').filter(Boolean);
-        const allParams = [...new Set([...baseParams, ...newActiveEffects])];
-        return {
-          ...filter,
-          transform: allParams.length ? `?${allParams.join('&')}` : '',
-          image: img?.base64CanvasImageForBlackAndWhitelColor || buildUrl(allParams.length ? `?${allParams.join('&')}` : '', false, filter.name)
-        };
-      }
 
-      const baseParams = filter.transform.replace('?', '').split('&').filter(Boolean);
-      const allParams = [...new Set([...baseParams, ...activeEffects])];
-      return {
-        ...filter,
-        transform: allParams.length ? `?${allParams.join('&')}` : '',
-        image: img?.base64CanvasImageForSinglelColor || "https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif"
-      };
-    }));
-    // console.log(filters, "&&&&&&&&&&&&")
-  }, [activeEffects, selectedImageId, img?.src]);
 
-  // const handleRangeInputSizeChange = (e) => {
-
-  //   const rawValue = e.target.value;
-  //   // console.log("------value", rawValue)
-  //   setRangeValuesSize(rawValue);
-
-  //   const parsed = parseFloat(rawValue);
-  //   if (isNaN(parsed) || parsed < 0.2 || parsed > 10) return;
-
-  //   const scaleX = img?.scaleX;
-  //   const scaleY = img?.scaleY;
-
-  //   // Use average of current X and Y scale as "prev size"
-  //   const currentAvg = (scaleX + scaleY) / 2;
-
-  //   const scaleRatio = parsed / currentAvg;
-  //   globalDispatch("loadingText", true);
-  //   globalDispatch("scaleX", scaleX * scaleRatio);
-  //   globalDispatch("scaleY", scaleY * scaleRatio);
-  //   globalDispatch("scaledValue", parsed);
-  //   globalDispatch("loadingText", true);
-  //   setResetDefault(false);
-  // };
   const handleRangeInputSizeChange = (e) => {
     const rawValue = e.target.value;
     setRangeValuesSize(rawValue);
@@ -562,19 +391,6 @@ const AddImageToolbar = () => {
 
   const DPI = 300; // dots per inch
 
-  // const handleBlur = () => {
-  //   const parsed = parseFloat(rangeValuesSize);
-  //   if (isNaN(parsed) || parsed < 0.2 || parsed > 10) {
-  //     setRangeValuesSize("1");
-  //     globalDispatch("loadingText", true);
-
-  //     globalDispatch("scaleX", 1);
-  //     globalDispatch("scaleY", 1);
-  //     globalDispatch("scaledValue", 1);
-  //     globalDispatch("loadingText", false);
-  //   }
-  //   setResetDefault(false);
-  // };
   const handleBlur = () => {
     const parsed = parseFloat(rangeValuesSize);
     if (isNaN(parsed) || parsed < 0.2 || parsed > 10) {
@@ -652,11 +468,7 @@ const AddImageToolbar = () => {
   };
 
 
-  // const [filters, setFilters] = useState([
-  //   { name: 'Normal', transform: '' },
-  //   { name: 'Single Color', transform: '?monochrome=ff0000' },
-  //   { name: 'Black/White', transform: '?sat=-100' }
-  // ]);
+
 
 
   const buildUrl = useCallback((transform, resetAll, filterName) => {
@@ -682,49 +494,22 @@ const AddImageToolbar = () => {
   }, [img]);
 
   const applyTransform = useCallback(
-    async (transform, resetAll, editColor) => {
+    async (transform, resetAll, editColor, newActiveEffects) => {
       if (!img?.src) return;
-
-      // console.log("aply tranform call with tranform", transform);
+      globalDispatch("loading", true);
+      console.log("aply tranform call with tranform", transform);
 
       const newUrl = buildUrl(transform, resetAll);
-      const loadingPlaceholder = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s'; // or any placeholder image
 
-      // Set loading: true in local + global state
       setLoading(true);
-      setPreviewUrl(loadingPlaceholder);
-      const changes = {
-        loading: true,
-        position: img.position
-      }
-      // dispatch(toggleLoading({ changes }));
-      // globalDispatch("loadingSrc", loadingPlaceholder);
-      // globalDispatch("src", img.src); // keep old src while loading
-      // globalDispatch("loading", true); // keep old src while loading
-      // globalDispatch("transform", transform);
-
       // Load transformed image
       const tempImage = new Image();
       tempImage.onload = async () => {
         // Only update everything when loaded successfully
         setPreviewUrl(newUrl);
         setActiveTransform(transform);
-
         globalDispatch("src", newUrl);
-        await handleImage(newUrl, singleColor, selectedFilter, invertColor, false);
-        // dispatch(toggleLoading({ changes: { loading: false } }));
-
-        // globalDispatch("loadingSrc", null);
-        // globalDispatch("loading", false);
-
-        // globalDispatch("removeBg", transform.includes("bg-remove=true"));
-        // globalDispatch(
-        //   "removeBgParamValue",
-        //   transform.includes("bg-remove=true") ? "bg-remove=true" : ""
-        // );
-
-        // console.log("URL..............", newUrl)
-
+        await handleImage(newUrl, singleColor, selectedFilter, invertColor, false, newActiveEffects);
         setLoading(false);
       };
 
@@ -733,7 +518,6 @@ const AddImageToolbar = () => {
         setPreviewUrl(img.src);
         setLoading(false);
         globalDispatch("loading", false);
-        globalDispatch("loadingSrc", null);
       };
 
       tempImage.src = newUrl; // Begin load
@@ -743,24 +527,24 @@ const AddImageToolbar = () => {
 
 
 
-  const toggleEffect = (effect) => {
-    setActiveEffects(prev => {
-      const newEffects = prev.includes(effect)
-        ? prev.filter(e => e !== effect)
-        : [...prev, effect];
+  // const toggleEffect = (effect) => {
+  //   setActiveEffects(prev => {
+  //     const newEffects = prev.includes(effect)
+  //       ? prev.filter(e => e !== effect)
+  //       : [...prev, effect];
 
-      const baseFilter = filters.find(f => f.name === selectedFilter) || BASE_FILTERS[0];
-      const baseParams = baseFilter.transform.replace('?', '').split('&').filter(param =>
-        BASE_FILTERS.some(base => base.transform.replace('?', '').includes(param))
-      );
+  //     const baseFilter = filters.find(f => f.name === selectedFilter) || BASE_FILTERS[0];
+  //     const baseParams = baseFilter.transform.replace('?', '').split('&').filter(param =>
+  //       BASE_FILTERS.some(base => base.transform.replace('?', '').includes(param))
+  //     );
 
-      const allParams = [...new Set([...baseParams, ...newEffects])];
-      const newTransform = allParams.length ? `?${allParams.join('&')}` : '';
+  //     const allParams = [...new Set([...baseParams, ...newEffects])];
+  //     const newTransform = allParams.length ? `?${allParams.join('&')}` : '';
 
-      applyTransform(newTransform, false, editColor);
-      return newEffects;
-    });
-  };
+  //     applyTransform(newTransform, false, editColor);
+  //     return newEffects;
+  //   });
+  // };
   function cleanTransformString(str) {
     if (!str) return "";
 
@@ -771,19 +555,38 @@ const AddImageToolbar = () => {
       .replace(/undefined/g, "")    // remove accidental "undefined"
       .trim();
   }
+  useEffect(() => {
+    // console.log("activeEffects changed:", activeEffects);
+  }, [activeEffects]);
 
 
   // Toggle a URL query parameter (like 'bg-remove=true') on/off in the activeTransform
   const toggle = (param, condition, filterName) => {
+    // CONDITION TRUE MEANS REMOVE
+    // CONDITION FALSE MEANS ADD
     if (condition) {
       const cleaned = activeTransform.replace(new RegExp(`${param}(&|$)`), '');
-      return applyTransform(cleanTransformString(cleaned), false, editColor);
+      const cleanedParam = cleanTransformString(cleaned);
+      // console.log(cleanedParam, "cleanedParam..........");
+
+      // setActiveEffects(effect => effect?.filter(ef => ef !== cleaned))
+      const newActiveEffects = activeEffects?.filter(ef => ef !== cleaned)
+      // console.log("acitve effects", activeEffects)
+
+      return applyTransform(cleanedParam, false, editColor, newActiveEffects);
     }
 
     const separator = activeTransform ? '&' : '?';
     const updated = `${activeTransform}${separator}${param}`;
-    return applyTransform(cleanTransformString(updated), false, editColor);
+    const updatedParam = cleanTransformString(updated);
+    // console.log(updatedParam, "updatedparam......");
+
+    // setActiveEffects(prev => [...prev, updatedParam])
+    const newActiveEffects = [...activeEffects, updatedParam]
+    // console.log("acitve effects", activeEffects)
+    return applyTransform(updatedParam, false, editColor, newActiveEffects);
   };
+
 
   const isActive = useCallback((param) => activeTransform.includes(param), [activeTransform]);
 
@@ -852,15 +655,15 @@ const AddImageToolbar = () => {
 
   const hasMounted = useRef(false); // ✅ move to top level
 
-  useEffect(() => {
-    // console.log("hasmounted", hasMounted)
-    if (!hasMounted.current) {
-      hasMounted.current = true;
-      return; // ⛔ skip on first render
-    }
-    // console.log("remove background is calling");
-    removeBackgroundHandler(); // ✅ run on subsequent changes only
-  }, [img?.removeBgImagebtn]);
+  // useEffect(() => {
+  //   console.log("hasmounted", hasMounted)
+  //   if (!hasMounted.current) {
+  //     hasMounted.current = true;
+  //     return; // ⛔ skip on first render
+  //   }
+  //   // console.log("remove background is calling");
+  //   removeBackgroundHandler(); // ✅ run on subsequent changes only
+  // }, [img?.removeBgImagebtn]);
 
   function removeBackgroundHandler(e) {
     // update local state
@@ -968,45 +771,46 @@ const AddImageToolbar = () => {
     globalDispatch("replaceBgParamValue", imgixParam);
   };
 
-  function getBase64CanvasImage(imageSrc, color) {
-    return new Promise((resolve, reject) => {
-      const canvas = document.getElementById('HelperCanvas');
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.src = imageSrc;
+  // function getBase64CanvasImage(imageSrc, color) {
+  //   return new Promise((resolve, reject) => {
+  //     const canvas = document.getElementById('HelperCanvas');
+  //     const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  //     const img = new Image();
+  //     img.crossOrigin = "anonymous";
+  //     img.src = imageSrc;
 
-      img.onload = function () {
-        canvas.width = img.width;
-        canvas.height = img.height;
+  //     img.onload = function () {
+  //       canvas.width = img.width;
+  //       canvas.height = img.height;
 
-        // Optional: Fill background if needed (e.g., white)
-        ctx.fillStyle = "transparent";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+  //       // Optional: Fill background if needed (e.g., white)
+  //       ctx.fillStyle = "transparent";
+  //       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.drawImage(img, 0, 0);
+  //       ctx.drawImage(img, 0, 0);
 
-        // Export as Blob and convert to Object URL
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const objectURL = URL.createObjectURL(blob);
-            resolve(objectURL); // You can directly use this in img.src
-          } else {
-            reject(new Error("Failed to convert canvas to blob"));
-          }
+  //       // Export as Blob and convert to Object URL
+  //       canvas.toBlob((blob) => {
+  //         if (blob) {
+  //           const objectURL = URL.createObjectURL(blob);
+  //           resolve(objectURL); // You can directly use this in img.src
+  //         } else {
+  //           reject(new Error("Failed to convert canvas to blob"));
+  //         }
 
-          // Clean up canvas
-          canvas.width = 0;
-          canvas.height = 0;
-          // canvas.remove();
-        }, "image/png", 0.92);
-      };
+  //         // Clean up canvas
+  //         canvas.width = 0;
+  //         canvas.height = 0;
+  //         // canvas.remove();
+  //       }, "image/png", 0.92);
+  //     };
 
-      img.onerror = function () {
-        reject(new Error("Failed to load image"));
-      };
-    });
-  }
+  //     img.onerror = function () {
+  //       reject(new Error("Failed to load image"));
+  //     };
+  //   });
+  // }
+  // getBase64CanvasImage
   async function makeSolid(imageSrc, threshold) {
     return new Promise((resolve, reject) => {
       const canvas = document.getElementById('HelperCanvas');
@@ -1093,7 +897,7 @@ const AddImageToolbar = () => {
 
 
   function applyFilterAndGetUrl(imageSrc, color) {
-    // console.log("apply filter call with color", color, imageSrc);
+    console.log("apply filter call with color", color, imageSrc);
     imageSrc = String(imageSrc);
     if (imageSrc.includes("monochrome=black")) {
       imageSrc = imageSrc.replace("monochrome=black", "");
@@ -1438,84 +1242,6 @@ const AddImageToolbar = () => {
     globalDispatch("loading", false);
   }
 
-  function replaceColorAndGetBase64(imageSrc, targetHex, newHex, tolerance = 50) {
-    // console.log(targetHex, newHex, "replaceColorAndGetBase64 functiion", imageSrc)
-    return new Promise(async (resolve, reject) => {
-      const canvas = document.getElementById('HelperCanvas');
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      const img = new Image();
-
-      // Support CORS if external URL
-      img.crossOrigin = "anonymous";
-      img.src = imageSrc;
-
-      img.onload = async function () {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
-
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-
-        const targetColor = hexToRgbForReplaceColor(targetHex);
-        const newColor = hexToRgbForReplaceColor(newHex);
-
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i], g = data[i + 1], b = data[i + 2];
-
-          if (colorsMatch([r, g, b], targetColor, tolerance)) {
-            data[i] = newColor[0];
-            data[i + 1] = newColor[1];
-            data[i + 2] = newColor[2];
-          }
-        }
-
-        ctx.putImageData(imageData, 0, 0);
-        const base64 = canvas.toDataURL('image/png');
-
-
-        const objectURL = await new Promise((resolve, reject) => {
-          canvas.toBlob((blob) => {
-            if (blob) {
-              resolve(URL.createObjectURL(blob));
-            } else {
-              reject(new Error("Failed to convert canvas to blob"));
-            }
-          }, "image/png", 0.92);
-        });
-
-        // Cleanup
-        canvas.width = 0;
-        canvas.height = 0;
-        // canvas.remove();
-
-        resolve(objectURL);
-        // canvas.remove();
-      };
-
-      img.onerror = function () {
-        resolve(imageSrc);
-      };
-    });
-  }
-
-  function hexToRgbForReplaceColor(hex) {
-    hex = hex.replace('#', '');
-    const bigint = parseInt(hex, 16);
-    const r = (bigint >> 16) & 255;
-    const g = (bigint >> 8) & 255;
-    const b = bigint & 255;
-    return [r, g, b];
-  }
-
-  function colorsMatch(c1, c2, tolerance = 50) {
-    return (
-      Math.abs(c1[0] - c2[0]) < tolerance &&
-      Math.abs(c1[1] - c2[1]) < tolerance &&
-      Math.abs(c1[2] - c2[2]) < tolerance
-    );
-  }
-
 
 
   const applyColorBlend = async (originalColor, newColor, index) => {
@@ -1544,18 +1270,22 @@ const AddImageToolbar = () => {
     const dims = getDisplayDimensions();
     setDims(dims)
   }, [img, img?.width, img?.height, img?.scale, img?.scaleX, img?.scaleY])
+
   const rf = useRef(null);
+
   useEffect(() => {
     if (img?.base64CanvasImageForSinglelColor) {
-      // console.log("base64CanvasImageForSinglelColor already exists", img?.base64CanvasImageForSinglelColor);
-      return;
+
+      console.log("base64CanvasImageForSinglelColor already exists", img?.base64CanvasImageForSinglelColor);
+      if (!img.base64CanvasImageForSinglelColor.startsWith("blob")) return;
+
     }
     // console.log(img.base64CanvasImageForSinglelColor, "base64CanvasImageForSinglelColor");
     if (!filters || filters.length === 0) return;
     if (rf.current) return
     rf.current = true;
     (async () => {
-      const applyFilterURL = await applyFilterAndGetUrl(img.src ?? previewUrl, singleColor);
+      const applyFilterURL = await applyFilterAndGetUrl(img?.src ?? previewUrl, singleColor);
       // console.log("applied filter url ", applyFilterURL);
       globalDispatch("base64CanvasImageForSinglelColor", String(applyFilterURL));
       setFilters(fs => fs.map(f => {
@@ -1569,6 +1299,10 @@ const AddImageToolbar = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // runs when filters are populated
 
+
+  useEffect(() => {
+    console.log("stored selected filter is being updated", img?.selectedFilter)
+  }, [img?.selectedFilter])
   // console.log("previewUrl", previewUrl, "image src", img?.src);
   //  if(loading) return <div className={styles.loadingOverlay}><div className={styles.loadingSpinner} /><p>Applying changes...</p></div>;
   return (
@@ -1610,63 +1344,20 @@ const AddImageToolbar = () => {
                           }}
                         >
                           {
-                            loading ? <> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} /></> : <> {f.image && <img src={f.image} alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} />}</>
+                            loading ? <> <img src={loadingImage} alt={f.name} className={styles.filterImage} /></> : <> {f.image && <img src={f.image} alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} />}</>
                           }
 
+
                           <div className={styles.filterLabel}>{f.name}</div>
-                          {/* <img
-                        src={previewUrl} alt={filter.name} className={styles.filterImage} onError={() => alert("Image not publicly accessible")} />
-                      <div className={styles.filterLabel}>{filter.name}</div> */}
+
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* {selectedFilter === "Normal" || selectedFilter === "Single Color" && (<hr />)} */}
-
-                  {/* {selectedFilter === "Normal" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Edit Colors</div>
-                <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleTextColorPopup}>
-                  <SpanColorBox color={textColor} />
-                  <SpanColorBox color={textColor} />
-                  <SpanColorBox color={textColor} />
-                  <span><AngleActionIcon /></span>
-                  {textColorPopup && (
-                    <ChooseColorBox
-                      addColorPopupHAndler={toggleTextColorPopup}
-                      title="Text Color"
-                      defaultColor={textColor}
-                      onColorChange={textColorChangedFunctionCalled}  // Update text color
-                      button={true}
-                    />
-
-                  )}
-                </div>
-              </div>)} */}
 
 
 
-                  {/* {selectedFilter === "Single Color" && (<div className={styles.toolbarBoxFontValueSetInnerContainer}> */}
-                  {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Colors</div> */}
-                  {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleTextColorPopup}>
-                  <SpanColorBox color={textColor} />
-                  <span><AngleActionIcon /></span>
-                  {textColorPopup && (
-                    <ChooseColorBox
-                      addColorPopupHAndler={toggleTextColorPopup}
-                      title="Text Color"
-                      defaultColor={textColor}
-                      onColorChange={textColorChangedFunctionCalled}  // Update text color
-                      button={true}
-                    />
-
-                  )}
-                </div> */}
-                  {/* </div>)} */}
-
-
-
-                  {/* {selectedFilter === "Normal" && (<hr />)} */}
                   {selectedFilter === "Normal" && (
                     <>
                       <div className={styles.toolbarBoxFontValueSetInnerContainer}>

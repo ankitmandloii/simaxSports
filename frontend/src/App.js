@@ -35,7 +35,12 @@ function App() {
 
   const [continueEditPopup, setContinueEditPopup] = useState(false);
   const [willRenderContinue, setWillRenderContinue] = useState(false);
+  const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
+
   const initialState = useSelector((state) => state.TextFrontendDesignSlice);
+  const { canvasWidth, canvasHeight } = useSelector((state) => state.canvasReducer);
+  const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
+  const { present, DesignNotes, nameAndNumberDesignState, addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice);
 
   const isQuantityPage = location.pathname === "/quantity";
   const reduxState = useSelector((state) => state);
@@ -418,8 +423,8 @@ function App() {
     if (!willRenderContinue && rawProducts.length > 0) {
       let savedState = null;
       try {
-        localStorage.removeItem("savedReduxState");
-        // savedState = JSON.parse(localStorage.getItem("savedReduxState"));
+        // localStorage.removeItem("savedReduxState");
+        savedState = JSON.parse(localStorage.getItem("savedReduxState"));
       } catch (e) {
         console.error("Error parsing saved Redux state:", e);
         return;
@@ -452,6 +457,12 @@ function App() {
   // navigate("design/product", { replace: true });
   // }, []);
 
+  useEffect(() => {
+    // If user is not already inside /design/* → force redirect
+    if (!location.pathname.startsWith("/design")) {
+      navigate("/design/product", { replace: true });
+    }
+  }, []);
 
   return (
     <>
@@ -527,7 +538,7 @@ function App() {
         />
 
         {continueEditPopup && (
-          <ContinueEditPopup handleContinuePopup={handleContinuePopup} />
+          <ContinueEditPopup handleContinuePopup={handleContinuePopup} {...{ activeSide, canvasWidth, canvasHeight, present, DesignNotes, nameAndNumberDesignState, addName, addNumber, activeNameAndNumberPrintSide }} />
         )}
 
         <BottomBar />

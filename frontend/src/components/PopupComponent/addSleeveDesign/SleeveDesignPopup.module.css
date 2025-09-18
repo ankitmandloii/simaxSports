@@ -126,6 +126,12 @@
   transform: scale(0.9);
   /* Darker orange on hover */
 }
+.addDesignButton:disabled {
+     opacity: 0.5;
+     cursor: not-allowed;
+     /* pointer-events: none; */
+  /* Darker orange on hover */
+}
 
 /* No Thanks Button */
 .noThanksButton {

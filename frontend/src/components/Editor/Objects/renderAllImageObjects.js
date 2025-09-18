@@ -1,5 +1,6 @@
 import React from "react";
-
+import { store } from "../../../redux/store"
+import { processAndReplaceColors, applyFilterAndGetUrl, invertColorsAndGetUrl, getBase64CanvasImage, replaceColorAndGetBase64 } from "../../ImageOperation/CanvasImageOperations";
 const renderAllImageObjects = (
   fabricCanvasRef,
   dispatch,
@@ -19,17 +20,83 @@ const renderAllImageObjects = (
   productCategory,
   openAieditorPopup,
   setOpenAieditorPopup,
-  isZoomedIn
+  isZoomedIn,
+  currentImageObject
 ) => {
-  // console.log("imageContaintObject", imageContaintObject);
+  // console.log("currentImageObject selectedFilter", currentImageObject.selectedFilter);
   // console.log("openAieditorPopup.......", openAieditorPopup)
 
   const canvas = fabricCanvasRef.current;
 
+  async function handleImage(imageSrc, color = "#ffffff", currentImageObject, invertColor, editColor, extractedColors, globalDispatch, id) {
+    try {
+      const selectedFilter = currentImageObject.selectedFilter;
+      globalDispatch("loading", true, id);
+      // console.log("handle image function called with src", imageSrc, color, selectedFilter, invertColor, editColor, globalDispatch, id);
 
+      let currentBase64Image;
+
+      let normalColorImage, singleColorImage, blackWhiteColorImage;
+      // const newfilters = updateFilter();
+
+      const baseUrl = imageSrc.split("?")[0] || "";
+      const params = imageSrc.split("?")[1] || ""
+      const filteredParams = params.replace("sat=-100", "");
+      // console.log("params", params, "filteredParams", filteredParams)
+
+      const normalSrc = baseUrl + "?" + filteredParams
+      const singleSrc = baseUrl + "?" + filteredParams
+      const blackAndWhiteSrc = baseUrl + "?" + params + (!params.includes("sat=-100") ? "&sat=-100" : "")
+      const allTransformImage = [normalSrc, singleSrc, blackAndWhiteSrc];
+
+      console.log("curent seleteced filter is ", selectedFilter)
+      // console.log("stored seletected filter is ", img.selectedFilter)
+
+      // for normal color image
+      if (editColor) {
+        normalColorImage = await processAndReplaceColors(allTransformImage[0], color, editColor, extractedColors);
+      }
+      else {
+        normalColorImage = await getBase64CanvasImage(allTransformImage[0], color)
+      }
+
+      //for single color image
+      if (invertColor) {
+        const applyFilterURL = await applyFilterAndGetUrl(allTransformImage[1], color);
+        singleColorImage = await invertColorsAndGetUrl(applyFilterURL || allTransformImage[1]);
+      }
+      else {
+        singleColorImage = await applyFilterAndGetUrl(allTransformImage[1], color);
+      }
+
+      // for black and white image
+      blackWhiteColorImage = await getBase64CanvasImage(allTransformImage[2], color)
+
+      if (currentImageObject.selectedFilter == "Single Color") {
+        currentBase64Image = singleColorImage;
+      }
+      else if (currentImageObject.selectedFilter == "Normal") {
+        currentBase64Image = normalColorImage;
+      }
+      else {
+        currentBase64Image = blackWhiteColorImage;
+      }
+
+      // Dispatch the base64 string to your global state (no need to convert it to a string again)
+      globalDispatch("base64CanvasImage", currentBase64Image, id);
+      globalDispatch("base64CanvasImageForNormalColor", String(normalColorImage), id);
+      globalDispatch("base64CanvasImageForSinglelColor", String(singleColorImage), id);
+      globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(blackWhiteColorImage), id);
+      // Set loading to false after the process is done
+      globalDispatch("loading", false, id); // Corrected the typo here
+    } catch (error) {
+      globalDispatch("loading", false, id); // Ensure loading is stopped even in case of error
+      console.error("Error:", error); // Log any errors that occur
+    }
+  }
   if (!canvas) return;
   let syncing = false;
-  function createRemoveBackgroundToggle(fabricImage, canvasId, callback, removeBg) {
+  function createRemoveBackgroundToggle(fabricImage, canvasId, callback, removeBg, currentImageObject) {
     // console.log("button data ", fabricImage, canvasId, callback, removeBg);
     const id = fabricImage.id;
     const buttonId = `canvas-${id}`;
@@ -162,16 +229,22 @@ const renderAllImageObjects = (
       checkbox.checked = false;
     }
 
-    checkbox.addEventListener("change", (event) => {
-      console.log("Checkbox changed for image:", id);
+    checkbox.addEventListener("change", async (event) => {
+      // console.log("Checkbox changed for image:", id);
+      const state = store.getState();
+      const activeSide = state.TextFrontendDesignSlice.activeSide;
+      const images = state.TextFrontendDesignSlice.present[activeSide].images;
+      const selectedImageId = state.TextFrontendDesignSlice.present[activeSide].selectedImageId;
 
+      const currentImageObject = images.find((img) => img.id === selectedImageId);
       const addImageToolbarBgBtn = document.querySelector("#removeBackgroundInput");
       const currentSrc = fabricImage.src;
+
       const baseSrc = currentSrc.split('?')[0];
       let params = currentSrc.split('?')[1] ? currentSrc.split('?')[1].split('&') : [];
 
       const checked = event.target.checked; // ✅ use actual checkbox state
-      console.log("checked or not ", checked)
+      // console.log("checked or not ", checked)
 
       // Update toggle UI
       slider.style.backgroundColor = checked ? "#3b82f6" : "#ccc";
@@ -186,19 +259,22 @@ const renderAllImageObjects = (
       // Construct new URL
       const newTransform = params.length > 0 ? `?${params.join('&')}` : '';
       const newSrc = `${baseSrc}${newTransform}`;
-      console.log("New image src:", newSrc);
+      // console.log("New image src:", newSrc);
 
-      if (window.innerWidth <= 1200) {
-        globalDispatch("loading", true, id);
-        globalDispatch("src", newSrc, id);
-        globalDispatch("base64CanvasImage", newSrc, id);
-        globalDispatch("removeBg", checked, id);
-        globalDispatch("selectedFilter", "Normal", id);
-        globalDispatch("loading", false, id);
-      }
-      else {
-        globalDispatch("removeBgImagebtn", Math.random(), id);
-      }
+      // if (window.innerWidth <= 1200) {
+      //   globalDispatch("loading", true, id);
+      globalDispatch("src", newSrc, id);
+      globalDispatch("removeBg", checked, id);
+      console.log("currentImageObject before calling handleimage ", currentImageObject)
+      await handleImage(newSrc, currentImageObject.singleColor, currentImageObject, currentImageObject.invertColor, currentImageObject.editColor, currentImageObject.extractedColors, globalDispatch, id)
+      //   globalDispatch("base64CanvasImage", newSrc, id);
+
+      //   globalDispatch("selectedFilter", "Normal", id);
+      //   globalDispatch("loading", false, id);
+      // }
+      // else {
+      //   globalDispatch("removeBgImagebtn", Math.random(), id);
+      // }
       // Show loading state
       // globalDispatch("loading", true, id);
       // globalDispatch("loadingSrc", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s", id);
@@ -563,8 +639,8 @@ const renderAllImageObjects = (
             id,
             src,
             base64CanvasImage,
-            left: position.x,
-            top: position.y,
+            left: position?.x || 100,
+            top: position?.y || 100,
             angle,
             scaleX: finalX,
             scaleY: finalY,
@@ -647,7 +723,7 @@ const renderAllImageObjects = (
 
           createRemoveBackgroundToggle(newImg, `canvas-${activeSide}`, (isChecked, image) => {
             // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
-          }, removeBg);
+          }, removeBg, currentImageObject);
 
           createAiEdtiorButton(newImg, `canvas-${activeSide}`, (isChecked, image) => {
             // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
@@ -747,8 +823,8 @@ const renderAllImageObjects = (
       );
 
       existingObj.set({
-        left: position.x,
-        top: position.y,
+        left: position?.x || 100,
+        top: position?.y || 100,
         angle,
         flipX,
         flipY,
@@ -820,6 +896,9 @@ const renderAllImageObjects = (
         br: false,
         mtr: false,
       });
+      // createRemoveBackgroundToggle(existingObj, `canvas-${activeSide}`, (isChecked, image) => {
+      //   // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
+      // }, removeBg, currentImageObject);
 
       function getPrintSizeFromCanvasBackground(fabricImage, canvas, shirtRealWidthInches) {
         const shirtImage = canvas.backgroundImage;
@@ -890,8 +969,8 @@ const renderAllImageObjects = (
           img.set({
             id,
             src,
-            left: position.x,
-            top: position.y,
+            left: position?.x || 100,
+            top: position?.y || 100,
             angle,
             scaleX: finalX,
             scaleY: finalY,
@@ -956,7 +1035,7 @@ const renderAllImageObjects = (
 
           createRemoveBackgroundToggle(img, `canvas-${activeSide}`, (isChecked, image) => {
             // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
-          }, removeBg);
+          }, removeBg, currentImageObject);
           createAiEdtiorButton(img, `canvas-${activeSide}`, (isChecked, image) => {
             // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
           }, removeBg, setOpenAieditorPopup, openAieditorPopup);

@@ -40,14 +40,14 @@ const Footer = () => {
   const [userDesigns, setUserDesigns] = useState([]);
   const [pendingAction, setPendingAction] = useState(null);
   const { canvasWidth, canvasHeight } = useSelector((state) => state.canvasReducer);
+  const { present, DesignNotes, nameAndNumberDesignState, addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice);
   // console.log("---------------canvassss", canvasWidth, canvasHeight)
   const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.nameAndNumberDesignState)
   // console.log("--------nameAndNumberDesign", nameAndNumberDesign)
   const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present["back"].nameAndNumberProductList);
   const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
   const sleevedesignn = useSelector((state) => state.TextFrontendDesignSlice.sleeveDesign);
-  const { present, DesignNotes, nameAndNumberDesignState, addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice);
-  console.log("present...", present)
+  // console.log("present...", present)
   const productState = useSelector((state) => state.productSelection.products);
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
   const isProductPage = location.pathname === "/design/product";
