@@ -24,6 +24,7 @@ import usePersistQueryParams from "./components/CommonComponent/Customhook";
 import { apiConnecter } from "./components/utils/apiConnector";
 import { fetchSettings } from "./redux/SettingsSlice/SettingsSlice";
 import { restoreEditDesigns } from "./redux/FrontendDesign/TextFrontendDesignSlice";
+import Test from '../../frontend/src/components/Test'
 
 enableMapSet();
 function App() {
@@ -499,6 +500,8 @@ function App() {
                 {/* /design pages */}
                 <Route path="design">
                   <Route path="product" element={<ProductToolbar />} />
+                  {/* <Route path="product" element={<Test />} /> */}
+
                   <Route path="addText" element={<AddTextToolbar />} />
                   <Route path="addImage" element={<AddImageToolbar />} />
                   <Route path="products" element={<ProductContainer />} />
