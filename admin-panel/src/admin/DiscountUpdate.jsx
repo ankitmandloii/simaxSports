@@ -498,36 +498,82 @@ export default function DiscountUpdate() {
               {(() => {
                 const r = simulate();
                 return (
-                  <div style={{ marginTop: 10, fontSize: 14, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div>
-                      <div>Tier hit: <b>{r.tier.minQty}+ @ {pct(r.tier.rate)}%</b> off</div>
-                      <div>
-                        Each (before): <b>${r.eachBefore.toFixed(2)}</b>, Each (after):{" "}
-                        <b>${r.eachAfter.toFixed(2)}</b>
+                  // <div style={{ marginTop: 10, fontSize: 14, display: 'flex', gap: '10px' }}>
+                  //   <div style={{ flex: 1 }}>
+                  //     <div>Tier hit: <b>{r.tier.minQty}+ @ {pct(r.tier.rate)}%</b> off</div>
+                  //     <div>
+                  //       Each (before): <b>${r.eachBefore.toFixed(2)}</b>,
+                  //     </div>
+                  //     <div>
+                  //       Each (after):{" "}
+                  //       <b>${r.eachAfter.toFixed(2)}</b>
+                  //     </div>
+                  //     <div>Subtotal before: <b>${r.subtotalBefore.toFixed(2)}</b></div>
+                  //     <div>Discounted subtotal: <b>${r.discountedSubtotal.toFixed(2)}</b></div>
+                  //   </div>
+
+                  //   <div style={{ flex: 1 }}>
+                  //     <div>
+                  //       Flat fees → Print-area: <b>${r.printAreaFee.toFixed(2)}</b>
+                  //       {r.licenseFee ? ` + License: $${r.licenseFee.toFixed(2)}` : ""}
+                  //     </div>
+                  //     <div>Grand total: <b>${r.grand.toFixed(2)}</b></div>
+                  //     {!!r.ladder.length && (
+                  //       <div style={{ marginTop: 8 }}>
+                  //         Buy more & save:&nbsp;
+                  //         {r.ladder.map((x, i) => (
+                  //           <span key={x.threshold} style={{ marginRight: 10 }}>
+                  //             {x.threshold} items for <b>${x.eachAtTier.toFixed(2)}</b> ea
+                  //             {i < r.ladder.length - 1 ? " | " : ""}
+                  //           </span>
+                  //         ))}
+                  //       </div>
+                  //     )}
+                  //   </div>
+                  // </div>
+                  <div style={{ marginTop: 10, fontSize: 14, display: 'flex', gap: '30px' }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ marginBottom: 5, display: 'flex', justifyContent: 'space-between' }}>
+                        Tier Applied: <b>{r.tier.minQty}+ @ {pct(r.tier.rate)}%off</b>
                       </div>
-                      <div>Subtotal before: <b>${r.subtotalBefore.toFixed(2)}</b></div>
-                      <div>Discounted subtotal: <b>${r.discountedSubtotal.toFixed(2)}</b></div>
+                      <div style={{ marginBottom: 5, display: 'flex', justifyContent: 'space-between' }}>
+                        Each (before): <b>${r.eachBefore.toFixed(2)}</b>
+                      </div>
+                      <div style={{ marginBottom: 5, display: 'flex', justifyContent: 'space-between' }}>
+                        Each (after): <b>${r.eachAfter.toFixed(2)}</b>
+                      </div>
+                      <div style={{ marginBottom: 5, display: 'flex', justifyContent: 'space-between' }}>
+                        Subtotal before: <b>${r.subtotalBefore.toFixed(2)}</b>
+                      </div>
+                      <div style={{ marginBottom: 5, display: 'flex', justifyContent: 'space-between' }}>
+                        Discounted subtotal: <b>${r.discountedSubtotal.toFixed(2)}</b>
+                      </div>
                     </div>
 
-                    <div>
-                      <div>
-                        Flat fees → Print-area: <b>${r.printAreaFee.toFixed(2)}</b>
-                        {r.licenseFee ? ` + License: $${r.licenseFee.toFixed(2)}` : ""}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ marginBottom: 5, display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #e4e4e7', paddingBottom: '20px' }}>
+                        Print-area fee: <b>${r.printAreaFee.toFixed(2)}</b>
                       </div>
-                      <div>Grand total: <b>${r.grand.toFixed(2)}</b></div>
+                      <div style={{ marginBottom: 5, display: 'flex', justifyContent: 'space-between', fontSize: '20px', fontWeight: 'bold' }}>
+                        Grand Total: <b style={{ color: '#005bff' }}>{r.grand.toFixed(2)}</b>
+                      </div>
                       {!!r.ladder.length && (
-                        <div style={{ marginTop: 8 }}>
+                        <div style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between' }}>
+
                           Buy more & save:&nbsp;
-                          {r.ladder.map((x, i) => (
-                            <span key={x.threshold} style={{ marginRight: 10 }}>
-                              {x.threshold} items for <b>${x.eachAtTier.toFixed(2)}</b> ea
-                              {i < r.ladder.length - 1 ? " | " : ""}
-                            </span>
-                          ))}
+                          <span>
+                            {r.ladder.map((x, i) => (
+                              <span key={x.threshold} style={{ marginRight: 10 }}>
+                                {x.threshold} items for <b>${x.eachAtTier.toFixed(2)}</b> ea
+                                {i < r.ladder.length - 1 ? " | " : ""}
+                              </span>
+                            ))}
+                          </span>
                         </div>
                       )}
                     </div>
                   </div>
+
                 );
               })()}
             </div>
@@ -826,6 +872,6 @@ export default function DiscountUpdate() {
         )}
 
       </div>
-    </div>
+    </div >
   );
 }
