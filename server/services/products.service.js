@@ -28,7 +28,8 @@ exports.getProductsList = async function (limit = 5, cursor = null) {
           id
           title
           tags
-          vendor   
+          vendor
+          handle   
           variants(first: 200) {
             edges {
               node {
@@ -494,6 +495,7 @@ exports.getProductByIdAsList = async (productId) => {
         title
         tags
         vendor
+        handle
         variants(first: 200) {
           edges {
             node {
