@@ -165,7 +165,7 @@ export default function GeneralSettings() {
   const [otherSettings, setOtherSettings] = useState({
     enableZoomFeature: true,
     enableSleevesShow: true,
-    enableFrontSmallImageSectionShow: true,
+    // enableFrontSmallImageSectionShow: true,
     enableBackSmallImageSectionShow: true,
     enableMainImageSectionShow: true,
   });

@@ -63,7 +63,7 @@ const SettingsSchema = new mongoose.Schema({
   otherSettings: {
     enableZoomFeature: { type: Boolean },
     enableSleevesShow: { type: Boolean },
-    enableFrontSmallImageSectionShow: { type: Boolean },
+    // enableFrontSmallImageSectionShow: { type: Boolean },
     enableBackSmallImageSectionShow: { type: Boolean },
     // enableMainImageSectionShow: { type: Boolean }
   }
