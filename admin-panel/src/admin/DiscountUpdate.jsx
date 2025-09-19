@@ -407,7 +407,8 @@ export default function DiscountUpdate() {
                 background: "#fff",
               }}
             >
-              <div style={{ fontWeight: 600, marginBottom: 8 }}>Try it (sandbox)</div>
+              {/* <div style={{ fontWeight: 600, marginBottom: 8 }}>Try it (sandbox)</div> */}
+              <h3>Test Calculator</h3>
 
               {/* responsive grid (5→2 cols on mobile) */}
               <div className="grid-5" style={{ marginTop: 8 }}>
@@ -468,8 +469,8 @@ export default function DiscountUpdate() {
               </div>
 
               {/* Name and Number Surcharge Section */}
-              <div style={{ marginTop: 16 }}>
-                <label>
+              <div style={{ marginTop: 16, display: 'flex' }}>
+                <label style={{ flex: '1', fontWeight: 'bold' }}>
                   <input
                     type="checkbox"
                     checked={nameChecked}
@@ -477,8 +478,8 @@ export default function DiscountUpdate() {
                   />
                   Add Name Printing Surcharge (${nameAndNumberSurcharges["nameSurcharge"]})
                 </label>
-                <br />
-                <label>
+
+                <label style={{ flex: '1', fontWeight: 'bold' }}>
                   <input
                     type="checkbox"
                     checked={numberChecked}
@@ -497,30 +498,35 @@ export default function DiscountUpdate() {
               {(() => {
                 const r = simulate();
                 return (
-                  <div style={{ marginTop: 10, fontSize: 14 }}>
-                    <div>Tier hit: <b>{r.tier.minQty}+ @ {pct(r.tier.rate)}%</b> off</div>
+                  <div style={{ marginTop: 10, fontSize: 14, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <div>
-                      Each (before): <b>${r.eachBefore.toFixed(2)}</b>, Each (after):{" "}
-                      <b>${r.eachAfter.toFixed(2)}</b>
-                    </div>
-                    <div>Subtotal before: <b>${r.subtotalBefore.toFixed(2)}</b></div>
-                    <div>Discounted subtotal: <b>${r.discountedSubtotal.toFixed(2)}</b></div>
-                    <div>
-                      Flat fees → Print-area: <b>${r.printAreaFee.toFixed(2)}</b>
-                      {r.licenseFee ? ` + License: $${r.licenseFee.toFixed(2)}` : ""}
-                    </div>
-                    <div>Grand total: <b>${r.grand.toFixed(2)}</b></div>
-                    {!!r.ladder.length && (
-                      <div style={{ marginTop: 8 }}>
-                        Buy more & save:&nbsp;
-                        {r.ladder.map((x, i) => (
-                          <span key={x.threshold} style={{ marginRight: 10 }}>
-                            {x.threshold} items for <b>${x.eachAtTier.toFixed(2)}</b> ea
-                            {i < r.ladder.length - 1 ? " | " : ""}
-                          </span>
-                        ))}
+                      <div>Tier hit: <b>{r.tier.minQty}+ @ {pct(r.tier.rate)}%</b> off</div>
+                      <div>
+                        Each (before): <b>${r.eachBefore.toFixed(2)}</b>, Each (after):{" "}
+                        <b>${r.eachAfter.toFixed(2)}</b>
                       </div>
-                    )}
+                      <div>Subtotal before: <b>${r.subtotalBefore.toFixed(2)}</b></div>
+                      <div>Discounted subtotal: <b>${r.discountedSubtotal.toFixed(2)}</b></div>
+                    </div>
+
+                    <div>
+                      <div>
+                        Flat fees → Print-area: <b>${r.printAreaFee.toFixed(2)}</b>
+                        {r.licenseFee ? ` + License: $${r.licenseFee.toFixed(2)}` : ""}
+                      </div>
+                      <div>Grand total: <b>${r.grand.toFixed(2)}</b></div>
+                      {!!r.ladder.length && (
+                        <div style={{ marginTop: 8 }}>
+                          Buy more & save:&nbsp;
+                          {r.ladder.map((x, i) => (
+                            <span key={x.threshold} style={{ marginRight: 10 }}>
+                              {x.threshold} items for <b>${x.eachAtTier.toFixed(2)}</b> ea
+                              {i < r.ladder.length - 1 ? " | " : ""}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
               })()}
@@ -545,6 +551,7 @@ export default function DiscountUpdate() {
               <tr>
                 <th align="left">Min Qty</th>
                 <th align="left">Discount (%)</th>
+                <th align="left">Actions</th>
                 <th />
               </tr>
             </thead>
@@ -583,44 +590,44 @@ export default function DiscountUpdate() {
         <Button style={{ marginTop: 8 }} onClick={addRow}>+ Add Tier</Button>
       </section>
 
-<section style={{ marginTop: 24 }}>
-  <h3>Name and Number Surcharges</h3>
-  <p style={{ fontSize: "0.7rem", color: "#555", marginTop: 4 }}>
-    As per depend on Customer Selection Ex. Only Name or Number or Both
-  </p>
-  
-  {/* Name Surcharge */}
-  <div style={{ marginTop: 8 }}>
-    <label>Name Surcharge ($):</label>
-    <input
-      type="number"
-      step="0.01"
-      min={0}
-      value={nameAndNumberSurcharges.nameSurcharge}
-      onChange={e => setNameAndNumberSurcharges(prev => ({
-        ...prev, nameSurcharge: Number(e.target.value)
-      }))}
-      style={{ width: "100%", maxWidth: 220 }}
-    />
-  </div>
+      {/* <section style={{ marginTop: 24 }}>
+        <h3>Name and Number Surcharges</h3>
+        <p style={{ fontSize: "0.7rem", color: "#555", marginTop: 4 }}>
+          As per depend on Customer Selection Ex. Only Name or Number or Both
+        </p>
 
-  {/* Number Surcharge */}
-  <div style={{ marginTop: 8 }}>
-    <label>Number Surcharge ($):</label>
-    <input
-      type="number"
-      step="0.01"
-      min={0}
-      value={nameAndNumberSurcharges.numberSurcharge}
-      onChange={e => setNameAndNumberSurcharges(prev => ({
-        ...prev, numberSurcharge: Number(e.target.value)
-      }))}
-      style={{ width: "100%", maxWidth: 220 }}
-    />
-  </div>
+        {/* Name Surcharge */}
+      {/* <div style={{ marginTop: 8 }}>
+          <label>Name Surcharge ($):</label>
+          <input
+            type="number"
+            step="0.01"
+            min={0}
+            value={nameAndNumberSurcharges.nameSurcharge}
+            onChange={e => setNameAndNumberSurcharges(prev => ({
+              ...prev, nameSurcharge: Number(e.target.value)
+            }))}
+            style={{ width: "100%", maxWidth: 220 }}
+          />
+        </div> */}
 
-  {/* Name & Number Surcharge */}
-  <div style={{ marginTop: 8 }}>
+      {/* Number Surcharge */}
+      {/* <div style={{ marginTop: 8 }}>
+          <label>Number Surcharge ($):</label>
+          <input
+            type="number"
+            step="0.01"
+            min={0}
+            value={nameAndNumberSurcharges.numberSurcharge}
+            onChange={e => setNameAndNumberSurcharges(prev => ({
+              ...prev, numberSurcharge: Number(e.target.value)
+            }))}
+            style={{ width: "100%", maxWidth: 220 }}
+          />
+        </div> */}
+
+      {/* Name & Number Surcharge */}
+      {/* <div style={{ marginTop: 8 }}>
     <label>Name & Number Surcharge ($):</label>
     <input
       type="number"
@@ -633,7 +640,25 @@ export default function DiscountUpdate() {
       style={{ width: "100%", maxWidth: 220 }}
     />
   </div>
-</section>
+</section> */}
+      <section>
+        <h3>Name and Number Surcharges</h3>
+        <p style={{ fontSize: "0.7rem", color: "#555", marginTop: 4 }}>As per depend on Customer Selection Ex. Only Name or Number or Both</p>
+        <div className="grid-3">
+          <div>
+            <label>Name Surcharge ($)</label>
+            <input type="number" step="0.01" min={0} value={nameAndNumberSurcharges.nameSurcharge} onChange={e => setNameAndNumberSurcharges(prev => ({ ...prev, nameSurcharge: Number(e.target.value) }))} />
+          </div>
+          <div>
+            <label>Number Surcharge ($)</label>
+            <input type="number" step="0.01" min={0} value={nameAndNumberSurcharges.numberSurcharge} onChange={e => setNameAndNumberSurcharges(prev => ({ ...prev, numberSurcharge: Number(e.target.value) }))} />
+          </div>
+          <div>
+            <label>Name & Number Surcharge ($)</label>
+            <input type="number" step="0.01" min={0} value={nameAndNumberSurcharges.nameAndNumberBothPrint} onChange={e => setNameAndNumberSurcharges(prev => ({ ...prev, nameAndNumberBothPrint: Number(e.target.value) }))} />
+          </div>
+        </div>
+      </section>
 
 
       {/* Size Surcharges */}
@@ -718,7 +743,7 @@ export default function DiscountUpdate() {
           min={0}
           value={licenseFee}
           onChange={e => setLicenseFee(e.target.value)}
-          style={{ width: "100%", maxWidth: 220 }}
+          className="inputBox"
         />
       </section>
 

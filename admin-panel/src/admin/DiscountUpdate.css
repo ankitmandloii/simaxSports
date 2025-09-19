@@ -1,20 +1,77 @@
-Global Styles
-html, body, #root {
-  max-width: 100%;
-  overflow-x: hidden;
-  font-family: 'Roboto', sans-serif;
-}
-
 .pricing__container {
-  max-width: 880px;
-  margin: 20px auto;
-  padding: 0 20px;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Grid layout */
-.grid-5, .grid-4 {
+.pricing__container h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #005bff;
+  margin-bottom: 16px;
+}
+
+.pricing__container h3 {
+  font-size: 20px !important;
+  font-weight: 600;
+  color: #005bff;
+  /* margin-bottom: 16px; */
+
+}
+
+.pricing__container section {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+
+.pricing-calculator-header {
+  /* background: #6d4aff; */
+  /* color: #fff; */
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.pricing-calculator-header h3 {
+  color: #000;
+  margin: 0;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pricing-calculator-header h3 span[role="img"] {
+  font-size: 1.2em;
+}
+
+.pricing-calculator-header p {
+  /* color: #e0e0e0; */
+  font-size: 0.8rem;
+  margin: 4px 0 0;
+}
+
+details summary {
+  font-weight: 600;
+  color: #005bff;
+  cursor: pointer;
+}
+
+details div {
+  margin-top: 12px;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.grid-5,
+.grid-4,
+.grid-3 {
   display: grid;
-  gap: 16px;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .grid-5 {
@@ -25,168 +82,138 @@ html, body, #root {
   grid-template-columns: repeat(4, 1fr);
 }
 
-.grid-5 > *, .grid-4 > * {
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-5 div,
+.grid-4 div,
+.grid-3 div {
   min-width: 0;
 }
 
-@media (max-width: 640px) {
-  .grid-5 {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .grid-4 {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .table-wrap {
-    overflow-x: auto;
-  }
+.grid-5 label,
+.grid-4 label,
+.grid-3 label {
+  font-size: 12px;
+  color: #555;
+  display: block;
+  margin-bottom: 4px;
 }
 
-/* Inputs styling */
-input[type="number"],
-input[type="text"],
-select {
+.grid-5 input[type="number"],
+.grid-5 select,
+.grid-4 input[type="number"],
+.grid-4 input,
+.grid-3 input[type="number"] {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   font-size: 14px;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease;
 }
 
-input[type="number"]:focus,
-input[type="text"]:focus,
-select:focus {
-  border-color: #007bff;
-  outline: none;
+.inputBox {
+  width: 15rem;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
-input:disabled {
-  background-color: #f3f3f3;
+.grid-5 input[type="checkbox"],
+.grid-4 input[type="checkbox"],
+.grid-3 input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+.pricing__container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pricing__container th,
+.pricing__container td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.pricing__container th {
+  background: #f5f5f5;
+  font-weight: 600;
+  color: #333;
+}
+
+.pricing__container td input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.pricing__container button {
+  /* background: #005bff; */
+  /* color: #fff; */
+  color: #000;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.pricing__container button:hover {
+  color: red;
+  /* background: #5d3fe6; */
+}
+
+.pricing__container button:disabled {
+  background: #ccc;
   cursor: not-allowed;
 }
 
-/* Buttons */
-button,
-.Button {
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.grid-4 input:disabled,
+.grid-3 input:disabled {
+  background: #f3f3f3;
+  color: #888;
 }
 
-button:hover, .Button:hover {
-  background-color: #0056b3;
-  color: #fff;
+.pricing__container p {
+  font-size: 0.7rem;
+  color: #555;
+  margin-top: 4px;
 }
 
-button:disabled, .Button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.pricing__container p span {
+  color: #005bff;
+  font-weight: 600;
 }
 
-/* Toast Error and Success Styling */
-.toast-error {
-  color: #d9534f;
-  background-color: #f8d7da;
-  border-color: #f5c6cb;
-}
+/* Responsiveness */
+@media (max-width: 768px) {
 
-.toast-success {
-  color: #28a745;
-  background-color: #d4edda;
-  border-color: #c3e6cb;
-}
-
-/* Skeleton Styles */
-.skel {
-  background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%);
-  background-size: 400% 100%;
-  animation: skel 1.4s ease infinite;
-  border-radius: 8px;
-}
-
-@keyframes skel {
-  0% {
-    background-position: 100% 0;
+  .grid-5,
+  .grid-4,
+  .grid-3 {
+    grid-template-columns: 1fr;
   }
-  100% {
-    background-position: 0 0;
+
+  .pricing-calculator-header {
+    border-radius: 8px;
+  }
+
+  .table-wrap table {
+    min-width: 300px;
+  }
+
+  .pricing__container button {
+    width: 100%;
+    margin-top: 8px;
   }
 }
-
-.skel-line {
-  height: 14px;
-}
-
-.skel-title {
-  height: 26px;
-  width: 240px;
-}
-
-.skel-input {
-  height: 36px;
-}
-
-.skel-btn {
-  height: 36px;
-  width: 140px;
-}
-
-/* Confirm Modal */
-.confirm-modal {
-  width: min(92vw, 480px);
-  max-width: 92vw;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 16px;
-  z-index: 1001;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-}
-
-.confirm-modal button {
-  /* padding: 12px 20px; */
-  /* border-radius: 8px; */
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  background-color: #007bff;
-  color: #000000;
-  /* border: none; */
-  transition: all 0.3s ease;
-}
-
-.confirm-modal button:first-child {
-  background-color: #28a745; /* Green for confirm */
-}
-
-.confirm-modal button:last-child {
-  background-color: #be0013; /* Red for cancel */
-}
-
-.confirm-modal button:first-child:hover {
-  background-color: #218838;
-}
-
-.confirm-modal button:last-child:hover {
-  background-color: #be0013;
-}
-
-.confirm-modal button:hover {
-  transform: scale(1.02); /* Slight scaling effect on hover */
-}
-/* Error Image Styling */
-.error-image {
-  max-width: 300px;
-  margin-top: 50px;
-  margin-bottom: 20px;
-}
-
-
-
-
