@@ -89,7 +89,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
 
       const data = await res.json();
       setLoading(false);
-      // console.log("-----CollectionData", data)
+      console.log("-----CollectionData", data)
       const edges = data?.result?.node?.products?.edges || [];
       const pageInfo = data?.result?.node?.products?.pageInfo;
 
@@ -97,7 +97,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
         const variants = node.variants.edges.map((v) => v.node);
         const productID = node.id;
         const productImages = node.images.edges.map((imgEdge) => imgEdge.node.originalSrc);
-
+        const handle = node?.handle;
         const colorMap = {};
         variants.forEach((variant) => {
           const color = variant.selectedOptions?.find((opt) => opt.name === 'Color')?.value;
@@ -131,7 +131,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
               name: color,
               swatchImg: swatchImage || variant.image?.originalSrc || '',
               img: customImage || variant.image?.originalSrc || '',
-              variant,
+              variant, handle: handle
             };
           }
         });
@@ -145,6 +145,9 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
           id: productID,
           productKey: productID,
           vendor: node?.vendor,
+          handle: handle
+
+
         };
       });
 

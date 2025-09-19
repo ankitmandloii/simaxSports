@@ -1144,6 +1144,7 @@ function ProductContainer() {
         selectedImage,
         imgurl: selectedImage,
         allVariants,
+        handle: productNode?.handle
       };
 
       dispatch(setSelectedProducts([initialProductWithColor]));
@@ -1281,6 +1282,7 @@ function ProductContainer() {
         tags: productNode.tags || [],
         images: productNode.images || [],
         vendor: productNode?.vendor,
+        handle: productNode?.handle || "",
         colors: updatedColors,
         selectedColor,
         selectedImage,

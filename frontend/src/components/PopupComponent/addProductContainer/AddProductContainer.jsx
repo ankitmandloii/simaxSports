@@ -108,6 +108,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
         return {
           name: product?.title,
           vendor: product?.vendor,
+          handle: product?.handle,
           imgurl: variants[0]?.image?.originalSrc || productImages[0] || '',
           images: productImages,
           colors: Object.values(colorMap),
@@ -195,6 +196,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
           allVariants: variants,
           id: productID,
           productKey: productID || uuidv4(),
+          handle: product?.handle,
         };
       });
 
