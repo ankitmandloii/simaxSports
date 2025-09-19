@@ -7,14 +7,15 @@ import { generateDesigns } from '../../Editor/utils/helper';
 import transformReduxState from '../../utils/transformReduxState';
 import { current } from '@reduxjs/toolkit';
 import CloseButton from '../../CommonComponent/CrossIconCommon/CrossIcon';
-
+import db from '../../../db/indexDb';
 
 const ContinueEditPopup = ({
   handleContinuePopup,
 }
 ) => {
   const dispatch = useDispatch();
-  let reduxdata = JSON.parse(localStorage.getItem("savedReduxState"));
+  // let reduxdata = JSON.parse(localStorage.getItem("savedReduxState"));
+  const [reduxdata, setReduxdata] = useState(null)
   const [loading, setLoading] = useState(true)
   const [reduxDataTransformed, setReduxDataTransformed] = useState(false)
   // reduxdata = transformReduxState(reduxdata)
@@ -28,7 +29,7 @@ const ContinueEditPopup = ({
   //   selectedProducts = reduxdata?.selectedProducts?.selectedProducts[0]
   // }
 
-  // const selectedProducts = reduxdata?.selectedProducts?.selectedProducts[0] ?? useSelector((state) => state.selectedProducts.selectedProducts[0]);
+
   console.log("selectedProducts in ContinueEditPopup", selectedProducts);
   const [lastProductImages, setLastProductImages] = useState([])
   const continueEditHandler = () => {
@@ -37,20 +38,39 @@ const ContinueEditPopup = ({
   };
 
   useEffect(() => {
-    if (!selectedProducts || selectedProducts.length === 0) return;
+    const loadState = async () => {
+      try {
+        const saved = await db.state.get("redux");
+        setReduxdata(saved?.data || null);
+      } catch (e) {
+        console.error("Error loading Redux state:", e);
+      }
+    };
+
+    loadState();
+  }, []);
+
+  useEffect(() => {
+    if (!reduxdata) return; // wait until loaded
+    if (!selectedProducts || selectedProducts.length === 0) {
+      handleContinuePopup();
+      return;
+    }
+    selectedProducts = reduxdata?.selectedProducts?.activeProduct ?? selectedProducts
+
     const lastProductImages = selectedProducts.images.slice(0, 3);
     lastProductImages.push(lastProductImages.slice(-1)[0]);
 
     const designPromises = async () => {
-      setLoading(true)
-      reduxdata = await transformReduxState(reduxdata);
-      setReduxDataTransformed(reduxdata)
-      console.log("reduxdata after transformReduxState in ContinueEditPopup", reduxdata);
-      const { present, nameAndNumberDesignState, addName, addNumber, activeNameAndNumberPrintSide, activeSide } = reduxdata?.TextFrontendDesignSlice
-      const { canvasWidth, canvasHeight } = reduxdata.canvasReducer;
-      // const canvas = document.getElementById('HelperCanvas');
-      // console.log("-------------itemm", item)
-      // const front = (await generateDesigns([item.allImages[0]], present.front.texts, present.front.images, activeSide, canvasWidth, canvasHeight))[0];
+      setLoading(true);
+      const transformed = await transformReduxState(reduxdata);
+      setReduxDataTransformed(transformed);
+
+      const { present, nameAndNumberDesignState, addName, addNumber, activeNameAndNumberPrintSide, activeSide } =
+        transformed.TextFrontendDesignSlice;
+
+      const { canvasWidth, canvasHeight } = transformed.canvasReducer;
+
       let front, back;
 
       // Handle front
@@ -114,24 +134,49 @@ const ContinueEditPopup = ({
           )
         )[0];
       }
-      const leftSleeve = (await generateDesigns([lastProductImages[2]], present.leftSleeve.texts, present.leftSleeve.images, {}, activeSide, canvasWidth, canvasHeight, addName,
-        addNumber))[0];
-      const rightSleeve = (await generateDesigns([lastProductImages[2]], present.rightSleeve.texts, present.rightSleeve.images, {}, activeSide, canvasWidth, canvasHeight, addName,
-        addNumber))[0];
+
+      const leftSleeve = (
+        await generateDesigns(
+          [lastProductImages[2]],
+          present.leftSleeve.texts,
+          present.leftSleeve.images,
+          {},
+          activeSide,
+          canvasWidth,
+          canvasHeight,
+          addName,
+          addNumber
+        )
+      )[0];
+
+      const rightSleeve = (
+        await generateDesigns(
+          [lastProductImages[2]],
+          present.rightSleeve.texts,
+          present.rightSleeve.images,
+          {},
+          activeSide,
+          canvasWidth,
+          canvasHeight,
+          addName,
+          addNumber
+        )
+      )[0];
 
       return { front, back, leftSleeve, rightSleeve };
     };
-    designPromises().then(({ front, back, leftSleeve, rightSleeve }) => {
-      // console.log("frontttttt", front)
-      const updatedImages = [front, back, leftSleeve, rightSleeve];
-      console.log("updatedImages in ContinueEditPopup", updatedImages);
-      setLastProductImages(updatedImages);
-      setLoading(false)
-    }).catch(() => {
-      setLoading(false)
-    });
-    // setLastProductImages(lastProductImages);
-  }, [selectedProducts]);
+
+    designPromises()
+      .then(({ front, back, leftSleeve, rightSleeve }) => {
+        const updatedImages = [front, back, leftSleeve, rightSleeve];
+        setLastProductImages(updatedImages);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, [selectedProducts, reduxdata]);
+
 
   return (
     <div className={style.overlay}>

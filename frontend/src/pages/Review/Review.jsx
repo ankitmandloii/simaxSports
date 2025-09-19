@@ -181,7 +181,8 @@ const Review = () => {
       price: product?.price,
       sku: product?.sku,
       inventory_quantity: product?.inventory_quantity,
-      vendor: product?.vendor
+      vendor: product?.vendor,
+      handle: product?.handle
     };
   });
   console.log(reviewItems, "reviewItems");

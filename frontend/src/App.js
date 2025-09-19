@@ -25,7 +25,8 @@ import { apiConnecter } from "./components/utils/apiConnector";
 import { fetchSettings } from "./redux/SettingsSlice/SettingsSlice";
 import { restoreEditDesigns } from "./redux/FrontendDesign/TextFrontendDesignSlice";
 import Test from '../../frontend/src/components/Test'
-
+import db from "../src/db/indexDb";
+import { debounce } from "lodash"
 enableMapSet();
 function App() {
   usePersistQueryParams();
@@ -36,6 +37,7 @@ function App() {
 
   const [continueEditPopup, setContinueEditPopup] = useState(false);
   const [willRenderContinue, setWillRenderContinue] = useState(false);
+  const [initialCheckDone, setInitialCheckDone] = useState(false);
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
 
   const initialState = useSelector((state) => state.TextFrontendDesignSlice);
@@ -297,33 +299,20 @@ function App() {
     }
   }
 
-
+  const saveStateDebounced = debounce(async (reduxState) => {
+    try {
+      await db.state.put({ id: "redux", data: reduxState });
+      console.log("✅ Redux state saved (debounced)");
+    } catch (e) {
+      console.error("❌ Error saving state:", e);
+    }
+  }, 1000);
   useEffect(() => {
-    if (!reduxState) return
-
-    const handleSaveState = () => {
-      try {
-        // const transformedState = transformReduxState(reduxState);
-        // console.log("transformedState", transformedState);
-        localStorage.setItem("savedReduxState", JSON.stringify(reduxState));
-      } catch (e) {
-        console.error("Error saving Redux state to localStorage:", e);
-      }
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
-        handleSaveState();
-      }
-    };
-
-    window.addEventListener("pagehide", handleSaveState);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener("pagehide", handleSaveState);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
+    console.log("initialCheckDone value", initialCheckDone)
+    if (!reduxState || !initialCheckDone) return
+    // setTimeout(() => {
+    // }, 10000);
+    saveStateDebounced(reduxState)
   }, [reduxState]);
   // Save whenever reduxState changes
   // useEffect(() => {
@@ -422,31 +411,50 @@ function App() {
   // Check if saved state should trigger continue edit popup
   useEffect(() => {
     if (!willRenderContinue && rawProducts.length > 0) {
-      let savedState = null;
-      try {
-        // localStorage.removeItem("savedReduxState");
-        savedState = JSON.parse(localStorage.getItem("savedReduxState"));
-      } catch (e) {
-        console.error("Error parsing saved Redux state:", e);
-        return;
-      }
+      const checkSavedState = async () => {
+        try {
+          const savedState = await db.state.get("redux");
+          console.log("savedState", savedState)
 
-      if (!savedState || !savedState.TextFrontendDesignSlice) return;
+          if (!savedState || !savedState?.data?.TextFrontendDesignSlice) {
+            setInitialCheckDone(true)
+            return;
+          }
 
-      const { addName, addNumber, present, activeSide } =
-        savedState.TextFrontendDesignSlice;
-      const textObjects = present?.[activeSide]?.texts || [];
+          const { addName, addNumber, present } =
+            savedState.data.TextFrontendDesignSlice;
 
-      const imgObjects = present?.[activeSide]?.images || [];
+          const sides = Object.keys(present || {});
+          let hasDesign = false;
 
+          for (const side of sides) {
+            const textObjects = present[side]?.texts || [];
+            const imgObjects = present[side]?.images || [];
 
-      if ((textObjects.length > 0) || (imgObjects.length > 0) || addName || addNumber) {
-        setWillRenderContinue(true);
-        setContinueEditPopup(true);
-      }
+            if (textObjects.length > 0 || imgObjects.length > 0) {
+              hasDesign = true;
+              break; // no need to continue if found
+            }
+          }
+
+          if (hasDesign || addName || addNumber) {
+            setWillRenderContinue(true);
+            setContinueEditPopup(true);
+          }
+          setInitialCheckDone(true)
+
+        } catch (e) {
+          console.error("Error reading saved Redux state:", e);
+        }
+
+        // Tumhara handler
+        editDesignHandler();
+      };
+
+      checkSavedState();
     }
-    editDesignHandler();
   }, [rawProducts, willRenderContinue]);
+
 
   const handleContinuePopup = () => {
     setContinueEditPopup(false);

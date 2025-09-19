@@ -6,11 +6,12 @@ import { resetCanvasState } from '../../../redux/FrontendDesign/TextFrontendDesi
 // import { useNavigate } from 'react-router-dom';
 
 
-const StartOverConfirmationPopup = ({ onCancel }) => {
+const StartOverConfirmationPopup = ({ onCancel, onResetclickHandler }) => {
   const dispatch = useDispatch()
   // const navigate = useNavigate()
   const resetAll = () => {
     dispatch(resetCanvasState())
+    onResetclickHandler();
 
     onCancel()
     // navigate(0);

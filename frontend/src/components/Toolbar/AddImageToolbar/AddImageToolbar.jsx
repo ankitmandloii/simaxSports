@@ -509,7 +509,7 @@ const AddImageToolbar = () => {
         setPreviewUrl(newUrl);
         setActiveTransform(transform);
         globalDispatch("src", newUrl);
-        await handleImage(newUrl, singleColor, selectedFilter, invertColor, false, newActiveEffects);
+        await handleImage(newUrl, singleColor, selectedFilter, img?.invertColor ?? invertColor, false, newActiveEffects);
         setLoading(false);
       };
 
@@ -893,7 +893,7 @@ const AddImageToolbar = () => {
     else {
       fetchPalette();
     }
-  }, [img?.src]);
+  }, [img?.src, selectedImageId]);
 
 
   function applyFilterAndGetUrl(imageSrc, color) {
@@ -1083,7 +1083,7 @@ const AddImageToolbar = () => {
 
     // handleImage(previewUrl, color);
     // console.log("color cahnges funcitonc called", color, previewUrl);
-    const newBase64Image = await handleImage(img.src || previewUrl, color, selectedFilter, invertColor.editColor);
+    const newBase64Image = await handleImage(img.src || previewUrl, color, selectedFilter, invertColor, editColor);
 
   };
 
@@ -1285,7 +1285,7 @@ const AddImageToolbar = () => {
     if (rf.current) return
     rf.current = true;
     (async () => {
-      const applyFilterURL = await applyFilterAndGetUrl(img?.src ?? previewUrl, singleColor);
+      const applyFilterURL = await applyFilterAndGetUrl(img?.src ?? previewUrl, img.singleColor ?? singleColor);
       // console.log("applied filter url ", applyFilterURL);
       globalDispatch("base64CanvasImageForSinglelColor", String(applyFilterURL));
       setFilters(fs => fs.map(f => {

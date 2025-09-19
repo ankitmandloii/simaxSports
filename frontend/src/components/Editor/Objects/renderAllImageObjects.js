@@ -32,6 +32,7 @@ const renderAllImageObjects = (
     try {
       const selectedFilter = currentImageObject.selectedFilter;
       globalDispatch("loading", true, id);
+      globalDispatch("editColor", false, id)
       // console.log("handle image function called with src", imageSrc, color, selectedFilter, invertColor, editColor, globalDispatch, id);
 
       let currentBase64Image;
@@ -53,12 +54,12 @@ const renderAllImageObjects = (
       // console.log("stored seletected filter is ", img.selectedFilter)
 
       // for normal color image
-      if (editColor) {
-        normalColorImage = await processAndReplaceColors(allTransformImage[0], color, editColor, extractedColors);
-      }
-      else {
-        normalColorImage = await getBase64CanvasImage(allTransformImage[0], color)
-      }
+      // if (editColor) {
+      //   normalColorImage = await processAndReplaceColors(allTransformImage[0], color, editColor, extractedColors);
+      // }
+      // else {
+      // }
+      normalColorImage = await getBase64CanvasImage(allTransformImage[0], color)
 
       //for single color image
       if (invertColor) {

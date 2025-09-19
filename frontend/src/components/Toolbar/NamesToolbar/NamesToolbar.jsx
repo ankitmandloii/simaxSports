@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setactiveNameAndNumberPrintSide, setActiveSide, setAddName, setAddNumber, updateNameAndNumberDesignState } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { apiConnecter } from '../../utils/apiConnector.jsx';
 
 const NamesToolbar = () => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
@@ -38,6 +39,7 @@ const NamesToolbar = () => {
   const [activeSize, setActiveSize] = useState(nameAndNumberDesign?.fontSize);
   const [activeFont, setActiveFont] = useState(nameAndNumberDesign?.fontFamily);
   const [activeColor, setActiveColor] = useState(nameAndNumberDesign?.fontColor);
+  const [priceData, setPriceData] = useState({})
 
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   console.log("-----------activeFont", activeFont)
@@ -100,7 +102,18 @@ const NamesToolbar = () => {
 
   useEffect(() => {
     dispatch(setActiveSide("back"));
+    getNameAndNumberPrice()
   }, []);
+
+  async function getNameAndNumberPrice() {
+    try {
+      const res = await apiConnecter("POST", "auth/getDiscountDetails");
+      console.log("res", res.data);
+      setPriceData(res?.data?.nameAndNumberSurcharges);
+    } catch (e) {
+      console.log("getting error while fetching name and number price from database", e)
+    }
+  }
 
   return (
     <div className={`toolbar-main-container ${style.NamesToolbarBox}`}>
@@ -226,9 +239,10 @@ const NamesToolbar = () => {
           </button>
           <hr />
           <div className={style.namePricingpara}>
+
             <p>Complete list required for accurate pricing</p>
-            <p>Names = $4.00 | Numbers = $3.00</p>
-            <p>Names & Numbers = $6.00</p>
+            <p>Names = ${priceData?.nameSurcharge ?? 0} | Numbers = ${priceData.numberSurcharge ?? 0}</p>
+            <p>Names & Numbers = ${priceData?.nameAndNumberBothPrint ?? 0}</p>
 
           </div>
         </div>

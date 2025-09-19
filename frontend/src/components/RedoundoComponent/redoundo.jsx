@@ -9,7 +9,7 @@ import styles from './redoundo.module.css';
 import EditWithAipopup from "../PopupComponent/EditWithAipopup/EditWithAipopup";
 import DesignNotesPopup from "../PopupComponent/DesignNotesPopup/DesignNotesPopup";
 import ShareDesignPopup from "../PopupComponent/ShareDesignPopup/ShareDesignPopup";
-function RedoundoComponent() {
+function RedoundoComponent({ onResetclickHandler }) {
   const location = useLocation();
   const canUndo = useSelector(selectCanUndo);
   const canRedo = useSelector(selectCanRedo);
@@ -63,7 +63,7 @@ function RedoundoComponent() {
         </li>
       </ul>
       {/* <button onClick={() => setShow(true)}>Edit AI</button> */}
-      {startOverPopup && <StartOverConfirmationPopup onCancel={closeStartOverPopup} />}
+      {startOverPopup && <StartOverConfirmationPopup onCancel={closeStartOverPopup} onResetclickHandler={onResetclickHandler} />}
       {/* {show && <EditWithAipopup onClose={() => setShow(false)} />} */}
       {/* {show && <ShareDesignPopup onClose={() => setShow(false)} />} */}
 

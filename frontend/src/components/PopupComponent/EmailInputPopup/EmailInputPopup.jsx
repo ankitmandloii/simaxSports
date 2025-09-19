@@ -35,7 +35,7 @@ const EmailInputPopup = ({ onSubmit, onClose }) => {
         <div className={styles.overlay}>
             <div className={styles.popup}>
                 <div className={styles.header}>
-                    <div className={styles.title}>ENTER EMAIL</div>
+                    <div className={styles.title}>ENTER YOUR EMAIL</div>
                     {/* <button className={styles.closeButton} onClick={onClose}>
                         <CrossIcon />
                     </button> */}

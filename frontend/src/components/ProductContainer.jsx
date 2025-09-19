@@ -1330,7 +1330,7 @@ function ProductContainer() {
     }
   }, [searchParams]);
 
-  useEffect(() => {
+  function setInitialImages() {
     const defaultImage = activeProduct?.imgurl || '';
     setActiveProductTitle(activeProduct?.name);
 
@@ -1363,6 +1363,10 @@ function ProductContainer() {
     setBackPreviewImage(back);
     setLeftSleevePreviewImage(sleeve);
     setRightSleevePreviewImage(sleeve);
+  }
+
+  useEffect(() => {
+    setInitialImages()
   }, [activeProduct]);
 
   useEffect(() => {
@@ -1383,11 +1387,16 @@ function ProductContainer() {
     }
   }, [exportRequested, dispatch]);
 
+  function onResetclickHandler() {
+    setInitialImages();
+    // alert("we have to remove desing")
+  }
+
   return (
     <div className={style.ProductContainerMainDiv}>
       <div className={style.flex}>
         <div className={style.controllContainer}>
-          {!isQuantityPage && <RedoundoComponent />}
+          {!isQuantityPage && <RedoundoComponent onResetclickHandler={onResetclickHandler} />}
           <ViewControlButtons
             ShowBack={ShowBack}
             ShowFront={ShowFront}

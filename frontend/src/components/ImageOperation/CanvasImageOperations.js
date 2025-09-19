@@ -37,6 +37,15 @@ async function processAndReplaceColors(imageSrc, color, editColor = false, extra
             const targetColor = hexToRgbForReplaceColor(colors[i]);
             const newColor = hexToRgbForReplaceColor(updateColors[i]);
 
+            // ✅ Skip if targetColor and newColor are identical
+            if (
+              targetColor[0] === newColor[0] &&
+              targetColor[1] === newColor[1] &&
+              targetColor[2] === newColor[2]
+            ) {
+              continue;
+            }
+
             for (let j = 0; j < data.length; j += 4) {
               const r = data[j], g = data[j + 1], b = data[j + 2];
               if (colorsMatch([r, g, b], targetColor, 50)) {
@@ -46,6 +55,7 @@ async function processAndReplaceColors(imageSrc, color, editColor = false, extra
               }
             }
           }
+
 
           ctx.putImageData(imageData, 0, 0);
         } else {

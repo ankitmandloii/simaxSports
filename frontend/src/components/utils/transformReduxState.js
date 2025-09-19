@@ -73,7 +73,7 @@ async function transformReduxState(state) {
                         if (img && typeof img === "object" && img.src) {
                             const AllDesignImage = await handleImage(
                                 img.src,
-                                img.Singlecolor,
+                                img.singleColor,
                                 img.selectedFilter,
                                 img.invertColor,
                                 img.editColor,
