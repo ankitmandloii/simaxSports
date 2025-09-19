@@ -493,6 +493,7 @@ exports.getProductByIdAsList = async (productId) => {
         id
         title
         tags
+        vendor
         variants(first: 200) {
           edges {
             node {
