@@ -61,10 +61,10 @@ app.use((err, req, res, next) => {
   }
 
   if (err instanceof multer.MulterError) {
-    return res.status(400).json({ message: err.message });
+    return res.status(400).json({ message: "File size is too large (max 10MB)" });
   }
 
-  return res.status(500).json({ message: err.message || "Internal Server Error" });
+  return res.status(500).json({ message: "Internal Server Error" });
 });
 
 

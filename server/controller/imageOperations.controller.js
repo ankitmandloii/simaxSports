@@ -119,7 +119,7 @@ exports.fileUploadForImgixUrl = async (req, res) => {
         });
     } catch (err) {
         console.error("Upload error:", err);
-        res.status(500).json({ message: "File upload failed", error: err.message });
+        sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, "File upload failed", err.message);
     }
 };
 
