@@ -1478,17 +1478,17 @@ function ProductContainer() {
                 <p>Front</p>
               </div>
 
-              {settingsForsides?.enableBackSmallImageSectionShow && (
-                <div className={style.cornerImgCanvaContainer} onClick={ShowBack}>
-                  <img
-                    ref={BackImgRef}
-                    src={backPreviewImage}
-                    className={`${style.ProductContainerSmallImage} ${activeSide === "back" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
-                    alt="Back View"
-                  />
-                  <p>Back</p>
-                </div>
-              )}
+
+              <div className={style.cornerImgCanvaContainer} onClick={ShowBack}>
+                <img
+                  ref={BackImgRef}
+                  src={backPreviewImage}
+                  className={`${style.ProductContainerSmallImage} ${activeSide === "back" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
+                  alt="Back View"
+                />
+                <p>Back</p>
+              </div>
+
 
               {addSleeves && !hidden && (
                 <>
