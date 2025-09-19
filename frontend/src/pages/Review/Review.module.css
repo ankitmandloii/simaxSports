@@ -542,6 +542,18 @@
   transition: all 0.3s ease;
 }
 
+.arrowIcon {
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  /* Ensure consistent line-height */
+  vertical-align: middle;
+  /* Aligns inline or inline-block elements */
+}
+
+
 .addToCart:hover {
 
   box-shadow: var(--box-shadow-black-color) 0px 2px 8px 0px;

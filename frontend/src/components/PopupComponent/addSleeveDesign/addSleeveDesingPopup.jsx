@@ -6,6 +6,7 @@ import printSampleDark from '../../images/sleeveImagePopup.png'
 import printSampleGrey from '../../images/sleeveImagePopup2.png';
 import printSampleGreen from '../../images/sleeveImagePopup3.png';
 import printSampleLight from '../../images/sleeveImagePopup4.png';
+import CloseButton from '../../CommonComponent/CrossIconCommon/CrossIcon';
 function getProductSleeveType(title) {
 
   const keywords = [
@@ -38,9 +39,10 @@ const SleeveDesignPopup = ({ onClose, onAddDesign, activeProductTitle }) => {
 
         <div className={styles.header}>
           <h2 className={styles.title}>MORE PRINT AREAS</h2>
-          <button className={styles.closeButton} onClick={onClose}>
-            &times; {/* This is an 'x' character for the close button */}
-          </button>
+          {/* <button className={styles.closeButton} onClick={onClose}>
+            &times; 
+          </button> */}
+          <CloseButton onClose={onClose} />
         </div>
         <div className={styles.popupMainContent}>
           <div className={styles.imageGrid}>

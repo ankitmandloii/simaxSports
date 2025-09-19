@@ -3,6 +3,7 @@ import styles from './EmailSendingModal.module.css';
 import Lottie from 'lottie-react';
 import emailAnimation from './emailAnimation.json';
 import { CrossIcon } from '../../components/iconsSvg/CustomIcon';
+import CloseButton from '../../components/CommonComponent/CrossIconCommon/CrossIcon';
 
 export default function EmailSendingModal({ onClose, isLoading }) {
     // if (!isOpen) return null;
@@ -12,7 +13,8 @@ export default function EmailSendingModal({ onClose, isLoading }) {
             <div className={styles.modal}>
                 <div className={styles.header}>
                     <div className={styles.title}>SAVE AND ADD TO CART</div>
-                    <button className={styles.close} onClick={onClose}>×</button>
+                    <CloseButton onClose={onClose} />
+                    {/* <button className={styles.close} onClick={onClose}>×</button> */}
                 </div>
                 {/* <div className={styles.header}>
                     <span>SAVE AND ADD TO CART</span>

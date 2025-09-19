@@ -20,6 +20,7 @@ import { restoreEditDesigns } from "../../redux/FrontendDesign/TextFrontendDesig
 import SaveDesignPopup from "../../components/PopupComponent/SaveDesignPopup/SaveDesignPopup";
 import { fetchDesign, saveDesignFunction, sendEmailDesign, updateDesignFunction, uploadBlobData } from "../../components/utils/GlobalSaveDesignFunctions";
 import EmailInputPopup from "../../components/PopupComponent/EmailInputPopup/EmailInputPopup";
+import { FaArrowRightLong } from "react-icons/fa6";
 
 const randomDiscount = () => Math.floor(Math.random() * 21) + 15; // 15% to 35%
 
@@ -983,7 +984,7 @@ const Review = () => {
                 </div>
               )}
               <button className={styles.addToCart} onClick={cartHandler}>
-                ADD TO CART <LuArrowRight />
+                ADD TO CART <span className={styles.arrowIcon}><FaArrowRightLong /></span>
               </button>
             </>
           )}

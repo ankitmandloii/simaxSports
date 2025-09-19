@@ -9,6 +9,9 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ColorSwatchPlaceholder from "../../CommonComponent/ColorSwatchPlaceholder.jsx/ColorSwatchPlaceholder";
 import { IoMdSearch } from "react-icons/io";
+// import CloseButton from '../../CommonComponent/CrossIconCommon/CrossIcon';
+import CloseButton from "../../CommonComponent/CrossIconCommon/CrossIcon";
+
 
 const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProductPopup }) => {
   const { list: rawProducts, loading, error } = useSelector((state) => state.products);
@@ -319,9 +322,10 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
             </button>
           </div>
 
-          <button onClick={onClose} className={styles.modalClose}>
+          {/* <button onClick={onClose} className={styles.modalClose}>
             &times;
-          </button>
+          </button> */}
+          <CloseButton onClose={onClose} />
         </div>
         <div className={styles.modalContentInner}>
 

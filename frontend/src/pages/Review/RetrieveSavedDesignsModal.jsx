@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import styles from "./RetrieveSavedDesignsModal.module.css";
 import { CrossIcon } from "../../components/iconsSvg/CustomIcon";
+import CloseButton from "../../components/CommonComponent/CrossIconCommon/CrossIcon";
 
 const RetrieveSavedDesignsModal = ({
     onClose = () => { },
@@ -43,12 +44,18 @@ const RetrieveSavedDesignsModal = ({
     return (
         <div className={styles.overlay}>
             <div className={styles.modal}>
-                <div className={styles.header}>
-                    <span className={styles.title}>SAVE AND ADD TO CART</span>
-                </div>
-                <button className={styles.close} onClick={onClose}>
+                <div className={styles.modalHeader}>
+                    <div className={styles.header}>
+                        <span className={styles.title}>SAVE AND ADD TO CART</span>
+
+                    </div>
+                    {/* <button className={styles.close} onClick={onClose}>
                     <CrossIcon />
-                </button>
+                </button> */}
+
+                    <CloseButton onClose={onClose} />
+
+                </div>
 
                 <div className={styles.body}>
                     <h2 className={styles.subtitle}>Retrieve Your Saved Designs</h2>

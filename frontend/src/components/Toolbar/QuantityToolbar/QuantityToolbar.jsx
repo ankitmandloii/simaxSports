@@ -499,7 +499,7 @@ const QuantityToolbar = () => {
             className={style.calculateBtn}
             onClick={() => calculatePrice()}
           >
-            Calculate Pricing <span><FaArrowRightLong /></span>
+            Calculate Pricing <span className={style.arrowIcon}><FaArrowRightLong /></span>
           </button></>
         }
       </div>

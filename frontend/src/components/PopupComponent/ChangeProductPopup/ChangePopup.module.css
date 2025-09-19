@@ -51,20 +51,36 @@
 }
 
 .closeBtn {
-  background: none;
+  /* width: 32px;
+    height: 32px;
+    color: #f9fafc;
+    font-size: 14px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    background-color: #cccfd6; */
+
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: #f9fafc;
+  background: #cccfd6;
   border: none;
   font-size: 26px;
   cursor: pointer;
-
-  transition: color 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease;
 }
 
 .closeBtn svg {
-  color: #aaa;
+  color: #f9fafc;
+  height: 12px;
+  width: 12px;
 }
 
 .closeBtn:hover {
-  color: #000;
+  background: var(--blue-color);
 
 }
 

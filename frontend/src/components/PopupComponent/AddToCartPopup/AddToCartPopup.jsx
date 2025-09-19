@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styles from "./AddToCartPopup.module.css";
 import { CrossIcon } from "../../iconsSvg/CustomIcon";
 import { useLocation } from "react-router-dom";
+import CloseButton from "../../CommonComponent/CrossIconCommon/CrossIcon";
 
 const AddToCartPopup = ({ onSave, onClose, defaultDesignName }) => {
     // const [designName, setDesignName] = useState("");
@@ -39,7 +40,8 @@ const AddToCartPopup = ({ onSave, onClose, defaultDesignName }) => {
                 {/* <h3 className={styles.header}>SAVE AND ADD TO CART</h3> */}
                 <div className={styles.header}>
                     <div className={styles.title}>SAVE AND ADD TO CART</div>
-                    <button className={styles.closeButton} onClick={onClose}><CrossIcon /></button>
+                    <CloseButton onClose={onClose} />
+                    {/* <button className={styles.closeButton} onClick={onClose}><CrossIcon /></button> */}
                 </div>
 
                 {/* <h2 className={styles.title}>Add to Cart</h2> */}

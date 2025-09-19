@@ -223,8 +223,8 @@ const DuplicateIcon = () => (
 
 const CrossIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M1.33325 1.33325L14.6666 14.6666" stroke="var(--black-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M14.6666 1.33325L1.33325 14.6666" stroke="var(--black-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M1.33325 1.33325L14.6666 14.6666" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M14.6666 1.33325L1.33325 14.6666" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 

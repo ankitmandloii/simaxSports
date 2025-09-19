@@ -87,6 +87,7 @@ import { FaTwitter } from "react-icons/fa";
 import { FaPinterest } from "react-icons/fa";
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import CloseButton from '../../CommonComponent/CrossIconCommon/CrossIcon';
 
 const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign, navigate }) => {
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -138,7 +139,9 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign, navigate }) =
             <div className={styles.popup}>
                 <div className={styles.modalHeader}>
                     <h3>Share Your Design</h3>
-                    <span onClick={setSavedesignPopupHandler}><CrossIcon /></span>
+                    {/* <span onClick={setSavedesignPopupHandler}><CrossIcon /></span> */}
+                    <CloseButton onClose={setSavedesignPopupHandler} />
+
                 </div>
                 <div className={styles.content}>
                     <div className={styles.designimg}>

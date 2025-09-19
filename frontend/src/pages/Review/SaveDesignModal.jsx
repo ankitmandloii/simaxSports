@@ -137,6 +137,7 @@
 import React, { useState } from 'react';
 import styles from './SaveDesignModal.module.css';
 import { CrossIcon } from '../../components/iconsSvg/CustomIcon';
+import CloseButton from '../../components/CommonComponent/CrossIconCommon/CrossIcon';
 
 export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName, designId, currentDesign = [] }) {
     console.log(currentDesign, "currentDesign");
@@ -164,7 +165,8 @@ export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName, 
             <div className={styles.popup}>
                 <div className={styles.header}>
                     <div className={styles.headerTitle}>SAVE AND ADD TO CART</div>
-                    <button className={styles.closeButton} onClick={onClose}><CrossIcon /></button>
+                    <CloseButton onClose={onClose} />
+                    {/* <button className={styles.closeButton} onClick={onClose}><CrossIcon /></button> */}
                 </div>
                 <h2 className={styles.subTitle}>Save changes to "{designName}"</h2>
                 <p className={styles.subText}>

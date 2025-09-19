@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from "./EmailInputPopup.module.css";
 import { CrossIcon } from "../../iconsSvg/CustomIcon";
+import CloseButton from "../../CommonComponent/CrossIconCommon/CrossIcon";
 
 const EmailInputPopup = ({ onSubmit, onClose }) => {
     const [email, setEmail] = useState("");
@@ -35,9 +36,10 @@ const EmailInputPopup = ({ onSubmit, onClose }) => {
             <div className={styles.popup}>
                 <div className={styles.header}>
                     <div className={styles.title}>ENTER EMAIL</div>
-                    <button className={styles.closeButton} onClick={onClose}>
+                    {/* <button className={styles.closeButton} onClick={onClose}>
                         <CrossIcon />
-                    </button>
+                    </button> */}
+                    <CloseButton onClose={onClose} />
                 </div>
                 <div className={styles.content}>
                     <p className={styles.subText}>

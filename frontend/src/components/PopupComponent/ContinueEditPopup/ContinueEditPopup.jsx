@@ -6,6 +6,7 @@ import { restoreAllSlicesFromLocalStorage } from '../../utils/RestoreSliceStates
 import { generateDesigns } from '../../Editor/utils/helper';
 import transformReduxState from '../../utils/transformReduxState';
 import { current } from '@reduxjs/toolkit';
+import CloseButton from '../../CommonComponent/CrossIconCommon/CrossIcon';
 
 
 const ContinueEditPopup = ({
@@ -137,9 +138,10 @@ const ContinueEditPopup = ({
       <div className={style.modal}>
         <div className={style.header}>
           <div className={style.title}>CONTINUE YOUR DESIGN</div>
-          <button className={style.closeButton} onClick={handleContinuePopup}>
+          <CloseButton onClose={handleContinuePopup} />
+          {/* <button className={style.closeButton} onClick={handleContinuePopup}>
             <CrossIcon />
-          </button>
+          </button> */}
         </div>
 
         <div className={style.content}>
