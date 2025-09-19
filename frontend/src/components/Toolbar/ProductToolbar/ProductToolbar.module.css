@@ -119,6 +119,14 @@
   gap: 2px;
   cursor: pointer;
   height: 2.8rem;
+  transition: all 0.3s ease;
+
+}
+
+.addProductBtn:hover {
+  color: var(--blue-color);
+  border: 1.5px dashed var(--blue-color);
+
 }
 
 .addProductBtn span {

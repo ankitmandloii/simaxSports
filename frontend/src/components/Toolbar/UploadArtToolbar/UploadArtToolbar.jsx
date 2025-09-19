@@ -148,9 +148,11 @@ const UploadArtToolbar = () => {
           dpi: dpiValues[index] || null
         }));
       });
-
+      console.log("upload response", response);
       navigate("/design/addImage");
     } catch (err) {
+      console.log("upload error", err);
+
       toast.error(err.message);
     } finally {
       setIsLoading(false);

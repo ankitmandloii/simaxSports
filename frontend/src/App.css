@@ -46,6 +46,7 @@ body {
   --black-color: #000000;
   --white-color: #ffffff;
   --blue-light: #f1f1f1;
+  --box-shadow-black-color: #000000c2;
 }
 
 h2,
@@ -169,7 +170,12 @@ h4 {
   align-items: center;
   padding: 6px 10px;
   cursor: pointer;
+  transition: all 0.3s ease;
   /* margin: 0 auto; */
+}
+
+.black-button:hover {
+  box-shadow: var(--box-shadow-black-color) 0px 2px 8px 0px;
 }
 
 /* common css of toolbar head */

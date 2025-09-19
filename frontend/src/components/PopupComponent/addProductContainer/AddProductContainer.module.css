@@ -12,10 +12,11 @@
 }
 
 .heading {
-  font-size: 1.5rem;
+  font-size: 20px;
   font-weight: 500;
   color: var(--blue-color);
 }
+
 
 .subHeadingBox {
   display: flex;
@@ -88,6 +89,7 @@
   align-items: center;
   margin-bottom: 10px;
   padding-bottom: 10px;
+  background-color: #f9fafc;
   border-bottom: 1px solid #ddd;
   padding: 10px 20px;
   /* flex-wrap: wrap; */
@@ -247,13 +249,18 @@
   color: white;
   margin: 1rem 0;
   /* margin-top: 1rem; */
-  border: 2px solid #F0F6FE;
+  /* border: 2px solid #F0F6FE; */
   border-radius: 8px;
   font-size: small;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.modalAllProductButton:hover {
+  box-shadow: var(--box-shadow-black-color) 0px 2px 8px 0px;
 }
 
 .closePopupBtn svg {

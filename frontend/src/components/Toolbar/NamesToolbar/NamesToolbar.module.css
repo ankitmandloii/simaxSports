@@ -163,8 +163,14 @@
   align-items: center;
   padding: 6px 10px;
   cursor: pointer;
+  transition: all 0.4s ease;
   /* animation: blink 1s infinite alternate; */
 }
+
+.blackButton:hover {
+  box-shadow: var(--box-shadow-black-color) 0px 2px 8px 0px;
+}
+
 
 /* ---- */
 .switch {

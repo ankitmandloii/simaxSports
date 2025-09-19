@@ -1465,18 +1465,18 @@ function ProductContainer() {
         {!isQuantityPage && (
           <div className={style.ProuductMirrorContainer}>
             <div className={style.ProuductMirrorLeftContainer}>
-              {settingsForsides?.enableFrontSmallImageSectionShow && (
-                <div className={style.cornerImgCanvaContainer} onClick={ShowFront}>
-                  <img
-                    ref={FrontImgRef}
-                    src={frontPreviewImage}
-                    className={`${style.ProductContainerSmallImage} ${activeSide === "front" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
-                    alt="Front View"
-                  />
-                  <p>Front</p>
-                </div>
-              )}
-              {settingsForsides?.enableFrontSmallImageSectionShow && (
+
+              <div className={style.cornerImgCanvaContainer} onClick={ShowFront}>
+                <img
+                  ref={FrontImgRef}
+                  src={frontPreviewImage}
+                  className={`${style.ProductContainerSmallImage} ${activeSide === "front" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
+                  alt="Front View"
+                />
+                <p>Front</p>
+              </div>
+
+              {settingsForsides?.enableBackSmallImageSectionShow && (
                 <div className={style.cornerImgCanvaContainer} onClick={ShowBack}>
                   <img
                     ref={BackImgRef}

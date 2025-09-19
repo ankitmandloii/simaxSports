@@ -12,8 +12,9 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from "uuid";   // ✅ import uuid
-import { LuArrowLeft } from 'react-icons/lu';
+import { LuArrowLeft, LuArrowRight } from 'react-icons/lu';
 import { apiConnecter } from '../../utils/apiConnector.jsx';
+import { FaArrowRightLong } from "react-icons/fa6";
 
 // const adultSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"];
 // const womenSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
@@ -350,9 +351,9 @@ const QuantityToolbar = () => {
       <div className="toolbar-main-heading">
         <h5 className="Toolbar-badge">Quantity And Sizes</h5>
         <div className={style.quantityHead}>
-          <span className={style.arrow} onClick={goBack}>
+          <div className={style.arrow} onClick={goBack}>
             <LuArrowLeft />
-          </span>
+          </div>
           <h2>How Many Do You Need?</h2>
 
 
@@ -498,7 +499,7 @@ const QuantityToolbar = () => {
             className={style.calculateBtn}
             onClick={() => calculatePrice()}
           >
-            CALCULATE PRICING
+            Calculate Pricing <span><FaArrowRightLong /></span>
           </button></>
         }
       </div>

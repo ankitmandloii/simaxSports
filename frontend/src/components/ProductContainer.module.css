@@ -287,6 +287,7 @@ canvas#mirrorCanvasBack {
 
 .sleeveDesignButn:hover {
   box-shadow: 0 0 0 2px var(--blue-color);
+  color: var(--blue-color);
 }
 
 .sleeveDesignButn svg {
@@ -321,6 +322,7 @@ canvas#mirrorCanvasBack {
 
 .zoomContainer:hover {
   box-shadow: 0 0 0 2px var(--blue-color);
+  color: var(--blue-color);
 }
 
 .zoomContainer svg {

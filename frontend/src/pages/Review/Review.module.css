@@ -525,7 +525,7 @@
 }
 
 .addToCart {
-  background-color: var(--blue-color);
+  background-color: var(--black-color);
   color: white;
   font-weight: bold;
   padding: 0.75rem;
@@ -539,6 +539,13 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.addToCart:hover {
+
+  box-shadow: var(--box-shadow-black-color) 0px 2px 8px 0px;
+
 }
 
 .payment {
