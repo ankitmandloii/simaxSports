@@ -4,6 +4,7 @@ import styles from './DesignNotesPopup.module.css';
 import { setDesignNotes } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
 import { toast } from "react-toastify";
+import CloseButton from '../../CommonComponent/CrossIconCommon/CrossIcon';
 
 
 const DesignNotesPopup = ({ handleClose }) => {
@@ -78,7 +79,8 @@ const DesignNotesPopup = ({ handleClose }) => {
             <div className={styles.popup}>
                 <div className={styles.header}>
                     <h3 className={styles.title}>Design Notes</h3>
-                    <button onClick={handleClosee} className={styles.close}><CrossIcon /></button>
+                    <CloseButton onClose={handleClosee} />
+                    {/* <button onClick={handleClosee} className={styles.close}><CrossIcon /></button> */}
                 </div>
                 <div className={styles.content}>
                     <p className={styles.description}>

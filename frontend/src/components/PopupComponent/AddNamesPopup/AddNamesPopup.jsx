@@ -7,6 +7,7 @@ import { addNameAndNumberProduct, UpdateNameAndNumberProduct } from '../../../re
 import { getHexFromName } from '../../utils/colorUtils.js';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CloseButton from '../../CommonComponent/CrossIconCommon/CrossIcon.jsx';
 
 const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
   // const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
@@ -267,9 +268,10 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
             <h2>Edit Names & Numbers List</h2>
             <p>Personalize your apparel with Names and/or Numbers!</p>
           </div>
-          <button className={styles.closeBtn} onClick={showAddnamesPopupHandler}>
+          {/* <button className={styles.closeBtn} onClick={showAddnamesPopupHandler}>
             <CrossIcon />
-          </button>
+          </button> */}
+          <CloseButton onClose={showAddnamesPopupHandler} />
         </div>
 
         <div className={styles.popupBody}>
