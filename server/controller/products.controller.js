@@ -5,6 +5,130 @@ const { statusCode } = require("../constant/statusCodes.js");
 const { default: axios } = require("axios");
 const ProductVariant = require('../model/ProductVariantSchema.js'); // Import the MongoDB model
 
+const getAuthHeader = () => {
+  const username = process.env.SS_USER_NAME;
+  const password = process.env.SS_PASSWORD;
+  const base64Auth = Buffer.from(`${username}:${password}`).toString("base64");
+  return {
+    Authorization: `Basic ${base64Auth}`,
+  };
+};
+
+async function withRetry(fn, retries = 3, delayMs = 2000) {
+  let attempt = 0;
+  while (attempt < retries) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (err.response?.status === 503) {
+        console.warn(`🔁 Retry ${attempt + 1} due to throttling...`);
+        await delay(delayMs);
+        attempt++;
+      } else {
+        throw err;
+      }
+    }
+  }
+  throw new Error("Max retries exceeded");
+}
+
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+
+
+exports.fetchSSProductsForInventryCheckByStyleId = async (styleId) => {
+  try {
+    // console.log("Fetching S&S products for styleId:", styleId);
+    const response = await axios.get(`${process.env.SS_API_URL}/products`, {
+      headers: getAuthHeader(),
+      params: { styleid: styleId },
+    });
+    // console.log("response", response?.data);
+
+    const products = response?.data || [];
+    if (products.length === 0) {
+      console.warn(`No products found for styleId: ${styleId}`);
+      return [];
+    }
+
+    // Map to return only SKU and available qty
+    const data = products.map(prod => ({
+      sku: prod.sku,
+      total_available: prod.qty,
+    }));
+
+    // console.log("data",data)
+    return data;
+  } catch (error) {
+    console.error("Error fetching S&S products by SKU:", error.response?.status, error.response?.data || error.message);
+    return [];
+  }
+};
+
+
+exports.inventoryCheck = async (req, res) => {
+  try {
+    const items = req.body; // Expecting an array of { sku, qty }
+    // console.log("items", items.length);
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return sendResponse(res, statusCode.BAD_REQUEST, false, "Request body must be an array of { sku, qty } objects");
+    }
+
+    // console.log("items", items.length);
+
+    const results = [];
+    const styleIdCache = {}; // Cache to store fetched data for styleId
+
+    // Iterate through each item in the request body
+    for (const item of items) {
+      const { styleId, sku } = item;  // Destructure to get styleId and sku from each item
+      try {
+        // If the styleId is not cached, fetch it from S&S
+        let ssProducts = styleIdCache[styleId];
+        if (!ssProducts) {
+          ssProducts = await withRetry(() => this.fetchSSProductsForInventryCheckByStyleId(styleId));
+          await delay(1000);
+          styleIdCache[styleId] = ssProducts;  // Cache the result for future use
+        }
+
+        // Find the product that matches the sku in the cached S&S response
+        const matchingProduct = ssProducts.find(product => product.sku === sku);
+
+        if (matchingProduct) {
+          // If there's a match, add the SKU and available quantity to the results
+          results.push({
+            sku,
+            requested_qty: item.qty,  // The requested qty from your system
+            available_qty: matchingProduct.total_available || 0,  // Available qty from S&S API
+            can_fulfill: matchingProduct.total_available >= item.qty  // Whether S&S can fulfill the requested qty
+          });
+        } else {
+          // If no match is found, return the requested SKU with 0 availability
+          results.push({
+            sku,
+            requested_qty: item.qty,
+            available_qty: 0,  // No matching product in S&S
+            can_fulfill: false  // Cannot fulfill the requested qty
+          });
+        }
+
+        await delay(1000);  // Delay between requests if necessary
+      } catch (err) {
+        console.error(`❌ Failed for styleId ${item.styleId}:`, err.message);
+      }
+    }
+
+    // Send the final response with the result data
+    return sendResponse(res, statusCode.OK, true, "Quantities checked", results);
+  } catch (err) {
+    const detail = err?.response?.data || err?.message || String(err);
+    console.error("S&S qty check error:", detail);
+    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, "Inventory check failed");
+  }
+};
+
 
 
 exports.productList = async (req, res) => {
@@ -684,32 +808,7 @@ exports.productsSearch = async (req, res) => {
 
 
 
-exports.inventoryCheck = async (req, res) => {
-  try {
-    const items = req.body; // Expecting an array of { sku, qty }
 
-    if (!Array.isArray(items) || items.length === 0) {
-      return sendResponse(res, statusCode.BAD_REQUEST, false, "Request body must be an array of { sku, qty } objects");
-    }
-
-    // Run inventory check for each item
-    const results = await Promise.all(
-      items.map(({ sku, qty }) => services.inventoryCheckFromSandS(sku, qty))
-    );
-
-    return sendResponse(
-      res,
-      statusCode.OK,
-      true,
-      "Quantities checked",
-      results
-    );
-  } catch (err) {
-    const detail = err?.response?.data || err?.message || String(err);
-    console.error("S&S qty check error:", detail);
-    return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, "Inventory check failed");
-  }
-};
 
 
 
