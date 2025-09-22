@@ -23,7 +23,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
   // console.log(selectedProducts, "-----alllproductselect");
 
-  const [allProducts, setAllProducts] = useState(nameAndNumberProductList);
+  const [allProducts, setAllProducts] = useState(nameAndNumberProductList ?? []);
 
 
   // console.log(nameAndNumberProductList, "nameAndNumberProductList")
@@ -50,7 +50,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
     // Case 1: Custom-structured product
     if (product?.allVariants?.length) {
       const sizeVariantPairs = product.allVariants.flatMap((variant) => {
-        const sizeOption = variant.selectedOptions.find((opt) => opt.name === 'Size');
+        const sizeOption = variant?.selectedOptions?.find((opt) => opt.name === 'Size');
         return sizeOption ? [{ size: sizeOption.value, variantId: variant.id }] : [];
       });
       return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
@@ -59,7 +59,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
     // Case 2: Shopify-style structure
     if (product?.variants?.edges?.length) {
       const sizeVariantPairs = product.variants.edges.flatMap(({ node }) => {
-        const sizeOption = node.selectedOptions.find((opt) => opt.name === 'Size');
+        const sizeOption = node?.selectedOptions?.find((opt) => opt.name === 'Size');
         return sizeOption ? [{ size: sizeOption.value, variantId: node.id }] : [];
       });
       return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
@@ -199,7 +199,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
 
     const isValid = selectionsRows.every(([key, rows]) =>
       rows.every(row => {
-        const product = allProducts.find(p => `${p.id}` === key);
+        const product = allProducts?.find(p => `${p.id}` === key);
         const isSizeFilled =
           product?.sizes?.length === 0 || (row.size && row.size.trim() !== '');
         const isNameFilled = !addName || row.name !== '';
@@ -235,7 +235,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
       // console.log('sizeCountWithId', sizeCountWithId)
 
       selectionsRows.forEach(([id, rows]) => {
-        const found = sizeCountWithId.find(obj => obj.id === id);
+        const found = sizeCountWithId?.find(obj => obj.id === id);
 
         dispatch(UpdateNameAndNumberProduct({
           id,
@@ -250,7 +250,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
   };
 
 
-  const activeProduct = allProducts.find(product =>
+  const activeProduct = allProducts?.find(product =>
     (rowsByKey[product.id] || []).some(row => row.selectionId === activeRowId)
   );
   // console.log("------activee", activeProduct)
@@ -306,7 +306,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
                         value={row.size}
                         onChange={e => {
                           console.log("selected size", e.target.value);
-                          const productSize = product.sizes.find(s => s.size === e.target.value);
+                          const productSize = product?.sizes?.find(s => s.size === e.target.value);
                           console.log("productSize", productSize);
                           const newId = productSize?.variantId || row.selectionId;
                           console.log("newId", newId);
