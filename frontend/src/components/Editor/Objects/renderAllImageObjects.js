@@ -745,7 +745,7 @@ const renderAllImageObjects = (
             }
           });
 
-          newImg.on("modified", (e) => {
+          newImg.on("mouseup", (e) => {
             const obj = e.target;
             if (!obj) return;
             const center = obj.getCenterPoint();
@@ -769,8 +769,23 @@ const renderAllImageObjects = (
             } catch (err) {
               console.log("error in image render component")
             }
+            // syncMirrorCanvasHelper(activeSide);
+            // toggleVisibility(true);
+          });
+          newImg.on("modified", (e) => {
+            const obj = e.target;
+            if (!obj) return;
+            // globalDispatch("")
+            handleScale(e);
             syncMirrorCanvasHelper(activeSide);
             toggleVisibility(true);
+            try {
+              canvas.renderAll();
+
+            } catch (err) {
+              console.log("error in image render component")
+            }
+
           });
 
           newImg.on("selected", (e) => {
@@ -1087,7 +1102,7 @@ const renderAllImageObjects = (
             }
           });
 
-          img.on("modified", (e) => {
+          img.on("mouseup", (e) => {
             const obj = e.target;
             if (!obj) return;
             const center = obj.getCenterPoint();
@@ -1110,7 +1125,14 @@ const renderAllImageObjects = (
             } catch (err) {
               console.log("error in image render component")
             }
+            // syncMirrorCanvasHelper(activeSide);
+            // toggleVisibility(true);
+          });
+          img.on("modified", (e) => {
+            const obj = e.target;
+            if (!obj) return;
             syncMirrorCanvasHelper(activeSide);
+            handleScale(e);
             toggleVisibility(true);
           });
 
