@@ -85,7 +85,7 @@
       // Warning text
       const warningText = new fabric.Text("Please keep design inside the box", {
         left: boxLeft + boxWidth / 2,
-        top: boxTop - canvasHeight * 0.03,
+        top: boxTop - canvasHeight * 0.10,
         fontSize: canvasHeight * 0.03,
         fontFamily: "proxima-soft, sans-serif",
         fill: "white",
