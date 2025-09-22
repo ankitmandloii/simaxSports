@@ -880,7 +880,7 @@ async function detectSleeveType(imageUrl) {
     return "Unknown"; // Fallback to Unknown on error
   }
 }
-
+  
 function ProductContainer() {
   const FrontImgRef = useRef(null);
   const BackImgRef = useRef(null);

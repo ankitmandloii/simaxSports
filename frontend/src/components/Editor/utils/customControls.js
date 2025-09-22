@@ -1278,7 +1278,7 @@ function renderHtmlHeightControl(ctx, left, top, _styleOverride, fabricObject) {
       position: "absolute",
       width: "15px", // Size of the circle
       height: "28px", // Same as above
-      marginLeft: "6px",
+      // marginLeft: "6px",
       backgroundColor: "white", // White background for the circle
       // borderRadius: "50%", // Ensures it's a circle
       border: "1px solid #B0B0B0", // Added grey border around the circle
@@ -1392,7 +1392,7 @@ function renderHtmlWidthControl(ctx, left, top, _styleOverride, fabricObject) {
       border: "1px solid #B0B0B0", // Added grey border around the circle
       boxShadow: "0 0 4px rgba(0,0,0,0.2)", // Light shadow effect
       display: "flex",
-      marginTop: "6px",
+      // marginTop: "6px",
       alignItems: "center", // Vertically center the icon
       justifyContent: "center", // Horizontally center the icon
       // padding: "2px",   // Padding for icon positioning

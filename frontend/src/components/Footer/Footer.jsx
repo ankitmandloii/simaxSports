@@ -22,10 +22,52 @@ import EmailInputPopup from '../PopupComponent/EmailInputPopup/EmailInputPopup.j
 import { setActiveSide } from '../../redux/FrontendDesign/TextFrontendDesignSlice.js';
 import { apiConnecter } from '../utils/apiConnector.jsx';
 import axios from 'axios';
+import * as tmImage from "@teachablemachine/image";
+
+async function detectSleeveType(imageUrl) {
+  try {
+    // Load the model
+    const modelPath = "/model/model.json";
+    const metadataPath = "/model/metadata.json";
+    const model = await tmImage.load(modelPath, metadataPath);
+
+    // Create an image element from the URL
+    const imgElement = new Image();
+    imgElement.crossOrigin = "anonymous"; // Handle CORS if needed
+    imgElement.src = imageUrl;
+
+    // Wait for the image to load
+    await new Promise((resolve, reject) => {
+      imgElement.onload = resolve;
+      imgElement.onerror = () => reject(new Error("Failed to load image"));
+    });
+
+    // Run prediction
+    const predictions = await model.predict(imgElement);
+    const bestPrediction = predictions.reduce((prev, current) =>
+      prev.probability > current.probability ? prev : current
+    );
+
+    const sleeveType = bestPrediction.className; // e.g., "Sleeveless", "Long Sleeve", "Tank Top"
+    const probability = (bestPrediction.probability * 100).toFixed(2);
+    console.log(`Detected sleeve type: ${sleeveType} (${probability}%)`);
+
+    return sleeveType;
+  } catch (error) {
+    console.error("Error detecting sleeve type:", error);
+    return "Unknown"; // Fallback to Unknown on error
+  }
+}
 
 // const designId = "68ae9e7a3e658d88aa45852a";
 // const customerEmail = "testuser@example.com";
+function updateFontSize(textObj) {
+  // Use original font size and scales
+  const originalFontSize = textObj.fontSize / textObj.originalScaleX; // get base font size
+  const newFontSize = originalFontSize * Math.max(textObj.scaleX, textObj.scaleY);
 
+  return newFontSize;
+}
 const Footer = () => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1200);
@@ -66,15 +108,15 @@ const Footer = () => {
       DesignName: "Enter design name",
       present: {
         front: {
-          texts: present.front.texts.map((t) => ({ ...t })),
+          texts: present.front.texts.map((t) => ({ ...t, fontSize: updateFontSize(t) })),
           images: present.front.images.map((i) => ({ ...i }))
         },
         back: {
-          texts: present.back.texts.map((t) => ({ ...t })),
+          texts: present.back.texts.map((t) => ({ ...t, fontSize: updateFontSize(t) })),
           images: present.back.images.map((i) => ({ ...i }))
         },
         leftSleeve: {
-          texts: present.leftSleeve.texts.map((t) => ({ ...t })),
+          texts: present.leftSleeve.texts.map((t) => ({ ...t, fontSize: updateFontSize(t) })),
           images: present.leftSleeve.images.map((i) => ({ ...i }))
         },
         rightSleeve: {
@@ -339,95 +381,164 @@ const Footer = () => {
       //   const rightDesignImages = await generateDesigns([item.allImages[3]], present.rightSleeve.texts, present.rightSleeve.images, activeSide, canvasWidth, canvasHeight);
       //   return { front: frontDesignImages[0], back: backDesignImages[0] };
       // });
-      const designPromises = reviewItems.map(async (item) => {
-        // if ((addName || addNumber) && nameAndNumberProductList.length === 0) {
-        //   toast.error("Please enter name and number first to save design");
-        //   return;
-        // }
-        // console.log("-------------itemm", item)
-        // const front = (await generateDesigns([item.allImages[0]], present.front.texts, present.front.images, activeSide, canvasWidth, canvasHeight))[0];
-        let front, back;
 
-        // Handle front
-        if (activeNameAndNumberPrintSide === "front" && (addName || addNumber) && nameAndNumberProductList.length !== 0) {
-          front = (
-            await generateDesigns(
-              [item.allImages[0]],
-              present.front.texts,
-              present.front.images,
-              nameAndNumberDesignState,
-              activeSide,
-              canvasWidth,
-              canvasHeight,
-              addName,
-              addNumber
-            )
-          )[0];
-        } else {
-          front = (
-            await generateDesigns(
-              [item.allImages[0]],
-              present.front.texts,
-              present.front.images,
-              {},
-              activeSide,
-              canvasWidth,
-              canvasHeight,
-              addName,
-              addNumber
-            )
-          )[0];
+      const smallDesignPromises = async (item) => {
+        // setLoading(true);
+        // const transformed = await transformReduxState(reduxdata);
+        // setReduxDataTransformed(transformed);
+
+        // const {
+        //   present,
+        //   nameAndNumberDesignState,
+        //   addName,
+        //   addNumber,
+        //   activeNameAndNumberPrintSide,
+        //   activeSide,
+        // } = transformed.TextFrontendDesignSlice;
+        // const { canvasWidth, canvasHeight } = transformed.canvasReducer;
+
+        // 1. Detect the sleeve type from the primary image
+        const sleeveType = await detectSleeveType(item.allImages[0]);
+        console.log("Detected sleeve type:", sleeveType);
+        const hasSleeves = !['Sleeveless', 'Tank Top', 'WithoutSleeves'].includes(sleeveType);
+
+        // 2. Conditionally build the list of parts to design
+        let designParts = [
+          { side: "front", data: present.front, image: item.allImages[0] },
+          { side: "back", data: present.back, image: item.allImages[1] },
+        ];
+
+        if (hasSleeves) {
+          designParts.push(
+            { side: "leftSleeve", data: present.leftSleeve, image: item.allImages[2] },
+            { side: "rightSleeve", data: present.rightSleeve, image: item.allImages[3] }
+          );
         }
 
-        // Handle back
-        if (activeNameAndNumberPrintSide === "back" && (addName || addNumber) && nameAndNumberProductList.length !== 0) {
-          back = (
-            await generateDesigns(
-              [item.allImages[1]],
-              present.back.texts,
-              present.back.images,
-              nameAndNumberDesignState,
-              activeSide,
-              canvasWidth,
-              canvasHeight,
-              addName,
-              addNumber
-            )
-          )[0];
-        } else {
-          back = (
-            await generateDesigns(
-              [item.allImages[1]],
-              present.back.texts,
-              present.back.images,
-              {},
-              activeSide,
-              canvasWidth,
-              canvasHeight,
-              addName,
-              addNumber
-            )
-          )[0];
-        }
-        const leftSleeve = (await generateDesigns([item.allImages[2]], present.leftSleeve.texts, present.leftSleeve.images, {}, activeSide, canvasWidth, canvasHeight, addName,
-          addNumber))[0];
-        const rightSleeve = (await generateDesigns([item.allImages[3]], present.rightSleeve.texts, present.rightSleeve.images, {}, activeSide, canvasWidth, canvasHeight, addName,
-          addNumber))[0];
+        // 3. Create promises only for the required parts
+        const promises = designParts.map((part) => {
+          const useNameAndNumber =
+            activeNameAndNumberPrintSide === part.side && (addName || addNumber);
+
+          return generateDesigns(
+            [part.image],
+            part.data.texts,
+            part.data.images,
+            useNameAndNumber ? nameAndNumberDesignState : {},
+            activeSide,
+            canvasWidth,
+            canvasHeight,
+            addName,
+            addNumber
+          );
+        });
+
+        // 4. Await all promises and handle the results safely
+        const results = await Promise.all(promises);
+
+        const front = results[0]?.[0] || null;
+        const back = results[1]?.[0] || null;
+        // Set sleeves to null if they weren't generated
+        const leftSleeve = hasSleeves ? (results[2]?.[0] || null) : null;
+        const rightSleeve = hasSleeves ? (results[3]?.[0] || null) : null;
 
         return { front, back, leftSleeve, rightSleeve };
+      };
+      const designPromises = reviewItems.map(async (item) => {
+        return await smallDesignPromises(item);
+        // // if ((addName || addNumber) && nameAndNumberProductList.length === 0) {
+        // //   toast.error("Please enter name and number first to save design");
+        // //   return;
+        // // }
+        // // console.log("-------------itemm", item)
+        // // const front = (await generateDesigns([item.allImages[0]], present.front.texts, present.front.images, activeSide, canvasWidth, canvasHeight))[0];
+        // let front, back;
+
+        // // Handle front
+        // if (activeNameAndNumberPrintSide === "front" && (addName || addNumber) && nameAndNumberProductList.length !== 0) {
+        //   front = (
+        //     await generateDesigns(
+        //       [item.allImages[0]],
+        //       present.front.texts,
+        //       present.front.images,
+        //       nameAndNumberDesignState,
+        //       activeSide,
+        //       canvasWidth,
+        //       canvasHeight,
+        //       addName,
+        //       addNumber
+        //     )
+        //   )[0];
+        // } else {
+        //   front = (
+        //     await generateDesigns(
+        //       [item.allImages[0]],
+        //       present.front.texts,
+        //       present.front.images,
+        //       {},
+        //       activeSide,
+        //       canvasWidth,
+        //       canvasHeight,
+        //       addName,
+        //       addNumber
+        //     )
+        //   )[0];
+        // }
+
+        // // Handle back
+        // if (activeNameAndNumberPrintSide === "back" && (addName || addNumber) && nameAndNumberProductList.length !== 0) {
+        //   back = (
+        //     await generateDesigns(
+        //       [item.allImages[1]],
+        //       present.back.texts,
+        //       present.back.images,
+        //       nameAndNumberDesignState,
+        //       activeSide,
+        //       canvasWidth,
+        //       canvasHeight,
+        //       addName,
+        //       addNumber
+        //     )
+        //   )[0];
+        // } else {
+        //   back = (
+        //     await generateDesigns(
+        //       [item.allImages[1]],
+        //       present.back.texts,
+        //       present.back.images,
+        //       {},
+        //       activeSide,
+        //       canvasWidth,
+        //       canvasHeight,
+        //       addName,
+        //       addNumber
+        //     )
+        //   )[0];
+        // }
+        // const leftSleeve = (await generateDesigns([item.allImages[2]], present.leftSleeve.texts, present.leftSleeve.images, {}, activeSide, canvasWidth, canvasHeight, addName,
+        //   addNumber))[0];
+        // const rightSleeve = (await generateDesigns([item.allImages[3]], present.rightSleeve.texts, present.rightSleeve.images, {}, activeSide, canvasWidth, canvasHeight, addName,
+        //   addNumber))[0];
+
+        // return { front, back, leftSleeve, rightSleeve };
       });
 
       const results = await Promise.all(designPromises);
+      console.log("results ", results);
       const blobData = results.reduce((arr, item) => {
         arr.push(base64toBlob(item.front, "image/png"));
         arr.push(base64toBlob(item.back, "image/png"));
-        arr.push(base64toBlob(item.leftSleeve, "image/png"))
-        arr.push(base64toBlob(item.rightSleeve, "image/png"))
+        if (item.leftSleeve) {
+          arr.push(base64toBlob(item.leftSleeve, "image/png"))
+        }
+        if (item.rightSleeve) {
+          arr.push(base64toBlob(item.rightSleeve, "image/png"))
+        }
         return arr;
       }, []);
 
       const cloudinaryResponse = await uploadBlobData(blobData);
-      // console.log("cloudinaryResponse:", cloudinaryResponse);
+      console.log("cloudinaryResponse:", cloudinaryResponse);
       designPayload.design.FinalImages = cloudinaryResponse?.files || [];
 
       const allFrontImagesElement = designPayload.design.present.front.images;
@@ -495,6 +606,8 @@ const Footer = () => {
       //   body: formData
       // });
 
+      // updateFontSize(designPayload);
+      console.log(designPayload, "designPayload")
 
       let responseData;
       if (payload.type === "update" && payload.designId) {
