@@ -148,7 +148,7 @@ const AddImageToolbar = () => {
       setInvertColor(img.invertColor);
       setSolidColor(img.solidColor);
     } catch { }
-  }, [img, selectedImageId, resetDefault, img?.loading]);
+  }, [img, selectedImageId, resetDefault, img?.loading, img?.base64CanvasImage]);
 
   useEffect(() => {
     if (!img?.src || (img?.originalWidth && img?.originalHeight)) return;
@@ -216,7 +216,7 @@ const AddImageToolbar = () => {
       return {
         ...filter,
         transform: allParams.length ? `?${allParams.join('&')}` : '',
-        image: img?.base64CanvasImageForSinglelColor || { loadingImage }
+        image: img?.base64CanvasImageForSinglelColor || loadingImage
       };
     })
     setFilters(newFilters);
@@ -1338,8 +1338,8 @@ const AddImageToolbar = () => {
                             setSelectedFilter(f.name);
                             // globalDispatch("src", buildUrl(f.transform, false, f.name));
                             globalDispatch("selectedFilter", f.name);
-                            // globalDispatch("base64CanvasImage", f.image);
-                            handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor, img.editColor || editColor);
+                            globalDispatch("base64CanvasImage", f.image);
+                            // handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor, img.editColor || editColor);
                             if (f.name != "Normal") setResetDefault(false);
                           }}
                         >
@@ -1559,7 +1559,7 @@ const AddImageToolbar = () => {
                   {AdminSettingsforAioperation?.replaceBackgroundAI && (
 
                     !removeBackground && <div className={styles.toolbarBoxFontValueSetInnerContainer} onClick={() => setreplaceBgwithAi(false)}>
-                      <div className={styles.toolbarBoxFontValueSetInnerActionheading} >AI Image Editor<span className={styles.aiBadge}>AI</span></div>
+                      <div className={styles.toolbarBoxFontValueSetInnerActionheading} >Replace Background With AI<span className={styles.aiBadge}>AI</span></div>
                       <span className={styles.rightarrow}><FaChevronRight /></span>
 
                       {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleBGReplaceColorPopup}>

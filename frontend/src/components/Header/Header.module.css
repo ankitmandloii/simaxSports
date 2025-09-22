@@ -14,12 +14,6 @@
   z-index: 9999;
 }
 
-.deasable {
-  pointer-events: none;
-  opacity: 0.5;
-  cursor: default;
-}
-
 
 .navSpanNumber {
   font-size: 16px;
@@ -93,6 +87,12 @@ a.step:first-child:after {
 }
 
 
+.deasable {
+  pointer-events: none;
+  opacity: 0.5;
+  /* cursor: default; */
+}
+
 
 .stepActive {
   color: var(--blue-color) !important;
@@ -104,6 +104,8 @@ a.step:first-child:after {
   align-items: center;
   text-align: center;
   gap: 3px;
+  pointer-events: all;
+  opacity: 1;
 }
 
 .stepActive .navSpanNumber {
@@ -139,6 +141,8 @@ a.step:first-child:after {
   width: 32px;
   height: 32px;
 }
+
+
 
 @media screen and (max-width: 750px) {
   .rightSection {
