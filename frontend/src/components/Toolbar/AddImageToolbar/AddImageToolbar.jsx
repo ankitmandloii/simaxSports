@@ -40,10 +40,10 @@ const AddImageToolbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
-  const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const allTextInputData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
   const allImageData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
+  const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const img = allImageData?.find((img) => img.id == selectedImageId);
   const { data: settings } = useSelector((state) => state.settingsReducer);
   const AdminSettingsforAioperation = settings?.artworkEditorSettings || {};
@@ -148,7 +148,7 @@ const AddImageToolbar = () => {
       setInvertColor(img.invertColor);
       setSolidColor(img.solidColor);
     } catch { }
-  }, [img, selectedImageId, resetDefault, img?.loading]);
+  }, [img, selectedImageId, resetDefault, img?.loading, img?.base64CanvasImage]);
 
   useEffect(() => {
     if (!img?.src || (img?.originalWidth && img?.originalHeight)) return;
@@ -216,7 +216,7 @@ const AddImageToolbar = () => {
       return {
         ...filter,
         transform: allParams.length ? `?${allParams.join('&')}` : '',
-        image: img?.base64CanvasImageForSinglelColor || { loadingImage }
+        image: img?.base64CanvasImageForSinglelColor || loadingImage
       };
     })
     setFilters(newFilters);
@@ -896,147 +896,66 @@ const AddImageToolbar = () => {
   }, [img?.src, selectedImageId]);
 
 
-  function applyFilterAndGetUrl(imageSrc, color) {
-    console.log("apply filter call with color", color, imageSrc);
-    imageSrc = String(imageSrc);
-    if (imageSrc.includes("monochrome=black")) {
-      imageSrc = imageSrc.replace("monochrome=black", "");
-    }
-    return new Promise((resolve, reject) => {
-      const canvas = document.getElementById('HelperCanvas');
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      const img = new Image();
 
-      // If imageSrc is base64, directly set img.src
-      if (imageSrc.startsWith("data:image")) {
-        img.src = imageSrc;
-      } else {
-        img.crossOrigin = "anonymous"; // Allow cross-  origin access
-        img.src = imageSrc;  // For external URLs
-      }
+  // applyFilterAndGetUrl
+  // function invertColorsAndGetUrl(imageSrc) {
+  //   return new Promise((resolve, reject) => {
+  //     const canvas = document.getElementById('HelperCanvas');
+  //     const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  //     const img = new Image();
 
-      img.onload = function () {
-        // Set the canvas size to the image size
-        canvas.width = img.width;
-        canvas.height = img.height;
+  //     // If imageSrc is base64, directly set img.src
+  //     if (imageSrc.startsWith("data:image")) {
+  //       img.src = imageSrc;
+  //     } else {
+  //       img.crossOrigin = "anonymous"; // Allow cross-origin access
+  //       img.src = imageSrc;  // For external URLs
+  //     }
 
-        // Draw the original image onto the canvas
-        ctx.drawImage(img, 0, 0);
+  //     img.onload = function () {
+  //       // Set the canvas size to the image size
+  //       canvas.width = img.width;
+  //       canvas.height = img.height;
 
-        // Get the tint color in RGB
-        const tint = hexToRgb(color);
+  //       // Draw the original image onto the canvas
+  //       ctx.drawImage(img, 0, 0);
 
-        // Apply the effect: grayscale, sepia, and alpha tinting
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
+  //       // Get the image data from the canvas
+  //       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  //       const data = imageData.data;
 
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-          const a = data[i + 3]; // Alpha value
+  //       // Loop through each pixel and invert the brightness
+  //       for (let i = 0; i < data.length; i += 4) {
+  //         data[i] = 255 - data[i];     // Red
+  //         data[i + 1] = 255 - data[i + 1]; // Green
+  //         data[i + 2] = 255 - data[i + 2]; // Blue
+  //       }
 
-          // Calculate brightness and invert it
-          const brightness = (r + g + b) / 3;
-          const inverted = 255 - brightness;
-          const alpha = inverted / 255;
+  //       // Put the altered image data back to the canvas
+  //       ctx.putImageData(imageData, 0, 0);
 
-          // If the pixel is fully transparent, retain transparency; else apply tint
-          if (a === 0) {
-            data[i + 3] = 0; // Keep the pixel transparent
-          } else {
-            // Apply tint color and alpha (preserving original alpha if the background exists)
-            data[i] = tint.r; // Red
-            data[i + 1] = tint.g; // Green
-            data[i + 2] = tint.b; // Blue
-            data[i + 3] = a * alpha; // Keep the transparency effect consistent
-          }
-        }
+  //       // Return the base64 representation of the inverted image
+  //       canvas.toBlob((blob) => {
+  //         if (blob) {
+  //           const objectURL = URL.createObjectURL(blob);
+  //           resolve(objectURL); // You can directly use this in img.src
+  //         } else {
+  //           reject(new Error("Failed to convert canvas to blob"));
+  //         }
 
-        // Put the altered image data back to the canvas
-        ctx.putImageData(imageData, 0, 0);
+  //         // Clean up canvas
+  //         canvas.width = 0;
+  //         canvas.height = 0;
+  //         // canvas.remove();
+  //       }, "image/png", 0.92);
+  //       // canvas.remove();
+  //     };
 
-        // Return the base64 representation of the canvas
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const objectURL = URL.createObjectURL(blob);
-            resolve(objectURL); // You can directly use this in img.src
-          } else {
-            reject(new Error("Failed to convert canvas to blob"));
-          }
-
-          // Clean up canvas
-          canvas.width = 0;
-          canvas.height = 0;
-          // canvas.remove();
-        }, "image/png", 0.92);
-        // canvas.remove();
-      };
-
-      img.onerror = function () {
-        resolve(imageSrc);
-      };
-    });
-  }
-
-  function invertColorsAndGetUrl(imageSrc) {
-    return new Promise((resolve, reject) => {
-      const canvas = document.getElementById('HelperCanvas');
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      const img = new Image();
-
-      // If imageSrc is base64, directly set img.src
-      if (imageSrc.startsWith("data:image")) {
-        img.src = imageSrc;
-      } else {
-        img.crossOrigin = "anonymous"; // Allow cross-origin access
-        img.src = imageSrc;  // For external URLs
-      }
-
-      img.onload = function () {
-        // Set the canvas size to the image size
-        canvas.width = img.width;
-        canvas.height = img.height;
-
-        // Draw the original image onto the canvas
-        ctx.drawImage(img, 0, 0);
-
-        // Get the image data from the canvas
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-
-        // Loop through each pixel and invert the brightness
-        for (let i = 0; i < data.length; i += 4) {
-          data[i] = 255 - data[i];     // Red
-          data[i + 1] = 255 - data[i + 1]; // Green
-          data[i + 2] = 255 - data[i + 2]; // Blue
-        }
-
-        // Put the altered image data back to the canvas
-        ctx.putImageData(imageData, 0, 0);
-
-        // Return the base64 representation of the inverted image
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const objectURL = URL.createObjectURL(blob);
-            resolve(objectURL); // You can directly use this in img.src
-          } else {
-            reject(new Error("Failed to convert canvas to blob"));
-          }
-
-          // Clean up canvas
-          canvas.width = 0;
-          canvas.height = 0;
-          // canvas.remove();
-        }, "image/png", 0.92);
-        // canvas.remove();
-      };
-
-      img.onerror = function () {
-        resolve(imageSrc);
-      };
-    });
-  }
+  //     img.onerror = function () {
+  //       resolve(imageSrc);
+  //     };
+  //   });
+  // }
 
 
 
@@ -1338,8 +1257,8 @@ const AddImageToolbar = () => {
                             setSelectedFilter(f.name);
                             // globalDispatch("src", buildUrl(f.transform, false, f.name));
                             globalDispatch("selectedFilter", f.name);
-                            // globalDispatch("base64CanvasImage", f.image);
-                            handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor, img.editColor || editColor);
+                            globalDispatch("base64CanvasImage", f.image);
+                            // handleImage(buildUrl(f.transform, false, f.name), singleColor, f.name, invertColor, img.editColor || editColor);
                             if (f.name != "Normal") setResetDefault(false);
                           }}
                         >
@@ -1559,7 +1478,7 @@ const AddImageToolbar = () => {
                   {AdminSettingsforAioperation?.replaceBackgroundAI && (
 
                     !removeBackground && <div className={styles.toolbarBoxFontValueSetInnerContainer} onClick={() => setreplaceBgwithAi(false)}>
-                      <div className={styles.toolbarBoxFontValueSetInnerActionheading} >AI Image Editor<span className={styles.aiBadge}>AI</span></div>
+                      <div className={styles.toolbarBoxFontValueSetInnerActionheading} >Replace Background With AI<span className={styles.aiBadge}>AI</span></div>
                       <span className={styles.rightarrow}><FaChevronRight /></span>
 
                       {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading} onClick={toggleBGReplaceColorPopup}>

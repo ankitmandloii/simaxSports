@@ -24,7 +24,7 @@ const Header = () => {
   }, [CustomerLogin])
 
   const shouldRedirectToReview = (productState) => {
-    if(window.location.pathname == "/design/product") return false
+    if (window.location.pathname == "/design/product") return false
     return Object.values(productState).some((product) => {
       return Object.values(product.selections || {}).some(quantity => quantity >= 1);
     });
@@ -54,7 +54,7 @@ const Header = () => {
 
           <Link
             to="/review"
-            className={`${style.step} ${location.pathname === '/review' ? style.stepActive : ''} ${!shouldRedirectToReview(productState) ? style.deasable : ''}`}
+            className={`${style.step} ${location.pathname === '/review' ? style.stepActive : ''} ${style.deasable}`}
           >
             <span className={style.navSpanNumber}>3</span> Review
           </Link>
@@ -98,7 +98,7 @@ const Header = () => {
               {currentPath === "/review" && (
                 <Link
                   to="/review"
-                  className={`${style.step} ${style.stepActive} ${!shouldRedirectToReview(productState) ? style.deasable : ''}`}
+                  className={`${style.step} ${style.stepActive} ${style.deasable}`}
                 >
                   <span className={style.navSpanNumber}>3</span>
                   <span className={style.navSpanHeading}>Review</span>

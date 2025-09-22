@@ -23,6 +23,7 @@ import { setActiveSide } from '../../redux/FrontendDesign/TextFrontendDesignSlic
 import { apiConnecter } from '../utils/apiConnector.jsx';
 import axios from 'axios';
 import * as tmImage from "@teachablemachine/image";
+import { uploadImagesInBatches } from '../utils/uploadImagesInBatches.js';
 
 async function detectSleeveType(imageUrl) {
   try {
@@ -553,37 +554,11 @@ const Footer = () => {
         ...allRightImagesElement
       ];
 
-      const allFiles = [];
-      const formData = new FormData();
-      for (let i = 0; i < allImages.length; i++) {
-        const blobUrl = allImages[i].base64CanvasImage;
-        if (!blobUrl) continue;
-
-        // use the ID in the filename
-        const file = await blobUrlToFile(blobUrl, `${allImages[i].id}.png`);
-        formData.append("images", file);
-      }
 
 
+      const uploadedImages = await uploadImagesInBatches(allImages);
 
-      // const file = await blobUrlToFile(base64CanvasImage);
-
-      // formData.append("file", file);
-      // console.log("all fils from blob ", formData)
-
-
-      if ([...formData.entries()].length > 0) {
-        const responseForblobToFiles = await axios.post(
-          `${process.env.REACT_APP_BASE_URL}imageOperation/upload`,
-          formData,
-          {
-            headers: { 'Content-Type': 'multipart/form-data' },
-          }
-        );
-
-        // console.log("responseForblobToFiles ", responseForblobToFiles);
-        const uploadedImages = responseForblobToFiles.data.files;
-        // console.log("uploadedImages", uploadedImages)
+      if (allImages?.length > 0) {
         const updateImages = (images) =>
           images.map(img => {
             const match = uploadedImages.find(

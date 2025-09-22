@@ -22,6 +22,7 @@ import { fetchDesign, saveDesignFunction, sendEmailDesign, updateDesignFunction,
 import EmailInputPopup from "../../components/PopupComponent/EmailInputPopup/EmailInputPopup";
 import { FaArrowRightLong } from "react-icons/fa6";
 import * as tmImage from "@teachablemachine/image";
+import { uploadImagesInBatches } from "../../components/utils/uploadImagesInBatches";
 
 async function detectSleeveType(imageUrl) {
   try {
@@ -734,23 +735,19 @@ const Review = () => {
         ...allLeftImagesElement,
         ...allRightImagesElement
       ];
-      async function blobUrlToFile(blobUrl, filename = "canvas.png") {
-        const response = await fetch(blobUrl);   // fetch blob data
-        const blob = await response.blob();      // convert to blob
-        return new File([blob], filename, { type: blob.type });
-      }
+  
 
+      const uploadedImages = await uploadImagesInBatches(allImages)
+      // const allFiles = [];
+      // const formData = new FormData();
+      // for (let i = 0; i < allImages.length; i++) {
+      //   const blobUrl = allImages[i].base64CanvasImage;
+      //   if (!blobUrl) continue;
 
-      const allFiles = [];
-      const formData = new FormData();
-      for (let i = 0; i < allImages.length; i++) {
-        const blobUrl = allImages[i].base64CanvasImage;
-        if (!blobUrl) continue;
-
-        // use the ID in the filename
-        const file = await blobUrlToFile(blobUrl, `${allImages[i].id}.png`);
-        formData.append("images", file);
-      }
+      //   // use the ID in the filename
+      //   const file = await blobUrlToFile(blobUrl, `${allImages[i].id}.png`);
+      //   formData.append("images", file);
+      // }
 
 
 
@@ -760,18 +757,7 @@ const Review = () => {
       // console.log("all fils from blob ", formData)
 
 
-      if ([...formData.entries()].length > 0) {
-        const responseForblobToFiles = await axios.post(
-          `${process.env.REACT_APP_BASE_URL}imageOperation/upload`,
-          formData,
-          {
-            headers: { 'Content-Type': 'multipart/form-data' },
-          }
-        );
-
-        // console.log("responseForblobToFiles ", responseForblobToFiles);
-        const uploadedImages = responseForblobToFiles.data.files;
-        // console.log("uploadedImages", uploadedImages)
+      if (allImages?.length > 0) {
         const updateImages = (images) =>
           images.map(img => {
             const match = uploadedImages.find(
