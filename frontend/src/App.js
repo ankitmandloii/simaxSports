@@ -302,13 +302,13 @@ function App() {
   const saveStateDebounced = debounce(async (reduxState) => {
     try {
       await db.state.put({ id: "redux", data: reduxState });
-      console.log("✅ Redux state saved (debounced)");
+      // console.log("✅ Redux state saved (debounced)");
     } catch (e) {
       console.error("❌ Error saving state:", e);
     }
   }, 1000);
   useEffect(() => {
-    console.log("initialCheckDone value", initialCheckDone)
+    // console.log("initialCheckDone value", initialCheckDone)
     if (!reduxState || !initialCheckDone) return
     // setTimeout(() => {
     // }, 10000);

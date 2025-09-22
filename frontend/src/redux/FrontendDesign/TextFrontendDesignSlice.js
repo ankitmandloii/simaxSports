@@ -727,11 +727,11 @@ const TextFrontendDesignSlice = createSlice({
       const {
         id,
         newSelections = [], // Array of { selectionId, name, number, size }
-        side = "back",
+
         isRenderOrNot,
         sizeCount = {} // 👈 extract sizeCount from payload
       } = action.payload;
-
+      let side = "back";
       // Save to undo history
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
 

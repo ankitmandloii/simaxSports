@@ -935,7 +935,7 @@ function ProductContainer() {
   const [searchParams] = useSearchParams();
   const { data: settings, loading } = useSelector((state) => state.settingsReducer);
   const settingsForsides = settings?.otherSettings || {};
-  console.log("settingsForsides", settingsForsides)
+  // console.log("settingsForsides", settingsForsides)
   const { list: rawProducts } = useSelector((state) => state.products);
 
   const toggleZoom = () => {

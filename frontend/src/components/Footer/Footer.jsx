@@ -138,7 +138,7 @@ const Footer = () => {
     },
   };
   function NamesAndNumberPrintAreas() {
-    // console.log("namProductLisst", nameAndNumberProductList)
+    console.log("namProductLisst", nameAndNumberProductList)
     const areas = nameAndNumberProductList?.flatMap(product =>
       product?.selections?.map(sel => ({
         color: product.color,
@@ -149,7 +149,7 @@ const Footer = () => {
         fontColor: nameAndNumberDesign.fontColor,    // default or dynamic
         fontFamily: nameAndNumberDesign.fontFamily,   // default or dynamic
         position: nameAndNumberDesign.position,
-        id: sel.selectionId.replace(/\/\d+$/, ""),   // default or dynamic
+        id: sel?.selectionId?.replace(/\/\d+$/, ""),   // default or dynamic
         printSide: activeNameAndNumberPrintSide || "back",
       }))
     );

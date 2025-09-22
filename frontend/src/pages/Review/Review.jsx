@@ -65,8 +65,8 @@ const Review = () => {
   const design = useSelector((state) => state.TextFrontendDesignSlice.present);
   const productState = useSelector((state) => state.productSelection.products);
   const designState = useSelector((state) => state.TextFrontendDesignSlice);
-  const { present, DesignNotes } = designState;
 
+  const { present, DesignNotes } = designState;
 
   const [discount, setDiscount] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
@@ -192,6 +192,33 @@ const Review = () => {
     // console.log("---------addnamedesignSlice", nameAndNumberDesign, nameAndNumberProductList)
   }, [isFetchingDesign, retrieveLoader, designExists]);
 
+  function getSizeSelectionsForNameAndNumber() {
+    const nameAndNumberProductList = [
+      ["id1", [{ size: "S" }, { size: "M" }, { size: "S" }]],
+      ["id2", [{ size: "L" }, { size: "L" }]]
+    ];
+
+    const extraSizesForNameAndNumber = nameAndNumberProductList.map(([id, rows]) => {
+      const sizeCount = rows.reduce((acc, sel) => {
+        // Check if the size property already exists in the accumulator object
+        if (acc[sel.size]) {
+          // If it exists, increment the count
+          acc[sel.size] += 1;
+        } else {
+          // If it does not exist, initialize the count to 1
+          acc[sel.size] = 1;
+        }
+        return acc;
+      }, {}); // Initialize the accumulator as an empty object
+
+      return [id, sizeCount];
+    });
+
+    console.log(extraSizesForNameAndNumber, "extraSizesForNameAndNumber");
+    return extraSizesForNameAndNumber;
+  }
+
+
   const reviewItems = Object.entries(productState).map(([id, product]) => {
     const sizes = Object.entries(product.selections).reduce((acc, [size, qty]) => {
       if (qty > 0) acc[size] = qty;
@@ -215,7 +242,8 @@ const Review = () => {
       sku: product?.sku,
       inventory_quantity: product?.inventory_quantity,
       vendor: product?.vendor,
-      handle: product?.handle
+      handle: product?.handle,
+      // sizeSelectionsForNameAndNumber: getSizeSelectionsForNameAndNumber(product)
     };
   });
   console.log(reviewItems, "reviewItems");
@@ -389,9 +417,9 @@ const Review = () => {
           sizes: {
             [size]: Number(varianttitle.inventory_quantity)
           },
-          "nameAndNumberSurcharges": "nameSurcharge",
-          // "nameAndNumberSurcharges": "numberSurcharge",
-          // "nameAndNumberSurcharges": "nameAndNumberBothPrint",
+          ...(addName && !addNumber && { nameAndNumberSurcharges: "nameSurcharge" }),
+          ...(!addName && addNumber && { nameAndNumberSurcharges: "numberSurcharge" }),
+          ...(addName && addNumber && { nameAndNumberSurcharges: "nameAndNumberBothPrint" }),
         };
         discountData.push(newData);
         return newData;

@@ -18,15 +18,18 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
   const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice);
   const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.nameAndNumberDesignState)
   // console.log("---------addnamedesignSlice", nameAndNumberDesign)
-  const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberProductList);
+
+  const { present } = useSelector((state) => state.TextFrontendDesignSlice);
+  console.log("present ", present)
+  const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present["back"].nameAndNumberProductList);
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  // console.log(selectedProducts, "-----alllproductselect");
+  console.log(selectedProducts, "-----alllproductselect");
 
   const [allProducts, setAllProducts] = useState(nameAndNumberProductList ?? []);
 
 
-  // console.log(nameAndNumberProductList, "nameAndNumberProductList")
+  console.log(nameAndNumberProductList, "nameAndNumberProductList")
 
   const dispatch = useDispatch();
 
@@ -45,26 +48,39 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
   const [activeRowId, setActiveRowId] = useState(null);
 
 
+  const getSizeOptions = (product, color) => {
+    const extractAvailableSizeVariants = (variants, accessor = (v) => v) => {
+      const sizeVariantPairs = variants.flatMap((variantWrapper) => {
+        const variant = accessor(variantWrapper);
+        // console.log("variant?.selectedOptions?", variant?.selectedOptions)
+        const sizeOption = variant?.selectedOptions?.find(
+          (opt) => opt.name === 'Size'
+        );
+        const inventoryQty =
+          variant?.inventoryItem?.inventoryLevels?.edges?.[0]?.node
+            ?.quantities?.[0]?.quantity || 0;
+        // console.log("variant", variant, "inventoryQty", inventoryQty);
+        if (sizeOption && variant?.selectedOptions?.[0].value === color && inventoryQty > 0) {
+          return [
+            {
+              size: sizeOption.value,
+              variantId: variant?.id,
+              quantity: inventoryQty,
+              sku: variant?.sku,
+              "handle": product?.handle
+            },
+          ];
+        }
+        return [];
+      });
+      return Array.from(
+        new Map(sizeVariantPairs.map((item) => [item.size, item])).values()
+      );
+    };
 
-  const getSizeOptions = (product) => {
-    // Case 1: Custom-structured product
     if (product?.allVariants?.length) {
-      const sizeVariantPairs = product.allVariants.flatMap((variant) => {
-        const sizeOption = variant?.selectedOptions?.find((opt) => opt.name === 'Size');
-        return sizeOption ? [{ size: sizeOption.value, variantId: variant.id }] : [];
-      });
-      return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
+      return extractAvailableSizeVariants(product.allVariants);
     }
-
-    // Case 2: Shopify-style structure
-    if (product?.variants?.edges?.length) {
-      const sizeVariantPairs = product.variants.edges.flatMap(({ node }) => {
-        const sizeOption = node?.selectedOptions?.find((opt) => opt.name === 'Size');
-        return sizeOption ? [{ size: sizeOption.value, variantId: node.id }] : [];
-      });
-      return Array.from(new Map(sizeVariantPairs.map((item) => [item.size, item])).values());
-    }
-
     return [];
   };
 
@@ -113,13 +129,14 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
       const addedColors = product.addedColors || [];
       const selectedColor = [product.selectedColor] || [];
       const consistentTitle = product?.title || product?.name || product?.handle || 'Product';
-
+      console.log("addedColors", addedColors)
       const extraProducts = addedColors.map((variantProduct) => ({
+
         id: variantProduct?.variant?.id?.split("/")?.reverse()[0],
         imgurl: variantProduct?.img,
         color: variantProduct?.name,
         size: variantProduct?.variant?.selectedOptions[1]?.value,
-        sizes: variantProduct?.sizes,
+        sizes: getSizeOptions(variantProduct, variantProduct?.name),
         name: product?.name,
         title: consistentTitle,
         selections: [],
@@ -146,7 +163,8 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
           imgurl: variantProduct?.img,
           color: variantProduct?.name,
           size: variantProduct?.variant?.selectedOptions[1]?.value,
-          sizes: variantProduct?.sizes?.map(size => ({ size: size.size, variantId: size?.variant?.id })) || [],
+          // sizes: variantProduct?.sizes?.map(size => ({ size: size.size, variantId: size?.variant?.id })) || [],
+          sizes: getSizeOptions(variantProduct, variantProduct?.name),
           name: product?.name,
           title: consistentTitle,
           selections: [],
@@ -196,8 +214,30 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
 
   const saveAndExit = () => {
     const selectionsRows = Object.entries(rowsByKey);
+    console.log("selection rows", selectionsRows)
+    const isRowEmpty = (row) => {
+      return (
+        (row.size === null || row.size.trim() === '') &&
+        (row.name === null || row.name.trim() === '') &&
+        (row.number === null || row.number.trim() === '')
+      );
+    };
+    const filteredRows = []
+    // Filter the selectionsRows array
+    selectionsRows.forEach(([key, rows]) => {
+      // Check if ALL rows in the inner array are emptys
+      const filledRows = rows.filter((row) => {
+        return !isRowEmpty(row)
+      });
+      if (filledRows.length != 0) {
+        filteredRows.push([key, filledRows ?? []])
+      }
+    });
 
-    const isValid = selectionsRows.every(([key, rows]) =>
+    console.log("filteredRows", filteredRows)
+
+
+    const isValid = filteredRows.every(([key, rows]) =>
       rows.every(row => {
         const product = allProducts?.find(p => `${p.id}` === key);
         const isSizeFilled =
@@ -232,9 +272,9 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
         };
       });
 
-      // console.log('sizeCountWithId', sizeCountWithId)
-
-      selectionsRows.forEach(([id, rows]) => {
+      console.log('sizeCountWithId', sizeCountWithId)
+      console.log("selectionsRows", selectionsRows)
+      filteredRows.forEach(([id, rows]) => {
         const found = sizeCountWithId?.find(obj => obj.id === id);
 
         dispatch(UpdateNameAndNumberProduct({
@@ -257,7 +297,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
   const canvasBgColor = getHexFromName(activeProduct?.color) || "#f5f5f5";
 
   // console.log("--canvass", canvasBgColor)
-  console.log("====all", allProducts)
+  // console.log("====all", allProducts)
 
   return (
 

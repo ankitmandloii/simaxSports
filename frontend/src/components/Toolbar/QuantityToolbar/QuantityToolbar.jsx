@@ -549,7 +549,7 @@ const QuantityToolbar = () => {
   const nameAndNumberProductList = useSelector(
     (state) => state.TextFrontendDesignSlice.present["back"].nameAndNumberProductList
   );
-
+  console.log("name nand number product list", nameAndNumberProductList)
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [products, setAllProducts] = useState([]);
