@@ -7,10 +7,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateImageState } from "../../../redux/FrontendDesign/TextFrontendDesignSlice";
 import { CrossIcon } from "../../iconsSvg/CustomIcon";
 import UploadBox from "../../utils/UploadBox";
+import { applyFilterAndGetUrl } from "../../ImageOperation/CanvasImageOperations";
 // import UploadBox from "../../utils/UploadBox"; // Import UploadBox component
 
 const EditWithAipopup = ({ onClose }) => {
     const dispatch = useDispatch();
+
     const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
     const selectedImageId = useSelector(
         (state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId
@@ -236,6 +238,7 @@ const EditWithAipopup = ({ onClose }) => {
                 if (!fileUrl) {
                     throw new Error("File object missing URL");
                 }
+                const base64CanvasImageForSinglelColor = await applyFilterAndGetUrl(fileUrl, img?.singleColor || "#ffffff")
 
                 setUploadStatus("complete");
                 dispatch(
@@ -245,6 +248,12 @@ const EditWithAipopup = ({ onClose }) => {
                             src: fileUrl,
                             base64CanvasImage: fileUrl,
                             loadingText: true,
+                            // removeBg: false,
+                            // cropAndTrim : false,
+                            selectedFilter: "Normal",
+                            base64CanvasImageForNormalColor: fileUrl,
+                            base64CanvasImageForSinglelColor,
+                            base64CanvasImageForBlackAndWhitelColor: fileUrl + "?sat=-100",
                         },
                     })
                 );
@@ -293,9 +302,9 @@ const EditWithAipopup = ({ onClose }) => {
                     <textarea
                         className={styles.textarea}
                         placeholder={`ex. Change the beach scene to a mountain scene
-ex. Add text above the design that says Established 2025 in a cursive font
-ex. Transform this into a cartoon version for a t-shirt graphic
-ex. Remove the text on the side of the boat`}
+                                    ex. Add text above the design that says Established 2025 in a cursive font
+                                    ex. Transform this into a cartoon version for a t-shirt graphic
+                                    ex. Remove the text on the side of the boat`}
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         rows={4}
