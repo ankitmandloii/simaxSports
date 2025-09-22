@@ -106,22 +106,25 @@ const renderCurveTextObjects = (
         }
 
 
-        existingObj.on("modified", (e) => {
-          setActiveObjectType("curved-text");
-          const obj = e.target;
-          if (!obj || textInput.locked) return;
+        // existingObj.on("mouseup", (e) => {
+        //   const obj = e.target;
+        //   if (!obj || textInput.locked) return;
 
-          const center = obj.getCenterPoint();
-          const percentX = (obj.left / canvasWidth) * 100;
-          const percentY = (obj.top / canvasHeight) * 100;
-          obj.setPositionByOrigin(center, "center", "center");
-          obj.setCoords();
+        //   // Update the state with the final position after the drag
+        //   const canvasWidth = canvas.getWidth();
+        //   const canvasHeight = canvas.getHeight();
+        //   const percentX = (obj.left / canvasWidth) * 100;
+        //   const percentY = (obj.top / canvasHeight) * 100;
 
-          globalDispatch("position", { x: percentX, y: percentY }, textInput.id);
-          globalDispatch("angle", obj.angle, textInput.id);
-          canvas.requestRenderAll();
-          syncMirrorCanvasHelper(activeSide);
-        });
+        //   globalDispatch("position", { x: percentX, y: percentY }, textInput.id);
+        //   globalDispatch("angle", obj.angle, textInput.id);
+        //   globalDispatch("scaleX", parseFloat(obj.scaleX.toFixed(1)), obj.id);
+        //   globalDispatch("scaleY", parseFloat(obj.scaleY.toFixed(1)), obj.id);
+
+        //   syncMirrorCanvasHelper(activeSide);
+        //   canvas.requestRenderAll(); // Request a final render
+        // });
+
       } else if (!existingObj) {
         const curved = new fabric.CurvedText(textInput.content, {
           lockScalingFlip: true,
@@ -229,24 +232,43 @@ const renderCurveTextObjects = (
           canvas.requestRenderAll();
         };
 
-        curved.on("modified", (e) => {
-          setActiveObjectType("curved-text");
+        // curved.on("modified", (e) => {
+        //   setActiveObjectType("curved-text");
+        //   const obj = e.target;
+        //   if (!obj || textInput.locked) return;
+
+        //   const center = obj.getCenterPoint();
+        //   const percentX = (obj.left / canvasWidth) * 100;
+        //   const percentY = (obj.top / canvasHeight) * 100;
+
+        //   globalDispatch("position", { x: percentX, y: percentY }, textInput.id);
+        //   obj.setPositionByOrigin(center, "center", "center");
+        //   obj.setCoords();
+
+        //   globalDispatch("angle", obj.angle, textInput.id);
+        //   canvas.requestRenderAll();
+        //   handleScale(e);
+        //   syncMirrorCanvasHelper(activeSide);
+        // });
+        curved.on("mouseup", (e) => {
           const obj = e.target;
           if (!obj || textInput.locked) return;
 
-          const center = obj.getCenterPoint();
+          // Update the state with the final position after the drag
+          const canvasWidth = canvas.getWidth();
+          const canvasHeight = canvas.getHeight();
           const percentX = (obj.left / canvasWidth) * 100;
           const percentY = (obj.top / canvasHeight) * 100;
 
           globalDispatch("position", { x: percentX, y: percentY }, textInput.id);
-          obj.setPositionByOrigin(center, "center", "center");
-          obj.setCoords();
-
           globalDispatch("angle", obj.angle, textInput.id);
-          canvas.requestRenderAll();
-          handleScale(e);
+          globalDispatch("scaleX", parseFloat(obj.scaleX.toFixed(1)), obj.id);
+          globalDispatch("scaleY", parseFloat(obj.scaleY.toFixed(1)), obj.id);
+
           syncMirrorCanvasHelper(activeSide);
+          canvas.requestRenderAll(); // Request a final render
         });
+
 
         curved.setControlsVisibility({
           mt: false,
