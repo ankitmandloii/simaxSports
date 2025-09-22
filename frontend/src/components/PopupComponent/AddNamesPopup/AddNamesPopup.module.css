@@ -103,8 +103,12 @@
 .addAnother {
   color: red;
   font-weight: bold;
-  cursor: pointer;
+  /* cursor: pointer; */
   margin-top: 10px;
+}
+
+.addAnother span {
+  cursor: pointer;
 }
 
 .popupRight img {

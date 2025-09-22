@@ -99,6 +99,7 @@ const Footer = () => {
   const searchParams = new URLSearchParams(location.search);
   const customerEmail = searchParams.get("customerEmail");
   const [localEmail, setLocalEmail] = useState(searchParams.get("customerEmail"));
+  console.log("designExists", designExists)
 
   const designId = searchParams.get("designId");
   // console.log("=======nameAndNumberProductList", nameAndNumberProductList, nameAndNumberDesign)
@@ -821,7 +822,8 @@ const Footer = () => {
         <SaveDesignModal
           onClose={() => setActiveModal(null)}
           onSubmit={handleSaveDesign}
-          defaultDesignName=""
+          defaultDesignName={designExists ? designExists.DesignName : ""}
+          // defaultDesignName=''
           designId={designId}
         />
       )}

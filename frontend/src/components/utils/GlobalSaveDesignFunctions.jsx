@@ -175,6 +175,7 @@ export const updateDesignFunction = async (payload) => {
         // console.log("Design updated successfully:", responseData);
         return responseData;
     } catch (error) {
+        console.log("=========errorupdate", error)
         throw new Error(`Failed to update design: ${error.message}`);
     }
 };

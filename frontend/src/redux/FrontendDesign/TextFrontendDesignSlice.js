@@ -93,7 +93,7 @@ const createNewImage = (
   extractedColors: [],
   removeBgImagebtn: false,
   loadingText: false,
-  dpi: dpi || 300,
+  dpi: dpi || 150,
   resetDefault: false,
   heightInches: 1,
   widthInches: 1

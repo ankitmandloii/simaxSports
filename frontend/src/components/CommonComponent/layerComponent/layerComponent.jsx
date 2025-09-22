@@ -6,6 +6,7 @@ import CopyImg from '../../images/copyPng.png'
 import { useDispatch, useSelector } from 'react-redux';
 import { copyElementToSide } from '../../../redux/FrontendDesign/TextFrontendDesignSlice';
 import { CrossIcon } from '../../iconsSvg/CustomIcon';
+import CloseButton from '../CrossIconCommon/CrossIcon';
 const LayerModal = ({ isOpen, onClose, onLayerAction, Sleeve }) => {
   const dispatch = useDispatch();
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
@@ -37,7 +38,8 @@ const LayerModal = ({ isOpen, onClose, onLayerAction, Sleeve }) => {
 
         <div className={style.header}>
           <h2 className={style.headerTitle}>Layer Actions</h2>
-          <span className={style.closeIconButton} onClick={onClose}><CrossIcon /> </span>
+          {/* <span className={style.closeIconButton} onClick={onClose}><CrossIcon /> </span> */}
+          <CloseButton onClose={onClose} />
 
 
 

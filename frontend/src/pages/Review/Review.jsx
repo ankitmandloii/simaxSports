@@ -165,7 +165,8 @@ const Review = () => {
         const designs = data.userDesigns?.designs || [];
         const designFound = designs.some((design) => design._id === designId);
         const design = designs.find((d) => d._id === designId);
-        setDesignExists(designFound);
+        setDesignExists(design);
+        console.log("-------designExists", designExists)
         setCurrentDesign(design);
         setDesignStateDb(data);
         setIsFetchingDesign(false);
@@ -735,7 +736,7 @@ const Review = () => {
         ...allLeftImagesElement,
         ...allRightImagesElement
       ];
-  
+
 
       const uploadedImages = await uploadImagesInBatches(allImages)
       // const allFiles = [];
@@ -955,7 +956,9 @@ const Review = () => {
             <SaveDesignModal
               onClose={() => setSaveDesignLoader(false)}
               onSubmit={handleSaveDesign}
-              defaultDesignName="Demo T-Shirt 55555"
+              defaultDesignName={designExists ? designExists.DesignName : ""}
+
+              // defaultDesignName="Demo T-Shirt 55555"
               designId={designId}
               currentDesign={currentDesign}
             />

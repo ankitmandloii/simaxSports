@@ -143,7 +143,7 @@ export default function SaveDesignModal({ onClose, onSubmit, defaultDesignName, 
     console.log(currentDesign, "currentDesign");
     const [selectedOption, setSelectedOption] = useState('update');
     // const [designName, setDesignName] = useState(currentDesign?.[0].DesignName || '');
-    const [designName, setDesignName] = useState(currentDesign?.[0]?.DesignName || '');
+    const [designName, setDesignName] = useState(defaultDesignName || '');
 
     const [emailUpdates, setEmailUpdates] = useState(true);
 
