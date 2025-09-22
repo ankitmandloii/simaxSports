@@ -1029,7 +1029,7 @@ exports.calculatePrice = async (req, res) => {
       };
     }
 
-    console.log("cfg", cfg.nameAndNumberSurcharges);
+    // console.log("cfg", cfg.nameAndNumberSurcharges);
 
     const dbSurcharges = toPlainObjectMap(cfg.sizeSurcharges);
     const dbLicenseFee = Number(cfg.licenseFeeFlat ?? 0);
