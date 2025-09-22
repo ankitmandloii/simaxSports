@@ -880,7 +880,7 @@ async function detectSleeveType(imageUrl) {
     return "Unknown"; // Fallback to Unknown on error
   }
 }
-  
+
 function ProductContainer() {
   const FrontImgRef = useRef(null);
   const BackImgRef = useRef(null);
@@ -935,7 +935,7 @@ function ProductContainer() {
   const [searchParams] = useSearchParams();
   const { data: settings, loading } = useSelector((state) => state.settingsReducer);
   const settingsForsides = settings?.otherSettings || {};
-
+  console.log("settingsForsides", settingsForsides)
   const { list: rawProducts } = useSelector((state) => state.products);
 
   const toggleZoom = () => {
@@ -1301,7 +1301,7 @@ function ProductContainer() {
       detectSleeveType(frontBgImage).then((sleeveType) => {
         // console.log("========sleevetyprrr", sleeveType)
         setActiveProductTitle(activeProduct?.name || "");
-        if (sleeveType === "WithoutSleeves") {
+        if (sleeveType === "Sleeveless") {
           setHidden(true);
         } else {
           setHidden(false);
@@ -1487,18 +1487,19 @@ function ProductContainer() {
                 <p>Front</p>
               </div>
 
+              {settingsForsides?.enableBackSmallImageSectionShow &&
 
-              <div className={style.cornerImgCanvaContainer} onClick={ShowBack}>
-                <img
-                  ref={BackImgRef}
-                  src={backPreviewImage}
-                  className={`${style.ProductContainerSmallImage} ${activeSide === "back" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
-                  alt="Back View"
-                />
-                <p>Back</p>
-              </div>
+                <div className={style.cornerImgCanvaContainer} onClick={ShowBack}>
+                  <img
+                    ref={BackImgRef}
+                    src={backPreviewImage}
+                    className={`${style.ProductContainerSmallImage} ${activeSide === "back" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
+                    alt="Back View"
+                  />
+                  <p>Back</p>
+                </div>
 
-
+              }
               {addSleeves && !hidden && (
                 <>
                   <div className={style.cornerImgCanvaContainer} onClick={ShowRightSleeve}>

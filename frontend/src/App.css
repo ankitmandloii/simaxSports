@@ -369,15 +369,24 @@ hr {
  
 } */
 
-.loader {
+/* .loader {
   border: 6px solid #f3f3f3;
   border-top: 6px solid var(--black-color);
-  /* Blue */
   border-radius: 50%;
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
   margin: 40px auto;
+} */
+
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border-left-color: var(--black-color);
+  animation: spin 1s ease infinite;
+  margin-bottom: 10px;
 }
 
 @keyframes spin {

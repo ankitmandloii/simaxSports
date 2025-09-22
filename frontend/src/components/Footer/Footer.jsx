@@ -439,6 +439,7 @@ const Footer = () => {
         const front = results[0]?.[0] || null;
         const back = results[1]?.[0] || null;
         // Set sleeves to null if they weren't generated
+        console.log("------hasSleeves", hasSleeves)
         const leftSleeve = hasSleeves ? (results[2]?.[0] || null) : null;
         const rightSleeve = hasSleeves ? (results[3]?.[0] || null) : null;
 
@@ -623,7 +624,7 @@ const Footer = () => {
         });
 
       } else {
-        // console.log("Calling saveDesignFunction with payload:", designPayload);
+        console.log("Calling saveDesignFunction with payload:", designPayload);
         responseData = await saveDesignFunction(designPayload);
       }
 

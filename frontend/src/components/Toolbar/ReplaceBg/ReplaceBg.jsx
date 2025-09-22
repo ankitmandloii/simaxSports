@@ -265,6 +265,7 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
             {loading && (
                 <div className={styles.loaderOverlay}>
                     <div className={styles.spinner}></div>
+                    <p>Updating Image....</p>
                 </div>
             )}
             {showUploadBox && currentUploadFileInfo ? (

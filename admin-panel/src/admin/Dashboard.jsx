@@ -703,7 +703,7 @@ export function Dashboard() {
                     <NoteRow label="Flip" value={`X: ${t.flipX ? "true" : "false"}, Y: ${t.flipY ? "true" : "false"}`} />
                     <NoteRow label="Layer" value={t.layerIndex} />
                     <NoteRow label="Size" value={t.size} />
-                    <NoteRow label="Dimensions" value={`W: ${t.width ?? "-"} × H: ${t.height ?? "-"}`} />
+                    {/* <NoteRow label="Dimensions" value={`W: ${t.width ?? "-"} × H: ${t.height ?? "-"}`} /> */}
                   </Box>
                 </Card>
               ))}

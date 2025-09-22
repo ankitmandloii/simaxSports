@@ -236,7 +236,9 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
 
   return (
     <div className={style.toolbarMainContainerClipArt}>
+      {/* {showUploadBox && currentUploadFileInfo ? ( */}
       {showUploadBox && currentUploadFileInfo ? (
+
         <UploadBox
           file={currentUploadFileInfo.file}
           imageUrl={currentUploadFileInfo.imageUrl}

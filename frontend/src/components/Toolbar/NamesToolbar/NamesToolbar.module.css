@@ -44,7 +44,7 @@
   align-items: center;
   /* padding-bottom: 10px;
    */
-  padding: 10px;
+  padding: 10px 0;
 }
 
 .namescheckboxDiv span {
@@ -68,6 +68,7 @@
   border: 1px solid var(--borderColor);
   padding: 9px 10px;
   cursor: pointer;
+  border-radius: 10px;
 }
 
 .namesToolbarButtonActive {
@@ -126,7 +127,7 @@
 }
 
 .Deactive {
-  opacity: 0.4;
+  opacity: 0.2;
   pointer-events: none;
   user-select: none;
 }

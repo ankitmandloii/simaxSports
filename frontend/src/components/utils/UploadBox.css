@@ -14,6 +14,27 @@
   /* Make sure it's on top */
 }
 
+.uploadContent {
+  padding: 20px;
+  overflow: hidden;
+}
+
+.header {
+  padding: 13px 24px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  background-color: #f9fafc;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--blue-color);
+}
+
 /* The main upload box container */
 .upload-box {
   background-color: #ffffff;
@@ -21,7 +42,8 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   width: 90%;
   max-width: 500px;
-  padding: 25px;
+  overflow: hidden;
+  /* padding: 25px; */
   /* font-family: Arial, sans-serif; */
   color: #333;
 }

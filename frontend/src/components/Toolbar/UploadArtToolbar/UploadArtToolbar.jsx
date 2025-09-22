@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import ExifReader from "exifreader";
 import { useGoogleLogin } from "@react-oauth/google";
 import { BsFileEarmarkImageFill } from "react-icons/bs";
-
+import UploadBox from "../../utils/UploadBox";
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
 const DEVELOPER_KEY = process.env.REACT_APP_DEVELOPER_KEY;
 
@@ -257,6 +257,7 @@ const UploadArtToolbar = () => {
   }, [googleAccessToken, shouldOpenPicker]);
 
   return (
+
     <div className="toolbar-main-container">
       {/* Full screen overlay */}
       {isDragging && (
@@ -349,9 +350,9 @@ const UploadArtToolbar = () => {
           />
         </div>
       ) : (
-        <div>
+        <div className={style.loaderWrapper}>
           <div className="loader" />
-          <p id="prepareHeading">Preparing your files...</p>
+          <p className={style.prepareHeading}>Preparing your files...</p>
         </div>
       )}
     </div>

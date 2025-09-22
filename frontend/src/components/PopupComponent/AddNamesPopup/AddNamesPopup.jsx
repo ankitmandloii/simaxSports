@@ -353,8 +353,9 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
                       <button className={styles.trashBtn} onClick={() => removeRow(`${product.id}`, row.selectionId)}><DeleteIcon /></button>
                     </div>
                   ))}
+                  <div className={styles.addAnother}><span onClick={() => addRow(`${product.id}`)}>+ Add Another</span>
 
-                  <p className={styles.addAnother} onClick={() => addRow(`${product.id}`)}>+ Add Another</p>
+                  </div>
                   {(() => {
                     const rows = rowsByKey[product.id] || [];
                     const productTotal = rows.length;

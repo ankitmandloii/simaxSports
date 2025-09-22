@@ -17,6 +17,15 @@
   border: 1px solid #ccc;
   cursor: pointer;
 } */
+.loaderWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  /* background: gray; */
+  height: 100%;
+}
 
 .selected {
   border: 2px solid black;

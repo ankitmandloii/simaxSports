@@ -953,7 +953,7 @@ const Review = () => {
     <>
       {loading ? (
         <div className={styles.loaderWrapper}>
-          <div className="loader" />
+          <div className={styles.loader} />
           <p>calculating price...</p>
         </div>
       ) : (
@@ -1122,5 +1122,7 @@ const Review = () => {
     </>
   );
 };
+
+
 
 export default Review;

@@ -22,7 +22,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
   const [selectedProductColors, setSelectedProductColors] = useState(null);
   const [cursor, setCursor] = useState('');
   const [hasNextPage, setHasNextPage] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [swatchLoaded, setSwatchLoaded] = useState(true);
 
   // console.log("------------loadingggg", loading)
@@ -296,9 +296,15 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
   return (
     <div className={style.productPanel}>
       {!effectiveCollectionId ? (
-        <div className="loader" />
+        <div className={style.loaderWrapper}>
+          <div className="loader" />
+          <p>Loading products....</p>
+        </div>
       ) : loading && products.length === 0 ? (
-        <div className="loader" />
+        <div className={style.loaderWrapper}>
+          <div className="loader" />
+          <p>Loading products....</p>
+        </div>
       ) : products.length === 0 ? (
         <p>No products found.</p>
       ) : (

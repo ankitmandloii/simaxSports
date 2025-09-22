@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateImageState } from "../../../redux/FrontendDesign/TextFrontendDesignSlice";
 import { CrossIcon } from "../../iconsSvg/CustomIcon";
 import UploadBox from "../../utils/UploadBox";
+import CloseButton from "../../CommonComponent/CrossIconCommon/CrossIcon";
 // import UploadBox from "../../utils/UploadBox"; // Import UploadBox component
 
 const EditWithAipopup = ({ onClose }) => {
@@ -280,9 +281,10 @@ const EditWithAipopup = ({ onClose }) => {
             <div className={styles.popup}>
                 <div className={styles.header}>
                     <div className={styles.title}><span className={styles.aiTag}>AI</span> EDIT YOUR IMAGE WITH AI MAGIC</div>
-                    <button className={styles.close} onClick={onClose}>
+                    {/* <button className={styles.close} onClick={onClose}>
                         <CrossIcon />
-                    </button>
+                    </button> */}
+                    <CloseButton onClose={onClose} />
                 </div>
                 <div className={styles.content}>
                     <p className={styles.description}>
@@ -307,6 +309,7 @@ ex. Remove the text on the side of the boat`}
                     {loading ? (
                         <div className={styles.loaderOverlay}>
                             <div className={styles.spinner}></div>
+
                         </div>
                     ) : !showResult ? (
                         <>
