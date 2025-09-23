@@ -99,7 +99,7 @@ const Footer = () => {
   const searchParams = new URLSearchParams(location.search);
   const customerEmail = searchParams.get("customerEmail");
   const [localEmail, setLocalEmail] = useState(searchParams.get("customerEmail"));
-  console.log("designExists", designExists)
+  // console.log("designExists", designExists)
 
   const designId = searchParams.get("designId");
   // console.log("=======nameAndNumberProductList", nameAndNumberProductList, nameAndNumberDesign)
@@ -138,7 +138,7 @@ const Footer = () => {
     },
   };
   function NamesAndNumberPrintAreas() {
-    console.log("namProductLisst", nameAndNumberProductList)
+    // console.log("namProductLisst", nameAndNumberProductList)
     const areas = nameAndNumberProductList?.flatMap(product =>
       product?.selections?.map(sel => ({
         color: product.color,
@@ -345,7 +345,7 @@ const Footer = () => {
     return new Blob([bytes], { type: contentType });
   }
   const handleSaveDesign = async (payload) => {
-    if ((addName || addNumber) && nameAndNumberProductList.length === 0) {
+    if ((addName || addNumber) && nameAndNumberProductList?.length === 0) {
       toast.warning("You haven't added Name and Number, so they shouldn't appear in your finalDesign.");
       // return;
     }

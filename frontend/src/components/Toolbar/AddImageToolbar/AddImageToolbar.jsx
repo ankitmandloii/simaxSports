@@ -1,4 +1,5 @@
 
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './AddImageToolbar.module.css'
 import loadingImage from "../../images/Loading_icon.gif"
@@ -1188,23 +1189,6 @@ const AddImageToolbar = () => {
   useEffect(() => {
     const dims = getDisplayDimensions();
     setDims(dims)
-    if (selectedImageId === null) return;
-    dispatch(updateImageState({
-      id: selectedImageId,
-      changes: {
-        loadingText: true,
-        // scaleX: scaleX * scaleRatio,
-        // scaleY: scaleY * scaleRatio,
-        // scaledValue: parsed,
-        widthPixels: dims?.pixels?.width,
-        heightPixels: dims?.pixels?.height,
-        widthInches: dims?.inches?.width,
-        heightInches: dims?.inches?.height,
-        dpi: dims.dpi,
-        loadingText: false,
-      },
-      isRenderOrNot: true,
-    }));
   }, [img, img?.width, img?.height, img?.scale, img?.scaleX, img?.scaleY])
 
   const rf = useRef(null);

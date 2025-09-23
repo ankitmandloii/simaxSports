@@ -40,75 +40,6 @@ const createNewText = ({ value, id, centerX, centerY }, totalElements) => ({
   locked: false,
   layerIndex: totalElements,
 });
-const createNewImage = (
-  { src, dpi },
-  totalElements,
-  centerX,
-  centerY
-) => ({
-  id: nanoid(),
-  src: src,
-  scaleX: 1,
-  scaleY: 1,
-  rotate: 0,
-  flipX: false,
-  flipY: false,
-  width: 150,
-  height: 150,
-  left: 280,
-  top: 200,
-  position: { x: centerX, y: centerY },
-  scaledValue: 1,
-  angle: 0,
-  locked: false,
-  layerIndex: totalElements,
-  thresholdValue: 144,
-  // AI state...
-  replaceBackgroundColor: "#000000",
-  replaceBgParamValue: "bg-remove=true&bg=AABB22",
-  cropAndTrim: false,
-  superResolution: false,
-  invertColor: false,
-  solidColor: false,
-  removeBg: false,
-  singleColor: "#ffffff",
-  base64CanvasImage: src,
-  base64CanvasImageForNormalColor: null,
-  base64CanvasImageForSinglelColor: null,
-  base64CanvasImageForBlackAndWhitelColor: null,
-  cropAndTrimParamValue:
-    "fit=crop&crop=entropy&trim=color&w=400&h=400&dpr=2&quality=100&format=webp",
-  superResolutionParamValue:
-    "?auto=enhance&dpr=2&quality=100&format=webp&upscale=true",
-  removeBgParamValue: "?remove-bg=true&dpr=2&quality=100&format=webp",
-  loading: false,
-  loadingSrc: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s",
-  replaceSrc: false,
-  selectedFilter: "Normal",
-  base64CanvasImageForNormalColor: null,
-  base64CanvasImageForSinglelColor: null,
-  base64CanvasImageForBlackAndWhitelColor: null,
-  editColor: false,
-  extractedColors: [],
-  removeBgImagebtn: false,
-  loadingText: false,
-  dpi: dpi || 150,
-  // DPI/size metrics (dynamic)
-  riginalWidth: null,          // set after probing the image
-  originalHeight: null,         // set after probing the image
-  renderWidthCanvasPx: 0,       // updated from Fabric on scale/move
-  renderHeightCanvasPx: 0,
-  canvasWidthPx: 0,             // canvas size used in calc
-  canvasHeightPx: 0,
-  dpi: 0,
-  dpiX: 0,
-  dpiY: 0,
-  resetDefault: false,
-  heightInches: 1,
-  widthInches: 1
-
-});
-
 // const createNewImage = (
 //   { src, dpi },
 //   totalElements,
@@ -132,8 +63,8 @@ const createNewImage = (
 //   locked: false,
 //   layerIndex: totalElements,
 //   thresholdValue: 144,
-//   // Ai Operation
-//   replaceBackgroundColor: "#000000", // stored with hash
+//   // AI state...
+//   replaceBackgroundColor: "#000000",
 //   replaceBgParamValue: "bg-remove=true&bg=AABB22",
 //   cropAndTrim: false,
 //   superResolution: false,
@@ -162,11 +93,80 @@ const createNewImage = (
 //   removeBgImagebtn: false,
 //   loadingText: false,
 //   dpi: dpi || 150,
+//   // DPI/size metrics (dynamic)
+//   riginalWidth: null,          // set after probing the image
+//   originalHeight: null,         // set after probing the image
+//   renderWidthCanvasPx: 0,       // updated from Fabric on scale/move
+//   renderHeightCanvasPx: 0,
+//   canvasWidthPx: 0,             // canvas size used in calc
+//   canvasHeightPx: 0,
+//   dpi: 0,
+//   dpiX: 0,
+//   dpiY: 0,
 //   resetDefault: false,
 //   heightInches: 1,
 //   widthInches: 1
 
 // });
+
+const createNewImage = (
+  { src, dpi },
+  totalElements,
+  centerX,
+  centerY
+) => ({
+  id: nanoid(),
+  src: src,
+  scaleX: 1,
+  scaleY: 1,
+  rotate: 0,
+  flipX: false,
+  flipY: false,
+  width: 150,
+  height: 150,
+  left: 280,
+  top: 200,
+  position: { x: centerX, y: centerY },
+  scaledValue: 1,
+  angle: 0,
+  locked: false,
+  layerIndex: totalElements,
+  thresholdValue: 144,
+  // Ai Operation
+  replaceBackgroundColor: "#000000", // stored with hash
+  replaceBgParamValue: "bg-remove=true&bg=AABB22",
+  cropAndTrim: false,
+  superResolution: false,
+  invertColor: false,
+  solidColor: false,
+  removeBg: false,
+  singleColor: "#ffffff",
+  base64CanvasImage: src,
+  base64CanvasImageForNormalColor: null,
+  base64CanvasImageForSinglelColor: null,
+  base64CanvasImageForBlackAndWhitelColor: null,
+  cropAndTrimParamValue:
+    "fit=crop&crop=entropy&trim=color&w=400&h=400&dpr=2&quality=100&format=webp",
+  superResolutionParamValue:
+    "?auto=enhance&dpr=2&quality=100&format=webp&upscale=true",
+  removeBgParamValue: "?remove-bg=true&dpr=2&quality=100&format=webp",
+  loading: false,
+  loadingSrc: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s",
+  replaceSrc: false,
+  selectedFilter: "Normal",
+  base64CanvasImageForNormalColor: null,
+  base64CanvasImageForSinglelColor: null,
+  base64CanvasImageForBlackAndWhitelColor: null,
+  editColor: false,
+  extractedColors: [],
+  removeBgImagebtn: false,
+  loadingText: false,
+  dpi: dpi || 150,
+  resetDefault: false,
+  heightInches: 1,
+  widthInches: 1
+
+});
 
 const initialState = {
   activeSide: "front",
