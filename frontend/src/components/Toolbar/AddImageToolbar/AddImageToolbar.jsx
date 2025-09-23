@@ -267,7 +267,7 @@ const AddImageToolbar = () => {
       else {
         normalColorImage = await getBase64CanvasImage(allTransformImage[0], color)
       }
-
+      
       //for single color image
       if (invertColor) {
         const applyFilterURL = await applyFilterAndGetUrl(allTransformImage[1], color);
