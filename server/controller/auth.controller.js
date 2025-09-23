@@ -1016,10 +1016,9 @@ exports.calculatePrice = async (req, res) => {
       return { ...m };
     };
 
-    // 1) Load config from DB
+    // Load config
     let cfg = await DiscountConfig.findOne({ key: "global" }).lean();
     if (!cfg) {
-      
       cfg = {
         tiers: [],
         sizeSurcharges: { XL: 1, "2XL": 2, "3XL": 3 },
@@ -1029,46 +1028,37 @@ exports.calculatePrice = async (req, res) => {
       };
     }
 
-    // console.log("cfg", cfg.nameAndNumberSurcharges);
-
     const dbSurcharges = toPlainObjectMap(cfg.sizeSurcharges);
     const dbLicenseFee = Number(cfg.licenseFeeFlat ?? 0);
     const printAreaFromDB = toPlainObjectMap(cfg.printAreaSurcharges);
     const nameAndNumberSurchargesFromDB = toPlainObjectMap(cfg.nameAndNumberSurcharges);
 
     const surcharges = { ...dbSurcharges, ...(extras.sizeSurcharges || {}) };
-
-
     const licenseFeeFlat = (typeof extras.licenseFeeFlat === "number") ? extras.licenseFeeFlat : dbLicenseFee;
     const printAreaMap = { ...printAreaFromDB, ...(extras.printAreaSurcharges || {}) };
     const nameAndNumberSurchargesMap = { ...nameAndNumberSurchargesFromDB, ...(extras.nameAndNumberSurcharges || {}) };
- 
 
-    // --- Choose how to apply print-area fee ---
-    const PRINT_AREA_MODE = 'orderMax'; // 'orderMax' or 'perItem'
-
+    const PRINT_AREA_MODE = 'orderMax';
     let printAreaFeeTotal = 0;
 
-    // 2) Build base breakdown (per quantity print-area surcharge)
+    // Base breakdown
     const baseBreakdown = items.map(it => {
       const unitPrice = (typeof it.unitPrice === "number")
         ? it.unitPrice
         : (CATALOG && typeof CATALOG[it.sku] === "number" ? CATALOG[it.sku] : NaN);
-      if (!Number.isFinite(unitPrice)) {
-        throw new Error(`Missing unitPrice for sku ${it.sku}`);
-      }
+      if (!Number.isFinite(unitPrice)) throw new Error(`Missing unitPrice for sku ${it.sku}`);
 
-      // collect per-item print-area flat fee (calculated per quantity)
       const printAreas = Math.max(0, Number(it.printAreas) || 0);
       const paKey = printAreas ? String(Math.min(4, Math.max(1, printAreas))) : null;
       const itemPrintAreaFee = paKey ? Number(printAreaMap[paKey] || 0) : 0;
 
-      // Apply by mode
       if (PRINT_AREA_MODE === 'perItem') {
-        printAreaFeeTotal += itemPrintAreaFee * it.quantity;
+        printAreaFeeTotal += itemPrintAreaFee * Object.values(it.sizes).reduce((s, q) => s + q, 0);
       }
 
       const sizes = it.sizes || {};
+      const extraNameQty = it.extrasizesForNameAndNumber || {};
+
       const sizeBreakdown = Object.entries(sizes).map(([size, rawQty]) => {
         const qty = Math.max(0, Number(rawQty) || 0);
         if (!qty) return null;
@@ -1077,14 +1067,21 @@ exports.calculatePrice = async (req, res) => {
         const effectiveUnit = unitPrice + sizeSurcharge;
         const baseLine = effectiveUnit * qty;
 
-        // Determine which surcharge (name, number, or both) applies
+        // Calculate name/number fee **per extra quantity** instead of qty
         let nameAndNumberFee = 0;
-        if (it.nameAndNumberSurcharges === "nameAndNumberBothPrint") {
-          nameAndNumberFee = nameAndNumberSurchargesMap.nameAndNumberBothPrint * qty; // apply surcharge for both
-        } else if (it.nameAndNumberSurcharges === "nameSurcharge") {
-          nameAndNumberFee = nameAndNumberSurchargesMap.nameSurcharge * qty; // apply name surcharge only
-        } else if (it.nameAndNumberSurcharges === "numberSurcharge") {
-          nameAndNumberFee = nameAndNumberSurchargesMap.numberSurcharge * qty; // apply number surcharge only
+        if (it.nameAndNumberSurcharges && extraNameQty) {
+          for (const [exSize, exQty] of Object.entries(extraNameQty)) {
+            const extraQty = Math.max(0, Number(exQty) || 0);
+            if (!extraQty) continue;
+
+            if (it.nameAndNumberSurcharges === "nameAndNumberBothPrint") {
+              nameAndNumberFee += nameAndNumberSurchargesMap.nameAndNumberBothPrint * extraQty;
+            } else if (it.nameAndNumberSurcharges === "nameSurcharge") {
+              nameAndNumberFee += nameAndNumberSurchargesMap.nameSurcharge * extraQty;
+            } else if (it.nameAndNumberSurcharges === "numberSurcharge") {
+              nameAndNumberFee += nameAndNumberSurchargesMap.numberSurcharge * extraQty;
+            }
+          }
         }
 
         const totalLineBeforeDiscount = baseLine + nameAndNumberFee;
@@ -1094,9 +1091,8 @@ exports.calculatePrice = async (req, res) => {
           qty,
           unitPrice,
           surcharge: sizeSurcharge,
-          // printAreaInfo now tracks per-quantity fee
           printAreaInfo: { printAreas, itemPrintAreaFee, perQtyPrintAreaFee: itemPrintAreaFee * qty },
-          nameAndNumberFee,  // Only one of the three fees will apply
+          nameAndNumberFee,
           lineBeforeDiscount: round(totalLineBeforeDiscount)
         };
       }).filter(Boolean);
@@ -1107,10 +1103,8 @@ exports.calculatePrice = async (req, res) => {
       return { sku: it.sku, name: it.name, unitPrice, quantity, sizeBreakdown, subtotalBefore, itemPrintAreaFee };
     }).filter(it => it.quantity > 0);
 
-    // Calculate totalQuantity after baseBreakdown is created
     const totalQuantity = baseBreakdown.reduce((s, i) => s + i.quantity, 0);
 
-    // If using orderMax mode, override fee to a single fee based on max printAreas across items
     if (PRINT_AREA_MODE === 'orderMax') {
       let maxAreas = 0;
       for (const it of items) {
@@ -1121,49 +1115,32 @@ exports.calculatePrice = async (req, res) => {
       printAreaFeeTotal = paKey ? Number(printAreaMap[paKey] || 0) * totalQuantity : 0;
     }
 
-    // 3) Discount tier
+    // Discount tier
     const tiers = await getTiers();
     const tier = pickTier(tiers, totalQuantity);
     const discountRate = tier?.rate || 0;
-    
 
-    // Future tiers
     const futureTiers = (tiers || [])
       .filter(t => t.minQty > totalQuantity)
-      .map(t => ({
-        threshold: t.minQty,
-        rate: t.rate,
-        percent: Math.round(t.rate * 10000) / 100,
-        addQty: Math.max(0, t.minQty - totalQuantity)
-      }));
+      .map(t => ({ threshold: t.minQty, rate: t.rate, percent: Math.round(t.rate * 10000)/100, addQty: Math.max(0, t.minQty - totalQuantity) }));
 
-    // 4) Apply discount to per-size rows (still NO print-area in unit math)
     const itemBreakdown = baseBreakdown.map(it => {
       const sizeBreakdown = it.sizeBreakdown.map(r => {
-        const effectiveBefore = r.unitPrice + r.surcharge; // ← no print-area here
+        const effectiveBefore = r.unitPrice + r.surcharge;
         const discountedUnitPrice = round(effectiveBefore * (1 - discountRate));
         const lineAfterDiscount = round(discountedUnitPrice * r.qty);
-    
-        const futureUnitPrices = futureTiers.map(ft => {
-          const unitAtTier = round(effectiveBefore * (1 - ft.rate));
-          return {
-            threshold: ft.threshold,
-            percent: ft.percent,
-            rate: ft.rate,
-            addQty: ft.addQty,
-            unitPriceAtTier: unitAtTier,
-            subtotalAtTier: round(unitAtTier * r.qty)
-          };
-        });
+
+        const futureUnitPrices = futureTiers.map(ft => ({
+          threshold: ft.threshold,
+          percent: ft.percent,
+          rate: ft.rate,
+          addQty: ft.addQty,
+          unitPriceAtTier: round(effectiveBefore * (1 - ft.rate)),
+          subtotalAtTier: round(round(effectiveBefore * (1 - ft.rate)) * r.qty)
+        }));
 
         return {
-          size: r.size,
-          qty: r.qty,
-          unitPrice: r.unitPrice,
-          surcharge: r.surcharge,
-          printAreaInfo: r.printAreaInfo, // for UI reference
-          nameAndNumberFee: r.nameAndNumberFee,
-          lineBeforeDiscount: r.lineBeforeDiscount,
+          ...r,
           discountedUnitPrice,
           lineAfterDiscount,
           futureUnitPrices
@@ -1171,55 +1148,34 @@ exports.calculatePrice = async (req, res) => {
       });
 
       const subtotalAfter = round(sizeBreakdown.reduce((s, r) => s + r.lineAfterDiscount, 0));
+
       return {
-        sku: it.sku,
-        name: it.name,
-        unitPrice: it.unitPrice,
-        quantity: it.quantity,
+        ...it,
         sizeBreakdown,
-        subtotalBefore: it.subtotalBefore,
         subtotalAfter
       };
     });
 
-    // 5) Summary
     const baseSubtotal = round(itemBreakdown.reduce((s, i) => s + i.subtotalBefore, 0) + printAreaFeeTotal);
     const discountedSubtotal = round(itemBreakdown.reduce((s, i) => s + i.subtotalAfter, 0));
     const discountAmount = round(baseSubtotal - discountedSubtotal);
 
-   
     const fees = {
       licenseFee: flags.collegiateLicense ? licenseFeeFlat : 0,
-      printAreaFee: round(printAreaFeeTotal), // per-quantity print area fees
-      nameAndNumberFees: round(itemBreakdown.reduce((s, i) => s + i.sizeBreakdown.reduce((ss, r) => ss + r.nameAndNumberFee, 0), 0)) // total name and number fees
+      printAreaFee: round(printAreaFeeTotal),
+      nameAndNumberFees: round(itemBreakdown.reduce((s, i) => s + i.sizeBreakdown.reduce((ss, r) => ss + r.nameAndNumberFee, 0), 0))
     };
 
-   
-    // Grand total includes discountedSubtotal + all fees (print area, name/number, and license)
     const grandTotal = round(discountedSubtotal + fees.licenseFee + fees.printAreaFee + fees.nameAndNumberFees);
-
     const eachBeforeDiscount = totalQuantity > 0 ? round(baseSubtotal / totalQuantity) : 0;
     const eachAfterDiscount = totalQuantity > 0 ? round(grandTotal / totalQuantity) : 0;
 
     res.json({
-      summary: {
-        totalQuantity,
-        baseSubtotal,
-        discountTier: {
-          threshold: tier?.minQty || 1,
-          rate: discountRate,
-          percent: Math.round(discountRate * 10000) / 100
-        },
-        eachBeforeDiscount,
-        eachAfterDiscount,
-        ladder: futureTiers,
-        discountAmount,
-        fees,
-        grandTotal
-      },
-      maxDiscountRate: ((tiers[tiers.length - 1]?.rate || 0)* 100),
+      summary: { totalQuantity, baseSubtotal, discountTier: { threshold: tier?.minQty || 1, rate: discountRate, percent: Math.round(discountRate*10000)/100 }, eachBeforeDiscount, eachAfterDiscount, ladder: futureTiers, discountAmount, fees, grandTotal },
+      maxDiscountRate: ((tiers[tiers.length - 1]?.rate || 0) * 100),
       items: itemBreakdown
     });
+
   } catch (err) {
     res.status(400).json({ error: err.message || "Bad request" });
   }
