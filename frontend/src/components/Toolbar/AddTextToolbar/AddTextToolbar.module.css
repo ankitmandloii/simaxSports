@@ -149,8 +149,8 @@
   cursor: pointer;
 }
 
-.toolbarBoxIconsContainerClickStyleFlip1 span {
-  padding: 6px 8px;
+.toolbarBoxIconsContainerClickStyleFlip1 {
+  padding: 3px 8px;
   margin-bottom: 4px;
   display: flex;
   color: white;
@@ -163,8 +163,8 @@
   cursor: pointer;
 }
 
-.toolbarBoxIconsContainerClickStyleFlip2 span {
-  padding: 6px 8px;
+.toolbarBoxIconsContainerClickStyleFlip2 {
+  padding: 3px 8px;
   margin-bottom: 4px;
   display: flex;
   color: white;

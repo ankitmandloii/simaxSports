@@ -350,7 +350,9 @@ const AddTextToolbar = () => {
 
 
   const colorClassName = flipXValue !== true ? style.toolbarBoxIconsContainerFlip1 : style.toolbarBoxIconsContainerClickStyleFlip1;
-  const icon = flipXValue !== true ? <FlipFirstIcon /> : <FlipFirstWhiteColorIcon />;
+  // const icon = flipXValue !== true ? <FlipFirstIcon /> : <FlipFirstWhiteColorIcon />;
+  const icon = flipXValue !== true ? <FlipFirstIcon /> : <FlipFirstIcon />;
+
 
 
   //for FLipY
@@ -368,7 +370,9 @@ const AddTextToolbar = () => {
   }, [flipXValue, flipYValue])
 
   const colorClassNameForY = flipYValue !== true ? style.toolbarBoxIconsContainerFlip2 : style.toolbarBoxIconsContainerClickStyleFlip2;
-  const iconY = flipYValue !== true ? <FlipSecondIcon /> : <FlipSecondWhiteColorIcon />;
+  // const iconY = flipYValue !== true ? <FlipSecondIcon /> : <FlipSecondWhiteColorIcon />;
+  const iconY = flipYValue !== true ? <FlipSecondIcon /> : <FlipSecondIcon />;
+
 
   const handleDuplcateTextInput = () => {
     const islocked = textContaintObject.locked;
