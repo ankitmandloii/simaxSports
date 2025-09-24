@@ -864,7 +864,7 @@ const Review = () => {
         // console.log("emailPayload", emailPayload);
         await sendEmailDesign(emailPayload);
         if (checkoutData?.checkoutUrl) {
-          // window.location.href = checkoutData?.checkoutUrl;
+          window.location.href = checkoutData?.checkoutUrl;
         } else {
           throw new Error("No checkout URL returned");
         }
