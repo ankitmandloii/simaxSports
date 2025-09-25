@@ -422,6 +422,7 @@ const TextFrontendDesignSlice = createSlice({
         side = state.activeSide,
         isRenderOrNot,
       } = action.payload;
+      console.log("-----changesText", changes)
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       const text = state.present[side]?.texts?.find((t) => t.id === id);
       if (text && !text.locked) Object.assign(text, changes);
@@ -531,26 +532,39 @@ const TextFrontendDesignSlice = createSlice({
     // },
     undo: (state) => {
       const side = state.activeSide;
-      if (state.past[side].length === 0) return;
+      // console.log("------pastt", state.past[side]);
+      if (state.past[side].length === 0) {
+        // console.log(`🚫 [undo] No past states available for side: ${side}`);
+        return;
+      }
 
-      // console.log("↩️ [undo] Triggered for side:", side);
+      // console.log(`↩️ [undo] Triggered for side: ${side}`);
+      // console.log(`📋 [undo] Current present state before undo:`, JSON.parse(JSON.stringify(state.present[side])));
+      // console.log(`⏪ [undo] Past states stack (length: ${state.past[side].length}):`, state.past[side]);
 
       // Save current state → future
       state.future[side].unshift(
         JSON.parse(JSON.stringify(state.present[side]))
       );
+      // console.log(`⏩ [undo] Saved current state to future stack (length: ${state.future[side].length}):`, state.future[side][0]);
 
       // Peek at last snapshot
       const lastSnapshot = state.past[side][state.past[side].length - 1];
+      // console.log(`👀 [undo] Last snapshot in past:`, lastSnapshot);
 
       if (lastSnapshot?.__type === "image" && state.past[side].length > 1) {
         // Pop twice if last change was an image
+        // console.log(`🖼️ [undo] Detected image change, performing double-pop for side: ${side}`);
         state.past[side].pop();
         state.present[side] = state.past[side].pop();
-        // console.log("🖼️ [undo] Double-pop for image change");
+        // console.log(`🖼️ [undo] After double-pop, new present state:`, state.present[side]);
+        // console.log(`⏪ [undo] Updated past stack (length: ${state.past[side].length}):`, state.past[side]);
       } else {
         // Normal undo
+        // console.log(`🔄 [undo] Performing normal undo for side: ${side}`);
         state.present[side] = state.past[side].pop();
+        // console.log(`🔄 [undo] After normal undo, new present state:`, state.present[side]);
+        // console.log(`⏪ [undo] Updated past stack (length: ${state.past[side].length}):`, state.past[side]);
       }
 
       // Force re-render
@@ -558,7 +572,8 @@ const TextFrontendDesignSlice = createSlice({
         state.present[side].renderVersion = 0;
       }
       state.present[side].renderVersion++;
-      // console.log("🎨 [undo] Restored snapshot, renderVersion =", state.present[side].renderVersion);
+      // console.log(`🎨 [undo] Restored snapshot, renderVersion = ${state.present[side].renderVersion}`);
+      // console.log(`📋 [undo] Final present state after undo:`, state.present[side]);
     },
 
 
@@ -589,7 +604,13 @@ const TextFrontendDesignSlice = createSlice({
     // Reset canvas state for all sides
     resetCanvasState: (state) => {
       const side = state.activeSide;
-      state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
+      // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));\
+      state.past = {
+        front: [],
+        back: [],
+        leftSleeve: [],
+        rightSleeve: [],
+      };
       state.present = {
         front: {
           selectedTextId: null,

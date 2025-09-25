@@ -500,9 +500,19 @@ const MainDesignTool = ({
     obj.setPositionByOrigin(center, 'center', 'center');
     obj.setCoords();
 
-    globalDispatch("scaleX", parseFloat(relativeScaleX.toFixed(2)), obj.id);
-    globalDispatch("scaleY", parseFloat(relativeScaleY.toFixed(2)), obj.id);
-    globalDispatch("scaledValue", parseFloat(((relativeScaleX + relativeScaleY) / 2).toFixed(2)), obj.id);
+    dispatch(updateImageState({
+      id: obj.id,
+      changes: {
+        scaleX: parseFloat(relativeScaleX.toFixed(2)),
+        scaleY: parseFloat(relativeScaleY.toFixed(2)),
+        scaledValue: parseFloat(((relativeScaleX + relativeScaleY) / 2).toFixed(2))
+      }
+
+    }));
+
+    // globalDispatch("scaleX", parseFloat(relativeScaleX.toFixed(2)), obj.id);
+    // globalDispatch("scaleY", parseFloat(relativeScaleY.toFixed(2)), obj.id);
+    // globalDispatch("scaledValue", parseFloat(((relativeScaleX + relativeScaleY) / 2).toFixed(2)), obj.id);
 
     canvas?.renderAll();
     syncMirrorCanvasHelper(activeSide);

@@ -4,7 +4,7 @@ async function blobUrlToFile(blobUrl, filename = "canvas.png") {
     const blob = await response.blob();      // convert to blob
     return new File([blob], filename, { type: blob.type });
 }
-export async function uploadImagesInBatches(allImages, batchSize = 2) {
+export async function uploadImagesInBatches(allImages, batchSize = 1) {
     const uploadedImageUrls = [];
 
     // Convert all base64 to File objects first

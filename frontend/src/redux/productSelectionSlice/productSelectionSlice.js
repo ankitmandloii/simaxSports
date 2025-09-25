@@ -100,7 +100,7 @@ const productSelectionSlice = createSlice({
       }
       )
 
-      // console.log(selectedIds, "selectedIds");
+      console.log(selectedIds, "selectedIds");
 
 
       // Keep only products whose id is in selectedIds

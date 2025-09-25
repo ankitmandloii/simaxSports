@@ -76,7 +76,7 @@ const AddImageToolbar = () => {
   const [bgColorPopup, setBGColorPopup] = useState(false);
   const [ColorPopup, setColorPopup] = useState(false);
   const [replacebgwithAi, setreplaceBgwithAi] = useState(true);
-  const [targetDpi, setTargetDpi] = useState(img?.dpi)
+  const [targetDpi, setTargetDpi] = useState(300)
   //  const [activeFilter, setActiveFilter] = useState(filters[0]);
 
 
@@ -111,6 +111,7 @@ const AddImageToolbar = () => {
         height: (heightPixels / targetDpi).toFixed(2),
       },
       dpi: targetDpi,
+      effectedDpi: parseInt(originalWidthPx / ((widthPixels / targetDpi).toFixed(2)))
     };
   }
 
@@ -1544,7 +1545,7 @@ const AddImageToolbar = () => {
                       {/* <p><span>Width: </span> {dims.inches.width} IN</p>
                           <p><span>Height:</span> {dims.inches.height} IN</p> */}
                       <p><span>Pixels: </span>{dims?.pixels.width} × {dims?.pixels.height}</p>
-                      <p>DPI: {targetDpi} </p>
+                      <p>DPI: {dims?.effectedDpi ?? 300} </p>
                       {/* <p>Pixels: {dims.pixels.width} × {dims.pixels.height}</p>  */}
                     </div>
                     {/* {(() => {

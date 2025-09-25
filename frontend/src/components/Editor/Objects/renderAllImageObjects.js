@@ -1,6 +1,7 @@
 import React from "react";
 import { store } from "../../../redux/store"
 import { processAndReplaceColors, applyFilterAndGetUrl, invertColorsAndGetUrl, getBase64CanvasImage, replaceColorAndGetBase64 } from "../../ImageOperation/CanvasImageOperations";
+import { updateImageState } from "../../../redux/FrontendDesign/TextFrontendDesignSlice";
 const renderAllImageObjects = (
   fabricCanvasRef,
   dispatch,
@@ -756,11 +757,22 @@ const renderAllImageObjects = (
             // console.log("---------------- imageWidthPx", imageWidthPx)
             // console.log("---------------- imageHeightPx", imageHeightPx)
 
+            dispatch(updateImageState({
+              id: id,
+              changes: {
+                // loadingText: true,
+                width: imageWidthPx,
+                height: imageHeightPx,
+                position: { x: obj.left, y: obj.top },
+                angle: obj.angle,
+                // loadingText: false,
+              }
 
-            globalDispatch("width", imageWidthPx, id);
-            globalDispatch("height", imageHeightPx, id);
-            globalDispatch("position", { x: obj.left, y: obj.top }, id);
-            globalDispatch("angle", obj.angle, id);
+            }));
+            // globalDispatch("width", imageWidthPx, id);
+            // globalDispatch("height", imageHeightPx, id);
+            // globalDispatch("position", { x: obj.left, y: obj.top }, id);
+            // globalDispatch("angle", obj.angle, id);
             // globalDispatch("")
             handleScale(e);
             try {
@@ -1110,14 +1122,32 @@ const renderAllImageObjects = (
             obj.setCoords();
             const imageWidthPx = img?.getScaledWidth();
             const imageHeightPx = img?.getScaledHeight();
-            globalDispatch("position", { x: obj.left, y: obj.top }, id);
-
-            globalDispatch("width", imageWidthPx, id);
-            globalDispatch("height", imageHeightPx, id);
 
 
+            dispatch(updateImageState({
+              id: id,
+              changes: {
+                // loadingText: true,
+                position: { x: obj.left, y: obj.top },
+                width: imageWidthPx,
+                height: imageHeightPx,
+                angle: obj.angle,
+                // heightPixels: dims.pixels.height,
+                // widthInches: dims.inches.width,
+                // heightInches: dims.inches.height,
+                // dpi: dims.dpi,
+                // loadingText: false,
+              },
+              // isRenderOrNot: true,
+            }));
+            // globalDispatch("position", { x: obj.left, y: obj.top }, id);
 
-            globalDispatch("angle", obj.angle, id);
+            // globalDispatch("width", imageWidthPx, id);
+            // globalDispatch("height", imageHeightPx, id);
+
+
+
+            // globalDispatch("angle", obj.angle, id);
             handleScale(e);
             try {
               canvas.renderAll();

@@ -23,6 +23,7 @@ import EmailInputPopup from "../../components/PopupComponent/EmailInputPopup/Ema
 import { FaArrowRightLong } from "react-icons/fa6";
 import * as tmImage from "@teachablemachine/image";
 import { uploadImagesInBatches } from "../../components/utils/uploadImagesInBatches";
+// import { Object } from "fabric/fabric-impl";
 
 async function detectSleeveType(imageUrl) {
   try {
@@ -62,6 +63,8 @@ const Review = () => {
   const nameAndNumberDesign = useSelector((state) => state.TextFrontendDesignSlice.nameAndNumberDesignState)
   const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
   const nameAndNumberProductList = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].nameAndNumberProductList);
+  console.log(nameAndNumberProductList, "nameAndNumberProductList");
+
   const design = useSelector((state) => state.TextFrontendDesignSlice.present);
   const productState = useSelector((state) => state.productSelection.products);
   const designState = useSelector((state) => state.TextFrontendDesignSlice);
@@ -192,30 +195,25 @@ const Review = () => {
     // console.log("---------addnamedesignSlice", nameAndNumberDesign, nameAndNumberProductList)
   }, [isFetchingDesign, retrieveLoader, designExists]);
 
-  function getSizeSelectionsForNameAndNumber() {
-    const nameAndNumberProductList = [
-      ["id1", [{ size: "S" }, { size: "M" }, { size: "S" }]],
-      ["id2", [{ size: "L" }, { size: "L" }]]
-    ];
-
-    const extraSizesForNameAndNumber = nameAndNumberProductList.map(([id, rows]) => {
-      const sizeCount = rows.reduce((acc, sel) => {
-        // Check if the size property already exists in the accumulator object
-        if (acc[sel.size]) {
-          // If it exists, increment the count
-          acc[sel.size] += 1;
-        } else {
-          // If it does not exist, initialize the count to 1
-          acc[sel.size] = 1;
-        }
-        return acc;
-      }, {}); // Initialize the accumulator as an empty object
-
-      return [id, sizeCount];
+  function getSizeSelectionsForNameAndNumber(id, givenSize) {
+    console.log("given id and size", id, givenSize);
+    // const nameAndNumberProductList = [
+    //   ["id1", [{ size: "S" }, { size: "M" }, { size: "S" }]],
+    //   ["id2", [{ size: "L" }, { size: "L" }]]
+    // ];
+    const selectinRowsForId = nameAndNumberProductList.find((item) => item.id == id);
+    console.log("selectinRowsForId", selectinRowsForId)
+    if (!selectinRowsForId) return
+    const sizeCount = Object.entries(selectinRowsForId.sizeCount).find(([size, cnt]) => {
+      return size == givenSize;
     });
 
-    console.log(extraSizesForNameAndNumber, "extraSizesForNameAndNumber");
-    return extraSizesForNameAndNumber;
+    console.log(sizeCount, " sizeCount ", givenSize);
+    if (!sizeCount) {
+      return {};
+    }
+    return { [sizeCount[0]]: sizeCount[1] } ?? {};
+    // return extraSizesForNameAndNumber;
   }
 
 
@@ -243,7 +241,6 @@ const Review = () => {
       inventory_quantity: product?.inventory_quantity,
       vendor: product?.vendor,
       handle: product?.handle,
-      // sizeSelectionsForNameAndNumber: getSizeSelectionsForNameAndNumber(product)
     };
   });
   console.log(reviewItems, "reviewItems");
@@ -403,12 +400,14 @@ const Review = () => {
       const variantTitles = sizeskey.map(([size, count]) => {
         return { title: `${color} / ${size}`, inventory_quantity: count };
       });
-
+      const id = product.variantId.split("/").reverse()[0];
       const data = variantTitles.map((varianttitle) => {
         const variantData = allVariants.find((v) => v.title == varianttitle.title);
         // console.log(variantData, "variantdata"); 
         const size = varianttitle.title.split("/")[1].trim();
 
+        const extrasizesForNameAndNumber = getSizeSelectionsForNameAndNumber(id, size)
+        console.log("sizeSelectionsForNameAndNumber", extrasizesForNameAndNumber)
         const newData = {
           unitPrice: Number.parseFloat(variantData?.price),
           printAreas: 1,
@@ -417,6 +416,7 @@ const Review = () => {
           sizes: {
             [size]: Number(varianttitle.inventory_quantity)
           },
+          extrasizesForNameAndNumber,
           ...(addName && !addNumber && { nameAndNumberSurcharges: "nameSurcharge" }),
           ...(!addName && addNumber && { nameAndNumberSurcharges: "numberSurcharge" }),
           ...(addName && addNumber && { nameAndNumberSurcharges: "nameAndNumberBothPrint" }),
@@ -432,7 +432,7 @@ const Review = () => {
         collegiateLicense: CollegiateLicense
       }
     };
-    // console.log("data.....", dataForDiscountCheck);
+    console.log("data.....", dataForDiscountCheck);
     // console.log("totalItems", totalItems);
     if (totalItems == 0) return;
     // Failed to calculate discount please try again later

@@ -543,6 +543,7 @@ const QuantityToolbar = () => {
 
   // console.log("--------quantitysele", selectedProducts);
   const productState = useSelector((state) => state.productSelection.products);
+  console.log('productState', productState)
 
   const CollegiateLicense = useSelector((state) => state.productSelection.CollegiateLicense);
 
@@ -702,8 +703,29 @@ const QuantityToolbar = () => {
 
     // -------------Populate sizes from nameAndNumber state--------------------
     nameAndNumberProductList?.forEach((product) => {
-      const availableSizes = product?.sizeCount || {};
-      const allSizes = product?.sizes || [];
+      const selection = productState[product.id];
+      console.log("selections", selection);
+
+      const newObj = { ...product?.sizeCount }; // existing size counts
+
+      // Merge and take max of each size
+      const availableSizes = {};
+
+      // Get all unique size keys
+      let allSizes = new Set([
+        ...Object.keys(newObj),
+        ...Object.keys(selection?.selections ?? {})
+      ]);
+
+      allSizes.forEach((size) => {
+        const sizeCount = newObj[size] ?? 0;
+        const selectionCount = selection?.selections?.[size] ?? 0;
+        availableSizes[size] = Math.max(sizeCount, selectionCount);
+      });
+
+      console.log("availableSizes", availableSizes);
+
+      allSizes = product?.sizes || [];
 
       if (Object.keys(availableSizes).length > 0) {
         for (let [size, value] of Object.entries(availableSizes)) {
@@ -712,11 +734,13 @@ const QuantityToolbar = () => {
         allSizes?.forEach((size) => {
           if (!(size.size in availableSizes)) {
             handleQuantityChange(product.id, size.size, 0);
+            console.log("prudct id ", product.id, size.size, 0)
           }
         });
       } else {
         allSizes?.forEach((size) => {
           handleQuantityChange(product.id, size.size, 0);
+          console.log("else prudct id ", product.id, size.size, 0)
         });
       }
     });
@@ -891,18 +915,18 @@ const QuantityToolbar = () => {
     // return availableSizesQuantity.find((i) => i.sku === item.sku)?.total_available ?? 0
   }
 
-  function getValueOfItem(productId, item) {
-    // console.log("product state is", productState)
-    // console.log("calling function for getting value", productId, item.size);
-    // console.log("avialbel quuantity", productState[productId]?.selections?.[item.size])
+  // function getValueOfItem(productId, item) {
+  //   console.log("product state is", productState)
+  //   console.log("calling function for getting value", productId, item.size);
+  //   console.log("avialbel quuantity", productState[productId]?.selections?.[item.size])
 
-    return productState[productId]?.selections?.[item.size] || ''
-  }
+  //   return productState[productId]?.selections?.[item.size] || ''
+  // }
 
   function getValueOfItem(productId, item) {
-    // console.log("product state is", productState)
-    // console.log("calling function for getting value", productId, item.size);
-    // console.log("avialbel quuantity", productState[productId]?.selections?.[item.size])
+    console.log("product state is", productState)
+    console.log("calling function for getting value", productId, item.size);
+    console.log("avialbel quuantity", productState[productId]?.selections?.[item.size])
 
     return productState[productId]?.selections?.[item.size] || ''
   }
