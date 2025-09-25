@@ -151,8 +151,8 @@ const storage = multer.memoryStorage(); //for S3
 const upload = multer({
   storage,
   limits: {
-    fileSize: 20 * 1024 * 1024,  // Max file size: 10MB
-    files: 5                    // Max 2 files
+    fileSize: 40 * 1024 * 1024,  // Max file size: 40MB
+    files: 5                    // Max 5 files
   },
   fileFilter: (req, file, cb) => {
     const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
@@ -167,7 +167,7 @@ const upload = multer({
 const uploadforSingleEditImage = multer({
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024,  // Max file size: 10MB
+    fileSize: 40 * 1024 * 1024,  // Max file size: 40MB
     files: 5                    // Max 2 files
   },
   fileFilter: (req, file, cb) => {
@@ -196,7 +196,7 @@ const cloudinaryUpload = multer({
   storage: multer.memoryStorage(),
   fileFilter: imageFileFilter,
   limits: {
-    fileSize: 10 * 1024 * 1024 // Optional: 10MB per file
+    fileSize: 20 * 1024 * 1024 // Optional: 20MB per file
     // Do NOT set 'files' limit if you want unlimited number of images
   }
 });
