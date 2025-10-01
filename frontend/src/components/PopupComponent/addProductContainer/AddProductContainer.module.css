@@ -378,12 +378,12 @@
 
 @media (max-width: 768px) {
   .heading {
-    font-size: 10px;
+    font-size: 15px;
   }
 
   .modalContent {
     width: 90%;
-    padding: 16px;
+    /* padding: 16px; */
     top: 10%;
   }
 
@@ -532,6 +532,6 @@
   }
 
   .modalHeader {
-    justify-content: space-around;
+    /* justify-content: space-around; */
   }
 }

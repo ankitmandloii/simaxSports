@@ -67,6 +67,14 @@
   border-bottom: none;
 }
 
+.formatPara {
+  font-size: 12px;
+  margin-top: 10px;
+  text-align: center;
+  color: #555;
+  ;
+}
+
 .uploadFileBtn {
   height: 33px;
   background: black;

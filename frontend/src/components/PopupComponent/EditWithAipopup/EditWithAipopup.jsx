@@ -273,7 +273,8 @@ const EditWithAipopup = ({ onClose }) => {
             } catch (err) {
                 if (err.name !== "AbortError") {
                     console.error("Error uploading image:", err.message);
-                    toast.error(`Error uploading image: ${err.message}`);
+                    // toast.error(`Error uploading image: ${err.message}`);
+                    toast.error(err?.response?.data?.message);
                 }
                 setUploadStatus("error");
                 setUploadProgress(0);

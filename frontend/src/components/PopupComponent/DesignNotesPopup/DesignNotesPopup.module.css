@@ -107,6 +107,7 @@
     height: 4rem;
     border: 1px solid #ccc;
     border-radius: 4px;
+    resize: none;
     min-height: 40px;
 }
 

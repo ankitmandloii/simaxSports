@@ -947,59 +947,7 @@ const TextFrontendDesignSlice = createSlice({
     },
 
     // ---neww
-    // updateImageState: (state, action) => {
-    //   const { id, changes, side = state.activeSide, isRenderOrNot } = action.payload;
-    //   const image = state.present[side]?.images?.find(img => img.id === id);
-    //   if (!image || image.locked) return;
 
-
-
-    //   if (changes?.loading || changes?.loadingText) {
-    //     console.log("data temp store..", changes);
-    //     console.log("we are storing present data to past when laoding true ", JSON.parse(JSON.stringify(state.present[side])))
-    //     state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-    //   }
-    //   // Buffer changes until operation is done
-
-    //   if (!state.imageChangeBuffer[side][id]) {
-    //     state.imageChangeBuffer[side][id] = [];
-    //   }
-    //   state.imageChangeBuffer[side][id].push(changes);
-
-    //   // Apply changes immediately so UI updates
-    //   Object.assign(image, changes);
-
-    //   // ✅ Only commit snapshot when loading:false
-    //   if (changes.loading === false || changes.loadingText === false) {
-    //     const combined = state.imageChangeBuffer[side][id].reduce(
-    //       (acc, curr) => ({ ...acc, ...curr, loading: false }),
-    //       {}
-    //     );
-    //     // Save history
-    //     console.log("we are storing present data to past when laoding false ", JSON.parse(JSON.stringify(state.present[side])))
-    //     // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-    //     const snapshot = JSON.stringify(state.present[side]);
-    //     const last = state.past[side].length
-    //       ? JSON.stringify(state.past[side][state.past[side].length - 1])
-    //       : null;
-
-    //     if (snapshot !== last) {
-    //       state.past[side].push(JSON.parse(snapshot));
-    //     }
-
-    //     Object.assign(image, combined);
-
-    //     // cleanup
-    //     delete state.imageChangeBuffer[side][id];
-    //     state.future[side] = [];
-    //   }
-
-    //   // skip undo history if rendering-only
-    //   if (isRenderOrNot) {
-    //     if (!state.present[side].renderVersion) state.present[side].renderVersion = 0;
-    //     state.present[side].renderVersion++;
-    //   }
-    // },
     updateImageState: (state, action) => {
       const { id, changes, side = state.activeSide, isRenderOrNot } = action.payload;
       console.log("-----changes", changes)
@@ -1013,6 +961,7 @@ const TextFrontendDesignSlice = createSlice({
         snap.__type = "image"; // 🏷️ tag snapshot
         state.past[side].push(snap);
       }
+
 
       // Buffer changes until operation is done
       if (!state.imageChangeBuffer[side][id]) {
@@ -1062,66 +1011,7 @@ const TextFrontendDesignSlice = createSlice({
 
 
 
-    // updateImageState: (state, action) => {
-    //   const {
-    //     id,
-    //     changes,
-    //     side = state.activeSide,
-    //     isRenderOrNot,
-    //   } = action.payload;
-    //   // console.log("id", id, "changes........................", changes);
-    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-    //   const image = state.present[side]?.images?.find((img) => img.id === id);
-    //   if (image && !image.locked) Object.assign(image, changes);
-    //   if (isRenderOrNot) {
-    //     state.present[side].setRendering = !state.present[side].setRendering;
-    //   }
-    //   state.future[side] = [];
-    // },
-    // duplicateImageState: (state, action) => {
-    //   const side = state.activeSide;
-    //   const idToDuplicate = action.payload;
 
-    //   if (!state.present[side]?.images) {
-    //     return;
-    //   }
-
-    //   const imageToDuplicate = state.present[side].images.find(
-    //     (img) => img.id === idToDuplicate
-    //   );
-
-    //   if (!imageToDuplicate) {
-    //     return;
-    //   }
-
-    //   if (imageToDuplicate.locked) {
-    //     return;
-    //   }
-
-
-    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-
-    //   const newPosition = {
-    //     x: imageToDuplicate.position.x + 20,
-    //     y: imageToDuplicate.position.y + 20,
-    //   };
-
-    //   const newImage = {
-    //     ...JSON.parse(JSON.stringify(imageToDuplicate)),
-    //     id: nanoid(),
-    //     position: newPosition,
-    //     left: newPosition.x,
-    //     top: newPosition.y,
-    //     layerIndex: state.present[side].images.length,
-    //   };
-
-    //   // console.log("New duplicated image:", newImage);
-
-    //   state.present[side].images.push(newImage);
-    //   state.present[side].selectedImageId = newImage.id;
-    //   state.future[side] = [];
-    //   state.present[side].setRendering = !state.present[side].setRendering;
-    // },
 
     // deleteeee reducers
     deleteTextState: (state, action) => {
