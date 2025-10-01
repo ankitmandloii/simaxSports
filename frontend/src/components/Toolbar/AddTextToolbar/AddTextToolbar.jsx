@@ -715,7 +715,7 @@ const AddTextToolbar = () => {
                         type="range"
                         id="min"
                         name="min"
-                        min="0"
+                        min="-360"
                         max="360"
                         step="0.1"
                         value={rangeValuesRotate}
@@ -724,7 +724,7 @@ const AddTextToolbar = () => {
 
                       <input
                         type="number"
-                        min="0"
+                        min="-360"
                         max="360"
                         step="0.1"
                         value={rangeValuesRotate}

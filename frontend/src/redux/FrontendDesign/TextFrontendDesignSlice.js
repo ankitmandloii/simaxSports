@@ -684,24 +684,24 @@ const TextFrontendDesignSlice = createSlice({
 
     setAddNumber: (state, action) => {
       const side = state.activeSide;
-
+      // state.present[side].addName = action.payload;
       const canvasComponent = document.querySelector(`#canvas-${side}`); // Simple way, but ideally use refs or context
       const rect = canvasComponent.getBoundingClientRect();
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
+
       const changes = {
         position: {
           x: centerX,
           y: centerY,
         }
       }
-      state.addNumber = action.payload;
-      if (state.present[side]?.nameAndNumberDesignState) {
-        Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
+      // state.addNumber = action.payload;
+      if (state?.nameAndNumberDesignState) {
+        Object.assign(state?.nameAndNumberDesignState, changes);
       }
-      state.present[side].addNumber = action.payload;
+      state.addNumber = action.payload;
       state.present[side].setRendering = !state.present[side].setRendering;
-
 
     },
     setAddName: (state, action) => {

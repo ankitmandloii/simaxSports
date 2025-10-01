@@ -379,7 +379,6 @@ const MainDesignTool = ({
       fabric,
       globalDispatch,
       activeSide,
-
       addNumber,
       addName,
       updateNameAndNumberDesignState,
@@ -622,6 +621,7 @@ const MainDesignTool = ({
   // }, [zoomLevel]);  // Trigger effect when zoomLevel changes
 
   function removeAllHtmlControls(canvas) {
+    // return
     if (!canvas) {
       canvas = fabricCanvasRef.current;
     }
@@ -1087,7 +1087,7 @@ const MainDesignTool = ({
     };
 
     loadAndRender();
-  }, [isRender, addName, addNumber, nameAndNumberDesignState, activeSide]);
+  }, [isZoomedIn, addName, addNumber, nameAndNumberDesignState, activeSide]);
 
   useEffect(() => {
     const sleeveType = getProductSleeveType(activeProductTitle);
