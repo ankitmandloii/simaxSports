@@ -159,6 +159,7 @@ const upload = multer({
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
+      console.log("file.mimetype2", file.mimetype);
       cb(new Error("Only JPEG, PNG, and JPG images are allowed"));
     }
   }

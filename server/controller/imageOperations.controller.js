@@ -84,6 +84,9 @@ exports.fileUploadForImgixUrl = async (req, res) => {
     try {
         const files = req.files?.length ? req.files : req.file ? [req.file] : [];
 
+
+
+        console.log(files, "files array")
         if (files.length === 0) {
             return res.status(400).json({ message: "No file(s) uploaded" });
         }

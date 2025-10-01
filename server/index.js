@@ -16,7 +16,9 @@ const cookieParser = require("cookie-parser");
 const { verifyShopifyWebhook } = require('./schema/customerValidation.js');
 const { orderPaymentDoneForOrderWEbHooks } = require('./controller/customer.controller.js');
 const cron = require("node-cron");
-const { runCleanupNow } = require("./utils/cleanDesigns.js")
+const { runCleanupNow } = require("./utils/cleanDesigns.js");
+const {sendResponse} = require('./utils/sendResponse.js');
+const { statusCode } = require('./constant/statusCodes.js');
 
 
 ConnectCloadinary();
@@ -57,14 +59,18 @@ cron.schedule('0 2 * * *', async () => {
 
 app.use((err, req, res, next) => {
   if (err.code === "LIMIT_FILE_SIZE") {
-    return res.status(400).json({ message: "File size is too large (max 10MB)" });
+    sendResponse(res, statusCode.BAD_REQUEST, false,  "File size is too large (max 10MB)");
+    return;
   }
 
   if (err instanceof multer.MulterError) {
-    return res.status(400).json({ message: "File size is too large (max 10MB)" });
+    sendResponse(res, statusCode.BAD_REQUEST, false,  "File size is too large (max 10MB)");
+    return;
   }
 
-  return res.status(500).json({ message: "Internal Server Error" });
+  console.error("Unhandled error:", err);
+  sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, err.message || "Internal Server Error");
+  return;
 });
 
 
