@@ -486,6 +486,7 @@ const AddTextToolbar = () => {
               onInput={handleShowContent}
               value={text || ''}
               maxLength={250}
+              disabled={isLocked}
               className={style.toolbarBoxTextarea}
             />
 

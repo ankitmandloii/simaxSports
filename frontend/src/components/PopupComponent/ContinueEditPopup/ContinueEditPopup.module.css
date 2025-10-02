@@ -189,9 +189,9 @@
 
 /* Mobile responsiveness */
 @media (max-width: 500px) {
-  .modal {
+  /* .modal {
     padding: 1.5rem;
-  }
+  } */
 
   .previewImage {
     width: 3.2rem;

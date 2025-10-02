@@ -1,5 +1,273 @@
-import React from "react";
+// import React from "react";
+// import { updateTextState } from "../../../redux/FrontendDesign/TextFrontendDesignSlice";
+// import { removeAllHtmlControls } from "../HelpersFunctions/renderImageHelpers";
+
+
+// const renderCurveTextObjects = (
+//   fabricCanvasRef,
+//   dispatch,
+//   textContaintObject,
+//   setActiveObjectType,
+//   updateBoundaryVisibility,
+//   createControls,
+//   syncMirrorCanvasHelper,
+//   navigate,
+//   fabric,
+//   setSelectedTextState,
+//   globalDispatch,
+//   activeSide,
+//   bringPopup,
+//   productCategory,
+//   isZoomedIn,
+//   location
+// ) => {
+//   const canvas = fabricCanvasRef.current;
+
+//   // ✅ Global canvas optimizations
+//   canvas.renderOnAddRemove = false;
+//   canvas.perPixelTargetFind = false;
+//   canvas.targetFindTolerance = 8;
+
+//   if (textContaintObject && textContaintObject.length === 0) {
+//     let existingTextbox = canvas
+//       .getObjects()
+//       .filter((obj) => obj.type === "curved-text" || obj.type === "textbox");
+//     existingTextbox.forEach((obj) => canvas.remove(obj));
+//     return;
+//   }
+
+//   if (Array.isArray(textContaintObject)) {
+//     textContaintObject.forEach((textInput) => {
+//       const { fontSize, id, content, fontStyle, fontWeight, locked, flipY, flipX, scaleY, scaleX, fontFamily, position, angle, textColor, arc, spacing, outLineColor, outLineSize, layerIndex } = textInput;
+//       const canvas = fabricCanvasRef.current;
+//       const existingObj = canvas
+//         .getObjects()
+//         .find((obj) => obj.id === id);
+
+//       const text = content || "";
+//       const charSpacing = spacing || 0;
+//       // const fontSize = 60;
+
+//       const clampScale = (value, min = 1, max = 10) =>
+//         Math.max(min, Math.min(value, max));
+
+//       const context = canvas.getElement().getContext("2d");
+//       context.font = `${fontSize}px ${fontFamily || "Arial"}`;
+//       const baseWidth = context.measureText(text).width;
+//       const extraSpacing = (text.length - 1) * (charSpacing / 1000) * fontSize;
+//       const measuredWidth = baseWidth + extraSpacing;
+
+//       if (existingObj && text.trim() === "") {
+//         canvas.remove(existingObj);
+//         return;
+//       }
+//       if (locked) {
+//         canvas.discardActiveObject();
+//         canvas.requestRenderAll();
+//       }
+//       const canvasWidth = canvas.getWidth();
+//       const canvasHeight = canvas.getHeight();
+
+//       function setUpText(text) {
+//         text.set({
+//           text: content,
+//           lockScalingFlip: true,
+//           id: id,
+//           fontWeight: fontWeight || "normal",
+//           fontStyle: fontStyle || "normal",
+//           left: (position.x / 100) * canvasWidth,
+//           top: (position.y / 100) * canvasHeight,
+//           stroke: outLineColor || "",
+//           strokeWidth: outLineSize || 0,
+//           fill: textColor || "white",
+//           spacing: spacing,
+//           warp: Number(arc),
+//           fontSize: fontSize,
+//           fontFamily: fontFamily || "Impact",
+//           originX: "center",
+//           originY: "center",
+//           hasControls: true,
+//           flipX: flipX,
+//           flipY: flipY,
+//           angle: angle || 0,
+//           scaleX: scaleX,
+//           scaleY: scaleY,
+//           layerIndex: layerIndex,
+//           maxWidth: 250,
+//           objectCaching: true, // ✅ cache drawing for performance
+//           lockMovementX: locked,
+//           lockMovementY: locked,
+//           borderColor: "skyblue",
+//           borderDashArray: [4, 4],
+//           hasBorders: true,
+//           hasControls: !textInput?.locked && !isZoomedIn,
+//           selectable: !isZoomedIn,
+//           evented: !isZoomedIn,
+//           width: Math.min(measuredWidth + 20, 200),
+//           isSync: true,
+//           locked: locked,
+//         })
+//         text.dirty = true;
+//         text.setCoords();
+//         if (!locked && !isZoomedIn) {
+//           text.controls = createControls(bringPopup, dispatch);
+//         } else {
+//           removeAllHtmlControls(canvas)
+//         }
+//       }
+
+//       if (existingObj) {
+//         setUpText(existingObj)
+//       } else if (!existingObj) {
+//         const curved = new fabric.CurvedText(content, {});
+//         setUpText(curved)
+//         curved.on("deselected", deselecteHandler);
+//         curved.on("mousedown", mousedownHandler);
+//         curved.on("modified", modifiedHandler);
+//         curved.on("mouseup", mouseupHandler);
+
+//         function deselecteHandler() {
+
+//           removeAllHtmlControls(canvas);
+//           dispatch(setSelectedTextState(null));
+//           console.log(location.pathname, "location.pathname")
+//           if (location.pathname === '/design/addText') {
+//             navigate('/design/product');
+//           }
+//           // navigate("/design/product")
+//         }
+//         function mousedownHandler() {
+//           dispatch(setSelectedTextState(id));
+//           setActiveObjectType("curved-text");
+//           navigate("/design/addText", { state: textInput });
+//         }
+//         function handleScale(e) {
+//           const clampScale = (value, min = 0.2, max = 10) =>
+//             Math.max(min, Math.min(value, max));
+//           const obj = e.target;
+//           if (
+//             !obj ||
+//             !e.transform ||
+//             !["scale", "scaleX", "scaleY"].includes(e.transform.action)
+//           )
+//             return;
+
+//           const center = obj.getCenterPoint();
+//           let deltaScaleX = obj.scaleX;
+//           let deltaScaleY = obj.scaleY;
+//           const isUniform = Math.abs(deltaScaleX - deltaScaleY) < 0.001;
+
+//           let finalScaleX, finalScaleY;
+//           if (isUniform) {
+//             finalScaleX = clampScale(deltaScaleX);
+//             finalScaleY = clampScale(deltaScaleX);
+//           } else {
+//             finalScaleX = clampScale(deltaScaleX);
+//             finalScaleY = clampScale(deltaScaleY);
+//           }
+
+//           obj.scaleX = finalScaleX;
+//           obj.scaleY = finalScaleY;
+//           obj.setPositionByOrigin(center, "center", "center");
+//           obj.setCoords();
+
+//           dispatch(updateTextState({
+//             id: id,
+//             changes: {
+//               scaleX: parseFloat(finalScaleX.toFixed(1)),
+//               scaleY: parseFloat(finalScaleY.toFixed(1)),
+//               scaledValue: parseFloat((finalScaleY + finalScaleY / 2).toFixed(1))
+//             }
+
+//           }));
+
+//           canvas.requestRenderAll();
+//         };
+//         function modifiedHandler(e) {
+//           setActiveObjectType("curved-text");
+//           const obj = e.target;
+//           if (!obj || locked) return;
+
+//           const center = obj.getCenterPoint();
+//           const percentX = (obj.left / canvasWidth) * 100;
+//           const percentY = (obj.top / canvasHeight) * 100;
+
+//           if (obj.angle !== angle) {
+//             globalDispatch("angle", obj.angle, id);
+//           }
+
+//           obj.setPositionByOrigin(center, "center", "center");
+//           obj.setCoords();
+
+//           canvas.requestRenderAll();
+//           handleScale(e);
+//           syncMirrorCanvasHelper(activeSide);
+//         }
+//         function mouseupHandler(e) {
+//           const obj = e.target;
+//           if (!obj || locked) return;
+
+//           const canvasWidth = canvas.getWidth();
+//           const canvasHeight = canvas.getHeight();
+//           const percentX = (obj.left / canvasWidth) * 100;
+//           const percentY = (obj.top / canvasHeight) * 100;
+
+//           // Only dispatch if values have changed
+//           if (percentX !== position.x || percentY !== position.y) {
+//             globalDispatch("position", { x: percentX, y: percentY }, id);
+//           }
+//           syncMirrorCanvasHelper(activeSide);
+//           canvas.requestRenderAll(); // Request a final render
+//         }
+//         curved.setControlsVisibility({
+//           mt: false,
+//           mb: false,
+//           ml: false,
+//           mr: false,
+//           tl: false,
+//           tr: false,
+//           bl: false,
+//           br: false,
+//           mtr: false,
+//         });
+//         canvas.add(curved);
+//       }
+//     });
+
+//     // ✅ Layering logic
+//     const sorted = [...textContaintObject].sort(
+//       (a, b) => a.layerIndex - b.layerIndex
+//     );
+//     sorted.forEach((text) => {
+//       const obj = canvas.getObjects().find((o) => o.id === text.id);
+//       if (obj) {
+//         canvas.bringToFront(obj);
+//       }
+//     });
+
+//     canvas.requestRenderAll();
+//     updateBoundaryVisibility(fabricCanvasRef, activeSide, productCategory);
+
+//     // ✅ Add smooth moving optimization
+//     let moving = false;
+//     // canvas.off("object:moving"); // avoid duplicate listeners
+//     canvas.on("object:moving", () => {
+//       if (moving) return;
+//       moving = true;
+//       requestAnimationFrame(() => {
+//         canvas.requestRenderAll();
+//         moving = false;
+//       });
+//     });
+//   }
+// };
+
+// export default renderCurveTextObjects;
+
+import React, { useState } from 'react';
+import { useLocation, useHistory } from 'react-router-dom';  // Import necessary hooks
 import { updateTextState } from "../../../redux/FrontendDesign/TextFrontendDesignSlice";
+import { removeAllHtmlControls } from "../HelpersFunctions/renderImageHelpers";
 
 const renderCurveTextObjects = (
   fabricCanvasRef,
@@ -16,15 +284,19 @@ const renderCurveTextObjects = (
   activeSide,
   bringPopup,
   productCategory,
-  isZoomedIn
+  isZoomedIn,
 ) => {
   const canvas = fabricCanvasRef.current;
+  // const location = useLocation();  // Track the current location (route)
+  // const history = useHistory();    // Use history for programmatic navigation
+  // const [shouldDeselect, setShouldDeselect] = useState(false);  // Flag to track deselect condition
 
   // ✅ Global canvas optimizations
   canvas.renderOnAddRemove = false;
   canvas.perPixelTargetFind = false;
   canvas.targetFindTolerance = 8;
 
+  // If there are no objects, remove any existing ones
   if (textContaintObject && textContaintObject.length === 0) {
     let existingTextbox = canvas
       .getObjects()
@@ -33,22 +305,23 @@ const renderCurveTextObjects = (
     return;
   }
 
+  // For each object in the textContaintObject array
   if (Array.isArray(textContaintObject)) {
     textContaintObject.forEach((textInput) => {
+      const { fontSize, id, content, fontStyle, fontWeight, locked, flipY, flipX, scaleY, scaleX, fontFamily, position, angle, textColor, arc, spacing, outLineColor, outLineSize, layerIndex } = textInput;
       const canvas = fabricCanvasRef.current;
       const existingObj = canvas
         .getObjects()
-        .find((obj) => obj.id === textInput.id);
+        .find((obj) => obj.id === id);
 
-      const text = textInput.content || "";
-      const charSpacing = textInput.spacing || 0;
-      const fontSize = 60;
+      const text = content || "";
+      const charSpacing = spacing || 0;
 
       const clampScale = (value, min = 1, max = 10) =>
         Math.max(min, Math.min(value, max));
 
       const context = canvas.getElement().getContext("2d");
-      context.font = `${fontSize}px ${textInput.fontFamily || "Arial"}`;
+      context.font = `${fontSize}px ${fontFamily || "Arial"}`;
       const baseWidth = context.measureText(text).width;
       const extraSpacing = (text.length - 1) * (charSpacing / 1000) * fontSize;
       const measuredWidth = baseWidth + extraSpacing;
@@ -57,143 +330,86 @@ const renderCurveTextObjects = (
         canvas.remove(existingObj);
         return;
       }
-      if (textInput.locked) {
+      if (locked) {
         canvas.discardActiveObject();
         canvas.requestRenderAll();
       }
       const canvasWidth = canvas.getWidth();
       const canvasHeight = canvas.getHeight();
 
-      if (existingObj) {
-        existingObj.set({
-          width: Math.min(measuredWidth + 20, 200),
-          text: textInput.content,
-          fontWeight: textInput.fontWeight || "normal",
-          fontStyle: textInput.fontStyle || "normal",
-          warp: Number(textInput.arc),
-          spacing: textInput.spacing,
-          stroke: textInput.outLineColor || "",
-          strokeWidth: textInput.outLineSize || 0,
-          fill: textInput.textColor || "white",
-          angle: textInput.angle || 0,
-          left: (textInput.position.x / 100) * canvasWidth,
-          top: (textInput.position.y / 100) * canvasHeight,
-          fontFamily: textInput.fontFamily || "Impact",
-          scaleX: textInput.scaleX,
-          scaleY: textInput.scaleY,
-          flipX: textInput.flipX,
-          flipY: textInput.flipY,
-          originX: "center",
-          originY: "center",
-          lockMovementX: textInput.locked,
-          lockMovementY: textInput.locked,
-          locked: textInput.locked,
-          hasControls: !textInput?.locked && !isZoomedIn,
-          selectable: !isZoomedIn,
-          evented: !isZoomedIn,
-          lockScalingX: textInput.locked,
-          lockScalingY: textInput.locked,
-          lockRotation: textInput.locked,
-          width: Math.min(measuredWidth + 20, 200),
-        });
-
-        existingObj.dirty = true;
-        existingObj.setCoords();
-        canvas.requestRenderAll();
-        if (!textInput.locked && !isZoomedIn) {
-          existingObj.controls = createControls(bringPopup, dispatch);
-        } else {
-          existingObj.controls = {};
-        }
-
-
-        // existingObj.on("mouseup", (e) => {
-        //   const obj = e.target;
-        //   if (!obj || textInput.locked) return;
-
-        //   // Update the state with the final position after the drag
-        //   const canvasWidth = canvas.getWidth();
-        //   const canvasHeight = canvas.getHeight();
-        //   const percentX = (obj.left / canvasWidth) * 100;
-        //   const percentY = (obj.top / canvasHeight) * 100;
-
-        //   globalDispatch("position", { x: percentX, y: percentY }, textInput.id);
-        //   globalDispatch("angle", obj.angle, textInput.id);
-        //   globalDispatch("scaleX", parseFloat(obj.scaleX.toFixed(1)), obj.id);
-        //   globalDispatch("scaleY", parseFloat(obj.scaleY.toFixed(1)), obj.id);
-
-        //   syncMirrorCanvasHelper(activeSide);
-        //   canvas.requestRenderAll(); // Request a final render
-        // });
-
-      } else if (!existingObj) {
-        const curved = new fabric.CurvedText(textInput.content, {
+      function setUpText(text) {
+        text.set({
+          text: content,
           lockScalingFlip: true,
-          id: textInput.id,
-          fontWeight: textInput.fontWeight || "normal",
-          fontStyle: textInput.fontStyle || "normal",
-          left: (textInput.position.x / 100) * canvasWidth,
-          top: (textInput.position.y / 100) * canvasHeight,
-          stroke: textInput.outLineColor || "",
-          strokeWidth: textInput.outLineSize || 0,
-          fill: textInput.textColor || "white",
-          spacing: textInput.spacing,
-          warp: Number(textInput.arc),
-          fontSize: textInput.fontSize,
-          fontFamily: textInput.fontFamily || "Impact",
+          id: id,
+          fontWeight: fontWeight || "normal",
+          fontStyle: fontStyle || "normal",
+          left: (position.x / 100) * canvasWidth,
+          top: (position.y / 100) * canvasHeight,
+          stroke: outLineColor || "",
+          strokeWidth: outLineSize || 0,
+          fill: textColor || "white",
+          spacing: spacing,
+          warp: Number(arc),
+          fontSize: fontSize,
+          fontFamily: fontFamily || "Impact",
           originX: "center",
           originY: "center",
           hasControls: true,
-          flipX: textInput.flipX,
-          flipY: textInput.flipY,
-          angle: textInput.angle || 0,
-          scaleX: textInput.scaleX,
-          scaleY: textInput.scaleY,
-          layerIndex: textInput.layerIndex,
+          flipX: flipX,
+          flipY: flipY,
+          angle: angle || 0,
+          scaleX: scaleX,
+          scaleY: scaleY,
+          layerIndex: layerIndex,
           maxWidth: 250,
-          objectCaching: true, // ✅ cache drawing for performance
-          lockMovementX: textInput.locked,
-          lockMovementY: textInput.locked,
+          objectCaching: true,
+          lockMovementX: locked,
+          lockMovementY: locked,
           borderColor: "skyblue",
           borderDashArray: [4, 4],
           hasBorders: true,
           hasControls: !textInput?.locked && !isZoomedIn,
           selectable: !isZoomedIn,
           evented: !isZoomedIn,
-
           width: Math.min(measuredWidth + 20, 200),
           isSync: true,
-          locked: textInput.locked,
-        });
-
-        function removeAllHtmlControls(canvas) {
-          if (!canvas) canvas = fabricCanvasRef.current;
-          canvas.getObjects().forEach((obj) => {
-            if (obj._htmlControls) {
-              for (const key in obj._htmlControls) {
-                const el = obj._htmlControls[key];
-                if (el?.parentNode) el.parentNode.removeChild(el);
-              }
-              obj._htmlControls = null;
-            }
-          });
-          document.querySelectorAll("[data-fabric-control]").forEach((el) =>
-            el.remove()
-          );
+          locked: locked,
+        })
+        text.dirty = true;
+        text.setCoords();
+        if (!locked && !isZoomedIn) {
+          text.controls = createControls(bringPopup, dispatch);
+        } else {
+          removeAllHtmlControls(canvas)
         }
+      }
 
-        curved.on("deselected", () => {
+      if (existingObj) {
+        setUpText(existingObj)
+      } else if (!existingObj) {
+        const curved = new fabric.CurvedText(content, {});
+        setUpText(curved);
+        curved.on("deselected", deselecteHandler);
+        curved.on("mousedown", mousedownHandler);
+        curved.on("modified", modifiedHandler);
+        curved.on("mouseup", mouseupHandler);
+
+        // Handle deselection (check current path to decide navigation)
+        function deselecteHandler() {
           removeAllHtmlControls(canvas);
           dispatch(setSelectedTextState(null));
-        });
 
-        curved.on("mousedown", () => {
-          dispatch(setSelectedTextState(textInput.id));
+          navigate('/design/product');  // Use history.push() for navigation
+        }
+
+        function mousedownHandler() {
+          dispatch(setSelectedTextState(id));
           setActiveObjectType("curved-text");
           navigate("/design/addText", { state: textInput });
-        });
+        }
 
-        const handleScale = (e) => {
+        function handleScale(e) {
           const clampScale = (value, min = 0.2, max = 10) =>
             Math.max(min, Math.min(value, max));
           const obj = e.target;
@@ -222,16 +438,9 @@ const renderCurveTextObjects = (
           obj.scaleY = finalScaleY;
           obj.setPositionByOrigin(center, "center", "center");
           obj.setCoords();
-          // globalDispatch("scaleX", parseFloat(finalScaleX.toFixed(1)), obj.id);
-          // globalDispatch("scaleY", parseFloat(finalScaleY.toFixed(1)), obj.id);
-          // globalDispatch(
-          //   "scaledValue",
-          //   parseFloat((finalScaleY + finalScaleY / 2).toFixed(1)),
-          //   obj.id
-          // );
-          // Only dispatch if scale values have changed
+
           dispatch(updateTextState({
-            id: textInput.id,
+            id: id,
             changes: {
               scaleX: parseFloat(finalScaleX.toFixed(1)),
               scaleY: parseFloat(finalScaleY.toFixed(1)),
@@ -239,53 +448,21 @@ const renderCurveTextObjects = (
             }
 
           }));
-          // if (parseFloat(finalScaleX.toFixed(1)) !== textInput.scaleX) {
-          //   globalDispatch("scaleX", parseFloat(finalScaleX.toFixed(1)), obj.id);
-          // }
-          // if (parseFloat(finalScaleY.toFixed(1)) !== textInput.scaleY) {
-          //   globalDispatch("scaleY", parseFloat(finalScaleY.toFixed(1)), obj.id);
-          //   globalDispatch(
-          //     "scaledValue",
-          //     parseFloat((finalScaleY + finalScaleY / 2).toFixed(1)),
-          //     obj.id
-          //   );
-          // }
+
           canvas.requestRenderAll();
         };
 
-        // curved.on("modified", (e) => {
-        //   setActiveObjectType("curved-text");
-        //   const obj = e.target;
-        //   if (!obj || textInput.locked) return;
-
-        //   const center = obj.getCenterPoint();
-        //   const percentX = (obj.left / canvasWidth) * 100;
-        //   const percentY = (obj.top / canvasHeight) * 100;
-
-        //   // globalDispatch("position", { x: percentX, y: percentY }, textInput.id);
-        //   obj.setPositionByOrigin(center, "center", "center");
-        //   obj.setCoords();
-
-        //   globalDispatch("angle", obj.angle, textInput.id);
-        //   canvas.requestRenderAll();
-        //   handleScale(e);
-        //   syncMirrorCanvasHelper(activeSide);
-        // });
-        curved.on("modified", (e) => {
+        function modifiedHandler(e) {
           setActiveObjectType("curved-text");
           const obj = e.target;
-          if (!obj || textInput.locked) return;
+          if (!obj || locked) return;
 
           const center = obj.getCenterPoint();
           const percentX = (obj.left / canvasWidth) * 100;
           const percentY = (obj.top / canvasHeight) * 100;
 
-          // Only dispatch if values have changed
-          // if (percentX !== textInput.position.x || percentY !== textInput.position.y) {
-          //   globalDispatch("position", { x: percentX, y: percentY }, textInput.id);
-          // }
-          if (obj.angle !== textInput.angle) {
-            globalDispatch("angle", obj.angle, textInput.id);
+          if (obj.angle !== angle) {
+            globalDispatch("angle", obj.angle, id);
           }
 
           obj.setPositionByOrigin(center, "center", "center");
@@ -294,55 +471,24 @@ const renderCurveTextObjects = (
           canvas.requestRenderAll();
           handleScale(e);
           syncMirrorCanvasHelper(activeSide);
-        });
+        }
 
-
-
-        // curved.on("mouseup", (e) => {
-        //   const obj = e.target;
-        //   if (!obj || textInput.locked) return;
-
-        //   // Update the state with the final position after the drag
-        //   const canvasWidth = canvas.getWidth();
-        //   const canvasHeight = canvas.getHeight();
-        //   const percentX = (obj.left / canvasWidth) * 100;
-        //   const percentY = (obj.top / canvasHeight) * 100;
-
-        //   globalDispatch("position", { x: percentX, y: percentY }, textInput.id);
-        //   globalDispatch("angle", obj.angle, textInput.id);
-        //   globalDispatch("scaleX", parseFloat(obj.scaleX.toFixed(1)), obj.id);
-        //   globalDispatch("scaleY", parseFloat(obj.scaleY.toFixed(1)), obj.id);
-
-        //   syncMirrorCanvasHelper(activeSide);
-        //   canvas.requestRenderAll(); // Request a final render
-        // });
-
-        curved.on("mouseup", (e) => {
+        function mouseupHandler(e) {
           const obj = e.target;
-          if (!obj || textInput.locked) return;
+          if (!obj || locked) return;
 
           const canvasWidth = canvas.getWidth();
           const canvasHeight = canvas.getHeight();
           const percentX = (obj.left / canvasWidth) * 100;
           const percentY = (obj.top / canvasHeight) * 100;
 
-          // Only dispatch if values have changed
-          if (percentX !== textInput.position.x || percentY !== textInput.position.y) {
-            globalDispatch("position", { x: percentX, y: percentY }, textInput.id);
+          if (percentX !== position.x || percentY !== position.y) {
+            globalDispatch("position", { x: percentX, y: percentY }, id);
           }
-          // if (obj.angle !== textInput.angle) {
-          //   globalDispatch("angle", obj.angle, textInput.id);
-          // }
-          // if (parseFloat(obj.scaleX.toFixed(1)) !== textInput.scaleX) {
-          //   globalDispatch("scaleX", parseFloat(obj.scaleX.toFixed(1)), obj.id);
-          // }
-          // if (parseFloat(obj.scaleY.toFixed(1)) !== textInput.scaleY) {
-          //   globalDispatch("scaleY", parseFloat(obj.scaleY.toFixed(1)), obj.id);
-          // }
-
           syncMirrorCanvasHelper(activeSide);
-          canvas.requestRenderAll(); // Request a final render
-        });
+          canvas.requestRenderAll();
+        }
+
         curved.setControlsVisibility({
           mt: false,
           mb: false,
@@ -354,17 +500,10 @@ const renderCurveTextObjects = (
           br: false,
           mtr: false,
         });
-
-        if (!textInput.locked && !isZoomedIn) {
-          curved.controls = createControls(bringPopup, dispatch);
-        } else {
-          curved.controls = {};
-        }
         canvas.add(curved);
       }
     });
 
-    // ✅ Layering logic
     const sorted = [...textContaintObject].sort(
       (a, b) => a.layerIndex - b.layerIndex
     );
@@ -378,9 +517,7 @@ const renderCurveTextObjects = (
     canvas.requestRenderAll();
     updateBoundaryVisibility(fabricCanvasRef, activeSide, productCategory);
 
-    // ✅ Add smooth moving optimization
     let moving = false;
-    // canvas.off("object:moving"); // avoid duplicate listeners
     canvas.on("object:moving", () => {
       if (moving) return;
       moving = true;

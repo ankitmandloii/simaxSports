@@ -218,7 +218,7 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign, navigate }) =
                                 <button className={styles.continueButton} onClick={() => {
                                     navigate("quantity");
                                     setSavedesignPopupHandler(); // <-- call the function
-                                }}>Continue to Pricing</button>
+                                }}>Continue To Pricing</button>
                             </>
                         )}
                     </div>

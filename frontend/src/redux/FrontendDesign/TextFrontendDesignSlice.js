@@ -40,74 +40,6 @@ const createNewText = ({ value, id, centerX, centerY }, totalElements) => ({
   locked: false,
   layerIndex: totalElements,
 });
-// const createNewImage = (
-//   { src, dpi },
-//   totalElements,
-//   centerX,
-//   centerY
-// ) => ({
-//   id: nanoid(),
-//   src: src,
-//   scaleX: 1,
-//   scaleY: 1,
-//   rotate: 0,
-//   flipX: false,
-//   flipY: false,
-//   width: 150,
-//   height: 150,
-//   left: 280,
-//   top: 200,
-//   position: { x: centerX, y: centerY },
-//   scaledValue: 1,
-//   angle: 0,
-//   locked: false,
-//   layerIndex: totalElements,
-//   thresholdValue: 144,
-//   // AI state...
-//   replaceBackgroundColor: "#000000",
-//   replaceBgParamValue: "bg-remove=true&bg=AABB22",
-//   cropAndTrim: false,
-//   superResolution: false,
-//   invertColor: false,
-//   solidColor: false,
-//   removeBg: false,
-//   singleColor: "#ffffff",
-//   base64CanvasImage: src,
-//   base64CanvasImageForNormalColor: null,
-//   base64CanvasImageForSinglelColor: null,
-//   base64CanvasImageForBlackAndWhitelColor: null,
-//   cropAndTrimParamValue:
-//     "fit=crop&crop=entropy&trim=color&w=400&h=400&dpr=2&quality=100&format=webp",
-//   superResolutionParamValue:
-//     "?auto=enhance&dpr=2&quality=100&format=webp&upscale=true",
-//   removeBgParamValue: "?remove-bg=true&dpr=2&quality=100&format=webp",
-//   loading: false,
-//   loadingSrc: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s",
-//   replaceSrc: false,
-//   selectedFilter: "Normal",
-//   base64CanvasImageForNormalColor: null,
-//   base64CanvasImageForSinglelColor: null,
-//   base64CanvasImageForBlackAndWhitelColor: null,
-//   editColor: false,
-//   extractedColors: [],
-//   removeBgImagebtn: false,
-//   loadingText: false,
-//   dpi: dpi || 150,
-//   // DPI/size metrics (dynamic)
-//   riginalWidth: null,          // set after probing the image
-//   originalHeight: null,         // set after probing the image
-//   renderWidthCanvasPx: 0,       // updated from Fabric on scale/move
-//   renderHeightCanvasPx: 0,
-//   canvasWidthPx: 0,             // canvas size used in calc
-//   canvasHeightPx: 0,
-//   dpi: 0,
-//   dpiX: 0,
-//   dpiY: 0,
-//   resetDefault: false,
-//   heightInches: 1,
-//   widthInches: 1
-
-// });
 
 const createNewImage = (
   { src, dpi },
@@ -684,24 +616,24 @@ const TextFrontendDesignSlice = createSlice({
 
     setAddNumber: (state, action) => {
       const side = state.activeSide;
-
+      // state.present[side].addName = action.payload;
       const canvasComponent = document.querySelector(`#canvas-${side}`); // Simple way, but ideally use refs or context
       const rect = canvasComponent.getBoundingClientRect();
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
+
       const changes = {
         position: {
           x: centerX,
           y: centerY,
         }
       }
-      state.addNumber = action.payload;
-      if (state.present[side]?.nameAndNumberDesignState) {
-        Object.assign(state.present[side]?.nameAndNumberDesignState, changes);
+      // state.addNumber = action.payload;
+      if (state?.nameAndNumberDesignState) {
+        Object.assign(state?.nameAndNumberDesignState, changes);
       }
-      state.present[side].addNumber = action.payload;
+      state.addNumber = action.payload;
       state.present[side].setRendering = !state.present[side].setRendering;
-
 
     },
     setAddName: (state, action) => {
@@ -756,62 +688,6 @@ const TextFrontendDesignSlice = createSlice({
         // console.log("product added succesfully");
       }
     },
-    // UpdateNameAndNumberProduct: (state, action) => {
-    //   const {
-    //     id,
-    //     newSelections = [], // Array of { selectionId, name, number, size }
-    //     side = "back",
-    //     isRenderOrNot,
-    //   } = action.payload;
-
-    //   // Save to undo history
-    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-
-    //   const list = state.present[side]?.nameAndNumberProductList;
-    //   if (!list) return;
-
-    //   const product = list.find((p) => p.id === id);
-    //   if (!product) {
-    //     // console.log("Product not found:", id);
-    //     return;
-    //   }
-
-    //   // Create a map of new selectionIds
-    //   const incomingMap = new Map(
-    //     newSelections.map((sel) => [sel.selectionId, sel])
-    //   );
-
-    //   // Filter out selections not in the incoming list
-    //   product.selections = product.selections.filter((existing) => {
-    //     const incoming = incomingMap.get(existing.selectionId);
-    //     if (incoming) {
-    //       // Only update if not locked
-    //       if (!existing.locked) {
-    //         Object.assign(existing, incoming);
-    //       }
-    //       // Keep it
-    //       return true;
-    //     }
-    //     // Remove if not present in new list
-    //     return false;
-    //   });
-
-    //   // Add any new selectionIds that didn't already exist
-    //   const existingIds = new Set(product.selections.map((s) => s.selectionId));
-    //   newSelections.forEach((sel) => {
-    //     if (!existingIds.has(sel.selectionId)) {
-    //       product.selections.push(sel);
-    //     }
-    //   });
-
-    //   // Optional render flag toggle
-    //   if (isRenderOrNot) {
-    //     state.present[side].setRendering = !state.present[side].setRendering;
-    //   }
-
-    //   // Clear redo history
-    //   state.future[side] = [];
-    // },
     UpdateNameAndNumberProduct: (state, action) => {
       const {
         id,
@@ -877,33 +753,6 @@ const TextFrontendDesignSlice = createSlice({
       ].nameAndNumberProductList.filter((product) => product.id !== id);
     },
 
-    // addImageState: (state, action) => {
-    //   const { src, id = nanoid(), side = state.activeSide, isRenderOrNot } = action.payload;
-    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-    //   const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
-    //   const canvasComponent = document.querySelector(`#canvas-${side}`); // Simple way, but ideally use refs or context
-    //   const rect = canvasComponent.getBoundingClientRect();
-    //   const centerX = rect.width / 2;
-    //   const centerY = rect.height / 2;
-    //   const newImage = createNewImage(
-    //     { src: src },
-    //     // { src: src + "?auto=enhance&sharp=80&upscale=true" },
-    //     totalElements,
-    //     centerX,
-    //     centerY
-    //   );
-    //   // const newImage = createNewImage(
-    //   //   { src },
-    //   //   state.present[side].images.length
-    //   // );
-    //   if (!state.present[side].images) {
-    //     state.present[side].images = [];
-    //   }
-    //   state.present[side].selectedImageId = newImage.id;
-    //   state.present[side].images.push(newImage);
-    //   state.future[side] = [];
-    //   // state.present[side].setRendering = !state.present[side].setRendering;
-    // },
     addImageState: (state, action) => {
       // console.log("---------actionnn", action.payload)
       const { src, id = nanoid(), side = state.activeSide, isRenderOrNot, dpi } = action.payload;
@@ -947,59 +796,7 @@ const TextFrontendDesignSlice = createSlice({
     },
 
     // ---neww
-    // updateImageState: (state, action) => {
-    //   const { id, changes, side = state.activeSide, isRenderOrNot } = action.payload;
-    //   const image = state.present[side]?.images?.find(img => img.id === id);
-    //   if (!image || image.locked) return;
 
-
-
-    //   if (changes?.loading || changes?.loadingText) {
-    //     console.log("data temp store..", changes);
-    //     console.log("we are storing present data to past when laoding true ", JSON.parse(JSON.stringify(state.present[side])))
-    //     state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-    //   }
-    //   // Buffer changes until operation is done
-
-    //   if (!state.imageChangeBuffer[side][id]) {
-    //     state.imageChangeBuffer[side][id] = [];
-    //   }
-    //   state.imageChangeBuffer[side][id].push(changes);
-
-    //   // Apply changes immediately so UI updates
-    //   Object.assign(image, changes);
-
-    //   // ✅ Only commit snapshot when loading:false
-    //   if (changes.loading === false || changes.loadingText === false) {
-    //     const combined = state.imageChangeBuffer[side][id].reduce(
-    //       (acc, curr) => ({ ...acc, ...curr, loading: false }),
-    //       {}
-    //     );
-    //     // Save history
-    //     console.log("we are storing present data to past when laoding false ", JSON.parse(JSON.stringify(state.present[side])))
-    //     // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-    //     const snapshot = JSON.stringify(state.present[side]);
-    //     const last = state.past[side].length
-    //       ? JSON.stringify(state.past[side][state.past[side].length - 1])
-    //       : null;
-
-    //     if (snapshot !== last) {
-    //       state.past[side].push(JSON.parse(snapshot));
-    //     }
-
-    //     Object.assign(image, combined);
-
-    //     // cleanup
-    //     delete state.imageChangeBuffer[side][id];
-    //     state.future[side] = [];
-    //   }
-
-    //   // skip undo history if rendering-only
-    //   if (isRenderOrNot) {
-    //     if (!state.present[side].renderVersion) state.present[side].renderVersion = 0;
-    //     state.present[side].renderVersion++;
-    //   }
-    // },
     updateImageState: (state, action) => {
       const { id, changes, side = state.activeSide, isRenderOrNot } = action.payload;
       console.log("-----changes", changes)
@@ -1013,6 +810,7 @@ const TextFrontendDesignSlice = createSlice({
         snap.__type = "image"; // 🏷️ tag snapshot
         state.past[side].push(snap);
       }
+
 
       // Buffer changes until operation is done
       if (!state.imageChangeBuffer[side][id]) {
@@ -1062,66 +860,7 @@ const TextFrontendDesignSlice = createSlice({
 
 
 
-    // updateImageState: (state, action) => {
-    //   const {
-    //     id,
-    //     changes,
-    //     side = state.activeSide,
-    //     isRenderOrNot,
-    //   } = action.payload;
-    //   // console.log("id", id, "changes........................", changes);
-    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-    //   const image = state.present[side]?.images?.find((img) => img.id === id);
-    //   if (image && !image.locked) Object.assign(image, changes);
-    //   if (isRenderOrNot) {
-    //     state.present[side].setRendering = !state.present[side].setRendering;
-    //   }
-    //   state.future[side] = [];
-    // },
-    // duplicateImageState: (state, action) => {
-    //   const side = state.activeSide;
-    //   const idToDuplicate = action.payload;
 
-    //   if (!state.present[side]?.images) {
-    //     return;
-    //   }
-
-    //   const imageToDuplicate = state.present[side].images.find(
-    //     (img) => img.id === idToDuplicate
-    //   );
-
-    //   if (!imageToDuplicate) {
-    //     return;
-    //   }
-
-    //   if (imageToDuplicate.locked) {
-    //     return;
-    //   }
-
-
-    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-
-    //   const newPosition = {
-    //     x: imageToDuplicate.position.x + 20,
-    //     y: imageToDuplicate.position.y + 20,
-    //   };
-
-    //   const newImage = {
-    //     ...JSON.parse(JSON.stringify(imageToDuplicate)),
-    //     id: nanoid(),
-    //     position: newPosition,
-    //     left: newPosition.x,
-    //     top: newPosition.y,
-    //     layerIndex: state.present[side].images.length,
-    //   };
-
-    //   // console.log("New duplicated image:", newImage);
-
-    //   state.present[side].images.push(newImage);
-    //   state.present[side].selectedImageId = newImage.id;
-    //   state.future[side] = [];
-    //   state.present[side].setRendering = !state.present[side].setRendering;
-    // },
 
     // deleteeee reducers
     deleteTextState: (state, action) => {

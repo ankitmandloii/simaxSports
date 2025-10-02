@@ -151,6 +151,10 @@
   background-color: black;
 }
 
+.rightarrow {
+  cursor: pointer;
+}
+
 .toolbarBoxIconsContainerFlip2 {
 
   padding: 3px 8px;

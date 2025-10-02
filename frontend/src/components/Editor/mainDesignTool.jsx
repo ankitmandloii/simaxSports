@@ -14,6 +14,7 @@ import updateBoundaryVisibility from "./core/updateBoundaryVisibility";
 import EditWithAipopup from "../PopupComponent/EditWithAipopup/EditWithAipopup"
 import { useMediaQuery } from 'react-responsive';
 
+
 import {
   deleteImageState,
   deleteTextState,
@@ -47,9 +48,22 @@ import createWarningForhoodie from "./warningBoundaries.jsx/createWarningForhood
 import createWarningForZip from "./warningBoundaries.jsx/createWarningForZip";
 import createWarningForTankTop from "./warningBoundaries.jsx/createWarningForTankTop";
 import createWarningForPolo from "./warningBoundaries.jsx/createWarningForPolo";
+import { getProductSleeveType, getProductType, showBoundaryOnAction } from "./HelpersFunctions/editorHelpers";
 fabric.CurvedText = CurvedText;
-const MainDesignTool = ({
+const WarningFunctionMap = {
+  "Zip": createWarningForZip,
+  "Jacket": createWarningForZip, // Maps to the same function as "Zip"
+  "Polo": createWarningForPolo,
+  "Hoodie": createWarningForhoodie,
+  "Hooded Sweatshirt": createWarningForhoodie, // Maps to the same function as "Hoodie"
+  "Tank": createWarningForTankTop,
+  "Boxy": createWarningForBoxy,
+  "T-shirt": createWarningForT_shirt,
+  "Tee": createWarningForT_shirt, // Maps to the same function as "T-shirt"
+  "Sweatshirt": createWarningForSweatShirt,
+};
 
+const MainDesignTool = ({
   id,
   backgroundImage,
   zoomLevel,
@@ -68,19 +82,8 @@ const MainDesignTool = ({
   // **********************************************************************************************************************************************************
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
-  // const addName  = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addName);
-  // const  addNumber = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].addNumber);
   const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice);
-  // const { addName, addNumber } = useSelector(
-  //   (state) => ({
-  //     addName: state.TextFrontendDesignSlice.present[activeSide]?.addName || false,
-  //     addNumber: state.TextFrontendDesignSlice.present[activeSide]?.addNumber || false,
-  //   })
-  // );
-
-  // console.log("--------------------------namenumber",addName,addNumber)
   const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.nameAndNumberDesignState)
-  // console.log("--------------namesssDesign",nameAndNumberDesignState)
   const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
   const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
@@ -90,9 +93,7 @@ const MainDesignTool = ({
   const { data: settings } = useSelector((state) => state.settingsReducer);
   const allImageData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
   const currentImageObject = allImageData?.find((img) => img.id == selectedImageId);
-  // console.log("-------settings", settings)
 
-  // console.log("loadingState redux ........", loadingState)
 
   // **********************************************************************************************************************************************************
   //                                                                                    USE REFS AREA
@@ -114,9 +115,7 @@ const MainDesignTool = ({
   const [openAieditorPopup, setOpenAieditorPopup] = useState(false);
   const [size, setSize] = useState();
   const [Sleeve, setSleeve] = useState(getProductSleeveType(activeProductTitle));
-  // console.log("--------sleeve", Sleeve);
 
-  // console.log(openAieditorPopup);
   // **********************************************************************************************************************************************************
   //                                                                                    USE DISPTACHS AREA
   // **********************************************************************************************************************************************************
@@ -124,31 +123,16 @@ const MainDesignTool = ({
   const navigate = useNavigate();
   const location = useLocation();
   const isQuantityPage = location.pathname === "/quantity" || location.pathname === '/review';
-  // console.log("---------------------checkqty", isQuantityPage)
 
 
   // **********************************************************************************************************************************************************
   //                                                                                    USE MEMO AREA
   // **********************************************************************************************************************************************************
-  const iconImages = useMemo(() => {
-    const imgs = {};
-    // for (const key in icons) {
-    //   const img = new Image();
-    //   img.src = icons[key];
-    //   imgs[key] = img;
-    // }
-    return imgs;
-  }, []);
-  // for route buttons
   const handleClose = () => {
     setShowNotes(false)
   }
   const handleHover = (path) => dispatch(setHoveredRoute(path));
   const handleLeave = () => dispatch(setHoveredRoute(null));
-  // const handleClick = (route) => {
-  //   dispatch(markDesignButtonClicked(activeSide)); // pass current side
-  //   setTimeout(() => navigate(route), 50); // slight delay to allow re-render
-  // };
   const handleClick = (path) => {
     dispatch(setHoveredRoute(null));
     dispatch(markDesignButtonClicked(activeSide));// Clear hovered state
@@ -175,140 +159,7 @@ const MainDesignTool = ({
       })
     );
   };
-  // Function to detect ProductTye
-  function getProductType(title) {
 
-    const keywords = [
-      "Boxy",
-      "Zip",
-      "T-shirt",
-      "Hoodie",
-      "Women's Sweatshirt",
-      "Unisex Sweatshirt",
-      "Hooded Sweatshirt",
-      "Pullover Hoodie",
-      "Polo",
-      "Zip(?: Pullover)?", // handles both "Zip" and "Zip Pullover"
-      "Tee",
-      "Jacket",
-      "Long Sleeve",
-      "Sweatshirt",
-      "Tank",
-      "Sleeveless",
-    ];
-
-    const lowerTitle = title?.toLowerCase();
-
-    for (let key of keywords) {
-      const regex = new RegExp(`\\b${key}\\b`, "i"); // \b ensures whole word match
-      if (regex.test(title)) {
-        return key;
-      }
-    }
-
-    return "Unknown";
-  }
-
-  function getProductSleeveType(title) {
-    // console.log("-----titleee", title);
-
-    const keywords = [
-      "Sleeveless",
-      "Long Sleeve",
-    ];
-
-    if (!title) {
-      // console.log("Title is undefined or null");
-      return "Unknown";
-    }
-
-    const lowerTitle = title.toLowerCase();
-    // console.log("Lowercase title:", lowerTitle);
-
-    for (let key of keywords) {
-      const regex = new RegExp(`\\b${key}\\b`, "i");
-      // console.log(`Testing regex: ${regex} against title: ${lowerTitle}`);
-      if (regex.test(lowerTitle)) {
-        // console.log(`Match found for keyword: ${key}`);
-        return key;
-      }
-    }
-
-    // console.log("No match found, returning Unknown");
-    return "Unknown";
-  }
-  // function getProductSleeveType(title) {
-  //   console.log("-----titleee", title)
-
-  //   const keywords = [
-  //     "Sleeveless",
-  //     "Long Sleeve",
-  //     // "T-shirt",
-  //     // "Hoodie",
-  //     // "Women's Sweatshirt",
-  //     // "Unisex Sweatshirt",
-  //     // "Hooded Sweatshirt",
-  //     // "Pullover Hoodie",
-  //     // "Polo",
-  //     // "Zip(?: Pullover)?", // handles both "Zip" and "Zip Pullover"
-  //     // "Tee",
-  //     // "Jacket",
-  //     // "Sweatshirt",
-  //     // "Tank"
-  //   ];
-
-  //   const lowerTitle = title?.toLowerCase();
-
-  //   for (let key of keywords) {
-  //     const regex = new RegExp(`\\b${key}\\b`, "i"); // \b ensures whole word match
-  //     if (regex.test(lowerTitle)) {
-  //       return key;
-  //     }
-  //   }
-
-  //   return "Unknown";
-  // }
-  // function getProductType(title) {
-  //   const keywords = [
-  //     "Unisex",
-  //     "Women's",
-  //     "Men's",
-  //     "Hooded",
-  //     "Hoodie",
-  //     "Sweatshirt",
-  //     "T-shirt",
-  //     "Long Sleeve",
-  //     "Sleeveless",
-  //     "Tee",
-  //     "Tank",
-  //     "Polo",
-  //     "Jacket",
-  //     "Zip",
-  //   ];
-
-  //   // Normalize curly quotes to straight quotes
-  //   const normalizeQuotes = (str) =>
-  //     str.replace(/[\u2018\u2019\u201A\u201B]/g, "'") // curly single quotes → '
-  //       .replace(/[\u201C\u201D\u201E\u201F]/g, '"'); // curly double quotes → "
-
-  //   const lowerTitle = normalizeQuotes(title?.toLowerCase());
-  //   const matchedKeywords = [];
-
-  //   for (let keyword of keywords) {
-  //     const regex = new RegExp(`\\b${keyword.toLowerCase()}\\b`, "i");
-  //     if (regex.test(lowerTitle)) {
-  //       matchedKeywords.push(keyword);
-  //     }
-  //   }
-
-  //   return matchedKeywords.length ? matchedKeywords.join(" ") : "Unknown";
-  // }
-
-
-  // console.log("--------activeTitle", getProductType(activeProductTitle));
-
-
-  // ---
 
   const checkBoundary = (e) => {
     // return;
@@ -362,7 +213,6 @@ const MainDesignTool = ({
       bringPopup,
       productCategory,
       isZoomedIn
-
     )
   }
   const renderNameAndNumberHelper = () => {
@@ -379,7 +229,6 @@ const MainDesignTool = ({
       fabric,
       globalDispatch,
       activeSide,
-
       addNumber,
       addName,
       updateNameAndNumberDesignState,
@@ -530,16 +379,16 @@ const MainDesignTool = ({
     // console.log("loading state is ", loading)
   }, [loadingState])
 
-  useEffect(() => {
-    const canvas = fabricCanvasRef.current;
-    if (!canvas) return;
-    const path = window.location.pathname;
-    if (path !== '/design/addImage' && path !== '/design/addText') {
-      canvas.discardActiveObject();
-      canvas.requestRenderAll();
+  // useEffect(() => {
+  //   const canvas = fabricCanvasRef.current;
+  //   if (!canvas) return;
+  //   const path = window.location.pathname;
+  //   if (path !== '/design/addImage' && path !== '/design/addText') {
+  //     canvas.discardActiveObject();
+  //     canvas.requestRenderAll();
 
-    }
-  }, [window.location.pathname])
+  //   }
+  // }, [window.location.pathname])
   // console.log("---------------",window.location.pathname=='/quantity'|| '/review')
   // console.log("---------------", window.location.pathname)
 
@@ -622,6 +471,7 @@ const MainDesignTool = ({
   // }, [zoomLevel]);  // Trigger effect when zoomLevel changes
 
   function removeAllHtmlControls(canvas) {
+    // return
     if (!canvas) {
       canvas = fabricCanvasRef.current;
     }
@@ -658,29 +508,24 @@ const MainDesignTool = ({
     });
     canvas.preserveObjectStacking = true;
     fabricCanvasRef.current = canvas;
-    // console.log("productCategory before warning", productCategory)
 
-    if ((getProductType(activeProductTitle) === "Zip") || (getProductType(activeProductTitle) === "Jacket")) {
-      createWarningForZip({ canvasWidth, canvasHeight, canvas, warningColor, activeSide, getProductSleeveType, activeProductTitle, fabric })
-    }
-    else if ((getProductType(activeProductTitle) === "Polo")) {
+    const warningOptions = {
+      canvasWidth,
+      canvasHeight,
+      canvas,
+      warningColor,
+      activeSide,
+      getProductSleeveType,
+      activeProductTitle,
+      fabric
+    };
 
-      createWarningForPolo({ canvasWidth, canvasHeight, canvas, warningColor, activeSide, getProductSleeveType, activeProductTitle, fabric })
-    }
-    else if ((getProductType(activeProductTitle) === "Hoodie") || (getProductType(activeProductTitle) === "Hooded Sweatshirt")) {
-      createWarningForhoodie({ canvasWidth, canvasHeight, canvas, warningColor, activeSide, getProductSleeveType, activeProductTitle, fabric })
+    const productType = getProductType(activeProductTitle);
+    const warningFunction = WarningFunctionMap[productType];
 
-    } else if ((getProductType(activeProductTitle) === "Tank")) {
-      createWarningForTankTop({ canvasWidth, canvasHeight, canvas, warningColor, activeSide, getProductSleeveType, activeProductTitle, fabric })
-    }
-    else if ((getProductType(activeProductTitle) === "Boxy")) {
-      createWarningForBoxy({ canvasWidth, canvasHeight, canvas, warningColor, activeSide, getProductSleeveType, activeProductTitle, fabric })
-    }
-    else if ((getProductType(activeProductTitle) === "T-shirt") || (getProductType(activeProductTitle) === "Tee")) {
-      createWarningForT_shirt({ canvasWidth, canvasHeight, canvas, warningColor, activeSide, getProductSleeveType, activeProductTitle, fabric })
-    }
-    else if ((getProductType(activeProductTitle) === "Sweatshirt")) {
-      createWarningForSweatShirt({ canvasWidth, canvasHeight, canvas, warningColor, activeSide, getProductSleeveType, activeProductTitle, fabric })
+    // 4. Execute the function if it exists
+    if (warningFunction) {
+      warningFunction(warningOptions);
     }
     canvas.requestRenderAll();
 
@@ -736,149 +581,195 @@ const MainDesignTool = ({
       // handleScale(e);
     };
 
-    const showBoundaryOnAction = (e) => {
-      // checkBoundary(e);
-      const canvas = fabricCanvasRef.current;
-      const objects = canvas.getObjects();
-      const boundaryBox = objects.find((obj) => obj.name === "boundaryBox");
-      const boundaryBoxInner = objects.find((obj) => obj.name === "boundaryBoxInner");
-      const boundaryBoxLeft = objects.find((obj) => obj.name === "boundaryBoxLeft");
-      const boundaryBoxRight = objects.find((obj) => obj.name === "boundaryBoxRight");
-      const centerVerticalLine = objects.find((obj) => obj.name === "centerVerticalLine");
-      const warningText = objects.find((obj) => obj.name === "warningText");
-      const centerVerticalLineLeftBorder = objects.find((obj) => obj.name === "centerVerticalLineLeftBorder");
-      const centerVerticalLineRightBorder = objects.find((obj) => obj.name === "centerVerticalLineRightBorder");
-      const leftChestText = objects.find((obj) => obj.name === "leftChestText");
-      const rightChestText = objects.find((obj) => obj.name === "rightChestText");
-      const youthText = objects.find((obj) => obj.name === "youthText");
-      const adultText = objects.find((obj) => obj.name === "adultText");
-      const leftBorder = objects.find((obj) => obj.name === "centerVerticalLineLeftBorder");
-      const rightBorder = objects.find((obj) => obj.name === "centerVerticalLineRightBorder");
-      const productCategory = getProductType(activeProductTitle)
-      if (!canvas) return;
-      if (productCategory == "Zip") {
+    // const showBoundaryOnAction = (e) => {
+    //   // checkBoundary(e);
+    //   const canvas = fabricCanvasRef.current;
+    //   const objects = canvas.getObjects();
 
-        if (activeSide == "front") {
-          const showBoundary = true;
-          if (boundaryBoxLeft) boundaryBoxLeft.visible = showBoundary;
-          if (boundaryBoxRight) boundaryBoxRight.visible = showBoundary;
-          if (leftChestText) leftChestText.visible = showBoundary;
-          if (rightChestText) rightChestText.visible = showBoundary;
-          if (warningText) { warningText.visible = showBoundary; }
-        }
-        else {
-          const showBoundary = true;
-          if (boundaryBox) boundaryBox.visible = showBoundary;
-          if (warningText) { warningText.visible = showBoundary; }
-          // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
-        }
+    //   // 1. Define all the names you want to find (optional, but good for clarity)
+    //   const desiredObjectNames = new Set([
+    //     "boundaryBox",
+    //     "boundaryBoxInner",
+    //     "boundaryBoxLeft",
+    //     "boundaryBoxRight",
+    //     "centerVerticalLine",
+    //     "warningText",
+    //     "centerVerticalLineLeftBorder",
+    //     "centerVerticalLineRightBorder",
+    //     "leftChestText",
+    //     "rightChestText",
+    //     "youthText",
+    //     "adultText",
+    //   ]);
+
+    //   // 2. Initialize a map to store the found objects
+    //   const objectMap = {};
+
+    //   // 3. Iterate over the array ONCE to populate the map
+    //   for (const obj of objects) {
+    //     // We only care about objects that have a 'name' property
+    //     if (obj.name && desiredObjectNames.has(obj.name)) {
+    //       objectMap[obj.name] = obj;
+    //     }
+    //   }
+
+    //   // 4. Destructure the objects from the map for easy access
+    //   const {
+    //     boundaryBox,
+    //     boundaryBoxInner,
+    //     boundaryBoxLeft,
+    //     boundaryBoxRight,
+    //     centerVerticalLine,
+    //     warningText,
+    //     leftChestText,
+    //     rightChestText,
+    //     youthText,
+    //     adultText,
+    //     // ... any other properties you need
+    //   } = objectMap;
+
+    //   const productCategory = getProductType(activeProductTitle)
+    //   if (!canvas) return;
+    //   if (productCategory == "Zip") {
+    //     if (activeSide == "front") {
+    //       const showBoundary = true;
+    //       if (boundaryBoxLeft) boundaryBoxLeft.visible = showBoundary;
+    //       if (boundaryBoxRight) boundaryBoxRight.visible = showBoundary;
+    //       if (leftChestText) leftChestText.visible = showBoundary;
+    //       if (rightChestText) rightChestText.visible = showBoundary;
+    //       if (warningText) { warningText.visible = showBoundary; }
+    //     }
+    //     else {
+    //       const showBoundary = true;
+    //       if (boundaryBox) boundaryBox.visible = showBoundary;
+    //       if (warningText) { warningText.visible = showBoundary; }
+    //       // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+    //     }
+    //   }
+    //   else {
+    //     const showBoundary = true;
+    //     if (activeSide == 'front') {
+    //       if (boundaryBox) boundaryBox.visible = showBoundary;
+    //       if (boundaryBoxInner) boundaryBoxInner.visible = showBoundary;
+    //       if (boundaryBoxLeft) boundaryBoxLeft.visible = showBoundary;
+    //       if (leftChestText) leftChestText.visible = showBoundary;
+    //       if (adultText) adultText.visible = showBoundary;
+    //       if (youthText) youthText.visible = showBoundary;
+    //       // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+    //       if (warningText) { warningText.visible = showBoundary; }
+    //     }
+    //     else {
+    //       if (boundaryBox) boundaryBox.visible = showBoundary;
+    //       if (boundaryBoxInner) boundaryBoxInner.visible = false;
+    //       if (boundaryBoxLeft) boundaryBoxLeft.visible = false;
+    //       if (leftChestText) leftChestText.visible = false;
+    //       if (adultText) adultText.visible = false;
+    //       if (youthText) youthText.visible = false;
+    //       if (warningText) { warningText.visible = showBoundary; }
+    //       // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+    //     }
+    //   }
+
+
+    //   if (activeSide == "leftSleeve" || activeSide == "rightSleeve") {
+    //     canvas.renderAll();
+    //     return;
+    //   }
+    //   // // Detect center collision
+    //   const canvasCenterX = canvas.getWidth() / 2;
+    //   const textObjects = objects.filter(
+    //     (obj) => obj.type === "curved-text" || obj.type === "image"
+    //   );
+
+    //   let anyObjectAtCenter = false;
+
+    //   textObjects.forEach((obj) => {
+    //     obj.setCoords();
+
+    //     const objCenterX = obj.getCenterPoint().x;
+    //     const delta = Math.abs(objCenterX - canvasCenterX);
+
+    //     if (delta <= 4) {
+    //       anyObjectAtCenter = true;
+
+    //       // Temporarily lock movement
+    //       obj.lockMovementX = true;
+    //       canvas.requestRenderAll();
+
+    //       setTimeout(() => {
+    //         obj.lockMovementX = false;
+    //         canvas.requestRenderAll();
+    //       }, 1000);
+    //     }
+
+    //     obj.setCoords();
+    //   });
+
+    //   // Show / hide the left / right borders
+    //   // leftBorder.set({ visible: anyObjectAtCenter });
+    //   // rightBorder.set({ visible: anyObjectAtCenter });
+    //   if (centerVerticalLine) {
+    //     if (anyObjectAtCenter) {
+    //       // alert("center");
+    //       centerVerticalLine.visible = true
+    //     }
+    //     else {
+    //       centerVerticalLine.visible = false
+    //     }
+    //     // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
+    //     // Change center line color if hitting center
+    //     const originalStroke = centerVerticalLine.originalStroke || centerVerticalLine.stroke || "skyblue";
+    //     if (!centerVerticalLine.originalStroke) {
+    //       centerVerticalLine.originalStroke = originalStroke;
+    //     }
+
+    //     centerVerticalLine.set("stroke", anyObjectAtCenter ? "orange" : originalStroke);
+
+    //   }
+
+    //   canvas.requestRenderAll();
+
+
+
+    // }
+
+
+    const eventHandlers = {
+      "object:added": handleObjectAdded,
+      "object:removed": handleObjectRemoved,
+      "object:modified": handleObjectModified,
+      // These three handlers need the extra context variables:
+      "object:moving": showBoundaryOnAction,
+      "object:scaling": showBoundaryOnAction,
+      "object:rotating": showBoundaryOnAction,
+      "selection:created": handleSelection,
+      "selection:updated": handleSelection,
+      "selection:cleared": handleSelectionCleared,
+      "editing:exited": updateBoundaryVisibility,
+      "text:cut": updateBoundaryVisibility,
+      "text:changed": handleObjectAdded,
+      // "object:moving": moveHandler,
+    };
+
+    // 2. Define a Set of handler functions that require the extra context variables.
+    const HANDLERS_NEEDING_CONTEXT = new Set([
+      showBoundaryOnAction
+    ]);
+
+
+    // 3. Iterate over the event handlers and register them.
+    Object.entries(eventHandlers).forEach(([event, handler]) => {
+      if (HANDLERS_NEEDING_CONTEXT.has(handler)) {
+        // If the handler needs context, wrap it in an arrow function to pass 
+        // the event object (e) plus the required context variables from the closure scope.
+        canvas.on(event, (e) => {
+          handler(e, fabricCanvasRef, activeProductTitle, activeSide);
+        });
+      } else {
+        // Otherwise, register the handler directly (it only receives the Fabric.js event object 'e').
+        canvas.on(event, handler);
       }
-      else {
-        const showBoundary = true;
-        if (activeSide == 'front') {
-          if (boundaryBox) boundaryBox.visible = showBoundary;
-          if (boundaryBoxInner) boundaryBoxInner.visible = showBoundary;
-          if (boundaryBoxLeft) boundaryBoxLeft.visible = showBoundary;
-          if (leftChestText) leftChestText.visible = showBoundary;
-          if (adultText) adultText.visible = showBoundary;
-          if (youthText) youthText.visible = showBoundary;
-          // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
-          if (warningText) { warningText.visible = showBoundary; }
-        }
-        else {
-          if (boundaryBox) boundaryBox.visible = showBoundary;
-          if (boundaryBoxInner) boundaryBoxInner.visible = false;
-          if (boundaryBoxLeft) boundaryBoxLeft.visible = false;
-          if (leftChestText) leftChestText.visible = false;
-          if (adultText) adultText.visible = false;
-          if (youthText) youthText.visible = false;
-          if (warningText) { warningText.visible = showBoundary; }
-          // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
-        }
-      }
-
-
-      if (activeSide == "leftSleeve" || activeSide == "rightSleeve") {
-        canvas.renderAll();
-        return;
-      }
-      // // Detect center collision
-      const canvasCenterX = canvas.getWidth() / 2;
-      const textObjects = objects.filter(
-        (obj) => obj.type === "curved-text" || obj.type === "image"
-      );
-
-      let anyObjectAtCenter = false;
-
-      textObjects.forEach((obj) => {
-        obj.setCoords();
-
-        const objCenterX = obj.getCenterPoint().x;
-        const delta = Math.abs(objCenterX - canvasCenterX);
-
-        if (delta <= 4) {
-          anyObjectAtCenter = true;
-
-          // Temporarily lock movement
-          obj.lockMovementX = true;
-          canvas.requestRenderAll();
-
-          setTimeout(() => {
-            obj.lockMovementX = false;
-            canvas.requestRenderAll();
-          }, 1000);
-        }
-
-        obj.setCoords();
-      });
-
-      // Show / hide the left / right borders
-      // leftBorder.set({ visible: anyObjectAtCenter });
-      // rightBorder.set({ visible: anyObjectAtCenter });
-      if (centerVerticalLine) {
-        if (anyObjectAtCenter) {
-          // alert("center");
-          centerVerticalLine.visible = true
-        }
-        else {
-          centerVerticalLine.visible = false
-        }
-        // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
-        // Change center line color if hitting center
-        const originalStroke = centerVerticalLine.originalStroke || centerVerticalLine.stroke || "skyblue";
-        if (!centerVerticalLine.originalStroke) {
-          centerVerticalLine.originalStroke = originalStroke;
-        }
-
-        centerVerticalLine.set("stroke", anyObjectAtCenter ? "orange" : originalStroke);
-
-      }
-
-      canvas.requestRenderAll();
-
-
-
-    }
-
-
-
-    const events = [
-      ["object:added", handleObjectAdded],
-      ["object:removed", handleObjectRemoved],
-      ["object:modified", handleObjectModified],
-      ["object:moving", showBoundaryOnAction],
-      ["object:scaling", showBoundaryOnAction],
-      ["object:rotating", showBoundaryOnAction],
-      ["selection:created", handleSelection],
-      ["selection:updated", handleSelection],
-      ["selection:cleared", handleSelectionCleared],
-      ["editing:exited", updateBoundaryVisibility],
-      ["text:cut", updateBoundaryVisibility],
-      ["text:changed", handleObjectAdded],
-
-      // ["object:moving", moveHandler], // Uncomment if needed
-    ];
-    events.forEach(([event, handler]) => canvas.on(event, handler));
+    });
 
     if (backgroundImage) {
       fabric.Image.fromURL(
@@ -929,7 +820,10 @@ const MainDesignTool = ({
       removeAllHtmlControls();
       setOpenAieditorPopup(false);
       // Remove all listeners
-      events.forEach(([event, handler]) => canvas.off(event, handler));
+      Object.entries(eventHandlers).forEach(([event, handler]) => {
+        canvas.off(event, handler);
+      });
+      // events.forEach(([event, handler]) => canvas.off(event, handler));
       const btn = document.getElementById(`canvas-${id}-ai`);
       if (btn) {
         btn.removeEventListener("click", () => {
@@ -1087,7 +981,7 @@ const MainDesignTool = ({
     };
 
     loadAndRender();
-  }, [isRender, addName, addNumber, nameAndNumberDesignState, activeSide]);
+  }, [isZoomedIn, addName, addNumber, nameAndNumberDesignState, activeSide]);
 
   useEffect(() => {
     const sleeveType = getProductSleeveType(activeProductTitle);

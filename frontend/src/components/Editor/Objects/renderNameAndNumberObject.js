@@ -18,7 +18,8 @@ const renderNameAndNumber = (
   bringPopup,
   productCategory,
   // proudctType,
-  activeNameAndNumberPrintSide
+  activeNameAndNumberPrintSide,
+  isZoomedIn
 ) => {
   // console.log("productCategory.......", productCategory)
 
@@ -103,11 +104,11 @@ const renderNameAndNumber = (
     originX: "center",
     originY: "center",
     alignText: "center",
-    selectable: true,
+    selectable: !isZoomedIn,
     fontFamily: fontFamily,
     hasBorders: false,
     hasControls: false,
-    evented: true,
+    evented: !isZoomedIn,
     isSync: true,
   });
 

@@ -153,7 +153,7 @@ const UploadArtToolbar = () => {
     } catch (err) {
       console.log("upload error", err);
 
-      toast.error(err.message);
+      toast.error(err?.response?.data?.message);
     } finally {
       setIsLoading(false);
     }
@@ -280,6 +280,7 @@ const UploadArtToolbar = () => {
       </div>
 
       {!isLoading ? (
+
         <div className={style.toolbarBox}>
           <div
             className={style.dropZone}
@@ -292,6 +293,7 @@ const UploadArtToolbar = () => {
               CHOOSE FILE(S)
             </button>
           </div>
+          <p className={style.formatPara}>Only JPEG, PNG, and JPG images are allowed</p>
           <div className={style.uploadBtnFlexContainer}>
             {settingsForUploadSection?.enableGoogleDrive && (
               <div

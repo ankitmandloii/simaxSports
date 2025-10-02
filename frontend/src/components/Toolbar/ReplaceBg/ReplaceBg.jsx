@@ -233,7 +233,7 @@ const ReplaceBg = ({ replacebgwithAi, setreplaceBgwithAi, img, replaceBgHandler 
         } catch (err) {
             if (err.name !== 'AbortError') {
                 console.error('Error in handleFiles:', err.message, { imageUrl });
-                toast.error(`Error uploading image: ${err.message}`);
+                toast.error(err?.response?.data?.message);
             }
             setUploadStatus('error');
             setUploadProgress(0);

@@ -466,7 +466,7 @@ const Review = () => {
       return data;
     } catch (error) {
       console.error("Error adding variants:", error);
-      toast.error("Failed to add variants.");
+      toast.error("Failed to add variants." + error.message);
     }
   }
 
@@ -967,12 +967,48 @@ const Review = () => {
   return (
     <>
       {loading ? (
-        <div className={styles.loaderWrapper}>
-          <div className={styles.loader} />
-          <p>calculating price...</p>
+        <div className={styles.container}>
+          <div className={styles.loaderWrapper}>
+            <div className={styles.loader} />
+            {/* <p>calculating price...</p> */}
+          </div>
+          <div className={styles.header}>
+            <div className="toolbar-main-heading">
+              <h5 className="Toolbar-badge">Review Your Order</h5>
+            </div>
+            <div className={styles.titleRow}>
+              <div className={styles.arrow} onClick={goBack}>
+                <LuArrowLeft />
+              </div>
+              <h3>Your Products & Pricing</h3>
+              <div className={styles.close} onClick={() => navigate("/design/product")}>
+                <RxCross2 />
+              </div>
+            </div>
+            <hr />
+          </div>
+          <button className={styles.addToCart} onClick={cartHandler}>
+            ADD TO CART <span className={styles.arrowIcon}><FaArrowRightLong /></span>
+          </button>
+          <div className={styles.review}>
+            <img
+              src="https://simaxbucket.s3.us-east-1.amazonaws.com/uploads/1755870746123_img-xdbtymq29jbjr5pt7xymstyn.png"
+              alt="Reviewer"
+            />
+            <div>
+              <blockquote>
+                "This company is amazing! Shipping is super fast and they are
+                competitively priced. We will absolutely use them again."
+              </blockquote>
+              <p>
+                <strong>Chelsea E.</strong> Ordered 35 pieces
+              </p>
+            </div>
+          </div>
         </div>
       ) : (
         <div className={styles.container}>
+
           {retrieveLoader && (
             <RetrieveSavedDesignsModal
               onClose={() => setRetrieveLoader(false)}

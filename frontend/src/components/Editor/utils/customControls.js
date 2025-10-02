@@ -1551,6 +1551,7 @@ function scaleFromCenter(eventData, transform, x, y) {
   transform.target.set({ centeredScaling: true });
   return fabric.controlsUtils.scalingEqually(eventData, transform, x, y);
 }
+
 function scaleXFromCenter(eventData, transform, x, y) {
   transform.target.set({ centeredScaling: true });
   return fabric.controlsUtils.scalingX(eventData, transform, x, y);

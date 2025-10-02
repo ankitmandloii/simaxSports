@@ -168,6 +168,7 @@ const AddImageToolbar = () => {
       }));
     };
   }, [img?.src, img?.originalWidth, img?.originalHeight, dispatch, selectedImageId]);
+
   const getDisplayDimensions = () => {
     if (!img?.originalWidth || !img?.originalHeight) {
       // console.log("img originalWidth not present");
@@ -1207,7 +1208,7 @@ const AddImageToolbar = () => {
       },
       isRenderOrNot: true,
     }));
-  }, [img, img?.width, img?.height, img?.scale, img?.scaleX, img?.scaleY])
+  }, [img?.src, img?.width, img?.height, img?.scale, img?.scaleX, img?.scaleY, img])
 
   const rf = useRef(null);
 
@@ -1223,7 +1224,7 @@ const AddImageToolbar = () => {
     if (rf.current) return
     rf.current = true;
     (async () => {
-      const applyFilterURL = await applyFilterAndGetUrl(img?.src ?? previewUrl, img.singleColor ?? singleColor);
+      const applyFilterURL = await applyFilterAndGetUrl(img?.src ?? previewUrl, img?.singleColor ?? singleColor);
       // console.log("applied filter url ", applyFilterURL);
       globalDispatch("base64CanvasImageForSinglelColor", String(applyFilterURL));
       setFilters(fs => fs.map(f => {
@@ -1294,11 +1295,43 @@ const AddImageToolbar = () => {
                   </div>
 
 
+                  <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                    {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Dimensions & DPI :    </div> */}
 
+                    <div className={styles.toolbarBoxFontValueSetInnerActioninch}>
+                      <p><span>Width: </span> {dims?.inches.width} IN</p>
+                      <p><span>Height:</span> {dims?.inches.height} IN</p>
+                      {/* <p><span>Pixels: </span>{dims.pixels.width} × {dims.pixels.height}</p> */}
+                      {/* <p>DPI: {targetDpi} ({getDPILabel(targetDpi)})</p>
+                            <p>Pixels: {dims.pixels.width} × {dims.pixels.height}</p> */}
+                    </div>
+                  </div>
+
+                  <hr />
+                  <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+                    {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Dimensions & DPI :    </div> */}
+
+                    {/* return ( */}
+                    <div className={styles.toolbarBoxFontValueSetInnerActioninch}>
+                      {/* <p><span>Width: </span> {dims.inches.width} IN</p>
+                          <p><span>Height:</span> {dims.inches.height} IN</p> */}
+                      <p><span>Pixels: </span>{dims?.pixels.width} × {dims?.pixels.height}</p>
+                      {/* <p><span>Pixels: </span>1254 × 1254</p> */}
+
+                      <p>DPI: {dims?.effectedDpi ?? 300} </p>
+                      {/* <p>Pixels: {dims.pixels.width} × {dims.pixels.height}</p>  */}
+                    </div>
+                    {/* {(() => {
+
+                      );
+                    })()} */}
+                  </div>
+                  {selectedFilter === "Normal" && <hr />}
 
                   {selectedFilter === "Normal" && (
                     <>
                       <div className={styles.toolbarBoxFontValueSetInnerContainer}>
+
                         <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
                           Edit Colors
                         </div>
@@ -1524,37 +1557,9 @@ const AddImageToolbar = () => {
 
                   {AdminSettingsforAioperation?.replaceBackgroundAI && <hr />}
                   {/* <hr /> */}
-                  <div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                    {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Dimensions & DPI :    </div> */}
 
-                    <div className={styles.toolbarBoxFontValueSetInnerActioninch}>
-                      <p><span>Width: </span> {dims?.inches.width} IN</p>
-                      <p><span>Height:</span> {dims?.inches.height} IN</p>
-                      {/* <p><span>Pixels: </span>{dims.pixels.width} × {dims.pixels.height}</p> */}
-                      {/* <p>DPI: {targetDpi} ({getDPILabel(targetDpi)})</p>
-                            <p>Pixels: {dims.pixels.width} × {dims.pixels.height}</p> */}
-                    </div>
-                  </div>
 
-                  <hr />
-                  <div className={styles.toolbarBoxFontValueSetInnerContainer}>
-                    {/* <div className={styles.toolbarBoxFontValueSetInnerActionheading}>Dimensions & DPI :    </div> */}
-
-                    {/* return ( */}
-                    <div className={styles.toolbarBoxFontValueSetInnerActioninch}>
-                      {/* <p><span>Width: </span> {dims.inches.width} IN</p>
-                          <p><span>Height:</span> {dims.inches.height} IN</p> */}
-                      <p><span>Pixels: </span>{dims?.pixels.width} × {dims?.pixels.height}</p>
-                      <p>DPI: {dims?.effectedDpi ?? 300} </p>
-                      {/* <p>Pixels: {dims.pixels.width} × {dims.pixels.height}</p>  */}
-                    </div>
-                    {/* {(() => {
-
-                      );
-                    })()} */}
-                  </div>
-
-                  <hr />
+                  {/* <hr /> */}
 
                   <div className={styles.toolbarBoxFontValueSetInnerContainer}>
                     <div className={styles.toolbarBoxFontValueSetInnerActionheading}>
