@@ -1224,7 +1224,7 @@ const AddImageToolbar = () => {
     if (rf.current) return
     rf.current = true;
     (async () => {
-      const applyFilterURL = await applyFilterAndGetUrl(img?.src ?? previewUrl, img.singleColor ?? singleColor);
+      const applyFilterURL = await applyFilterAndGetUrl(img?.src ?? previewUrl, img?.singleColor ?? singleColor);
       // console.log("applied filter url ", applyFilterURL);
       globalDispatch("base64CanvasImageForSinglelColor", String(applyFilterURL));
       setFilters(fs => fs.map(f => {
@@ -1610,7 +1610,7 @@ const AddImageToolbar = () => {
                         type="range"
                         id="min"
                         name="min"
-                        min="-360"
+                        min="0"
                         max="360"
                         step="0.1"
                         value={rangeValuesRotate}
@@ -1619,7 +1619,7 @@ const AddImageToolbar = () => {
 
                       <input
                         type="number"
-                        min="-360"
+                        min="0"
                         max="360"
                         step="0.1"
                         value={rangeValuesRotate}

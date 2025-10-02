@@ -84,7 +84,7 @@ async function processAndReplaceColors(imageSrc, color, editColor = false, extra
     throw error;
   }
 }
-function applyFilterAndGetUrl(imageSrc, color) {
+function applyFilterAndGetUrl(imageSrc, color = "#ffffff") {
   console.log("apply filter call with color", color, imageSrc);
   imageSrc = String(imageSrc);
   if (imageSrc.includes("monochrome=black")) {

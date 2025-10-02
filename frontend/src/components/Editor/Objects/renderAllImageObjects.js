@@ -2,6 +2,7 @@ import React from "react";
 import { store } from "../../../redux/store"
 import { processAndReplaceColors, applyFilterAndGetUrl, invertColorsAndGetUrl, getBase64CanvasImage, replaceColorAndGetBase64 } from "../../ImageOperation/CanvasImageOperations";
 import { updateImageState } from "../../../redux/FrontendDesign/TextFrontendDesignSlice";
+import { createAiEditorButton, createLoaderOverlay, createRemoveBackgroundToggle, handleImage, removeAllHtmlControls, updateButtonPosition } from "../HelpersFunctions/renderImageHelpers";
 const renderAllImageObjects = (
   fabricCanvasRef,
   dispatch,
@@ -24,436 +25,10 @@ const renderAllImageObjects = (
   isZoomedIn,
   currentImageObject
 ) => {
-  // console.log("currentImageObject selectedFilter", currentImageObject.selectedFilter);
-  // console.log("openAieditorPopup.......", openAieditorPopup)
-
   const canvas = fabricCanvasRef.current;
-
-  async function handleImage(imageSrc, color = "#ffffff", currentImageObject, invertColor, editColor, extractedColors, globalDispatch, id) {
-    try {
-      const selectedFilter = currentImageObject.selectedFilter;
-      globalDispatch("loading", true, id);
-      globalDispatch("editColor", false, id)
-      // console.log("handle image function called with src", imageSrc, color, selectedFilter, invertColor, editColor, globalDispatch, id);
-
-      let currentBase64Image;
-
-      let normalColorImage, singleColorImage, blackWhiteColorImage;
-      // const newfilters = updateFilter();
-
-      const baseUrl = imageSrc.split("?")[0] || "";
-      const params = imageSrc.split("?")[1] || ""
-      const filteredParams = params.replace("sat=-100", "");
-      // console.log("params", params, "filteredParams", filteredParams)
-
-      const normalSrc = baseUrl + "?" + filteredParams
-      const singleSrc = baseUrl + "?" + filteredParams
-      const blackAndWhiteSrc = baseUrl + "?" + params + (!params.includes("sat=-100") ? "&sat=-100" : "")
-      const allTransformImage = [normalSrc, singleSrc, blackAndWhiteSrc];
-
-      console.log("curent seleteced filter is ", selectedFilter)
-      // console.log("stored seletected filter is ", img.selectedFilter)
-
-      // for normal color image
-      // if (editColor) {
-      //   normalColorImage = await processAndReplaceColors(allTransformImage[0], color, editColor, extractedColors);
-      // }
-      // else {
-      // }
-      normalColorImage = await getBase64CanvasImage(allTransformImage[0], color)
-
-      //for single color image
-      if (invertColor) {
-        const applyFilterURL = await applyFilterAndGetUrl(allTransformImage[1], color);
-        singleColorImage = await invertColorsAndGetUrl(applyFilterURL || allTransformImage[1]);
-      }
-      else {
-        singleColorImage = await applyFilterAndGetUrl(allTransformImage[1], color);
-      }
-
-      // for black and white image
-      blackWhiteColorImage = await getBase64CanvasImage(allTransformImage[2], color)
-
-      if (currentImageObject.selectedFilter == "Single Color") {
-        currentBase64Image = singleColorImage;
-      }
-      else if (currentImageObject.selectedFilter == "Normal") {
-        currentBase64Image = normalColorImage;
-      }
-      else {
-        currentBase64Image = blackWhiteColorImage;
-      }
-
-      // Dispatch the base64 string to your global state (no need to convert it to a string again)
-      globalDispatch("base64CanvasImage", currentBase64Image, id);
-      globalDispatch("base64CanvasImageForNormalColor", String(normalColorImage), id);
-      globalDispatch("base64CanvasImageForSinglelColor", String(singleColorImage), id);
-      globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(blackWhiteColorImage), id);
-      // Set loading to false after the process is done
-      globalDispatch("loading", false, id); // Corrected the typo here
-    } catch (error) {
-      globalDispatch("loading", false, id); // Ensure loading is stopped even in case of error
-      console.error("Error:", error); // Log any errors that occur
-    }
-  }
   if (!canvas) return;
   let syncing = false;
-  function createRemoveBackgroundToggle(fabricImage, canvasId, callback, removeBg, currentImageObject) {
-    // console.log("button data ", fabricImage, canvasId, callback, removeBg);
-    const id = fabricImage.id;
-    const buttonId = `canvas-${id}`;
-    const canvasElement = document.getElementById(canvasId);
-    if (!canvasElement) return;
 
-    // Check if toggle already exists
-    let container = document.getElementById(buttonId);
-    if (container) {
-      // console.log("container already exist so updating them");
-      const center = fabricImage.getCenterPoint();
-      const imageBottom = center.y + (fabricImage.getScaledHeight() / 2);
-      const imageLeft = center.x;
-      const OFFSET = 40;
-
-      container.style.top = `${imageBottom + OFFSET}px`;
-      container.style.left = `${imageLeft}px`;
-      container.style.display = "none";
-
-      const checkbox = container.querySelector('input[type="checkbox"]');
-      const slider = container.querySelector(".slider");
-      const circle = container.querySelector(".circle");
-
-      if (checkbox) checkbox.checked = removeBg;
-
-
-      if (slider && circle) {
-        slider.style.backgroundColor = removeBg ? "#3b82f6" : "#ccc";
-        circle.style.transform = removeBg ? "translateX(16px)" : "translateX(0)";
-      }
-
-      return;
-    }
-
-    // Create the toggle
-    container = document.createElement("div");
-    container.id = buttonId;
-    Object.assign(container.style, {
-      position: "absolute",
-      zIndex: "99",
-      transform: "translate(-50%, 0)",
-      display: "none",
-      alignItems: "center",
-      gap: "6px",
-      padding: "4px 10px",
-      borderRadius: "9999px",
-      backgroundColor: "white",
-      boxShadow: "0 0 4px rgba(0,0,0,0.1)",
-      fontFamily: "sans-serif",
-      fontSize: "10px",
-      maxWidth: "95vw",
-      // flexWrap: "wrap",
-    });
-
-    const textSpan1 = document.createElement("span");
-    textSpan1.textContent = "Remove";
-    textSpan1.style.fontWeight = "500";
-
-    const aiBadge = document.createElement("span");
-    aiBadge.textContent = "AI";
-    Object.assign(aiBadge.style, {
-      fontSize: "10px",
-      padding: "1px 5px",
-      borderRadius: "4px",
-      backgroundImage: "linear-gradient(to right, #6C6CFF, #9CF8F8)",
-      color: "white",
-      fontWeight: "600",
-    });
-
-    const textSpan2 = document.createElement("span");
-    textSpan2.textContent = "Background";
-    textSpan2.style.fontWeight = "500";
-
-    const label = document.createElement("div");
-    label.style.display = "flex";
-    label.style.alignItems = "center";
-    label.style.gap = "3px";
-    label.appendChild(textSpan1);
-    label.appendChild(aiBadge);
-    label.appendChild(textSpan2);
-
-    const toggleWrapper = document.createElement("label");
-    Object.assign(toggleWrapper.style, {
-      position: "relative",
-      display: "inline-block",
-      width: "34px",
-      height: "18px",
-      cursor: "pointer",
-      flexShrink: "0",
-    });
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.style.opacity = "0";
-    checkbox.style.width = "0";
-    checkbox.style.height = "0";
-
-    const slider = document.createElement("span");
-    Object.assign(slider.style, {
-      position: "absolute",
-      top: "0",
-      left: "0",
-      right: "0",
-      bottom: "0",
-      backgroundColor: "#ccc",
-      borderRadius: "9999px",
-      transition: "0.2s",
-    });
-
-    const circle = document.createElement("span");
-    Object.assign(circle.style, {
-      position: "absolute",
-      left: "2px",
-      top: "2px",
-      width: "14px",
-      height: "14px",
-      backgroundColor: "white",
-      borderRadius: "50%",
-      transition: "0.2s",
-      boxShadow: "0 0 1px rgba(0,0,0,0.2)",
-    });
-
-    if (removeBg) {
-      slider.style.backgroundColor = "#3b82f6";
-      circle.style.transform = "translateX(16px)";
-      checkbox.checked = true;
-    } else {
-      slider.style.backgroundColor = "#ccc";
-      circle.style.transform = "translateX(0)";
-      checkbox.checked = false;
-    }
-
-    checkbox.addEventListener("change", async (event) => {
-      // console.log("Checkbox changed for image:", id);
-      const state = store.getState();
-      const activeSide = state.TextFrontendDesignSlice.activeSide;
-      const images = state.TextFrontendDesignSlice.present[activeSide].images;
-      const selectedImageId = state.TextFrontendDesignSlice.present[activeSide].selectedImageId;
-
-      const currentImageObject = images.find((img) => img.id === selectedImageId);
-      const addImageToolbarBgBtn = document.querySelector("#removeBackgroundInput");
-      const currentSrc = fabricImage.src;
-
-      const baseSrc = currentSrc.split('?')[0];
-      let params = currentSrc.split('?')[1] ? currentSrc.split('?')[1].split('&') : [];
-
-      const checked = event.target.checked; // ✅ use actual checkbox state
-      // console.log("checked or not ", checked)
-
-      // Update toggle UI
-      slider.style.backgroundColor = checked ? "#3b82f6" : "#ccc";
-      circle.style.transform = checked ? "translateX(16px)" : "translateX(0)";
-
-      // Remove old bg-remove params
-      params = params.filter(param => !param.startsWith("bg-remove="));
-
-      // Add new param based on state
-      params.push(`bg-remove=${checked}`);
-
-      // Construct new URL
-      const newTransform = params.length > 0 ? `?${params.join('&')}` : '';
-      const newSrc = `${baseSrc}${newTransform}`;
-      // console.log("New image src:", newSrc);
-
-      // if (window.innerWidth <= 1200) {
-      //   globalDispatch("loading", true, id);
-      globalDispatch("src", newSrc, id);
-      globalDispatch("removeBg", checked, id);
-      console.log("currentImageObject before calling handleimage ", currentImageObject)
-      await handleImage(newSrc, currentImageObject.singleColor, currentImageObject, currentImageObject.invertColor, currentImageObject.editColor, currentImageObject.extractedColors, globalDispatch, id)
-      //   globalDispatch("base64CanvasImage", newSrc, id);
-
-      //   globalDispatch("selectedFilter", "Normal", id);
-      //   globalDispatch("loading", false, id);
-      // }
-      // else {
-      //   globalDispatch("removeBgImagebtn", Math.random(), id);
-      // }
-      // Show loading state
-      // globalDispatch("loading", true, id);
-      // globalDispatch("loadingSrc", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s", id);
-
-      // Update image source
-
-      // fabricImage.setSrc(newSrc, () => {
-
-      //   console.log("Image updated with new src:", newSrc);
-      //   globalDispatch("removeBgImagebtn", checked, id);
-      //   globalDispatch("loading", false, id);
-      //   // globalDispatch("loadingSrc", null, id);
-      //   // globalDispatch("src", newSrc, id);
-      //   // globalDispatch("base64CanvasImage", newSrc, id);
-      //   // globalDispatch("selectedFilter", "Normal", id);
-      //   // globalDispatch("removeBg", checked, id);
-      //   console.log("calling removeBgImagebtn", checked, id);
-      //   canvas.renderAll();
-      //   // globalDispatch("removeBgParamValue", checked ? "bg-remove=true" : "", id);
-      //   if (callback) callback(checked, fabricImage);
-      // }, { crossOrigin: "anonymous" });
-
-      // Sync with toolbar checkbox
-      const toolbarCheckbox = document.querySelector(`#addImageToolbarBgBtn`);
-      console.log(toolbarCheckbox, "toolbarCheckbox");
-      if (toolbarCheckbox) {
-        toolbarCheckbox.checked = checked;
-        const event = new Event('change');
-        toolbarCheckbox.dispatchEvent(event);
-      }
-    });
-
-    slider.classList.add("slider");
-    circle.classList.add("circle");
-
-    toggleWrapper.appendChild(checkbox);
-    toggleWrapper.appendChild(slider);
-    toggleWrapper.appendChild(circle);
-
-    container.appendChild(label);
-    container.appendChild(toggleWrapper);
-    canvasElement.parentElement.appendChild(container);
-
-    // Initial position below image
-    const center = fabricImage.getCenterPoint();
-    const imageBottom = center.y + fabricImage.getScaledHeight() / 2;
-    const imageLeft = center.x;
-    const OFFSET = 40;
-
-    container.style.top = `${imageBottom + OFFSET}px`;
-    container.style.left = `${imageLeft}px`;
-
-    // console.warn("button created and done");
-  }
-  function createAiEdtiorButton(fabricImage, canvasId, callback, removeBg, setOpenAieditorPopup, openAieditorPopup) {
-    // console.log("button data ", fabricImage, canvasId, callback, removeBg);
-    const id = fabricImage.id;
-    const buttonId = `canvas-${id}-ai`;
-    const canvasElement = document.getElementById(canvasId);
-    if (!canvasElement) return;
-
-    // Check if toggle already exists
-    let container = document.getElementById(buttonId);
-    if (container) {
-      // console.log("container already exist so updating them");
-      const center = fabricImage.getCenterPoint();
-      const imageBottom = center.y + (fabricImage.getScaledHeight() / 2);
-      const imageLeft = center.x;
-      const OFFSET = 70;
-      container.style.top = `${imageBottom + OFFSET}px`;
-      container.style.left = `${imageLeft}px`;
-      container.style.display = "none";
-      // container.removeEventListener("click", () => { });
-
-      container.addEventListener("click", (event) => {
-        event.stopPropagation();
-
-        if (!openAieditorPopup) {
-          setOpenAieditorPopup(true);
-
-        }
-        // console.log("clicked ai btn",openAieditorPopup);
-      }, false)
-      return;
-    }
-
-    // Create the toggle
-    container = document.createElement("div");
-    container.id = buttonId;
-    Object.assign(container.style, {
-      position: "absolute",
-      zIndex: "99",
-      transform: "translate(-50%, 0)",
-      // display: "none",
-      alignItems: "center",
-      gap: "6px",
-      cursor: "pointer",
-      padding: "4px 10px",
-      borderRadius: "9999px",
-      backgroundColor: "white",
-      boxShadow: "0 0 4px rgba(0,0,0,0.1)",
-      fontFamily: "sans-serif",
-      fontSize: "10px",
-      maxWidth: "95vw",
-      pointerEvents: "auto"
-      // flexWrap: "wrap",
-    });
-
-    const textSpan1 = document.createElement("span");
-    textSpan1.textContent = "Image";
-    textSpan1.style.fontWeight = "500";
-
-    const aiBadge = document.createElement("span");
-    aiBadge.textContent = "AI";
-    Object.assign(aiBadge.style, {
-      fontSize: "10px",
-      padding: "1px 5px",
-      borderRadius: "4px",
-      backgroundImage: "linear-gradient(to right, #6C6CFF, #9CF8F8)",
-      color: "white",
-      fontWeight: "600",
-    });
-
-    const textSpan2 = document.createElement("span");
-    textSpan2.textContent = "Editor";
-    textSpan2.style.fontWeight = "500";
-
-    const label = document.createElement("div");
-    label.style.display = "flex";
-    label.style.alignItems = "center";
-    label.style.gap = "3px";
-    label.appendChild(aiBadge);
-    label.appendChild(textSpan1);
-    label.appendChild(textSpan2);
-
-
-    container.appendChild(label);
-
-    container.addEventListener("click", (event) => {
-      event.stopPropagation();
-
-      if (!openAieditorPopup) {
-        setOpenAieditorPopup(true);
-
-      }
-      // console.log("clicked ai btn",openAieditorPopup);
-    }, false)
-    canvasElement.parentElement.appendChild(container);
-
-    // Initial position below image
-    const center = fabricImage.getCenterPoint();
-    const imageBottom = center.y + fabricImage.getScaledHeight() / 2;
-    const imageLeft = center.x;
-    const OFFSET = 40;
-
-    container.style.top = `${imageBottom + OFFSET}px`;
-    container.style.left = `${imageLeft}px`;
-
-    // console.warn("button created and done");
-  }
-
-  function removeAllHtmlControls(canvas) {
-    if (!canvas) {
-      canvas = fabricCanvasRef.current;
-    }
-    canvas.getObjects().forEach((obj) => {
-      if (obj._htmlControls) {
-        for (const key in obj._htmlControls) {
-          const el = obj._htmlControls[key];
-          if (el?.parentNode) el.parentNode.removeChild(el);
-        }
-        obj._htmlControls = null;
-      }
-    });
-
-    document.querySelectorAll('[data-fabric-control]').forEach(el => el.remove());
-  }
 
   const MAX_WIDTH = 180;
   const MAX_HEIGHT = 180;
@@ -491,7 +66,7 @@ const renderAllImageObjects = (
   });
 
   if (duplicateRemoved || staleRemoved) {
-    canvas.renderAll();
+    canvas.requestRenderAll();
   }
 
   if (!imageContaintObject || imageContaintObject.length === 0) return;
@@ -518,78 +93,26 @@ const renderAllImageObjects = (
       thresholdValue,
       solidColor
     } = imageData;
+
+    const payload = {
+      id, src, base64CanvasImage, left: position?.x || 100, top: position?.y || 100, angle,
+      flipX, flipY, lockMovementX: locked, lockMovementY: locked, originX: "center", originY: "center",
+      objectCaching: false, borderColor: "skyblue", borderDashArray: [4, 4], hasBorders: true, hasControls: !locked && !isZoomedIn,
+      selectable: !isZoomedIn, locked, evented: !isZoomedIn, customType, isSync: true, layerIndex, lockScalingFlip: true,
+      singleColor, invertColor, thresholdValue, solidColor, evented: !isZoomedIn,
+    }
     // console.log("base64 ", base64CanvasImage)
     // if (!base64CanvasImage) return;
     if (locked) {
       canvas.discardActiveObject();
       try {
-        canvas.renderAll();
+        canvas.requestRenderAll();
 
       } catch (err) {
         console.log("error in image render component")
       }
     }
     const existingObj = canvas.getObjects("image").find((obj) => obj.id === id);
-
-    function createLoaderOverlay(fabricImage, canvasId) {
-      const id = fabricImage.id;
-      const loaderId = `loader-${id}`;
-      const canvasElement = document.getElementById(canvasId);
-      if (!canvasElement) return;
-
-      let loader = document.getElementById(loaderId);
-
-      // Compute scaled size (adjust multiplier as needed)
-      const scaledWidth = fabricImage.getScaledWidth();
-      const scaledHeight = fabricImage.getScaledHeight();
-      const loaderSize = Math.min(scaledWidth, scaledHeight) * 0.3; // 30% of smaller dimension
-
-      if (!loader) {
-        loader = document.createElement("div");
-        loader.id = loaderId;
-
-        Object.assign(loader.style, {
-          position: "absolute",
-          zIndex: "1000",
-          border: "4px solid #e0e0e0",
-          borderTop: "4px solid #3b82f6",
-          borderRadius: "50%",
-          animation: "spin 1s linear infinite",
-          pointerEvents: "none",
-        });
-
-        if (!document.getElementById("loader-style")) {
-          const style = document.createElement("style");
-          style.id = "loader-style";
-          style.innerHTML = `
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `;
-          document.head.appendChild(style);
-        }
-
-        canvasElement.parentElement.appendChild(loader);
-      }
-
-      // Apply dynamic size
-      loader.style.width = `${loaderSize}px`;
-      loader.style.height = `${loaderSize}px`;
-      loader.style.borderWidth = `${Math.max(loaderSize * 0.1, 2)}px`;
-
-      // Center of image on screen
-      const center = fabricImage.getCenterPoint();
-      const zoom = fabricImage.canvas.getZoom();
-      const viewportTransform = fabricImage.canvas.viewportTransform;
-
-      const left = center.x * zoom + viewportTransform[4] - loaderSize / 2;
-      const top = center.y * zoom + viewportTransform[5] - loaderSize / 2;
-
-      loader.style.left = `${left}px`;
-      loader.style.top = `${top}px`;
-      loader.style.display = "block";
-    }
 
 
     const loaderId = `loader-${id}`;
@@ -598,8 +121,9 @@ const renderAllImageObjects = (
     //   const existingObj = canvas.getObjects("image").find((obj) => obj.id === id);
     //   if (existingObj) {
     //     existingObj.set({
-    //       // selectable: false,
-    //       // evented: ,
+    //       selectable: false,
+    //       evented: false,
+    //       hasControls: false
 
     //     })
     //     canvas.renderAll();
@@ -622,261 +146,133 @@ const renderAllImageObjects = (
     // }
 
     // const normalizeUrl = (url) => decodeURIComponent(url.trim().toLowerCase());
-    if (
-      existingObj &&
+    const setupImage = (img) => {
+      const { scaleX: finalX, scaleY: finalY } = getScaled(
+        img,
+        scaleX,
+        scaleY
+      );
+      img.set({
+        ...payload,
+        scaleX: finalX,
+        scaleY: finalY,
+      })
+      img.setControlsVisibility({ mt: false, mb: false, ml: false, mr: false, tl: false, tr: false, bl: false, br: false, mtr: false, });
+      if (!locked && !isZoomedIn) {
+        if (canvas.getActiveObjects().find((i) => i.id == id)) {
+          toggleVisibility(true, locked)
+        }
+        img.controls = createControls(bringPopup, dispatch);
+      }
+      else {
+        toggleVisibility(false, locked)
+        removeAllHtmlControls(canvas);
+      }
+      img.on("scaling", () => toggleVisibility(false, locked));
+      img.on("rotating", () => toggleVisibility(false, locked));
+      img.on("moving", () => toggleVisibility(false, locked));
+      img.on("mousedown", mousedownHandler);
+      // img.on("moving", movingHandler);
+      img.on("mouseup", mouseupHandler)
+      // img.on("modified", modifiedHandler);
+      img.on("selected", selectionHandler);
+      img.on("deselected", deselectedhandler);
 
-      (src != existingObj?.src || base64CanvasImage != existingObj?.base64CanvasImage || singleColor != existingObj?.singleColor || invertColor != existingObj?.invertColor || thresholdValue != existingObj?.thresholdValue || solidColor != existingObj?.solidColor)
-    ) {
-      canvas.remove(existingObj);
-      fabric.Image.fromURL(
-        base64CanvasImage,
-        (newImg) => {
-          const { scaleX: finalX, scaleY: finalY } = getScaled(
-            newImg,
-            scaleX,
-            scaleY
-          );
+      function toggleVisibility(visible, locked) {
 
-          newImg.set({
-            id,
-            src,
-            base64CanvasImage,
-            left: position?.x || 100,
-            top: position?.y || 100,
-            angle,
-            scaleX: finalX,
-            scaleY: finalY,
-            flipX,
-            flipY,
-            lockMovementX: locked,
-            lockMovementY: locked,
-            originX: "center",
-            originY: "center",
-            objectCaching: false,
-            borderColor: "skyblue",
-            borderDashArray: [4, 4],
-            hasBorders: true,
-            hasControls: !locked || !isZoomedIn,
-            selectable: !isZoomedIn,
-            locked: locked,
-            evented: !isZoomedIn,
-            customType,
-            isSync: true,
-            layerIndex,
-            lockScalingFlip: true,
-            singleColor,
-            invertColor,
-            thresholdValue,
-            solidColor,
-            evented: !isZoomedIn,
-          });
-
-          newImg.setControlsVisibility({
-            mt: false,
-            mb: false,
-            ml: false,
-            mr: false,
-            tl: false,
-            tr: false,
-            bl: false,
-            br: false,
-            mtr: false,
-          });
-          removeAllHtmlControls(canvas);
-          function toggleVisibility(visible, locked) {
-            // console.log("locked stated", locked)
-
-            const toggle = document.getElementById(`canvas-${newImg.id}`);
-            const aiEditorBtn = document.getElementById(`canvas-${newImg.id}-ai`);
-            if (locked) {
-              toggle.style.display = "none";
-              aiEditorBtn.style.display = "none";
-              return;
-            }
-            if (toggle) {
-              aiEditorBtn.style.display = visible ? "flex" : "none";
-              toggle.style.display = visible ? "flex" : "none";
-            }
-          }
-
-          newImg.controls = createControls(bringPopup, dispatch);
-
-          const button = document.getElementById(`canvas-${id}`);
-          const aibutton = document.getElementById(`canvas-${id}-ai`);
-
-          if (button) {
-            const center = newImg.getCenterPoint();
-            const imageBottom = center.y + (newImg.getScaledHeight() / 2);
-            const imageLeft = center.x;
-            const OFFSET = 40;
-
-            button.style.top = `${imageBottom + OFFSET}px`;
-            button.style.left = `${imageLeft}px`;
-          }
-          if (aibutton) {
-            const center = newImg.getCenterPoint();
-            const imageBottom = center.y + (newImg.getScaledHeight() / 2);
-            const imageLeft = center.x;
-            const OFFSET = 70;
-
-            aibutton.style.top = `${imageBottom + OFFSET}px`;
-            aibutton.style.left = `${imageLeft}px`;
-          }
-
-          createRemoveBackgroundToggle(newImg, `canvas-${activeSide}`, (isChecked, image) => {
-            // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
-          }, removeBg, currentImageObject);
-
-          createAiEdtiorButton(newImg, `canvas-${activeSide}`, (isChecked, image) => {
-            // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
-          }, removeBg, setOpenAieditorPopup, openAieditorPopup);
-
-          canvas.add(newImg);
-          newImg.on("scaling", () => toggleVisibility(false, locked));
-          newImg.on("rotating", () => toggleVisibility(false, locked));
-          newImg.on("moving", () => toggleVisibility(false, locked));
-
-          newImg.on("mousedown", (e) => {
-            const obj = e.target;
-            if (obj?.id) {
-              canvas.setActiveObject(obj);
-              dispatch(selectedImageIdState(obj.id));
-              setActiveObjectType("Image");
-              navigate("/design/addImage");
-            }
-          });
-
-          newImg.on("mouseup", (e) => {
-            const obj = e.target;
-            if (!obj) return;
-            const center = obj.getCenterPoint();
-            obj.setPositionByOrigin(center, "center", "center");
-            obj.setCoords();
-            const imageWidthPx = newImg?.getScaledWidth();
-            const imageHeightPx = newImg?.getScaledHeight();
-            // console.log("---------------- imageWidthPx", imageWidthPx)
-            // console.log("---------------- imageHeightPx", imageHeightPx)
-
-            dispatch(updateImageState({
-              id: id,
-              changes: {
-                // loadingText: true,
-                width: imageWidthPx,
-                height: imageHeightPx,
-                position: { x: obj.left, y: obj.top },
-                angle: obj.angle,
-                // loadingText: false,
-              }
-
-            }));
-            // globalDispatch("width", imageWidthPx, id);
-            // globalDispatch("height", imageHeightPx, id);
-            // globalDispatch("position", { x: obj.left, y: obj.top }, id);
-            // globalDispatch("angle", obj.angle, id);
-            // globalDispatch("")
-            handleScale(e);
-            try {
-              canvas.renderAll();
-
-            } catch (err) {
-              console.log("error in image render component")
-            }
-            // syncMirrorCanvasHelper(activeSide);
-            // toggleVisibility(true);
-          });
-          newImg.on("modified", (e) => {
-            const obj = e.target;
-            if (!obj) return;
-            // globalDispatch("")
-            handleScale(e);
-            syncMirrorCanvasHelper(activeSide);
-            toggleVisibility(true);
-            try {
-              canvas.renderAll();
-
-            } catch (err) {
-              console.log("error in image render component")
-            }
-
-          });
-
-          newImg.on("selected", (e) => {
-            // console.log(e)
-            const toggle = document.getElementById(`canvas-${newImg.id}`);
-            const aibutton = document.getElementById(`canvas-${newImg.id}-ai`);
-            // console.log("locked stated", locked)
-            if (toggle) {
-              if (locked) {
-                toggle.style.display = "none";
-                aibutton.style.display = "none";
-              }
-              else {
-                toggle.style.display = "flex";
-                aibutton.style.display = "flex";
-              }
-            }
-          });
-
-          newImg.on("deselected", () => {
-            const toggle = document.getElementById(`canvas-${newImg.id}`);
-            const aibutton = document.getElementById(`canvas-${newImg.id}-ai`);
-            if (toggle) toggle.style.display = "none";
-            if (aibutton) aibutton.style.display = "none";
-          });
-          const image = newImg;
-          const DPI = 300; // assumed target print resolution
-
-          const widthPixels = image.getScaledWidth();  // actual size on canvas (in px)
-          const heightPixels = image.getScaledHeight();
-
-          const widthInches = (widthPixels / DPI).toFixed(2);
-          const heightInches = (heightPixels / DPI).toFixed(2);
-
-          // console.log(`Print Size: ${widthInches} in × ${heightInches} in`);
-
+        const toggle = document.getElementById(`canvas-${img.id}`);
+        const aiEditorBtn = document.getElementById(`canvas-${img.id}-ai`);
+        if (locked) {
+          toggle.style.display = "none";
+          aiEditorBtn.style.display = "none";
+          return;
+        }
+        if (toggle) {
+          aiEditorBtn.style.display = visible ? "flex" : "none";
+          toggle.style.display = visible ? "flex" : "none";
+        }
+      }
+      function mousedownHandler(e) {
+        const obj = e.target;
+        if (obj?.id) {
+          canvas.setActiveObject(obj);
+          dispatch(selectedImageIdState(obj.id));
+          setActiveObjectType("image");
+          navigate("/design/addImage");
           try {
-            canvas.renderAll();
+            canvas.requestRenderAll();
 
           } catch (err) {
             console.log("error in image render component")
           }
-        },
-        { crossOrigin: "anonymous" }
-      );
-    } else if (existingObj) {
-      const { scaleX: finalX, scaleY: finalY } = getScaled(
-        existingObj,
-        scaleX,
-        scaleY
-      );
+        }
+      }
+      function movingHandler() {
+        // const center = img.getCenterPoint();
+        // const imageBottom = center.y + (img.getScaledHeight() / 2);
+        // const imageLeft = center.x;
+        // const OFFSET = 40;
 
-      existingObj.set({
-        left: position?.x || 100,
-        top: position?.y || 100,
-        angle,
-        flipX,
-        flipY,
-        scaleX: finalX,
-        scaleY: finalY,
-        lockMovementX: locked,
-        lockMovementY: locked,
-        evented: !isZoomedIn,
-        layerIndex,
-        customType,
-        isSync: true,
-        hasControls: !locked || !isZoomedIn,
-        selectable: !isZoomedIn,
-        locked: locked,
-        evented: !isZoomedIn,
-      });
+        // const button = document.getElementById(`canvas-${img.id}`);
+        // const aibutton = document.getElementById(`canvas-${img.id}-ai`);
+        // if (button) {
+        //   button.style.top = `${imageBottom + OFFSET}px`;
+        //   button.style.left = `${imageLeft}px`;
+        //   button.style.transform = "translate(-50%, 0)";
+        // }
+        // if (aibutton) {
+        //   const center = img.getCenterPoint();
+        //   const imageBottom = center.y + (img.getScaledHeight() / 2);
+        //   const imageLeft = center.x;
+        //   const OFFSET = 70;
+        //   aibutton.style.top = `${imageBottom + OFFSET}px`;
+        //   aibutton.style.left = `${imageLeft}px`;
+        //   aibutton.style.transform = "translate(-50%, 0)";
+        // }
+      }
+      function mouseupHandler(e) {
 
-      existingObj.on("selected", (e) => {
+        const obj = e.target;
+        if (!obj) return;
+        const center = obj.getCenterPoint();
+        obj.setPositionByOrigin(center, "center", "center");
+        obj.setCoords();
+        const imageWidthPx = img?.getScaledWidth();
+        const imageHeightPx = img?.getScaledHeight();
+
+
+        dispatch(updateImageState({
+          id: id,
+          changes: {
+            // loadingText: true,
+            position: { x: obj.left, y: obj.top },
+            width: imageWidthPx,
+            height: imageHeightPx,
+            angle: obj.angle,
+          },
+        }));
+        handleScale(e);
+        try {
+          canvas.requestRenderAll();
+
+        } catch (err) {
+          console.log("error in image render component")
+        }
+      }
+      function modifiedHandler(e) {
+        // const obj = e.target;
+        // if (!obj) return;
+        // syncMirrorCanvasHelper(activeSide);
+        // handleScale(e);
+        // toggleVisibility(true);
+      }
+      function selectionHandler(e) {
         // console.log(e)
-        const toggle = document.getElementById(`canvas-${existingObj.id}`);
-        const aibutton = document.getElementById(`canvas-${existingObj.id}-ai`);
-        // console.log("locked stated", locked)
+        const toggle = document.getElementById(`canvas-${img.id}`);
+        const aibutton = document.getElementById(`canvas-${img.id}-ai`);
+        console.log("locked stated", e.target.locked)
         if (toggle) {
-          if (locked) {
+          if (e.target.locked) {
             toggle.style.display = "none";
             aibutton.style.display = "none";
           }
@@ -885,316 +281,41 @@ const renderAllImageObjects = (
             aibutton.style.display = "flex";
           }
         }
-      });
-
-      existingObj.on("deselected", () => {
-        const toggle = document.getElementById(`canvas-${existingObj.id}`);
-        const aibutton = document.getElementById(`canvas-${id}-ai`);
+      }
+      function deselectedhandler() {
+        const toggle = document.getElementById(`canvas-${img.id}`);
+        const aiButton = document.getElementById(`canvas-${img.id}-ai`);
         if (toggle) toggle.style.display = "none";
-        if (aibutton) aibutton.style.display = "none";
-
-      });
-      const button = document.getElementById(`canvas-${id}`);
-      const aibutton = document.getElementById(`canvas-${id}-ai`);
-      if (button) {
-        const center = existingObj.getCenterPoint();
-        const imageBottom = center.y + (existingObj.getScaledHeight() / 2);
-        const imageLeft = center.x;
-        const OFFSET = 40;
-        button.style.top = `${imageBottom + OFFSET}px`;
-        button.style.left = `${imageLeft}px`;
+        if (aiButton) aiButton.style.display = "none";
       }
-      if (aibutton) {
-        const center = existingObj.getCenterPoint();
-        const imageBottom = center.y + (existingObj.getScaledHeight() / 2);
-        const imageLeft = center.x;
-        const OFFSET = 70;
-        aibutton.style.top = `${imageBottom + OFFSET}px`;
-        aibutton.style.left = `${imageLeft}px`;
-      }
+    };
 
-      existingObj.setControlsVisibility({
-        mt: false,
-        mb: false,
-        ml: false,
-        mr: false,
-        tl: false,
-        tr: false,
-        bl: false,
-        br: false,
-        mtr: false,
-      });
-      // createRemoveBackgroundToggle(existingObj, `canvas-${activeSide}`, (isChecked, image) => {
-      //   // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
-      // }, removeBg, currentImageObject);
-
-      function getPrintSizeFromCanvasBackground(fabricImage, canvas, shirtRealWidthInches) {
-        const shirtImage = canvas.backgroundImage;
-
-        if (!shirtImage) {
-          // console.warn("No background image (shirt mockup) found on the canvas.");
-          return null;
-        }
-
-        const imageWidthPx = fabricImage.getScaledWidth();
-        const imageHeightPx = fabricImage.getScaledHeight();
-        const shirtWidthPx = shirtImage.getScaledWidth();
-
-        // Convert proportionally using real shirt width
-        const pixelsPerInch = shirtWidthPx / shirtRealWidthInches;
-
-        const widthInches = imageWidthPx / pixelsPerInch;
-        const heightInches = imageHeightPx / pixelsPerInch;
-
-        return {
-          width: widthInches.toFixed(2),
-          height: heightInches.toFixed(2),
-        };
-      }
-      const printSize = getPrintSizeFromCanvasBackground(existingObj, fabricCanvasRef.current, 19);
-
-      if (printSize) {
-        // console.log(`Print Area: ${printSize.width} in × ${printSize.height} in`);
-      }
-
-      existingObj.controls = createControls(bringPopup, dispatch);
-      const center = existingObj.getCenterPoint();
-      existingObj.setPositionByOrigin(center, "center", "center");
-      existingObj.setCoords();
-      const image = existingObj;
-      const DPI = 300; // assumed target print resolution
-      // INPUTS
-      // const shirtRealWidthInches = 19;        // actual shirt width
-      // const shirtImagePixels = 400;           // shirt image width in pixels
-      // const pixelsPerInch = shirtImagePixels / shirtRealWidthInches; // ≈ 35.95
-
-      // const widthPixels = image.getScaledWidth();
-      // const heightPixels = image.getScaledHeight();
-
-      // const widthInches = (widthPixels / pixelsPerInch).toFixed(2);
-      // const heightInches = (heightPixels / pixelsPerInch).toFixed(2);
-
-      // console.log(`Actual Print Size: ${widthInches} in × ${heightInches} in`);
-
-
-
-      try {
-        canvas.renderAll();
-
-      } catch (err) {
-        console.log("error in image render component")
-      }
+    if (
+      existingObj &&
+      (src != existingObj?.src || base64CanvasImage != existingObj?.base64CanvasImage || singleColor != existingObj?.singleColor || invertColor != existingObj?.invertColor || thresholdValue != existingObj?.thresholdValue || solidColor != existingObj?.solidColor)
+    ) {
+      canvas.remove(existingObj);
+      createNewObject();
+    } else if (existingObj) {
+      updateExistingObject(existingObj);
     } else {
+      createNewObject();
+    }
+
+    function updateExistingObject(existingObj) {
+      setupImage(existingObj);
+      updateButtonPosition(existingObj, id)
+      canvas.requestRenderAll();
+    }
+    function createNewObject() {
       fabric.Image.fromURL(
         base64CanvasImage,
         (img) => {
-          const { scaleX: finalX, scaleY: finalY } = getScaled(
-            img,
-            scaleX,
-            scaleY
-          );
-
-          img.set({
-            id,
-            src,
-            left: position?.x || 100,
-            top: position?.y || 100,
-            angle,
-            scaleX: finalX,
-            scaleY: finalY,
-            flipX,
-            flipY,
-            lockMovementX: locked,
-            lockMovementY: locked,
-            originX: "center",
-            originY: "center",
-            objectCaching: false,
-            borderColor: "skyblue",
-            borderDashArray: [4, 4],
-            hasBorders: true,
-            hasControls: !locked,
-            selectable: true,
-            evented: true,
-            customType,
-            isSync: true,
-            layerIndex,
-            lockScalingFlip: true,
-            singleColor,
-            hasControls: !locked,
-            invertColor,
-            thresholdValue,
-            solidColor,
-            hasControls: !locked || !isZoomedIn,
-            selectable: !isZoomedIn,
-            locked: locked,
-            evented: !isZoomedIn,
-          });
-
-          img.setControlsVisibility({
-            mt: false,
-            mb: false,
-            ml: false,
-            mr: false,
-            tl: false,
-            tr: false,
-            bl: false,
-            br: false,
-            mtr: false,
-          });
-
-          img.controls = createControls(bringPopup, dispatch);
-          removeAllHtmlControls(canvas);
-
-          function toggleVisibility(visible, locked) {
-            // console.log("locked stated", locked)
-
-            const toggle = document.getElementById(`canvas-${img.id}`);
-            const aiEditorBtn = document.getElementById(`canvas-${img.id}-ai`);
-            if (locked) {
-              toggle.style.display = "none";
-              aiEditorBtn.style.display = "none";
-              return;
-            }
-            if (toggle) {
-              aiEditorBtn.style.display = visible ? "flex" : "none";
-              toggle.style.display = visible ? "flex" : "none";
-            }
-          }
-
-          createRemoveBackgroundToggle(img, `canvas-${activeSide}`, (isChecked, image) => {
-            // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
-          }, removeBg, currentImageObject);
-          createAiEdtiorButton(img, `canvas-${activeSide}`, (isChecked, image) => {
-            // console.log(`Background removal ${isChecked ? "ON" : "OFF"} for`, image.id);
-          }, removeBg, setOpenAieditorPopup, openAieditorPopup);
-
-          canvas.add(img);
-
-          img.on("scaling", () => toggleVisibility(false, locked));
-          img.on("rotating", () => toggleVisibility(false, locked));
-          img.on("moving", () => toggleVisibility(false, locked));
-
-          img.on("mousedown", (e) => {
-            const obj = e.target;
-            if (obj?.id) {
-              canvas.setActiveObject(obj);
-              dispatch(selectedImageIdState(obj.id));
-              setActiveObjectType("image");
-              navigate("/design/addImage");
-              try {
-                canvas.renderAll();
-
-              } catch (err) {
-                console.log("error in image render component")
-              }
-            }
-          });
-
-          img.on("moving", () => {
-            const center = img.getCenterPoint();
-            const imageBottom = center.y + (img.getScaledHeight() / 2);
-            const imageLeft = center.x;
-            const OFFSET = 40;
-
-            const button = document.getElementById(`canvas-${img.id}`);
-            const aibutton = document.getElementById(`canvas-${img.id}-ai`);
-            if (button) {
-              button.style.top = `${imageBottom + OFFSET}px`;
-              button.style.left = `${imageLeft}px`;
-              button.style.transform = "translate(-50%, 0)";
-            }
-            if (aibutton) {
-              const center = img.getCenterPoint();
-              const imageBottom = center.y + (img.getScaledHeight() / 2);
-              const imageLeft = center.x;
-              const OFFSET = 70;
-              aibutton.style.top = `${imageBottom + OFFSET}px`;
-              aibutton.style.left = `${imageLeft}px`;
-              aibutton.style.transform = "translate(-50%, 0)";
-            }
-          });
-
-          img.on("mouseup", (e) => {
-            const obj = e.target;
-            if (!obj) return;
-            const center = obj.getCenterPoint();
-            obj.setPositionByOrigin(center, "center", "center");
-            obj.setCoords();
-            const imageWidthPx = img?.getScaledWidth();
-            const imageHeightPx = img?.getScaledHeight();
-
-
-            dispatch(updateImageState({
-              id: id,
-              changes: {
-                // loadingText: true,
-                position: { x: obj.left, y: obj.top },
-                width: imageWidthPx,
-                height: imageHeightPx,
-                angle: obj.angle,
-                // heightPixels: dims.pixels.height,
-                // widthInches: dims.inches.width,
-                // heightInches: dims.inches.height,
-                // dpi: dims.dpi,
-                // loadingText: false,
-              },
-              // isRenderOrNot: true,
-            }));
-            // globalDispatch("position", { x: obj.left, y: obj.top }, id);
-
-            // globalDispatch("width", imageWidthPx, id);
-            // globalDispatch("height", imageHeightPx, id);
-
-
-
-            // globalDispatch("angle", obj.angle, id);
-            handleScale(e);
-            try {
-              canvas.renderAll();
-
-            } catch (err) {
-              console.log("error in image render component")
-            }
-            // syncMirrorCanvasHelper(activeSide);
-            // toggleVisibility(true);
-          });
-          img.on("modified", (e) => {
-            const obj = e.target;
-            if (!obj) return;
-            syncMirrorCanvasHelper(activeSide);
-            handleScale(e);
-            toggleVisibility(true);
-          });
-
-          img.on("selected", (e) => {
-            // console.log(e)
-            const toggle = document.getElementById(`canvas-${img.id}`);
-            const aibutton = document.getElementById(`canvas-${img.id}-ai`);
-            console.log("locked stated", e.target.locked)
-            if (toggle) {
-              if (e.target.locked) {
-                toggle.style.display = "none";
-                aibutton.style.display = "none";
-              }
-              else {
-                toggle.style.display = "flex";
-                aibutton.style.display = "flex";
-              }
-            }
-          });
-
-          img.on("deselected", () => {
-            const toggle = document.getElementById(`canvas-${img.id}`);
-            const aiButton = document.getElementById(`canvas-${img.id}-ai`);
-            if (toggle) toggle.style.display = "none";
-            if (aiButton) aiButton.style.display = "none";
-          });
-          try {
-            canvas.renderAll();
-
-          } catch (err) {
-            console.log("error in image render component")
-          }
+          setupImage(img)
+          createRemoveBackgroundToggle(img, `canvas-${activeSide}`, removeBg, currentImageObject, handleImage, globalDispatch);
+          createAiEditorButton(img, `canvas-${activeSide}`, removeBg, setOpenAieditorPopup, openAieditorPopup, handleImage, globalDispatch);
+          canvas.add(img)
+          canvas.requestRenderAll();
         },
         { crossOrigin: "anonymous" }
       );
@@ -1205,3 +326,4 @@ const renderAllImageObjects = (
 };
 
 export default renderAllImageObjects;
+

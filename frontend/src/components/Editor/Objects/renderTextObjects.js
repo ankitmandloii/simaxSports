@@ -1,6 +1,6 @@
 import React from "react";
 import { updateTextState } from "../../../redux/FrontendDesign/TextFrontendDesignSlice";
-
+import { removeAllHtmlControls } from "../HelpersFunctions/renderImageHelpers";
 const renderCurveTextObjects = (
   fabricCanvasRef,
   dispatch,
@@ -103,7 +103,7 @@ const renderCurveTextObjects = (
         if (!textInput.locked && !isZoomedIn) {
           existingObj.controls = createControls(bringPopup, dispatch);
         } else {
-          existingObj.controls = {};
+          removeAllHtmlControls(canvas)
         }
 
 
@@ -166,21 +166,7 @@ const renderCurveTextObjects = (
           locked: textInput.locked,
         });
 
-        function removeAllHtmlControls(canvas) {
-          if (!canvas) canvas = fabricCanvasRef.current;
-          canvas.getObjects().forEach((obj) => {
-            if (obj._htmlControls) {
-              for (const key in obj._htmlControls) {
-                const el = obj._htmlControls[key];
-                if (el?.parentNode) el.parentNode.removeChild(el);
-              }
-              obj._htmlControls = null;
-            }
-          });
-          document.querySelectorAll("[data-fabric-control]").forEach((el) =>
-            el.remove()
-          );
-        }
+
 
         curved.on("deselected", () => {
           removeAllHtmlControls(canvas);
@@ -358,7 +344,7 @@ const renderCurveTextObjects = (
         if (!textInput.locked && !isZoomedIn) {
           curved.controls = createControls(bringPopup, dispatch);
         } else {
-          curved.controls = {};
+          removeAllHtmlControls(canvas)
         }
         canvas.add(curved);
       }

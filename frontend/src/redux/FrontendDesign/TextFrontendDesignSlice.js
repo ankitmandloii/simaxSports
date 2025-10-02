@@ -40,74 +40,6 @@ const createNewText = ({ value, id, centerX, centerY }, totalElements) => ({
   locked: false,
   layerIndex: totalElements,
 });
-// const createNewImage = (
-//   { src, dpi },
-//   totalElements,
-//   centerX,
-//   centerY
-// ) => ({
-//   id: nanoid(),
-//   src: src,
-//   scaleX: 1,
-//   scaleY: 1,
-//   rotate: 0,
-//   flipX: false,
-//   flipY: false,
-//   width: 150,
-//   height: 150,
-//   left: 280,
-//   top: 200,
-//   position: { x: centerX, y: centerY },
-//   scaledValue: 1,
-//   angle: 0,
-//   locked: false,
-//   layerIndex: totalElements,
-//   thresholdValue: 144,
-//   // AI state...
-//   replaceBackgroundColor: "#000000",
-//   replaceBgParamValue: "bg-remove=true&bg=AABB22",
-//   cropAndTrim: false,
-//   superResolution: false,
-//   invertColor: false,
-//   solidColor: false,
-//   removeBg: false,
-//   singleColor: "#ffffff",
-//   base64CanvasImage: src,
-//   base64CanvasImageForNormalColor: null,
-//   base64CanvasImageForSinglelColor: null,
-//   base64CanvasImageForBlackAndWhitelColor: null,
-//   cropAndTrimParamValue:
-//     "fit=crop&crop=entropy&trim=color&w=400&h=400&dpr=2&quality=100&format=webp",
-//   superResolutionParamValue:
-//     "?auto=enhance&dpr=2&quality=100&format=webp&upscale=true",
-//   removeBgParamValue: "?remove-bg=true&dpr=2&quality=100&format=webp",
-//   loading: false,
-//   loadingSrc: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdaMPJEC39w7gkdk_8CDYdbujh2-GcycSXeQ&s",
-//   replaceSrc: false,
-//   selectedFilter: "Normal",
-//   base64CanvasImageForNormalColor: null,
-//   base64CanvasImageForSinglelColor: null,
-//   base64CanvasImageForBlackAndWhitelColor: null,
-//   editColor: false,
-//   extractedColors: [],
-//   removeBgImagebtn: false,
-//   loadingText: false,
-//   dpi: dpi || 150,
-//   // DPI/size metrics (dynamic)
-//   riginalWidth: null,          // set after probing the image
-//   originalHeight: null,         // set after probing the image
-//   renderWidthCanvasPx: 0,       // updated from Fabric on scale/move
-//   renderHeightCanvasPx: 0,
-//   canvasWidthPx: 0,             // canvas size used in calc
-//   canvasHeightPx: 0,
-//   dpi: 0,
-//   dpiX: 0,
-//   dpiY: 0,
-//   resetDefault: false,
-//   heightInches: 1,
-//   widthInches: 1
-
-// });
 
 const createNewImage = (
   { src, dpi },
@@ -756,62 +688,6 @@ const TextFrontendDesignSlice = createSlice({
         // console.log("product added succesfully");
       }
     },
-    // UpdateNameAndNumberProduct: (state, action) => {
-    //   const {
-    //     id,
-    //     newSelections = [], // Array of { selectionId, name, number, size }
-    //     side = "back",
-    //     isRenderOrNot,
-    //   } = action.payload;
-
-    //   // Save to undo history
-    // state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-
-    //   const list = state.present[side]?.nameAndNumberProductList;
-    //   if (!list) return;
-
-    //   const product = list.find((p) => p.id === id);
-    //   if (!product) {
-    //     // console.log("Product not found:", id);
-    //     return;
-    //   }
-
-    //   // Create a map of new selectionIds
-    //   const incomingMap = new Map(
-    //     newSelections.map((sel) => [sel.selectionId, sel])
-    //   );
-
-    //   // Filter out selections not in the incoming list
-    //   product.selections = product.selections.filter((existing) => {
-    //     const incoming = incomingMap.get(existing.selectionId);
-    //     if (incoming) {
-    //       // Only update if not locked
-    //       if (!existing.locked) {
-    //         Object.assign(existing, incoming);
-    //       }
-    //       // Keep it
-    //       return true;
-    //     }
-    //     // Remove if not present in new list
-    //     return false;
-    //   });
-
-    //   // Add any new selectionIds that didn't already exist
-    //   const existingIds = new Set(product.selections.map((s) => s.selectionId));
-    //   newSelections.forEach((sel) => {
-    //     if (!existingIds.has(sel.selectionId)) {
-    //       product.selections.push(sel);
-    //     }
-    //   });
-
-    //   // Optional render flag toggle
-    //   if (isRenderOrNot) {
-    //     state.present[side].setRendering = !state.present[side].setRendering;
-    //   }
-
-    //   // Clear redo history
-    //   state.future[side] = [];
-    // },
     UpdateNameAndNumberProduct: (state, action) => {
       const {
         id,
@@ -877,33 +753,6 @@ const TextFrontendDesignSlice = createSlice({
       ].nameAndNumberProductList.filter((product) => product.id !== id);
     },
 
-    // addImageState: (state, action) => {
-    //   const { src, id = nanoid(), side = state.activeSide, isRenderOrNot } = action.payload;
-    //   state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
-    //   const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
-    //   const canvasComponent = document.querySelector(`#canvas-${side}`); // Simple way, but ideally use refs or context
-    //   const rect = canvasComponent.getBoundingClientRect();
-    //   const centerX = rect.width / 2;
-    //   const centerY = rect.height / 2;
-    //   const newImage = createNewImage(
-    //     { src: src },
-    //     // { src: src + "?auto=enhance&sharp=80&upscale=true" },
-    //     totalElements,
-    //     centerX,
-    //     centerY
-    //   );
-    //   // const newImage = createNewImage(
-    //   //   { src },
-    //   //   state.present[side].images.length
-    //   // );
-    //   if (!state.present[side].images) {
-    //     state.present[side].images = [];
-    //   }
-    //   state.present[side].selectedImageId = newImage.id;
-    //   state.present[side].images.push(newImage);
-    //   state.future[side] = [];
-    //   // state.present[side].setRendering = !state.present[side].setRendering;
-    // },
     addImageState: (state, action) => {
       // console.log("---------actionnn", action.payload)
       const { src, id = nanoid(), side = state.activeSide, isRenderOrNot, dpi } = action.payload;
