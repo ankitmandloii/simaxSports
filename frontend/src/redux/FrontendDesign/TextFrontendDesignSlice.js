@@ -674,10 +674,13 @@ const TextFrontendDesignSlice = createSlice({
     // Assuming: state.present[side].nameAndNumberProductList is now an ARRAY, not an object
 
     addNameAndNumberProduct: (state, action) => {
-      const { side = state.activeSide, productData } = action.payload;
+      const { side = "back", productData } = action.payload;
       const list = state.present[side]?.nameAndNumberProductList;
       // console.log("========addnamelist", list)
-      if (!list) return;
+      if (!list) {
+        console.warn("list is empty and return")
+        return
+      };
 
       // Check if product entry already exists
       let product = list.find((p) => p.id === productData.id);
@@ -685,7 +688,7 @@ const TextFrontendDesignSlice = createSlice({
       if (!product) {
         // Add new product with first variant
         list.push(productData);
-        // console.log("product added succesfully");
+        console.log("product added succesfully");
       }
     },
     UpdateNameAndNumberProduct: (state, action) => {

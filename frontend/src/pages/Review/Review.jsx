@@ -201,10 +201,10 @@ const Review = () => {
     //   ["id1", [{ size: "S" }, { size: "M" }, { size: "S" }]],
     //   ["id2", [{ size: "L" }, { size: "L" }]]
     // ];
-    const selectinRowsForId = nameAndNumberProductList.find((item) => item.id == id);
+    const selectinRowsForId = nameAndNumberProductList?.find((item) => item.id == id);
     console.log("selectinRowsForId", selectinRowsForId)
     if (!selectinRowsForId) return
-    const sizeCount = Object.entries(selectinRowsForId.sizeCount).find(([size, cnt]) => {
+    const sizeCount = Object.entries(selectinRowsForId.sizeCount)?.find(([size, cnt]) => {
       return size == givenSize;
     });
 

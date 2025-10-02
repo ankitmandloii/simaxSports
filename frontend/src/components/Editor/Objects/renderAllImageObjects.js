@@ -146,7 +146,7 @@ const renderAllImageObjects = (
     // }
 
     // const normalizeUrl = (url) => decodeURIComponent(url.trim().toLowerCase());
-    const setupImage = (img) => {
+    const setupImage = (img, update = false) => {
       const { scaleX: finalX, scaleY: finalY } = getScaled(
         img,
         scaleX,
@@ -168,16 +168,18 @@ const renderAllImageObjects = (
         toggleVisibility(false, locked)
         removeAllHtmlControls(canvas);
       }
-      img.on("scaling", () => toggleVisibility(false, locked));
-      img.on("rotating", () => toggleVisibility(false, locked));
-      img.on("moving", () => toggleVisibility(false, locked));
-      img.on("mousedown", mousedownHandler);
-      // img.on("moving", movingHandler);
-      img.on("mouseup", mouseupHandler)
-      // img.on("modified", modifiedHandler);
-      img.on("selected", selectionHandler);
-      img.on("deselected", deselectedhandler);
+      if (!update) {
+        img.on("scaling", () => toggleVisibility(false, locked));
+        img.on("rotating", () => toggleVisibility(false, locked));
+        img.on("moving", () => toggleVisibility(false, locked));
+        img.on("mousedown", mousedownHandler);
+        // img.on("moving", movingHandler);
+        img.on("mouseup", mouseupHandler)
+        // img.on("modified", modifiedHandler);
+        img.on("selected", selectionHandler);
+        img.on("deselected", deselectedhandler);
 
+      }
       function toggleVisibility(visible, locked) {
 
         const toggle = document.getElementById(`canvas-${img.id}`);
@@ -240,7 +242,10 @@ const renderAllImageObjects = (
         const imageWidthPx = img?.getScaledWidth();
         const imageHeightPx = img?.getScaledHeight();
 
-
+        const changes = {};
+        if (position.x != obj.left && position.y != obj.top) {
+          changes.position = { x: obj.left, y: obj.top }
+        }
         dispatch(updateImageState({
           id: id,
           changes: {
@@ -303,7 +308,7 @@ const renderAllImageObjects = (
     }
 
     function updateExistingObject(existingObj) {
-      setupImage(existingObj);
+      setupImage(existingObj, true);
       updateButtonPosition(existingObj, id)
       canvas.requestRenderAll();
     }

@@ -344,7 +344,9 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
                     <div key={row.selectionId} className={styles.tableRow}>
                       <select
                         value={row.size}
+
                         onChange={e => {
+                          setActiveRowId(row.selectionId)
                           console.log("selected size", e.target.value);
                           const productSize = product?.sizes?.find(s => s.size === e.target.value);
                           console.log("productSize", productSize);

@@ -380,7 +380,7 @@ function App() {
 
       // console.log(designStateDb);
       const response = await apiConnecter("get", "design/getDesignsFromFrontEndById", "", "", { designId });
-      // console.log(response);
+      console.log(response, "response from server for design id share mode");
 
       const matchedDesigns = response.data.userDesigns.designs;
 
@@ -476,11 +476,6 @@ function App() {
   return (
     <>
       <div className="app-main-container">
-
-
-
-
-
         <div className="main-inner-container">
 
           <div

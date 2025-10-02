@@ -132,6 +132,7 @@ const AddImageToolbar = () => {
     setEditColor(img.editColor);
     setPreviewUrl(img.src || '');
     setResetDefault(img.resetDefault || false);
+    setExtractedColors(img?.extractedColors);
     // console.log(previewUrl);
     try {
       const params = img.src?.split('?')[1] || '';
