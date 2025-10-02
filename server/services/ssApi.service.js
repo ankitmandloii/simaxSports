@@ -433,9 +433,9 @@ exports.saveSSProductsAndSpecsData = async (ssProducts, specData = []) => {
       // ⬆️ Upgrade image URLs to high-res
       upgradeImageUrls(product);
 
-      if (product.qty < 25) {
+      if (product.qty < 15) {
         product.qty = 0;
-        console.log("QTY is less then 25 Mark as ZERO QTY for Out of Stock")
+        console.log("QTY is less then 15 Mark as ZERO QTY for Out of Stock")
       }
 
       newSkusSet.add(product.sku);
