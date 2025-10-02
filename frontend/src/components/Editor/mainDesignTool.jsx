@@ -14,6 +14,7 @@ import updateBoundaryVisibility from "./core/updateBoundaryVisibility";
 import EditWithAipopup from "../PopupComponent/EditWithAipopup/EditWithAipopup"
 import { useMediaQuery } from 'react-responsive';
 
+
 import {
   deleteImageState,
   deleteTextState,
@@ -378,16 +379,16 @@ const MainDesignTool = ({
     // console.log("loading state is ", loading)
   }, [loadingState])
 
-  useEffect(() => {
-    const canvas = fabricCanvasRef.current;
-    if (!canvas) return;
-    const path = window.location.pathname;
-    if (path !== '/design/addImage' && path !== '/design/addText') {
-      canvas.discardActiveObject();
-      canvas.requestRenderAll();
+  // useEffect(() => {
+  //   const canvas = fabricCanvasRef.current;
+  //   if (!canvas) return;
+  //   const path = window.location.pathname;
+  //   if (path !== '/design/addImage' && path !== '/design/addText') {
+  //     canvas.discardActiveObject();
+  //     canvas.requestRenderAll();
 
-    }
-  }, [window.location.pathname])
+  //   }
+  // }, [window.location.pathname])
   // console.log("---------------",window.location.pathname=='/quantity'|| '/review')
   // console.log("---------------", window.location.pathname)
 
