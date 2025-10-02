@@ -100,27 +100,27 @@ const showBoundaryOnAction = (e, fabricCanvasRef, activeProductTitle, activeSide
 
     let anyObjectAtCenter = false;
 
-    textObjects.forEach((obj) => {
-        obj.setCoords();
+    // textObjects.forEach((obj) => {
+    //     obj.setCoords();
 
-        const objCenterX = obj.getCenterPoint().x;
-        const delta = Math.abs(objCenterX - canvasCenterX);
+    //     const objCenterX = obj.getCenterPoint().x;
+    //     const delta = Math.abs(objCenterX - canvasCenterX);
 
-        if (delta <= 4) {
-            anyObjectAtCenter = true;
+    //     if (delta <= 4) {
+    //         anyObjectAtCenter = true;
 
-            // Temporarily lock movement
-            obj.lockMovementX = true;
-            canvas.requestRenderAll();
+    //         // Temporarily lock movement
+    //         obj.lockMovementX = true;
+    //         canvas.requestRenderAll();
 
-            setTimeout(() => {
-                obj.lockMovementX = false;
-                canvas.requestRenderAll();
-            }, 1000);
-        }
+    //         setTimeout(() => {
+    //             obj.lockMovementX = false;
+    //             canvas.requestRenderAll();
+    //         }, 1000);
+    //     }
 
-        obj.setCoords();
-    });
+    //     obj.setCoords();
+    // });
 
     // Show / hide the left / right borders
     // leftBorder.set({ visible: anyObjectAtCenter });

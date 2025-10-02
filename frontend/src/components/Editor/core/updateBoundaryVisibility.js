@@ -2,26 +2,51 @@ import { useCallback } from "react";
 
 const updateBoundaryVisibility = (fabricCanvasRef, activeSide, productCategory) => {
   // console.log("-----activewee", activeSide, productCategory)
+
   const canvas = fabricCanvasRef.current;
-  if (!canvas) return;
-
   const objects = canvas.getObjects();
-  const boundaryBox = objects.find((obj) => obj.name === "boundaryBox");
-  const boundaryBoxInner = objects.find((obj) => obj.name === "boundaryBoxInner");
-  const boundaryBoxLeft = objects.find((obj) => obj.name === "boundaryBoxLeft");
-  const boundaryBoxRight = objects.find((obj) => obj.name === "boundaryBoxRight");
-  const centerVerticalLine = objects.find((obj) => obj.name === "centerVerticalLine");
-  const warningText = objects.find((obj) => obj.name === "warningText");
-  const centerVerticalLineLeftBorder = objects.find((obj) => obj.name === "centerVerticalLineLeftBorder");
-  const centerVerticalLineRightBorder = objects.find((obj) => obj.name === "centerVerticalLineRightBorder");
-  const leftChestText = objects.find((obj) => obj.name === "leftChestText");
-  const rightChestText = objects.find((obj) => obj.name === "rightChestText");
-  const youthText = objects.find((obj) => obj.name === "youthText");
-  const adultText = objects.find((obj) => obj.name === "adultText");
-  const leftBorder = objects.find((obj) => obj.name === "centerVerticalLineLeftBorder");
-  const rightBorder = objects.find((obj) => obj.name === "centerVerticalLineRightBorder");
 
+  // 1. Define all the names you want to find (optional, but good for clarity)
+  const desiredObjectNames = new Set([
+    "boundaryBox",
+    "boundaryBoxInner",
+    "boundaryBoxLeft",
+    "boundaryBoxRight",
+    "centerVerticalLine",
+    "warningText",
+    "centerVerticalLineLeftBorder",
+    "centerVerticalLineRightBorder",
+    "leftChestText",
+    "rightChestText",
+    "youthText",
+    "adultText",
+  ]);
 
+  // 2. Initialize a map to store the found objects
+  const objectMap = {};
+
+  // 3. Iterate over the array ONCE to populate the map
+  for (const obj of objects) {
+    // We only care about objects that have a 'name' property
+    if (obj.name && desiredObjectNames.has(obj.name)) {
+      objectMap[obj.name] = obj;
+    }
+  }
+
+  // 4. Destructure the objects from the map for easy access
+  const {
+    boundaryBox,
+    boundaryBoxInner,
+    boundaryBoxLeft,
+    boundaryBoxRight,
+    centerVerticalLine,
+    warningText,
+    leftChestText,
+    rightChestText,
+    youthText,
+    adultText,
+    // ... any other properties you need
+  } = objectMap;
   // console.log("------------------boundry", activeSide) 
 
   // if (!boundaryBox || !warningText || !centerVerticalLine) return;
