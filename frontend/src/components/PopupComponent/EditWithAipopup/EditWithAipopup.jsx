@@ -252,6 +252,11 @@ const EditWithAipopup = ({ onClose }) => {
                             // removeBg: false,
                             // cropAndTrim : false,
                             selectedFilter: "Normal",
+                            removeBg: false,
+                            cropAndTrim: false,
+                            superResolution: false,
+                            editColor: false,
+                            singleColor: "#ffffff",
                             base64CanvasImageForNormalColor: fileUrl,
                             base64CanvasImageForSinglelColor,
                             base64CanvasImageForBlackAndWhitelColor: fileUrl + "?sat=-100",
@@ -304,10 +309,7 @@ const EditWithAipopup = ({ onClose }) => {
 
                     <textarea
                         className={styles.textarea}
-                        placeholder={`ex. Change the beach scene to a mountain scene
-                                    ex. Add text above the design that says Established 2025 in a cursive font
-                                    ex. Transform this into a cartoon version for a t-shirt graphic
-                                    ex. Remove the text on the side of the boat`}
+                        placeholder={`ex. Change the beach scene to a mountain scene \nex. Add text above the design that says Established 2025 in a cursive font \nex. Transform this into a cartoon version for a t-shirt graphic\nex. Remove the text on the side of the boat`}
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         rows={4}
