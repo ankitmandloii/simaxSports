@@ -344,7 +344,7 @@ exports.mapProducts = (ssProducts, specs = [], title, description, baseCategoryN
         `,
         vendor: base.brandName,
         product_type: "Apparel",
-        tags: [base.colorFamily, base.baseCategoryID, base.brandName, base.baseCategory]
+        tags: [base.colorFamily, base.baseCategoryID, base.brandName, baseCategoryName]
           .filter(Boolean)
           .join(", "),
         handle,
