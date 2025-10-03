@@ -108,6 +108,21 @@ a.step:first-child:after {
   opacity: 1;
 }
 
+.stepActive .navSpanNumber::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  /* Adjust width to span appropriately under the text */
+  height: 4px;
+  background-color: var(--blue-color);
+  box-shadow: 0 2px 8px 0 var(--blue-color);
+  border-radius: 1px;
+  z-index: 1000;
+}
+
 .stepActive .navSpanNumber {
   background-color: var(--blue-color);
 }

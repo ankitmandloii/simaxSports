@@ -27,10 +27,10 @@
 }
 
 .active {
-  color: black;
+  color: #ffffff;
   /* Sky blue */
   font-weight: bold;
-  background-color: white;
+  background-color: var(--blue-color);
 }
 
 
@@ -61,11 +61,11 @@
 }
 
 .active .bottomBarIcon {
-  color: var(--blue-color);
+  color: #ffffff;
 }
 
 .active .label {
-  color: black;
+  color: #ffffff;
   /* Active sky blue */
 }
 

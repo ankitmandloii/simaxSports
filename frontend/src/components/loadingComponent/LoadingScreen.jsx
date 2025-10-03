@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import styles from './LoadingScreen.module.css';
+import logo from '../images/simax-design-logo.png'
 
 const messages = [
   'Initializing system',
@@ -32,14 +33,15 @@ const LoadingScreen = () => {
       <div className={styles.loaderCard}>
         <div className={styles.textAnimationContainer}>
           <div className={styles.simaxText}>
-            {'SIMAX'.split('').map((char, index) => (
+            {/* {'SIMAX'.split('').map((char, index) => (
               <span key={index}>{char}</span>
-            ))}
+            ))} */}
+            <img src={logo} />
           </div>
-          <div className={styles.sportsText}>DESIGN</div>
+          {/* <div className={styles.sportsText}>DESIGN</div> */}
         </div>
         <div className={styles.loaderText}>
-        Let's Create Something Amazing Today<span className={styles.dots}></span>
+          Let's Create Something Amazing Today<span className={styles.dots}></span>
         </div>
         <span className={styles.progressText} ref={progressRef}>
           Initializing system

@@ -39,7 +39,7 @@ body {
 }
 
 :root {
-  --blue-color: #005bff;
+  --blue-color: #0096DA;
   --blue-color-light: #2166e7;
   --borderColor: #d2d5d9;
   --grey-color: #8a9099;
@@ -806,3 +806,7 @@ hr {
     font-size: 16px;
   }
 }
+
+/* textarea {
+  resize: none;
+} */

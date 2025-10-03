@@ -291,6 +291,7 @@ const EditWithAipopup = ({ onClose }) => {
         }
     };
 
+
     return (
         <div className={styles.overlay}>
             <div className={styles.popup}>
@@ -309,7 +310,7 @@ const EditWithAipopup = ({ onClose }) => {
 
                     <textarea
                         className={styles.textarea}
-                        placeholder={`ex. Change the beach scene to a mountain scene \nex. Add text above the design that says Established 2025 in a cursive font \nex. Transform this into a cartoon version for a t-shirt graphic\nex. Remove the text on the side of the boat`}
+                        placeholder="ex. Change the beach scene to a mountain scene. Add text above the design that says Established 2025 in a cursive font. Transform this into a cartoon version for a t-shirt graphic. Remove the text on the side of the boat"
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         rows={4}
@@ -317,6 +318,7 @@ const EditWithAipopup = ({ onClose }) => {
                         disabled={loading}
                         onKeyDown={handleKeyDown}
                     />
+
 
                     {loading ? (
                         <div className={styles.loaderOverlay}>

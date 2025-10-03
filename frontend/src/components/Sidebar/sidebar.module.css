@@ -19,6 +19,10 @@
   display: none;
 }
 
+/* .sidebarIcon svg {
+  color: green;
+} */
+
 /* .hovered {
   background-color: #e0f7ff;
   color: #0077cc;
@@ -78,26 +82,31 @@
   min-height: 70px;
   padding: 11px;
   position: relative;
+  width: 7.5rem;
+  border-radius: 10px;
+  z-index: 1000;
 }
 
-/* .sidebarLink:hover {
-  background-color: #6c5ce710;
-} */
+
 
 .active {
-  background-color: #fff;
-  color: #000;
+  background-color: var(--blue-color);
+  color: #fff;
+  box-shadow: 0 2px 4px 0 var(--blue-color);
 }
 
 .hovered {
-  background-color: #fff;
-  color: #000;
+  background-color: var(--blue-color);
+  color: #ffffff;
 }
+
+
 
 .sidebarIcon svg {
   font-size: 18px;
   height: 23px;
   width: 26px;
+  /* color: red; */
 }
 
 .collapsed .sidebarIcon {
@@ -138,5 +147,10 @@
 
 .active .sidebarIcon path,
 .hovered .sidebarIcon path {
-  fill: var(--blue-color);
+  fill: #ffffff;
+}
+
+.active .spannAi {
+  background-color: #ffffff;
+  color: var(--blue-color)
 }

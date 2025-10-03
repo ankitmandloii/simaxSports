@@ -154,9 +154,14 @@ const AddImageToolbar = () => {
   }, [img, selectedImageId, resetDefault, img?.loading, img?.base64CanvasImage]);
 
   useEffect(() => {
-    if (!img?.src || (img?.originalWidth && img?.originalHeight)) return;
+    // if (!img?.src || (img?.originalWidth && img?.originalHeight)) return;
+    if (!img?.src) return;
+
     const probe = new Image();
     probe.crossOrigin = "anonymous";
+    console.log("----------src", img?.src)
+    console.log("----------probbe", probe.width, probe.height)
+
     probe.src = img.src.split("?")[0];
     probe.onload = () => {
       dispatch(updateImageState({
