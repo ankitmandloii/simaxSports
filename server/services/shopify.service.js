@@ -146,11 +146,12 @@ const retryAttachment = async (productId, variantId, mediaIds, retries = 5, dela
         );
 
         if (appendRes.data.errors || appendRes.data.data.productVariantAppendMedia.userErrors.length) {
+          console.error('Media attachment errors:', appendRes.data.data.productVariantAppendMedia.userErrors);
           throw new Error('Failed to attach media to variant');
         }
 
         success = true;
-        // console.log(`✅ Attached media to variant ${variantId}`);
+        console.log(`✅ Attached media to variant ${variantId}`);
       } else {
         console.log(`⏳ Media not ready. Retrying in ${delay}ms...`);
         await new Promise(res => setTimeout(res, delay));
@@ -160,13 +161,14 @@ const retryAttachment = async (productId, variantId, mediaIds, retries = 5, dela
     } catch (error) {
       console.error(`❌ Attempt ${attempt + 1} failed:`, error.message);
       attempt++;
+      if (attempt < retries) {
+        await new Promise(res => setTimeout(res, delay));
+      }
     }
   }
 
-  // console.log(`✅ Attached ALL media to variants`);
   return success;
 };
-
 
 const productVariantsCreate = async (productId, variants) => {
   const mutation = `
@@ -175,6 +177,7 @@ const productVariantsCreate = async (productId, variants) => {
         productVariants {
           id
           title
+          sku
           selectedOptions {
             name
             value
@@ -199,7 +202,7 @@ const productVariantsCreate = async (productId, variants) => {
         { optionName: "Size", name: variant.option2 || "Default" }    // Ensure option2 is set
       ];
 
-      
+
 
 
       return {
@@ -220,12 +223,9 @@ const productVariantsCreate = async (productId, variants) => {
             }
           }
         },
-        // mediaSrc: [variantSpecificImages[0]] || []
       };
     }),
   };
-
-
 
   try {
     const response = await axios.post(
@@ -238,8 +238,6 @@ const productVariantsCreate = async (productId, variants) => {
         },
       }
     );
-
-    // console.log("Shopify Response:", JSON.stringify(response.data, null, 2)); // Add this to inspect the full response
 
     const dataResponse = response.data?.data?.productVariantsBulkCreate;
 
@@ -273,8 +271,8 @@ const createProductGraphQL = async (product) => {
           title
           handle
           options {
-          id
-          name
+            id
+            name
           }
           variants(first: 250) {
             edges {
@@ -343,66 +341,76 @@ const createProductGraphQL = async (product) => {
       throw new Error("Shopify productCreate failed: " + formattedErrors);
     }
 
+    const productId = productData.product.id.split("/").pop();
+    const productGID = productData.product.id;
 
-    const productId = productData.product.id;
-    const variantMap = {};
-    productData?.product?.variants?.edges.forEach((edge) => {
-      console.log("edgesku",edge.node.sku)
-      console.log("edge?.node?.id",edge?.node?.id)
-      variantMap[edge.node.sku] = edge?.node?.id;
-    });
-
-
-
-
-    const imageMediaMap = {}; // src -> mediaId (best-effort if counts match)
+    // Step 2: Upload images first
+    const imageMediaMap = {};
     const imagesToUpload = product.images || [];
 
     if (imagesToUpload.length > 0) {
-
-      Object.assign(imageMediaMap, await uploadImagesInBatches(productId, imagesToUpload));
-
-
+      Object.assign(imageMediaMap, await uploadImagesInBatches(productGID, imagesToUpload));
       const totalOk = Object.keys(imageMediaMap).length;
-      console.log(`🖼️ [media] total mapped (best-effort): ${totalOk}/${imagesToUpload.length}`);
+      console.log(`🖼️ [media] total mapped: ${totalOk}/${imagesToUpload.length}`);
     } else {
       console.log("🖼️ No new images to upload.");
     }
 
-    // Step 2: Attach images to variants
+    // Step 3: Create actual variants (this will replace the default variant)
+    console.log("Creating variants...");
+    const createdVariants = await productVariantsCreate(productId, product.variants);
+
+    // Step 4: Build SKU to Variant ID mapping from created variants
+    const variantMap = {};
+    createdVariants.forEach((v) => {
+      variantMap[v.sku] = v.id;
+    });
+
+    console.log(`✅ Created ${createdVariants.length} variants`);
+
+    // Step 5: Wait a bit for media to be fully ready
+    await new Promise(res => setTimeout(res, 2000));
+
+    // Step 6: Attach images to variants
     for (const variant of product.variants) {
       const variantId = variantMap[variant.sku];
-      if (variantId) {
-        const mediaIds = [];
-        const imageUrl = variant.imageSrc;
-        if (imageUrl && imageMediaMap[imageUrl]) {
-          mediaIds.push(imageMediaMap[imageUrl]);
-        }
+      if (!variantId) {
+        console.warn(`⚠️ Variant ID not found for SKU: ${variant.sku}`);
+        continue;
+      }
 
-        if (mediaIds.length > 0) {
-          // Call retryAttachment for each variant
-          const success = await retryAttachment(productId, variantId, mediaIds);
-          if (!success && variant.sku) {
-            console.warn(`Failed to attach media to variant ${variant.sku} after multiple attempts.`);
-            // await deleteVariantFromShopify(variantId);
-            await markVariantAsFailedInSyncJob(variant.styleId, variant.sku);
-          }
+      const mediaIds = [];
+      const imageUrl = variant.imageSrc;
+
+      if (imageUrl && imageMediaMap[imageUrl]) {
+        mediaIds.push(imageMediaMap[imageUrl]);
+      }
+
+      if (mediaIds.length > 0) {
+        console.log(`Attaching media to variant ${variant.sku}...`);
+        const success = await retryAttachment(productGID, variantId, mediaIds);
+
+        if (!success && variant.sku) {
+          console.warn(`❌ Failed to attach media to variant ${variant.sku} after multiple attempts.`);
+          await markVariantAsFailedInSyncJob(variant.styleId, variant.sku);
         }
+      } else {
+        console.log(`⚠️ No media found for variant ${variant.sku}`);
       }
     }
-    console.log(`✅ Attached ALL media`);
 
-    return productId.split("/").pop();
-  
+    console.log(`✅ Completed media attachment process`);
+
+    return productId;
+
   } catch (err) {
-    console.error("❌ Product Creation Failed:", { title: product.title, error: err.message, stack: err.stack, err });
+    console.error("❌ Product Creation Failed:", { title: product.title, error: err.message, stack: err.stack });
     throw new Error(`Product creation failed: ${err.message}`);
   }
 };
 
-
 const uploadImagesInBatches = async (productId, imagesToUpload, maxRetries = 3) => {
-  const imageMediaMap = {}; // src -> mediaId
+  const imageMediaMap = {};
   const BATCH_SIZE = 25;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -451,14 +459,13 @@ const uploadImagesInBatches = async (productId, imagesToUpload, maxRetries = 3) 
       const errs = result?.mediaUserErrors || [];
 
       console.log(`🖼️ [media] batch attempt ${attempt}: uploaded ${ok.length}/${slice.length}`);
-      // Map successfully uploaded
+
       ok.forEach((media, idx) => {
         if (slice[idx]) {
           imageMediaMap[slice[idx].src] = media.id;
         }
       });
 
-      // Collect failed
       const failedImages = [];
       if (ok.length < slice.length || errs.length) {
         slice.forEach((img) => {
@@ -466,16 +473,15 @@ const uploadImagesInBatches = async (productId, imagesToUpload, maxRetries = 3) 
         });
       }
 
-      // Retry failed ones if attempts remain
       if (failedImages.length && attempt < maxRetries) {
         console.warn(
           `⚠️ ${failedImages.length} images failed in batch, retrying attempt ${attempt + 1}`
         );
-        await sleep(2000 * attempt); // exponential backoff
+        await sleep(2000 * attempt);
         return uploadBatch(failedImages, attempt + 1);
       }
 
-      return ok.length; // return successful count
+      return ok.length;
     } catch (err) {
       console.error(`❌ Batch upload failed (attempt ${attempt}):`, err.message);
       if (attempt < maxRetries) {
@@ -486,18 +492,15 @@ const uploadImagesInBatches = async (productId, imagesToUpload, maxRetries = 3) 
     }
   };
 
-  // Process batches
   for (let start = 0; start < imagesToUpload.length; start += BATCH_SIZE) {
     const slice = imagesToUpload.slice(start, start + BATCH_SIZE);
     await uploadBatch(slice);
-    await sleep(1200); // avoid API rate limits
+    await sleep(1200);
   }
 
   console.log(`🖼️ [media] total mapped: ${Object.keys(imageMediaMap).length}/${imagesToUpload.length}`);
   return imageMediaMap;
 };
-
-
 
 const publishProductToSalesChannels = async (productGID) => {
   const publicationsQuery = `
@@ -513,7 +516,6 @@ const publishProductToSalesChannels = async (productGID) => {
     }
   `;
 
-  // Step 1: Get all publications
   const pubResponse = await axios.post(
     `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
     { query: publicationsQuery },
@@ -526,14 +528,12 @@ const publishProductToSalesChannels = async (productGID) => {
   );
 
   const publications = pubResponse.data?.data?.publications?.edges || [];
-  // console.log("📦 Publications found:", publications.map(p => p.node.name));
 
   if (!publications.length) {
     console.warn("[⚠️] No sales channels found.");
     return;
   }
 
-  // Step 2: Mutation template
   const publishMutation = `
     mutation publishablePublish($id: ID!, $publicationId: ID!) {
       publishablePublish(id: $id, input: { publicationId: $publicationId }) {
@@ -553,7 +553,6 @@ const publishProductToSalesChannels = async (productGID) => {
     }
   `;
 
-  // Step 3: Loop through each publication (skip POS if not needed)
   for (const pub of publications) {
     if (pub.node.name === "Point of Sale") {
       console.log(`[⏭️ Skipped] ${pub.node.name}`);
@@ -628,7 +627,6 @@ const updateProduct = async (productId, product) => {
   };
 
   try {
-    // Step 1: Update the product details (like title, handle, etc.)
     const response = await axios.post(
       `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
       {
@@ -648,7 +646,6 @@ const updateProduct = async (productId, product) => {
       throw new Error(JSON.stringify(data.userErrors));
     }
 
-    // Step 2: Return the updated product ID
     return productId;
 
   } catch (err) {
@@ -661,11 +658,7 @@ const updateProduct = async (productId, product) => {
   }
 };
 
-
-
 const updateInventoryItemWeight = async (productId, productVariantId, weight) => {
-  // console.log("updateInventoryItemWeight CALLED")
-
   const mutation = `
    mutation productVariantsBulkUpdate(
   $productId: ID!,
@@ -695,8 +688,6 @@ const updateInventoryItemWeight = async (productId, productVariantId, weight) =>
     }
   }
 }`;
-
-
 
   const variables = {
     "productId": productId,
@@ -735,12 +726,9 @@ const updateInventoryItemWeight = async (productId, productVariantId, weight) =>
   if (errors?.length) {
     console.error(`[❌ Weight Update Error] ->`, errors);
   }
-
 };
 
-
 const getInventoryDetails = async (productGid) => {
-  // console.log("getInventoryDetails CALLED")
   const query = `
         query GetInventoryInfo($id: ID!) {
           product(id: $id) {
@@ -775,8 +763,7 @@ const getInventoryDetails = async (productGid) => {
         }
       }
     );
-    // console.log('Inventory details response:', JSON.stringify(response.data, null, 2));
-    // console.log('Inventory details response:');
+
     const productVariant = response.data.data?.product?.variants?.edges?.[0]?.node;
     const locationId = response.data.data?.locations?.edges?.[0]?.node?.id;
     if (!productVariant || !locationId) throw new Error('Missing variant or location');
@@ -790,9 +777,7 @@ const getInventoryDetails = async (productGid) => {
   }
 };
 
-
 const updateShopifyInventory = async (inventoryItemId, locationId, quantity) => {
-  // console.log("updateShopifyInventory CALLED ")
   const mutation = `
         mutation InventorySet($input: InventorySetOnHandQuantitiesInput!) {
           inventorySetOnHandQuantities(input: $input) {
@@ -813,7 +798,7 @@ const updateShopifyInventory = async (inventoryItemId, locationId, quantity) => 
           quantity,
         }
       ],
-      reason: "correction" // Use a valid reason here
+      reason: "correction"
     }
   };
 
@@ -829,15 +814,12 @@ const updateShopifyInventory = async (inventoryItemId, locationId, quantity) => 
       }
     );
 
-    // console.log('Inventory set response:', JSON.stringify(response.data, null, 2));
-
     const data = response.data.data;
     const errors = data?.inventorySetOnHandQuantities?.userErrors;
     if (errors?.length) {
       return { status: false, message: 'Inventory set failed', errors };
     }
 
-    // console.log('✅ Inventory set successfully');
     return {
       status: true,
       message: 'Inventory set successfully'
@@ -851,15 +833,12 @@ const updateShopifyInventory = async (inventoryItemId, locationId, quantity) => 
   }
 };
 
-
-
 const norm = s => (s || "").toString().trim().toLowerCase();
 
 const filenameFromUrl = (u) => {
   try {
     return new URL(u).pathname.split("/").pop() || "";
   } catch {
-    // fallback if URL constructor fails
     return (u.split("?")[0] || "").split("/").pop() || "";
   }
 };
@@ -872,12 +851,10 @@ const inferKind = ({ src, altText }) => {
   }
 
   const file = filenameFromUrl(src);
-  const base = file.replace(/\.[a-z0-9]+$/i, ""); // strip .jpg/.png/etc.
+  const base = file.replace(/\.[a-z0-9]+$/i, "");
 
-  // 1) fm anywhere: ..., _fm.jpg | _fm_...jpg | ..._fm
   if (/(?:^|_)fm(?:_|$)/i.test(base)) return "fm";
 
-  // 2) f_fl, b_fl, d_fl, omf_fl, omb_fl, oms_fl anywhere
   const m = base.match(/(?:^|_)(omf|omb|oms|f|b|d)_fl(?:_|$)/i);
   if (m) {
     const k = m[1].toLowerCase();
@@ -887,15 +864,10 @@ const inferKind = ({ src, altText }) => {
   return null;
 };
 
-
-//with only updation logic
 const addOrUpdateVariants = async (productId, newVariants) => {
-  // console.log("addOrUpdateVariants CALLED");
-
   const locationId = await getDefaultLocationId();
   const productGID = `gid://shopify/Product/${productId}`;
 
-  // Step 1: Fetch Shopify-uploaded media URLs for the product
   const fetchShopifyMediaUrls = async (productId) => {
     const fetchQuery = `
       query GetProductImages($id: ID!) {
@@ -982,22 +954,18 @@ const addOrUpdateVariants = async (productId, newVariants) => {
     }
   );
 
-  // Initialize existingVariantsMap and populate it
   const existingVariants = fetchResponse.data.data.product.variants.edges.map(e => e.node);
-  const existingVariantsMap = new Map(); // Initialize the Map object to store variants
+  const existingVariantsMap = new Map();
 
-  // Populate existingVariantsMap with SKU as the key
   for (const v of existingVariants) {
     existingVariantsMap.set(v.sku, v);
   }
 
-  // Step 3: Process each variant (create or update)
   for (const variant of newVariants) {
-    // console.log("newVariants", newVariants)
-    const existing = existingVariantsMap.get(variant.sku); // Check if the variant already exists by SKU
+    const existing = existingVariantsMap.get(variant.sku);
 
     if (!existing) {
-      toCreate.push(variant); // If variant doesn't exist, add to the "toCreate" array
+      toCreate.push(variant);
     } else {
       const option1 = existing.selectedOptions.find(o => o.name === "Size")?.value;
       const option2 = existing.selectedOptions.find(o => o.name === "Color")?.value;
@@ -1008,9 +976,6 @@ const addOrUpdateVariants = async (productId, newVariants) => {
         existing.barcode !== variant.barcode ||
         option1 !== variant.option1 ||
         option2 !== variant.option2;
-
-
-
 
       if (isChanged) {
         toUpdate.push({
@@ -1025,15 +990,12 @@ const addOrUpdateVariants = async (productId, newVariants) => {
           inventory_quantity: variant.inventory_quantity,
           weight: parseFloat(variant.weight),
           metafields: variant.metafields || [],
-          variantImages: variant.variantImages || [], // ✅ ADD THIS LINE
+          variantImages: variant.variantImages || [],
         });
       }
     }
   }
 
-
-
-  // Step 6: Update existing variants (if any)
   if (toUpdate.length) {
     const productVariantUpdateMutation = `
       mutation productVariantUpdate($input: ProductVariantInput!) {
@@ -1075,25 +1037,21 @@ const addOrUpdateVariants = async (productId, newVariants) => {
         }
       );
 
-      // ✅ Update weight
       if (v.weight !== undefined) {
         await updateInventoryItemWeight(productGID, v.id, v.weight);
         console.log(`[⚖️ Weight Updated] Variant ${v.sku} → ${v.weight} lbs`);
       }
 
       if (v.inventory_quantity !== undefined && v.inventoryItemId && originalLocationId.locationId) {
-
         await updateShopifyInventory(v.inventoryItemId, originalLocationId.locationId, v.inventory_quantity);
         console.log(`[📦 Inventory Updated] Variant ${v.sku} → Qty: ${v.inventory_quantity}`);
       }
-      // ✅ Update metafields
-      const metafields = [];
 
+      const metafields = [];
 
       const variantSpecificImages = shopifyImageEntries
         .filter(entry => (v.variantImages || []).some(img => img.altText === entry.altText))
         .map(entry => entry.src);
-
 
       if (variantSpecificImages.length) {
         metafields.push({
@@ -1104,17 +1062,13 @@ const addOrUpdateVariants = async (productId, newVariants) => {
           type: "json",
         });
 
-
-
         const fmUrl = (function () {
-
           for (const src of variantSpecificImages) {
             const kind = inferKind({ src, altText: "" });
             if (kind === "fm") return src;
           }
-          return ""; // or null if you prefer
+          return "";
         })();
-
 
         metafields.push({
           ownerId: v.id,
@@ -1172,28 +1126,16 @@ const addOrUpdateVariants = async (productId, newVariants) => {
         console.log(`[📝 Metafields] ${metafields.length} set for variant ${v.sku}`);
       }
     }
-
-
-
-
   }
 
-
-  // console.log("✅ Set updateInventoryItemWeight");
-  // console.log("✅ Set updateShopifyInventory");
   return {
     created: toCreate.length,
     updated: toUpdate.length,
   };
 };
 
-
-
-
-
 const updateSSMappingWithShopifyData = async (productId, variants) => {
   try {
-    // Query to fetch product details including variants from Shopify
     const query = `
       query getVariants($id: ID!) {
         product(id: $id) {
@@ -1214,7 +1156,6 @@ const updateSSMappingWithShopifyData = async (productId, variants) => {
       }
     `;
 
-    // Make the request to Shopify GraphQL API to fetch variants for the given product
     const response = await axios.post(
       `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
       { query, variables: { id: `gid://shopify/Product/${productId}` } },
@@ -1230,28 +1171,25 @@ const updateSSMappingWithShopifyData = async (productId, variants) => {
 
     if (variantEdges.length === 0) {
       console.log(`[⚠️] No variants found for product ${productId}`);
-      return;  // If no variants found, exit early
+      return;
     }
 
     let updatedCount = 0;
     let styleIdForSyncJob = null;
 
-    const bulkOps = []; // Array to collect bulk update operations for MongoDB
+    const bulkOps = [];
 
-    // Loop over each variant and prepare the update operation
     for (const edge of variantEdges) {
       const variant = edge.node;
       const sku = variant.sku;
       const shopifyVariantId = variant.id.split("/").pop();
       const shopifyInventoryId = variant.inventoryItem?.id?.split("/").pop();
 
-      // Check if variant data is valid before adding it to the update operation
       if (!sku || !shopifyVariantId || !shopifyInventoryId) {
         console.warn(`[⚠️] Invalid variant data for SKU: ${sku}`);
-        continue;  // Skip invalid data
+        continue;
       }
 
-      // Prepare the update operation for MongoDB
       bulkOps.push({
         updateOne: {
           filter: { sku },
@@ -1265,31 +1203,28 @@ const updateSSMappingWithShopifyData = async (productId, variants) => {
               shopifyDataUpdateStatus: "success",
             },
           },
-          upsert: true,  // Insert the document if it doesn't exist
+          upsert: true,
         },
       });
 
       updatedCount++;
-      styleIdForSyncJob = styleIdForSyncJob || productId;  // Store the styleId for sync job tracking
+      styleIdForSyncJob = styleIdForSyncJob || productId;
     }
 
     if (bulkOps.length > 0) {
-      // Perform the bulk update in MongoDB
       await SSProductMapping.bulkWrite(bulkOps);
       console.log(`[✅ MongoDB Updated] ${updatedCount} variants mapped to Shopify.`);
     }
 
-    // ✅ Only update StyleIdSyncJob after all variants for the style have been processed
     if (updatedCount > 0 && styleIdForSyncJob) {
       const syncJob = await StyleIdSyncJob.findOne({ styleId: styleIdForSyncJob });
 
       if (syncJob) {
-        // If the sync job exists, update the status to success after all variants are processed
         await StyleIdSyncJob.updateOne(
           { styleId: styleIdForSyncJob },
           {
             $set: {
-              status: "success",  // Mark job as successful
+              status: "success",
               syncedProducts: updatedCount,
               lastAttemped: new Date(),
             },
@@ -1297,7 +1232,6 @@ const updateSSMappingWithShopifyData = async (productId, variants) => {
         );
         console.log(`[✅ StyleIdSyncJob] styleID ${styleIdForSyncJob} marked as 'success'.`);
       } else {
-        // If the sync job doesn't exist, create a new entry with 'success' status
         await StyleIdSyncJob.create({
           styleId: styleIdForSyncJob,
           status: "success",
@@ -1310,13 +1244,12 @@ const updateSSMappingWithShopifyData = async (productId, variants) => {
 
   } catch (err) {
     console.error("[❌ MongoDB Mapping Update Failed]", err.message);
-    // Mark the sync job as failed if an error occurs during the sync process
-    if (StyleIdSyncJob) {
+    if (styleIdForSyncJob) {
       await StyleIdSyncJob.updateOne(
         { styleId: styleIdForSyncJob },
         {
           $set: {
-            status: "failed",  // Mark job as failed
+            status: "failed",
             error: err.message,
             lastAttemped: new Date(),
           },
@@ -1327,12 +1260,6 @@ const updateSSMappingWithShopifyData = async (productId, variants) => {
   }
 };
 
-
-
-
-
-
-
 const markVariantAsFailedInSyncJob = async (styleId, sku, reason = "image attach failed") => {
   try {
     await SSProductMapping.updateOne(
@@ -1341,7 +1268,7 @@ const markVariantAsFailedInSyncJob = async (styleId, sku, reason = "image attach
         $set: {
           shopifyInventoryStatus: "failed",
           shopifyDataUpdateStatus: "failed",
-          error: reason, // ← if you want to store reason, add `error` to schema
+          error: reason,
           updatedAt: new Date(),
         },
       }
@@ -1356,18 +1283,14 @@ const markVariantAsFailedInSyncJob = async (styleId, sku, reason = "image attach
   }
 };
 
-
-
 exports.uploadToShopify = async (products) => {
   console.log(`📦 Starting uploadToShopify for ${products.length} products`);
-
 
   const uploadedProducts = [];
   const variantsToUpdate = [];
 
   for (const product of products) {
     try {
-
       const existingProductId = await findProductByHandle(product.handle);
 
       let productId;
@@ -1375,21 +1298,14 @@ exports.uploadToShopify = async (products) => {
       if (existingProductId) {
         console.log(`♻️ Updating product: ${product.title} (${product.handle})`);
         productId = await updateProduct(existingProductId, product);
-
       } else {
         console.log(`🆕 Creating product: ${product.title} (${product.handle})`);
         productId = await createProductGraphQL(product);
-
-         await productVariantsCreate(productId, product.variants)
-         const productGID = `gid://shopify/Product/${productId}`;
+        const productGID = `gid://shopify/Product/${productId}`;
         await publishProductToSalesChannels(productGID);
       }
 
       await addOrUpdateVariants(productId, product.variants);
-
-
-
-
 
       uploadedProducts.push({
         id: productId,
@@ -1397,19 +1313,16 @@ exports.uploadToShopify = async (products) => {
         handle: product.handle,
       });
 
-
       variantsToUpdate.push(...product.variants);
-
 
     } catch (error) {
       console.error(`[❌ Failed] ${product.title} | ${error.message}`);
     }
   }
 
-  // Update the SS mapping after all products are uploaded
   if (variantsToUpdate.length > 0) {
     try {
-      await updateSSMappingWithShopifyData(uploadedProducts[0].id, variantsToUpdate);  // Use the first product's ID for the style mapping
+      await updateSSMappingWithShopifyData(uploadedProducts[0].id, variantsToUpdate);
     } catch (error) {
       console.error("[❌ SS Mapping Update Failed]", error.message);
     }

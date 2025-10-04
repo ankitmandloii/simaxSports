@@ -97,9 +97,9 @@ exports.updateUploadBrandSchemaForAfterDeleteWhichStyleIdHasNoData = async () =>
       {
         $group: {
           _id: "$productBrandName",
-          styleIds:       { $addToSet: "$_id" },     // ObjectIds of StyleIdSyncJob docs
+          styleIds: { $addToSet: "$_id" },     // ObjectIds of StyleIdSyncJob docs
           styleIdStrings: { $addToSet: "$styleId" }, // string style IDs
-          brandImage:     { $first: "$brandImage" }
+          brandImage: { $first: "$brandImage" }
         }
       }
     ]);
@@ -431,14 +431,14 @@ exports.syncSandsToShopify = async (req, res) => {
   // const styleIds = await fetchAllStyleIds(); //may be it will fetch from DB Id's
 
   try {
-    const styleID = 9162; //for testing purpose TASC Performance Inc
+    const styleID = 12614; //for testing purpose TASC Performance Inc
     const job = await StyleIdSyncJob.findOne({ styleId: styleID });
 
     // Fetch data for the style
     let ssData, specs;
 
     try {
-      const styleID = 9162;
+      const styleID = 12614;
       ssData = await SSProductMapping.find({ styleID });
       console.log(`[S&S] Fetched styleID from db ${styleID} with ${ssData.length} SKUs`);
       if (!ssData || ssData.length === 0) {
@@ -460,10 +460,10 @@ exports.syncSandsToShopify = async (req, res) => {
     const shopifyFormatted = await mapProducts(ssData, specs, job.title, job.description, job.baseCategory);
 
 
-    
+
     const uploaded = await uploadToShopify(shopifyFormatted);
 
-  
+
 
     if (!uploaded || uploaded.length === 0) {
       console.error("Nothing was uploaded", uploaded);
@@ -481,13 +481,13 @@ exports.syncSandsToShopify = async (req, res) => {
 
 exports.productDataGetFromSS = async (req, res) => {
   try {
- 
+
     const { styleId } = req.body; //for testing purpose
 
 
     const ssProducts = await SyncServices.fetchSSProductsByStyleIds(styleId);
 
-    return sendResponse(res, statusCode.OK, true, "Products fetched successfully", {"dataLength" : ssProducts.length ,"data": ssProducts});
+    return sendResponse(res, statusCode.OK, true, "Products fetched successfully", { "dataLength": ssProducts.length, "data": ssProducts });
   } catch (error) {
     console.error("[SYNC ERROR]", error.message);
     return sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, error.message);
