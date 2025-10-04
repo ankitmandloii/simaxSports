@@ -11,6 +11,7 @@ router.get('/getAllStyleIdsFromDb',controllers.getAllStyleIdsFromDb);
 router.post("/saveStyleIdsToDB", controllers.fetchAndStoreStyleIdsWhichClientWants);
 
 router.get("/sync-products", controllers.syncSandsToShopify);  //middleWare to sync data S&S to shopify
+router.get("/delete-productsFromShopify", controllers.deleteShopifyProduct);  //middleWare to sync data S&S to shopify
 // router.get("/sync-products", controllers.syncSandsToShopifytest);  //middleWare to sync data S&S to shopify
 router.get("/productDataGetFromSS", controllers.productDataGetFromSS);  //productDataGetFromSS 
 router.get("/productLenghtGetFromSS", controllers.productLenghtGetFromSS); //how much product in this styleid

@@ -11,6 +11,7 @@ const StyleIdSyncJob = require("../model/StyleIdSyncJob.js");
 const uploadBrandSchema = require("../model/uploadBrandSchema.js");
 const { default: axios } = require("axios");
 const SSProductMapping = require("../model/SSProductMapping.js");
+// const { createSmartCollectionForBaseCategory } = require("../scheduler/triggerSync.js")
 
 
 
@@ -198,6 +199,59 @@ exports.fetchAndStoreStyleIdsWhichClientWants = async (req, res) => {
 
 
 
+exports.deleteShopifyProduct = async (req, res) => {
+  try {
+    const { shopifyProductId } = req.query;
+    console.log(shopifyProductId);
+    console.log(`🔍 Deleting Shopify product with ID: ${shopifyProductId}...`);
+
+    // Step 1: GraphQL mutation for deleting a product
+    const mutation = `
+      mutation productDelete($input: ID!) {
+        productDelete(input: { id: $input }) {
+          deletedProductId
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `;
+
+    // Step 2: Construct Shopify GID
+    const shopifyGID = `gid://shopify/Product/${shopifyProductId}`;
+
+    // Step 3: Perform the mutation request
+    const response = await axios.post(
+      `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
+      {
+        query: mutation,
+        variables: { input: shopifyGID },
+      },
+      {
+        headers: {
+          "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Step 4: Process response
+    const result = response.data?.data?.productDelete;
+
+    if (result?.userErrors?.length) {
+      console.error(`❌ Shopify error while deleting product ID ${shopifyProductId}:`, result.userErrors);
+      return sendResponse(res, statusCode.BAD_REQUEST, false, "Shopify error while deleting product ID");
+    }
+
+    console.log(`🗑️ Successfully deleted from Shopify: ${shopifyProductId} (${result.deletedProductId})`);
+    return sendResponse(res, statusCode.OK, true, result);
+   
+  } catch (err) {
+    console.error(`❌ Failed to delete product ID=${shopifyProductId}:`, err.response?.data || err.message);
+    return sendResponse(res, statusCode.BAD_REQUEST, false, "Failed to delete product ID");
+  }
+};
 
 // exports.deleteObsoleteShopifyProducts = async (currentSSStyleIds = []) => {
 //   try {
@@ -432,9 +486,10 @@ exports.syncSandsToShopify = async (req, res) => {
 
   try {
     const styleID = 12614; //for testing purpose TASC Performance Inc
+  
     const job = await StyleIdSyncJob.findOne({ styleId: styleID });
 
-    // Fetch data for the style
+    // // Fetch data for the style
     let ssData, specs;
 
     try {
@@ -464,7 +519,7 @@ exports.syncSandsToShopify = async (req, res) => {
     const uploaded = await uploadToShopify(shopifyFormatted);
 
 
-
+    // await createSmartCollectionForBaseCategory(job.baseCategory, job.baseCategory, job.brandImage);
     if (!uploaded || uploaded.length === 0) {
       console.error("Nothing was uploaded", uploaded);
       return sendResponse(res, statusCode.BAD_REQUEST, false, ErrorMessage.NO_PRODUCTS_SYNCED);

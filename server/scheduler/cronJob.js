@@ -7,7 +7,7 @@ const StyleIdSyncJob = require("../model/StyleIdSyncJob");
 
 exports.startScheduler = () => {
     // const scheduleTime = process.env.SYNC_CRON_TIME || "0 2 * * *";
-    const scheduleTime = "15 9 * * *";
+    const scheduleTime = "01 21 * * *";
     // Default to 2:00 AM
 
 
@@ -30,9 +30,9 @@ exports.startScheduler = () => {
 
 
     // 🔁 CRON JOB 1: Fetch all style IDs from S&S and store to DB (every day at 1 AM)
-    cron.schedule("48 11 * * *", async () => {
+    cron.schedule("37 15 * * *", async () => {
         try {
-            console.log("🌐 Fetching style IDs from S&S at", new Date().toISOString());
+            console.log("🌐 Fetching style IDs from S&S at", new Date().toLocaleString());
             // Step 1: Reset data before syncing new data
             await resetDatabaseBeforeSync();
             // Step 2: Fetch new style IDs and store them in the database
@@ -59,13 +59,16 @@ exports.startScheduler = () => {
 
     cron.schedule(scheduleTime, async () => {
 
+        const allowedBrands =[
+        "Badger"
+      ];
         try {
-            console.log("🌐 Syncing styles for each brand at", new Date().toISOString());
+            console.log("🌐 Syncing styles for each brand at", new Date().toLocaleString());
             const brandJobs = await uploadBrandSchema.find({}).populate("styleIds").exec();
             const bulkOps = [];
 
             for (const brand of brandJobs) {
-                if (brand.BrandName == "Adidas") {
+                if (allowedBrands.includes(brand.BrandName)) {
                     await syncBrandStyles(brand, bulkOps);
                 } else {
                     continue;
@@ -92,7 +95,7 @@ exports.startScheduler = () => {
 
 
                 // Log for debugging
-                console.log(`⏰ Sync started for styleId ${style.styleId} of ${brand.BrandName} at ${new Date().toISOString()}`);
+                console.log(`⏰ Sync started for styleId ${style.styleId} of ${brand.BrandName} at ${new Date().toLocaleString()}`);
 
                 // Sync the style (this is where the actual sync logic happens)
                 const resOfStyleId = await syncStyle(style.styleId);
@@ -107,8 +110,8 @@ exports.startScheduler = () => {
             // Prepare the update data for the brand
             const updateData = {
                 $set: {
-                    // lastAttempedBrandSync: new Date()  // Always update the timestamp
-                    lastAttempedBrandSync:  new Date(createdAt).toLocaleString("en-GB", { timeZone: "UTC" }) // Always update the timestamp
+                    lastAttempedBrandSync: new Date().toLocaleString()  // Always update the timestamp
+                    // lastAttempedBrandSync:  new Date(createdAt).toLocaleString("en-GB", { timeZone: "UTC" }) // Always update the timestamp
                 }
             };
 
@@ -146,7 +149,8 @@ exports.startScheduler = () => {
                         $set: {
                             BrandSyncStatus: "failed",
                             error: err.message,
-                            lastAttempedBrandSync:  new Date(createdAt).toLocaleString("en-GB", { timeZone: "UTC" })
+                             lastAttempedBrandSync: new Date().toLocaleString()
+                            // lastAttempedBrandSync:  new Date(createdAt).toLocaleString("en-GB", { timeZone: "UTC" })
                         }
                     }
                 }
