@@ -5,10 +5,11 @@ const StyleIdSyncJob = require("../model/StyleIdSyncJob");
 
 
 
+//done with new version
 const getDefaultLocationId = async () => {
   try {
     const response = await axios.get(
-      `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/locations.json`,
+      `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-10/locations.json`,
       {
         headers: {
           "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
@@ -21,9 +22,9 @@ const getDefaultLocationId = async () => {
     if (locations.length === 0) {
       throw new Error("No locations found in Shopify store");
     }
-
     // Return the first location ID as default
     return locations[0].id;
+   
   } catch (error) {
     console.error("Error fetching default location ID:", error.message);
     throw error;
@@ -33,6 +34,7 @@ const getDefaultLocationId = async () => {
 
 
 
+//done with new version
 const findProductByHandle = async (handle) => {
   const query = `
     query getProductByHandle($handle: String!) {
@@ -44,7 +46,7 @@ const findProductByHandle = async (handle) => {
 
   try {
     const response = await axios.post(
-      `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
+      `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-10/graphql.json`,
       {
         query,
         variables: { handle }
@@ -65,6 +67,7 @@ const findProductByHandle = async (handle) => {
 
     // Check if productId is found
     if (productId) {
+       console.log("productIdproductIdproductIdproductId",productId.split('/').pop())
       return productId.split('/').pop();  // Extract the product ID
     } else {
       // console.log("Product not found with handle:", handle);
@@ -82,6 +85,7 @@ const findProductByHandle = async (handle) => {
 
 
 
+//done with new version
 const retryAttachment = async (productId, variantId, mediaIds, retries = 5, delay = 2000) => {
   let attempt = 0;
   let success = false;
@@ -100,7 +104,7 @@ const retryAttachment = async (productId, variantId, mediaIds, retries = 5, dela
   while (attempt < retries && !success) {
     try {
       const mediaStatusResponse = await axios.post(
-        `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
+        `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-10/graphql.json`,
         {
           query: `query GetMediaStatus($mediaIds: [ID!]!) {
             nodes(ids: $mediaIds) {
@@ -132,7 +136,7 @@ const retryAttachment = async (productId, variantId, mediaIds, retries = 5, dela
         };
 
         const appendRes = await axios.post(
-          `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
+          `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-10/graphql.json`,
           {
             query: productVariantAppendMediaMutation,
             variables: appendMediaVariables,
@@ -170,6 +174,8 @@ const retryAttachment = async (productId, variantId, mediaIds, retries = 5, dela
   return success;
 };
 
+
+//done with new version
 const productVariantsCreate = async (productId, variants) => {
   const mutation = `
     mutation ProductVariantsCreate($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
@@ -262,6 +268,7 @@ const productVariantsCreate = async (productId, variants) => {
 
 
 
+//done with new version
 const createProductGraphQL = async (product) => {
   const productCreateMutation = `
     mutation productCreate($product: ProductCreateInput!) {
@@ -409,6 +416,8 @@ const createProductGraphQL = async (product) => {
   }
 };
 
+
+//done with new version
 const uploadImagesInBatches = async (productId, imagesToUpload, maxRetries = 3) => {
   const imageMediaMap = {};
   const BATCH_SIZE = 25;
@@ -441,7 +450,7 @@ const uploadImagesInBatches = async (productId, imagesToUpload, maxRetries = 3) 
 
     try {
       const uploadRes = await axios.post(
-        `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
+        `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-10/graphql.json`,
         {
           query: productCreateMediaMutation,
           variables: mediaUploadVariables,
@@ -502,6 +511,8 @@ const uploadImagesInBatches = async (productId, imagesToUpload, maxRetries = 3) 
   return imageMediaMap;
 };
 
+
+//done with new version
 const publishProductToSalesChannels = async (productGID) => {
   const publicationsQuery = `
     query {
@@ -517,7 +528,7 @@ const publishProductToSalesChannels = async (productGID) => {
   `;
 
   const pubResponse = await axios.post(
-    `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
+    `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-10/graphql.json`,
     { query: publicationsQuery },
     {
       headers: {
@@ -597,6 +608,7 @@ const publishProductToSalesChannels = async (productGID) => {
 
 
 
+//done with new version
 const updateProduct = async (productId, product) => {
   const mutation = `
     mutation productUpdate($input: ProductInput!) {
@@ -614,21 +626,23 @@ const updateProduct = async (productId, product) => {
     }
   `;
 
+  // Define variables
   const variables = {
     input: {
-      id: `gid://shopify/Product/${productId}`,
+      id: `gid://shopify/Product/${productId}`, // Product ID now inside the input
       title: product.title,
       handle: product.handle,
-      bodyHtml: product.body_html,
+      descriptionHtml: product.body_html,
       vendor: product.vendor,
       productType: product.product_type,
       tags: product.tags.split(','),
+      status: product.status,
     },
   };
 
   try {
     const response = await axios.post(
-      `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
+      `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-10/graphql.json`,
       {
         query: mutation,
         variables,
@@ -641,11 +655,13 @@ const updateProduct = async (productId, product) => {
       }
     );
 
+    
     const data = response.data?.data?.productUpdate;
-    if (data.userErrors?.length) {
+    if (data?.userErrors?.length) {
       throw new Error(JSON.stringify(data.userErrors));
     }
-
+   
+    console.log(`Updated ${productId} Product SuccessFully`)
     return productId;
 
   } catch (err) {
@@ -658,6 +674,8 @@ const updateProduct = async (productId, product) => {
   }
 };
 
+
+//done with new version
 const updateInventoryItemWeight = async (productId, productVariantId, weight) => {
   const mutation = `
    mutation productVariantsBulkUpdate(
@@ -708,7 +726,7 @@ const updateInventoryItemWeight = async (productId, productVariantId, weight) =>
   };
 
   const response = await axios.post(
-    `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
+    `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-10/graphql.json`,
     {
       query: mutation,
       variables
@@ -728,6 +746,8 @@ const updateInventoryItemWeight = async (productId, productVariantId, weight) =>
   }
 };
 
+
+//done with new version
 const getInventoryDetails = async (productGid) => {
   const query = `
         query GetInventoryInfo($id: ID!) {
@@ -754,7 +774,7 @@ const getInventoryDetails = async (productGid) => {
       `;
   try {
     const response = await axios.post(
-      `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
+      `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-10/graphql.json`,
       { query, variables: { id: productGid } },
       {
         headers: {
@@ -777,6 +797,7 @@ const getInventoryDetails = async (productGid) => {
   }
 };
 
+//done with new version
 const updateShopifyInventory = async (inventoryItemId, locationId, quantity) => {
   const mutation = `
         mutation InventorySet($input: InventorySetOnHandQuantitiesInput!) {
@@ -804,7 +825,7 @@ const updateShopifyInventory = async (inventoryItemId, locationId, quantity) => 
 
   try {
     const response = await axios.post(
-      `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
+      `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-10/graphql.json`,
       { query: mutation, variables },
       {
         headers: {
@@ -865,7 +886,7 @@ const inferKind = ({ src, altText }) => {
 };
 
 const addOrUpdateVariants = async (productId, newVariants) => {
-  const locationId = await getDefaultLocationId();
+  // const locationId = await getDefaultLocationId();
   const productGID = `gid://shopify/Product/${productId}`;
 
   const fetchShopifyMediaUrls = async (productId) => {

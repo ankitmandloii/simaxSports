@@ -354,7 +354,7 @@ exports.mapProducts = (ssProducts, specs = [], title, description, baseCategoryN
         ],
         variants: variantGroup,
         images: allImages,
-        status: "active",
+        status: "ACTIVE",
         metafields: [
           {
             namespace: "custom",
