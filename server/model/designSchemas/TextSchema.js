@@ -10,28 +10,29 @@ const TextSchema = new Schema(
 
     content: { type: String, default: 'New Text' },
     fontWeight: { type: String, enum: ['normal', 'bold'], default: 'normal' },
-    fontStyle:  { type: String, enum: ['normal', 'italic'], default: 'normal' },
+    fontStyle: { type: String, enum: ['normal', 'italic'], default: 'normal' },
     fontFamily: { type: String, default: 'Montserrat' },
-    textColor:  { type: String, default: '#000000' },
+    textColor: { type: String, default: '#000000' },
 
     outline: { type: String, enum: ['none', 'solid'], default: 'none' },
     outLineColor: { type: String, default: '' },
-    outLineSize:  { type: Number, default: 0.5 },
+    outLineSize: { type: Number, default: 0.5 },
 
-    size:   { type: Number, default: 1 },
+    size: { type: Number, default: 1 },
     scaleX: { type: Number, default: 1 },
     scaleY: { type: Number, default: 1 },
-    angle:  { type: Number, default: 0 },
-    spacing:{ type: Number, default: 1 },
-    arc:    { type: Number, default: 0 },
+    angle: { type: Number, default: 0 },
+    spacing: { type: Number, default: 1 },
+    arc: { type: Number, default: 0 },
 
     center: { type: String, enum: ['left', 'center', 'right'], default: 'center' },
-    flipX:  { type: Boolean, default: false },
-    flipY:  { type: Boolean, default: false },
+    flipX: { type: Boolean, default: false },
+    flipY: { type: Boolean, default: false },
+    scaledValue: { type: Number, default: 1 },
 
-    width:   { type: Number, default: 150 },
-    height:  { type: Number, default: 50 },
-    fontSize:{ type: Number, default: 20 },
+    width: { type: Number, default: 150 },
+    height: { type: Number, default: 50 },
+    fontSize: { type: Number, default: 20 },
   },
   { _id: false }
 );

@@ -84,14 +84,14 @@ const MainDesignTool = ({
   const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
   const { addName, addNumber } = useSelector((state) => state.TextFrontendDesignSlice);
   const nameAndNumberDesignState = useSelector((state) => state.TextFrontendDesignSlice.nameAndNumberDesignState)
-  const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedImageId);
-  const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
-  const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].texts);
-  const isRender = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].setRendering);
-  const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].selectedTextId);
-  const loadingState = useSelector(state => state.TextFrontendDesignSlice.present[activeSide].loadingState);
+  const selectedImageId = useSelector((state) => state.TextFrontendDesignSlice?.present[activeSide]?.selectedImageId);
+  const imageContaintObject = useSelector((state) => state.TextFrontendDesignSlice?.present[activeSide]?.images);
+  const textContaintObject = useSelector((state) => state.TextFrontendDesignSlice?.present[activeSide]?.texts);
+  const isRender = useSelector((state) => state.TextFrontendDesignSlice?.present[activeSide]?.setRendering);
+  const selectedTextId = useSelector((state) => state.TextFrontendDesignSlice?.present[activeSide]?.selectedTextId);
+  const loadingState = useSelector(state => state.TextFrontendDesignSlice?.present[activeSide]?.loadingState);
   const { data: settings } = useSelector((state) => state.settingsReducer);
-  const allImageData = useSelector((state) => state.TextFrontendDesignSlice.present[activeSide].images);
+  const allImageData = useSelector((state) => state.TextFrontendDesignSlice?.present[activeSide]?.images);
   const currentImageObject = allImageData?.find((img) => img.id == selectedImageId);
 
 
@@ -197,10 +197,19 @@ const MainDesignTool = ({
   }
   const renderCurveTextObjectsHelper = () => {
     const productCategory = getProductType(activeProductTitle);
+   const globalDispatch = (lable, value, id) => {
+      dispatch(
+        updateTextState({
+          "id": id,
+          changes: { [lable]: value },
+        })
+      );
+    };
     renderCurveTextObjects(
       fabricCanvasRef,
       dispatch,
       textContaintObject,
+      globalDispatch,
       setActiveObjectType,
       updateBoundaryVisibility,
       createControls,
@@ -208,7 +217,6 @@ const MainDesignTool = ({
       navigate,
       fabric,
       setSelectedTextState,
-      globalDispatch,
       activeSide,
       bringPopup,
       productCategory,
@@ -239,6 +247,14 @@ const MainDesignTool = ({
     );
   }
   const renderAllImageObjectsHelper = (openAieditorPopup, setOpenAieditorPopup) => {
+    const globalDispatch = (lable, value, id) => {
+      dispatch(
+        updateImageState({
+          "id": id,
+          changes: { [lable]: value },
+        })
+      );
+    };
     renderAllImageObjects(
       fabricCanvasRef,
       dispatch,
@@ -505,6 +521,12 @@ const MainDesignTool = ({
     const canvas = new fabric.Canvas(canvasElement, {
       width: canvasWidth,
       height: canvasHeight,
+      // backgroundColor:"red",
+      perPixelTargetFind:false,
+      targetFindTolerance: 4,
+      preserveObjectStacking: true,
+    // 
+      
     });
     canvas.preserveObjectStacking = true;
     fabricCanvasRef.current = canvas;
@@ -581,157 +603,6 @@ const MainDesignTool = ({
       // handleScale(e);
     };
 
-    // const showBoundaryOnAction = (e) => {
-    //   // checkBoundary(e);
-    //   const canvas = fabricCanvasRef.current;
-    //   const objects = canvas.getObjects();
-
-    //   // 1. Define all the names you want to find (optional, but good for clarity)
-    //   const desiredObjectNames = new Set([
-    //     "boundaryBox",
-    //     "boundaryBoxInner",
-    //     "boundaryBoxLeft",
-    //     "boundaryBoxRight",
-    //     "centerVerticalLine",
-    //     "warningText",
-    //     "centerVerticalLineLeftBorder",
-    //     "centerVerticalLineRightBorder",
-    //     "leftChestText",
-    //     "rightChestText",
-    //     "youthText",
-    //     "adultText",
-    //   ]);
-
-    //   // 2. Initialize a map to store the found objects
-    //   const objectMap = {};
-
-    //   // 3. Iterate over the array ONCE to populate the map
-    //   for (const obj of objects) {
-    //     // We only care about objects that have a 'name' property
-    //     if (obj.name && desiredObjectNames.has(obj.name)) {
-    //       objectMap[obj.name] = obj;
-    //     }
-    //   }
-
-    //   // 4. Destructure the objects from the map for easy access
-    //   const {
-    //     boundaryBox,
-    //     boundaryBoxInner,
-    //     boundaryBoxLeft,
-    //     boundaryBoxRight,
-    //     centerVerticalLine,
-    //     warningText,
-    //     leftChestText,
-    //     rightChestText,
-    //     youthText,
-    //     adultText,
-    //     // ... any other properties you need
-    //   } = objectMap;
-
-    //   const productCategory = getProductType(activeProductTitle)
-    //   if (!canvas) return;
-    //   if (productCategory == "Zip") {
-    //     if (activeSide == "front") {
-    //       const showBoundary = true;
-    //       if (boundaryBoxLeft) boundaryBoxLeft.visible = showBoundary;
-    //       if (boundaryBoxRight) boundaryBoxRight.visible = showBoundary;
-    //       if (leftChestText) leftChestText.visible = showBoundary;
-    //       if (rightChestText) rightChestText.visible = showBoundary;
-    //       if (warningText) { warningText.visible = showBoundary; }
-    //     }
-    //     else {
-    //       const showBoundary = true;
-    //       if (boundaryBox) boundaryBox.visible = showBoundary;
-    //       if (warningText) { warningText.visible = showBoundary; }
-    //       // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
-    //     }
-    //   }
-    //   else {
-    //     const showBoundary = true;
-    //     if (activeSide == 'front') {
-    //       if (boundaryBox) boundaryBox.visible = showBoundary;
-    //       if (boundaryBoxInner) boundaryBoxInner.visible = showBoundary;
-    //       if (boundaryBoxLeft) boundaryBoxLeft.visible = showBoundary;
-    //       if (leftChestText) leftChestText.visible = showBoundary;
-    //       if (adultText) adultText.visible = showBoundary;
-    //       if (youthText) youthText.visible = showBoundary;
-    //       // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
-    //       if (warningText) { warningText.visible = showBoundary; }
-    //     }
-    //     else {
-    //       if (boundaryBox) boundaryBox.visible = showBoundary;
-    //       if (boundaryBoxInner) boundaryBoxInner.visible = false;
-    //       if (boundaryBoxLeft) boundaryBoxLeft.visible = false;
-    //       if (leftChestText) leftChestText.visible = false;
-    //       if (adultText) adultText.visible = false;
-    //       if (youthText) youthText.visible = false;
-    //       if (warningText) { warningText.visible = showBoundary; }
-    //       // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
-    //     }
-    //   }
-
-
-    //   if (activeSide == "leftSleeve" || activeSide == "rightSleeve") {
-    //     canvas.renderAll();
-    //     return;
-    //   }
-    //   // // Detect center collision
-    //   const canvasCenterX = canvas.getWidth() / 2;
-    //   const textObjects = objects.filter(
-    //     (obj) => obj.type === "curved-text" || obj.type === "image"
-    //   );
-
-    //   let anyObjectAtCenter = false;
-
-    //   textObjects.forEach((obj) => {
-    //     obj.setCoords();
-
-    //     const objCenterX = obj.getCenterPoint().x;
-    //     const delta = Math.abs(objCenterX - canvasCenterX);
-
-    //     if (delta <= 4) {
-    //       anyObjectAtCenter = true;
-
-    //       // Temporarily lock movement
-    //       obj.lockMovementX = true;
-    //       canvas.requestRenderAll();
-
-    //       setTimeout(() => {
-    //         obj.lockMovementX = false;
-    //         canvas.requestRenderAll();
-    //       }, 1000);
-    //     }
-
-    //     obj.setCoords();
-    //   });
-
-    //   // Show / hide the left / right borders
-    //   // leftBorder.set({ visible: anyObjectAtCenter });
-    //   // rightBorder.set({ visible: anyObjectAtCenter });
-    //   if (centerVerticalLine) {
-    //     if (anyObjectAtCenter) {
-    //       // alert("center");
-    //       centerVerticalLine.visible = true
-    //     }
-    //     else {
-    //       centerVerticalLine.visible = false
-    //     }
-    //     // if (centerVerticalLine) { centerVerticalLine.visible = showBoundary; }
-    //     // Change center line color if hitting center
-    //     const originalStroke = centerVerticalLine.originalStroke || centerVerticalLine.stroke || "skyblue";
-    //     if (!centerVerticalLine.originalStroke) {
-    //       centerVerticalLine.originalStroke = originalStroke;
-    //     }
-
-    //     centerVerticalLine.set("stroke", anyObjectAtCenter ? "orange" : originalStroke);
-
-    //   }
-
-    //   canvas.requestRenderAll();
-
-
-
-    // }
 
 
     const eventHandlers = {
@@ -774,13 +645,15 @@ const MainDesignTool = ({
     if (backgroundImage) {
       fabric.Image.fromURL(
         backgroundImage,
-        (img) => {
+        (img) => {  
           const imgWidth = img.width;
           const imgHeight = img.height;
 
           // Calculate scale based on the parent container size
-          const scaleX = (canvasWidth - 130) / imgWidth;
-          const scaleY = (canvasHeight - 130) / imgHeight;
+            const scaleX = (canvasWidth - 130) / imgWidth;
+            const scaleY = (canvasHeight - 130) / imgHeight;
+          // const scaleX = (canvasWidth ) / imgWidth;
+          // const scaleY = (canvasHeight) / imgHeight;
 
           // Apply the scale to ensure the image fits within the canvas while maintaining aspect ratio
           const scale = Math.max(scaleX, scaleY);
@@ -924,30 +797,11 @@ const MainDesignTool = ({
 
     // Render text objects
     if (textContaintObject && textContaintObject.length > 0) {
-      // renderCurveTextObjects();
       renderCurveTextObjectsHelper();
-      // renderCurveTextObjectsHelper(
-      //   fabricCanvasRef,
-      //   dispatch,
-      //   textContaintObject,
-      //   setActiveObjectType,
-      //   updateBoundaryVisibility,
-      //   createControls,
-      //   syncMirrorCanvasHelper,
-      //   navigate,
-      //   fabric,
-      //   setSelectedTextState,
-      //   globalDispatch,
-      //   activeSide,
-      //   bringPopup,
-      //   getProductType(activeProductTitle)
-
-      // )
     }
 
     // Render image objects
     if (imageContaintObject && imageContaintObject.length > 0) {
-      // renderAllImageObjects();
       renderAllImageObjectsHelper(openAieditorPopup, setOpenAieditorPopup);
     }
 
@@ -1139,16 +993,12 @@ const MainDesignTool = ({
 
       {showNotes && <DesignNotesPopup handleClose={handleClose} />}
 
-      {/* <div class="tenor-gif-embed" data-postid="6449096453315144907" data-share-method="host" data-aspect-ratio="0.991667" data-width="100%" style={{ zIndex: 9999999, position: "absolute", top: "50%", left: "50%" }}>
-        <a href="https://tenor.com/view/loading-gif-6449096453315144907">Loading Sticker</a>from <a href="https://tenor.com/search/loading-stickers"
-        >Loading Stickers</a></div> */}
-      {/* <img src="https://cdn.pixabay.com/animation/2023/08/11/21/18/21-18-05-265_512.gif" height={200} width={200} style={{ zIndex: 9999999, position: "absolute", top: "50%", left: "50%" }}></img> */}
-      {/* <!-- index.html or in React root --> */}
 
 
 
 
-    </div >
+
+    </div>
   );
 
 
