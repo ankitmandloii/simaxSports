@@ -366,7 +366,8 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
   const BASE_URL = process.env.REACT_APP_BASE_URL || 'https://simax-sports-x93p.vercel.app/api/';
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const apiKey = process.env.IDEOGRAM_API_KEY;
+  const apiKey = process.env.REACT_APP_IDEOGRAM_API_KEY;
+  console.log("========apikey", apiKey)
   const fetchDalleImages = async (query, pageNumber = 1) => {
     if (!query) {
       toast.error('Please enter a search query.');
@@ -397,7 +398,7 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
       const res = await fetch(proxyUrl, {
         method: 'POST',
         headers: {
-          'Api-Key': 'dXIMAeBkMeNwaeRvQTKGsARiyDBue5j5cYwA7CpxkmF9Ypxzj3g2b8VKLKN_UEFg9xuUDRrjGRvFzv3V527Mrw',
+          'Api-Key': apiKey,
         },
         body: formData,
         signal: controller.signal,
