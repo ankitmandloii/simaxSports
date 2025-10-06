@@ -1,7 +1,7 @@
 import { store } from "../../../redux/store"
 import { processAndReplaceColors, applyFilterAndGetUrl, invertColorsAndGetUrl, getBase64CanvasImage, replaceColorAndGetBase64 } from "../../ImageOperation/CanvasImageOperations";
 
-function createRemoveBackgroundToggle(fabricImage, canvasId, removeBg, currentImageObject, handleImage, globalDispatch) {
+function createRemoveBackgroundToggle(fabricImage, canvasId, removeBg, handleImage, globalDispatch) {
     // console.log("button data ", fabricImage, canvasId, callback, removeBg);
     const id = fabricImage.id;
     const buttonId = `canvas-${id}`;

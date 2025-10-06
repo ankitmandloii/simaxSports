@@ -27,6 +27,7 @@ import { restoreEditDesigns } from "./redux/FrontendDesign/TextFrontendDesignSli
 import Test from '../../frontend/src/components/Test'
 import db from "../src/db/indexDb";
 import { debounce } from "lodash"
+import { handleImage, transformImagesArray } from "./components/utils/transformReduxState";
 enableMapSet();
 function App() {
   usePersistQueryParams();
@@ -34,10 +35,14 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const searchParams = new URLSearchParams(location.search);
+  const designId = searchParams.get("designId");
+  const mode = searchParams.get("mode");
 
   const [continueEditPopup, setContinueEditPopup] = useState(false);
   const [willRenderContinue, setWillRenderContinue] = useState(false);
   const [initialCheckDone, setInitialCheckDone] = useState(false);
+  const [laoding,setLoading]=useState(false)
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
 
   const initialState = useSelector((state) => state.TextFrontendDesignSlice);
@@ -337,75 +342,89 @@ function App() {
     }, 5000);
   }, [dispatch]);
 
-  function restorePresentFromData(incomingPresent, src) {
-    const sides = ["front", "back", "leftSleeve", "rightSleeve"];
-    const restored = {};
 
-    sides.forEach(side => {
-      const originalImages = incomingPresent?.[side]?.images || [];
 
-      const enhancedImages = originalImages.map(image => ({
-        ...image,
-        base64CanvasImage: image.src  // Add base64 image string to each image
-      }));
 
-      restored[side] = {
-        selectedTextId: null,
-        selectedImageId: null,
-        loadingState: {
-          loading: false,
-          position: null
-        },
-        texts: incomingPresent?.[side]?.texts || [],
-        images: enhancedImages,
-        setRendering: false,
-        nameAndNumberProductList: [],
-      };
-    });
+async function restorePresentFromData(incomingPresent, src) {
+  console.log("incomingPresent", incomingPresent);
+  const sides = ["front", "back", "leftSleeve", "rightSleeve"];
+  const restored = {};
 
-    return restored;
+  for (const side of sides) {
+    const originalImages = incomingPresent?.[side]?.images || [];
+
+    // 🔹 Call transformImagesArray for each side
+    const enhancedImages = await transformImagesArray(originalImages);
+
+    restored[side] = {
+      selectedTextId: null,
+      selectedImageId: null,
+      loadingState: {
+        loading: false,
+        position: null,
+      },
+      texts:
+        incomingPresent?.[side]?.texts?.map((t) => ({
+          ...t,
+          fontSize: 20,
+          scaledValue: ((t.scaleX + t.scaleY) / 2).toFixed(0),
+        })) || [],
+      images: enhancedImages, // ✅ processed images here
+      setRendering: false,
+      nameAndNumberProductList: [],
+    };
   }
 
+  return restored;
+}
 
-  async function editDesignHandler() {
-    try {
-      const searchParams = new URLSearchParams(location.search);
-      const designId = searchParams.get("designId");
-      const mode = searchParams.get("mode");
-      if (!mode) return;
 
-      // agar mode "share" ya "edit" nahi hai
-      if (mode !== "share" && mode !== "edit") return;
-      if (!designId) return;
 
-      // console.log(designStateDb);
-      const response = await apiConnecter("get", "design/getDesignsFromFrontEndById", "", "", { designId });
-      console.log(response, "response from server for design id share mode");
+async function editDesignHandler() {
+  try {
+    if (!mode || (mode !== "share" && mode !== "edit") || !designId) return;
 
-      const matchedDesigns = response.data.userDesigns.designs;
+    setLoading(true);
 
-      if (matchedDesigns.length === 0) {
-        console.error("Design not found for id:", designId);
-      } else {
-        const apiData = matchedDesigns[0]; // get the first match
+    const response = await apiConnecter(
+      "get",
+      "design/getDesignsFromFrontEndById",
+      "",
+      "",
+      { designId }
+    );
 
-        const restoredState = {
-          // ...initialState,
-          present: restorePresentFromData(apiData.present),
-          DesignNotes: apiData.DesignNotes || initialState.DesignNotes,
-        };
-        console.log(restorePresentFromData(apiData.present));
-        dispatch(restoreEditDesigns(restorePresentFromData(apiData.present)))
+    console.log(response, "response from server for design id share mode");
 
-        // console.log(restoredState);
-      }
+    const matchedDesigns = response?.data?.userDesigns?.designs || [];
 
-    }
-    catch (e) {
-      console.log("error while fetching desing", e)
+    if (matchedDesigns.length === 0) {
+      console.error("Design not found for id:", designId);
+      return;
     }
 
+    const apiData = matchedDesigns[0];
+
+    // ✅ Await restorePresentFromData because it is async
+    const restoredPresent = await restorePresentFromData(apiData.present);
+
+    const restoredState = {
+      present: restoredPresent,
+      DesignNotes: apiData.DesignNotes || initialState.DesignNotes,
+    };
+
+    console.log(restoredPresent, "✅ restoredPresent (final)");
+
+    // ✅ Dispatch restored data to Redux (after waiting for async image processing)
+    dispatch(restoreEditDesigns(restoredPresent));
+
+  } catch (e) {
+    console.error("❌ Error while fetching design:", e);
+  } finally {
+    setLoading(false);
   }
+}
+
 
 
   // Check if saved state should trigger continue edit popup
@@ -437,7 +456,7 @@ function App() {
             }
           }
 
-          if (hasDesign || addName || addNumber) {
+          if ((hasDesign || addName || addNumber) && !mode) {
             setWillRenderContinue(true);
             setContinueEditPopup(true);
           }
@@ -448,7 +467,7 @@ function App() {
         }
 
         // Tumhara handler
-        editDesignHandler();
+       
       };
 
       checkSavedState();
@@ -471,6 +490,7 @@ function App() {
     if (!location.pathname.startsWith("/design")) {
       navigate("/design/product", { replace: true });
     }
+     editDesignHandler();
   }, []);
 
   return (
@@ -482,7 +502,7 @@ function App() {
             className={`main-layout-container ${isQuantityPage ? "quantity-page" : ""
               }`}
           >
-            {rawProducts.length === 0 ? (
+            {rawProducts.length === 0 || laoding ? (
               <>
                 <div
                   className="fullscreen-loader"

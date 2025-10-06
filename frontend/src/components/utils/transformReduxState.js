@@ -1,6 +1,6 @@
 import { applyFilterAndGetUrl, invertColorsAndGetUrl, processAndReplaceColors, getBase64CanvasImage, replaceColorAndGetBase64 } from "../ImageOperation/CanvasImageOperations";
 
-async function handleImage(imageSrc, color = "#ffffff", selectedFilter, invertColor, editColor, extractedColors) {
+export async function handleImage(imageSrc, color = "#ffffff", selectedFilter, invertColor, editColor, extractedColors) {
     try {
 
         console.log("handle image function called with src", imageSrc, color, selectedFilter, invertColor, editColor);
@@ -55,6 +55,30 @@ async function handleImage(imageSrc, color = "#ffffff", selectedFilter, invertCo
         console.error("Error:", error); // Log any errors that occur
     }
 }
+
+
+export const transformImagesArray = async (images = []) =>
+    Array.isArray(images)
+        ? await Promise.all(
+            images.map(async (img) => {
+                if (img && typeof img === "object" && img.src) {
+                    const AllDesignImage = await handleImage(
+                        img.src,
+                        img.singleColor,
+                        img.selectedFilter,
+                        img.invertColor,
+                        img.editColor,
+                        img.extractedColors
+                    );
+                    img.base64CanvasImage = AllDesignImage[0]
+                    img.base64CanvasImageForNormalColor = AllDesignImage[1]
+                    img.base64CanvasImageForSinglelColor = AllDesignImage[2]
+                    img.base64CanvasImageForBlackAndWhitelColor = AllDesignImage[3]
+                }
+                return img;
+            })
+        )
+        : [];
 async function transformReduxState(state) {
     try {
         if (!state?.TextFrontendDesignSlice) {
@@ -66,28 +90,6 @@ async function transformReduxState(state) {
         const newState = JSON.parse(JSON.stringify(state));
         const slice = newState.TextFrontendDesignSlice;
 
-        const transformImagesArray = async (images = []) =>
-            Array.isArray(images)
-                ? await Promise.all(
-                    images.map(async (img) => {
-                        if (img && typeof img === "object" && img.src) {
-                            const AllDesignImage = await handleImage(
-                                img.src,
-                                img.singleColor,
-                                img.selectedFilter,
-                                img.invertColor,
-                                img.editColor,
-                                img.extractedColors
-                            );
-                            img.base64CanvasImage = AllDesignImage[0]
-                            img.base64CanvasImageForNormalColor = AllDesignImage[1]
-                            img.base64CanvasImageForSinglelColor = AllDesignImage[2]
-                            img.base64CanvasImageForBlackAndWhitelColor = AllDesignImage[3]
-                        }
-                        return img;
-                    })
-                )
-                : [];
 
         // Process only present state
         for (const side of sides) {

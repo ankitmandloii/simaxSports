@@ -483,6 +483,8 @@ input:checked+.slider:before {
   /* align-items: center; */
   margin-left: 9px;
   margin-bottom: 10px;
+  display: inline;
+  width: fit-content;
 }
 
 @keyframes spin {
