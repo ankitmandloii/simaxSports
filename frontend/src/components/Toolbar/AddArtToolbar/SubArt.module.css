@@ -12,9 +12,9 @@
 
 .clipartGrid img {
   width: 6rem;
-  height: 4rem;
+  height: 6rem;
   /* height: auto; */
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .marginBottom {

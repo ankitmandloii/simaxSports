@@ -153,7 +153,7 @@
 
 // export const { resetCollections, restoreDesignCollectionSlice } = collectionSlice.actions;
 // export default collectionSlice.reducer;
-
+// ------
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { createSelector } from '@reduxjs/toolkit';
@@ -162,7 +162,7 @@ const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export const fetchCollections = createAsyncThunk(
   'collections/fetchCollections',
-  async ({ cursor, limit = 20 }) => {
+  async ({ cursor, limit = 50 }) => {
     const response = await fetch(`${BASE_URL}products/collectionList`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
