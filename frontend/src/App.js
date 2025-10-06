@@ -42,7 +42,7 @@ function App() {
   const [continueEditPopup, setContinueEditPopup] = useState(false);
   const [willRenderContinue, setWillRenderContinue] = useState(false);
   const [initialCheckDone, setInitialCheckDone] = useState(false);
-  const [laoding,setLoading]=useState(false)
+  const [laoding, setLoading] = useState(false)
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
 
   const initialState = useSelector((state) => state.TextFrontendDesignSlice);
@@ -345,85 +345,84 @@ function App() {
 
 
 
-async function restorePresentFromData(incomingPresent, src) {
-  console.log("incomingPresent", incomingPresent);
-  const sides = ["front", "back", "leftSleeve", "rightSleeve"];
-  const restored = {};
+  async function restorePresentFromData(incomingPresent, src) {
+    console.log("incomingPresent", incomingPresent);
+    const sides = ["front", "back", "leftSleeve", "rightSleeve"];
+    const restored = {};
 
-  for (const side of sides) {
-    const originalImages = incomingPresent?.[side]?.images || [];
+    for (const side of sides) {
+      const originalImages = incomingPresent?.[side]?.images || [];
 
-    // 🔹 Call transformImagesArray for each side
-    const enhancedImages = await transformImagesArray(originalImages);
+      // 🔹 Call transformImagesArray for each side
+      const enhancedImages = await transformImagesArray(originalImages);
 
-    restored[side] = {
-      selectedTextId: null,
-      selectedImageId: null,
-      loadingState: {
-        loading: false,
-        position: null,
-      },
-      texts:
-        incomingPresent?.[side]?.texts?.map((t) => ({
-          ...t,
-          fontSize: 20,
-          scaledValue: ((t.scaleX + t.scaleY) / 2).toFixed(0),
-        })) || [],
-      images: enhancedImages, // ✅ processed images here
-      setRendering: false,
-      nameAndNumberProductList: [],
-    };
-  }
-
-  return restored;
-}
-
-
-
-async function editDesignHandler() {
-  try {
-    if (!mode || (mode !== "share" && mode !== "edit") || !designId) return;
-
-    setLoading(true);
-
-    const response = await apiConnecter(
-      "get",
-      "design/getDesignsFromFrontEndById",
-      "",
-      "",
-      { designId }
-    );
-
-    console.log(response, "response from server for design id share mode");
-
-    const matchedDesigns = response?.data?.userDesigns?.designs || [];
-
-    if (matchedDesigns.length === 0) {
-      console.error("Design not found for id:", designId);
-      return;
+      restored[side] = {
+        selectedTextId: null,
+        selectedImageId: null,
+        loadingState: {
+          loading: false,
+          position: null,
+        },
+        texts:
+          incomingPresent?.[side]?.texts?.map((t) => ({
+            ...t,
+            fontSize: 20,
+          })) || [],
+        images: enhancedImages, // ✅ processed images here
+        setRendering: false,
+        nameAndNumberProductList: [],
+      };
     }
 
-    const apiData = matchedDesigns[0];
-
-    // ✅ Await restorePresentFromData because it is async
-    const restoredPresent = await restorePresentFromData(apiData.present);
-
-    const restoredState = {
-      present: restoredPresent,
-      DesignNotes: apiData.DesignNotes || initialState.DesignNotes,
-    };
-
-    console.log(restoredPresent, "✅ restoredPresent (final)");
-
-    // ✅ Dispatch restored data to Redux (after waiting for async image processing)
-    dispatch(restoreEditDesigns(restoredPresent));
-
-  } catch (e) {
-    console.error("❌ Error while fetching design:", e);
-  } finally {
-    setLoading(false);
+    return restored;
   }
-}
+
+
+
+  async function editDesignHandler() {
+    try {
+      if (!mode || (mode !== "share" && mode !== "edit") || !designId) return;
+
+      setLoading(true);
+
+      const response = await apiConnecter(
+        "get",
+        "design/getDesignsFromFrontEndById",
+        "",
+        "",
+        { designId }
+      );
+
+      console.log(response, "response from server for design id share mode");
+
+      const matchedDesigns = response?.data?.userDesigns?.designs || [];
+
+      if (matchedDesigns.length === 0) {
+        console.error("Design not found for id:", designId);
+        return;
+      }
+
+      const apiData = matchedDesigns[0];
+
+      // ✅ Await restorePresentFromData because it is async
+      const restoredPresent = await restorePresentFromData(apiData.present);
+
+      const restoredState = {
+        present: restoredPresent,
+        DesignNotes: apiData.DesignNotes || initialState.DesignNotes,
+      };
+
+      console.log(restoredPresent, "✅ restoredPresent (final)");
+
+      // ✅ Dispatch restored data to Redux (after waiting for async image processing)
+      dispatch(restoreEditDesigns(restoredPresent));
+
+    } catch (e) {
+      console.error("❌ Error while fetching design:", e);
+    } finally {
+      setLoading(false);
+    }
+  }
 
 
 
@@ -467,7 +466,7 @@ async function editDesignHandler() {
         }
 
         // Tumhara handler
-       
+
       };
 
       checkSavedState();
@@ -490,7 +489,7 @@ async function editDesignHandler() {
     if (!location.pathname.startsWith("/design")) {
       navigate("/design/product", { replace: true });
     }
-     editDesignHandler();
+    editDesignHandler();
   }, []);
 
   return (
