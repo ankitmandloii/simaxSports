@@ -16,8 +16,9 @@
   display: flex;
   flex-direction: column;
   list-style: none;
-  padding: 10px;
+  padding: 4px 10px;
   cursor: pointer;
+  border-bottom: 1px solid rgb(204, 207, 214);
 }
 
 .collectionCard {
@@ -28,9 +29,7 @@
   border-bottom: 1px solid transparent;
 }
 
-.collectionCard:hover {
-  border-bottom: 1px solid black;
-}
+
 
 .subcategoryUl {
   margin-left: 20px;
@@ -49,8 +48,7 @@
 }
 
 .active {
-  /* background-color: #f0f0f0; */
-  /* border-left: 4px solid #000; */
+
   font-weight: bold;
   color: var(--blue-color);
 }
@@ -81,13 +79,7 @@
   margin: 0;
 }
 
-.collectionLi {
-  display: flex;
-  flex-direction: column;
-  list-style: none;
-  padding: 10px;
-  cursor: pointer;
-}
+
 
 .collectionCard {
   display: flex;
@@ -97,9 +89,7 @@
   border-bottom: 1px solid transparent;
 }
 
-.collectionCard:hover {
-  border-bottom: 1px solid black;
-}
+
 
 .expandIcon {
   font-size: 1.2rem;
@@ -125,8 +115,7 @@
 }
 
 .active {
-  /* background-color: #f0f0f0; */
-  /* border-left: 4px solid #000; */
+
   font-weight: bold;
   color: var(--blue-color);
 }

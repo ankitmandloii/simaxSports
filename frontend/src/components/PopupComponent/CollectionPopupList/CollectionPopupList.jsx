@@ -150,6 +150,7 @@ import {
   selectCursor,
 } from '../../../redux/ProductSlice/CollectionSlice';
 import styles from './CollectionPopupList.module.css';
+import { FaPlus, FaMinus } from "react-icons/fa6";
 
 const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) => {
   const dispatch = useDispatch();
@@ -246,7 +247,7 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
                   >
                     <span>{category.title}</span>
                     <span className={styles.expandIcon}>
-                      {isExpanded ? '-' : '+'}
+                      {isExpanded ? <FaMinus /> : <FaPlus />}
                     </span>
                   </div>
 
@@ -256,8 +257,8 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
                         <li
                           key={subcategory.id}
                           className={`${styles.subcategoryLi} ${selectedSubcategory?.id === subcategory.id
-                              ? styles.active
-                              : ''
+                            ? styles.active
+                            : ''
                             }`}
                           onClick={() => handleSubcategorySelect(subcategory)}
                         >
@@ -276,8 +277,8 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
                       <li
                         key={subcategory.id}
                         className={`${styles.subcategoryLi} ${selectedSubcategory?.id === subcategory.id
-                            ? styles.active
-                            : ''
+                          ? styles.active
+                          : ''
                           }`}
                         onClick={() => handleSubcategorySelect(subcategory)}
                       >

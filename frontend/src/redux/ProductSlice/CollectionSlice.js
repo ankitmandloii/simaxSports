@@ -252,21 +252,21 @@ export const selectBrandCollections = createSelector(
 );
 
 // Memoized selector for category collections
-export const selectCategoryCollections = createSelector(
-  [selectCollections],
-  (collections) => {
-    return (collections || [])
-      .filter(
-        (collection) =>
-          collection.handle.includes('category') &&
-          !collection.handle.includes('subcategory')
-      )
-      .map((collection) => ({
-        id: collection.id,
-        title: collection.title,
-      }));
-  }
-);
+// export const selectCategoryCollections = createSelector(
+//   [selectCollections],
+//   (collections) => {
+//     return (collections || [])
+//       .filter(
+//         (collection) =>
+//           collection.handle.includes('category') &&
+//           !collection.handle.includes('subcategory')
+//       )
+//       .map((collection) => ({
+//         id: collection.id,
+//         title: collection.title,
+//       }));
+//   }
+// );
 
 // Memoized selector for subcategory groups
 export const selectSubcategoryGroups = createSelector(
@@ -298,19 +298,19 @@ export const selectSubcategoryGroups = createSelector(
 
 // Memoized selector for complete categories array
 export const selectCategories = createSelector(
-  [selectBrandCollections, selectCategoryCollections, selectSubcategoryGroups],
-  (brandCollections, categoryCollections, subcategoryGroups) => {
+  [selectBrandCollections, selectSubcategoryGroups],
+  (brandCollections, subcategoryGroups) => {
     return [
       {
         title: 'Featured Brands',
         subcategories: brandCollections,
       },
-      {
-        title: 'Category',
-        subcategories: categoryCollections,
-      },
+      // {
+      //   title: 'Category',
+      //   subcategories: categoryCollections,
+      // },
       ...Object.entries(subcategoryGroups).map(([type, subcats]) => ({
-        title: type,
+        // title: type,
         subcategories: subcats,
       })),
     ];
