@@ -297,25 +297,39 @@ export const selectSubcategoryGroups = createSelector(
 );
 
 // Memoized selector for complete categories array
+// export const selectCategories = createSelector(
+//   [selectBrandCollections, selectSubcategoryGroups],
+//   (brandCollections, subcategoryGroups) => {
+//     return [
+//       {
+//         title: 'Featured Brands',
+//         subcategories: brandCollections,
+//       },
+//       // {
+//       //   title: 'Category',
+//       //   subcategories: categoryCollections,
+//       // },
+//       ...Object.entries(subcategoryGroups).map(([type, subcats]) => ({
+//         // title: type,
+//         subcategories: subcats,
+//       })),
+//     ];
+//   }
+// );
 export const selectCategories = createSelector(
   [selectBrandCollections, selectSubcategoryGroups],
   (brandCollections, subcategoryGroups) => {
-    return [
-      {
-        title: 'Featured Brands',
-        subcategories: brandCollections,
-      },
-      // {
-      //   title: 'Category',
-      //   subcategories: categoryCollections,
-      // },
-      ...Object.entries(subcategoryGroups).map(([type, subcats]) => ({
+    return {
+      categories: Object.entries(subcategoryGroups).map(([type, subcats]) => ({
         // title: type,
         subcategories: subcats,
       })),
-    ];
+      featuredBrands: brandCollections,
+
+    };
   }
 );
+
 
 export const { resetCollections, restoreDesignCollectionSlice } = collectionSlice.actions;
 export default collectionSlice.reducer;

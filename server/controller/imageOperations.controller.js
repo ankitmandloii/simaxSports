@@ -782,7 +782,13 @@ function buildForm(prompt, { num = 1, magic = false, rendering_speed = "TURBO", 
   fd.append("style_type", style_type);
   fd.append("resolution", resolution);
   fd.append("num_images", String(num));
-  if (magic) fd.append("magic_prompt", "ON"); // only on the single-image request
+  if (magic) {
+    fd.append("magic_prompt", "ON"); // only on the single-image request
+
+  }
+  else {
+    fd.append("magic_prompt", "OFF");
+  }
   return fd;
 }
 
