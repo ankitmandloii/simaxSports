@@ -63,205 +63,205 @@ const SaveImageSchema = require("../model/saveImageSchema.js");
 
 
 const s3Client = new S3Client({
-    region: process.env.AWS_REGION,
-    credentials: {
-        accessKeyId: process.env.S3_ACCESS_KEY,
-        secretAccessKey: process.env.S3_ACCESS_SECRET_KEY
-    }
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_KEY,
+    secretAccessKey: process.env.S3_ACCESS_SECRET_KEY
+  }
 });
 
 const sanitizeFilenameFunction = (name) => {
-    return name
-        .toLowerCase()
-        .replace(/\s+/g, '_')            // Replace spaces with underscores
-        .replace(/[^\w\-\.]+/g, '')      // Remove non-alphanumeric except dot, dash, underscore
-        .replace(/_+/g, '_')             // Replace multiple underscores with single
-        .trim();
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, '_')            // Replace spaces with underscores
+    .replace(/[^\w\-\.]+/g, '')      // Remove non-alphanumeric except dot, dash, underscore
+    .replace(/_+/g, '_')             // Replace multiple underscores with single
+    .trim();
 };
 
 
 exports.fileUploadForImgixUrl = async (req, res) => {
-    try {
-        const files = req.files?.length ? req.files : req.file ? [req.file] : [];
+  try {
+    const files = req.files?.length ? req.files : req.file ? [req.file] : [];
 
 
 
-        console.log(files, "files array")
-        if (files.length === 0) {
-            return res.status(400).json({ message: "No file(s) uploaded" });
-        }
-
-      
-
-        const uploadedUrls = [];
-
-        for (const file of files) {
-            const sanitizedName = sanitizeFilenameFunction(file.originalname);
-            const fileKey = `uploads/${Date.now()}_${sanitizedName}`;
-            const uploadParams = {
-                Bucket: process.env.S3_BUCKET,
-                Key: fileKey,
-                Body: file.buffer,
-                ContentType: file.mimetype,
-            };
-
-            const uploadCommand = new PutObjectCommand(uploadParams);
-            await s3Client.send(uploadCommand);
-            // const fileUrlFromS3Direct = https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key};
-            const fileUrlFromImgixDirect = `https://${process.env.IMGIX_DOMAIN}/${fileKey}`;
-            uploadedUrls.push({
-                name: file.originalname,
-                url: fileUrlFromImgixDirect
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            uploaded: uploadedUrls.length,
-            files: uploadedUrls
-        });
-    } catch (err) {
-        console.error("Upload error:", err);
-        sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, "File upload failed", err.message);
+    console.log(files, "files array")
+    if (files.length === 0) {
+      return res.status(400).json({ message: "No file(s) uploaded" });
     }
+
+
+
+    const uploadedUrls = [];
+
+    for (const file of files) {
+      const sanitizedName = sanitizeFilenameFunction(file.originalname);
+      const fileKey = `uploads/${Date.now()}_${sanitizedName}`;
+      const uploadParams = {
+        Bucket: process.env.S3_BUCKET,
+        Key: fileKey,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      };
+
+      const uploadCommand = new PutObjectCommand(uploadParams);
+      await s3Client.send(uploadCommand);
+      // const fileUrlFromS3Direct = https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key};
+      const fileUrlFromImgixDirect = `https://${process.env.IMGIX_DOMAIN}/${fileKey}`;
+      uploadedUrls.push({
+        name: file.originalname,
+        url: fileUrlFromImgixDirect
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      uploaded: uploadedUrls.length,
+      files: uploadedUrls
+    });
+  } catch (err) {
+    console.error("Upload error:", err);
+    sendResponse(res, statusCode.INTERNAL_SERVER_ERROR, false, "File upload failed", err.message);
+  }
 };
 
 exports.fileUploadForS3Url = async (req, res) => {
-    try {
-        const files = req.files?.length ? req.files : req.file ? [req.file] : [];
+  try {
+    const files = req.files?.length ? req.files : req.file ? [req.file] : [];
 
-        if (files.length === 0) {
-            return res.status(400).json({ message: "No file(s) uploaded" });
-        }
-
-      
-
-        const uploadedUrls = [];
-
-        for (const file of files) {
-            const sanitizedName = sanitizeFilenameFunction(file.originalname);
-            const fileKey = `uploads/${Date.now()}_${sanitizedName}`;
-            const uploadParams = {
-                Bucket: process.env.S3_BUCKET,
-                Key: fileKey,
-                Body: file.buffer,
-                ContentType: file.mimetype,
-            };
-
-            const uploadCommand = new PutObjectCommand(uploadParams);
-            await s3Client.send(uploadCommand);
-            const fileUrlFromS3Direct = `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
-            // const fileUrlFromImgixDirect = `https://${process.env.IMGIX_DOMAIN}/${fileKey}`;
-            uploadedUrls.push({
-                name: file.originalname,
-                url: fileUrlFromS3Direct
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            uploaded: uploadedUrls.length,
-            files: uploadedUrls
-        });
-    } catch (err) {
-        console.error("Upload error:", err);
-        res.status(500).json({ message: "File upload failed", error: err.message });
+    if (files.length === 0) {
+      return res.status(400).json({ message: "No file(s) uploaded" });
     }
+
+
+
+    const uploadedUrls = [];
+
+    for (const file of files) {
+      const sanitizedName = sanitizeFilenameFunction(file.originalname);
+      const fileKey = `uploads/${Date.now()}_${sanitizedName}`;
+      const uploadParams = {
+        Bucket: process.env.S3_BUCKET,
+        Key: fileKey,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      };
+
+      const uploadCommand = new PutObjectCommand(uploadParams);
+      await s3Client.send(uploadCommand);
+      const fileUrlFromS3Direct = `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
+      // const fileUrlFromImgixDirect = `https://${process.env.IMGIX_DOMAIN}/${fileKey}`;
+      uploadedUrls.push({
+        name: file.originalname,
+        url: fileUrlFromS3Direct
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      uploaded: uploadedUrls.length,
+      files: uploadedUrls
+    });
+  } catch (err) {
+    console.error("Upload error:", err);
+    res.status(500).json({ message: "File upload failed", error: err.message });
+  }
 };
 
 
 
 //delete File From AWS -S3 bucket API
 exports.fileDelete = async (req, res) => {
-    const { key } = req.body;
+  const { key } = req.body;
 
 
-    if (!key) {
-        return res.status(400).json({ message: "Missing file key in request body" });
-    }
+  if (!key) {
+    return res.status(400).json({ message: "Missing file key in request body" });
+  }
 
-    const deleteParams = {
-        Bucket: process.env.S3_BUCKET,
-        Key: key, // Example: "uploads/162123_file.jpg"
-    };
+  const deleteParams = {
+    Bucket: process.env.S3_BUCKET,
+    Key: key, // Example: "uploads/162123_file.jpg"
+  };
 
-    try {
-        const command = new DeleteObjectCommand(deleteParams);
-        await s3Client.send(command);
+  try {
+    const command = new DeleteObjectCommand(deleteParams);
+    await s3Client.send(command);
 
-        return res.status(200).json({
-            success: true,
-            message: "File deleted successfully",
-            deletedKey: key
-        });
-    } catch (err) {
-        console.error("Delete error:", err);
-        return res.status(500).json({ message: "Failed to delete file", error: err.message });
-    }
+    return res.status(200).json({
+      success: true,
+      message: "File deleted successfully",
+      deletedKey: key
+    });
+  } catch (err) {
+    console.error("Delete error:", err);
+    return res.status(500).json({ message: "Failed to delete file", error: err.message });
+  }
 };
 
 // delete folder 
 exports.deleteFolder = async (domain) => {
-    try {
-        const shop = domain.split(".")[0];
-        // List all objects in the folder
-        const listParams = {
-            Bucket: process.env.S3_BUCKET,
-            Prefix: shop
-        };
-        const listedObjects = await s3.listObjectsV2(listParams).promise();
-        if (listedObjects.Contents.length === 0) {
-            console.log('Folder is already empty or does not exist');
-            return;
-        }
-        // Create a list of objects to delete
-        const deleteParams = {
-            Bucket: process.env.S3_BUCKET,
-            Delete: { Objects: [] }
-        };
-        listedObjects.Contents.forEach(({ Key }) => {
-            deleteParams.Delete.Objects.push({ Key });
-        });
-        // Delete the listed objects
-        await s3.deleteObjects(deleteParams).promise();
-        // If there are more objects to delete, recursively call the function
-        if (listedObjects.IsTruncated) {
-            await deleteFolder(process.env.S3_BUCKET, shop);
-        } else {
-            console.log('Folder deleted successfully');
-        }
-    } catch (error) {
-        console.error('Error deleting folder:', error);
+  try {
+    const shop = domain.split(".")[0];
+    // List all objects in the folder
+    const listParams = {
+      Bucket: process.env.S3_BUCKET,
+      Prefix: shop
+    };
+    const listedObjects = await s3.listObjectsV2(listParams).promise();
+    if (listedObjects.Contents.length === 0) {
+      console.log('Folder is already empty or does not exist');
+      return;
     }
+    // Create a list of objects to delete
+    const deleteParams = {
+      Bucket: process.env.S3_BUCKET,
+      Delete: { Objects: [] }
+    };
+    listedObjects.Contents.forEach(({ Key }) => {
+      deleteParams.Delete.Objects.push({ Key });
+    });
+    // Delete the listed objects
+    await s3.deleteObjects(deleteParams).promise();
+    // If there are more objects to delete, recursively call the function
+    if (listedObjects.IsTruncated) {
+      await deleteFolder(process.env.S3_BUCKET, shop);
+    } else {
+      console.log('Folder deleted successfully');
+    }
+  } catch (error) {
+    console.error('Error deleting folder:', error);
+  }
 }
 
 // get uploaded image by user
 exports.getImageGalleryList = async (request, response) => {
-    try {
-        const partnerId = request.body.partnerId
-        const result = await ImageGallery.find({ partnerId }).limit(request.body.limit).skip(request.body.offset)
-        return sendResponse(response, statusCode.OK, true, SuccessMessage.DATA_FETCHED, result);
-    } catch (error) {
-        return sendResponse(response, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
-    }
+  try {
+    const partnerId = request.body.partnerId
+    const result = await ImageGallery.find({ partnerId }).limit(request.body.limit).skip(request.body.offset)
+    return sendResponse(response, statusCode.OK, true, SuccessMessage.DATA_FETCHED, result);
+  } catch (error) {
+    return sendResponse(response, statusCode.INTERNAL_SERVER_ERROR, false, ErrorMessage.INTERNAL_SERVER_ERROR);
+  }
 }
 
 exports.readFile = async (request, response, path) => {
-    const session = response.locals.shopify.session || response.locals.shopify
-    const shop = session.shop.split(".")[0];
-    console.log(path, "path key")
-    const params = {
-        Bucket: `${process.env.S3_BUCKET}`,
-        Key: 'ec96df98-091f-46dc-9624-1795e1572a7f.json',
-    };
+  const session = response.locals.shopify.session || response.locals.shopify
+  const shop = session.shop.split(".")[0];
+  console.log(path, "path key")
+  const params = {
+    Bucket: `${process.env.S3_BUCKET}`,
+    Key: 'ec96df98-091f-46dc-9624-1795e1572a7f.json',
+  };
 
-    const data = await s3.getObject(params).promise();
+  const data = await s3.getObject(params).promise();
 
-    // Parse the file content as JSON
-    const jsonData = JSON.parse(data.Body.toString('utf-8'));
+  // Parse the file content as JSON
+  const jsonData = JSON.parse(data.Body.toString('utf-8'));
 
-    console.log('JSON data from S3:', jsonData);
-    return jsonData;
+  console.log('JSON data from S3:', jsonData);
+  return jsonData;
 }
 
 
@@ -461,7 +461,7 @@ exports.generateMultipleImagesByAi = async (req, res) => {
           }
 
           const item = Array.isArray(data?.data) ? data.data[0] : undefined;
-          const url  = item?.url || null;
+          const url = item?.url || null;
 
           results[i] = url ? { ok: true, url } : { ok: false, status: 502, error: { message: "No URL" } };
         } catch (err) {
@@ -717,11 +717,11 @@ exports.getImageUrlToDbWithThereKey = async (req, res) => {
   try {
     const { key } = req.body;
 
-    let skip  = Number.parseInt(req.query.skip  ?? '0', 10);
+    let skip = Number.parseInt(req.query.skip ?? '0', 10);
     let limit = Number.parseInt(req.query.limit ?? '100', 10);
 
-    if (!Number.isFinite(skip)  || skip  < 0)   skip  = 0;
-    if (!Number.isFinite(limit) || limit <= 0)  limit = 100;
+    if (!Number.isFinite(skip) || skip < 0) skip = 0;
+    if (!Number.isFinite(limit) || limit <= 0) limit = 100;
     if (limit > 200) limit = 200; // cap to prevent huge payloads
 
     const doc = await SaveImageSchema.findOne(
@@ -742,5 +742,130 @@ exports.getImageUrlToDbWithThereKey = async (req, res) => {
   }
 };
 
+
+
+
+
+
+
+
+// ---vv
+// ideogram.generate.js
+// Node 18+/Vercel-ready (uses global fetch & FormData)
+// Set env: IDEOGRAM_API_KEY
+
+// const MAX_RETRIES = 3;
+const IDEOGRAM_URL = process.env.IDEOGRAM_URL;
+
+async function postIdeogramWithBackoff(formData, attempt = 0) {
+  const resp = await fetch(IDEOGRAM_URL, {
+    method: "POST",
+    headers: {
+      "Api-Key": process.env.IDEOGRAM_API_KEY || "",
+    },
+    body: formData,
+  });
+
+  if (!resp.ok && (resp.status === 429 || resp.status >= 500) && attempt < MAX_RETRIES) {
+    const wait = Math.min(4000, 500 * 2 ** attempt); // 500, 1000, 2000, 4000
+    await new Promise(r => setTimeout(r, wait));
+    return postIdeogramWithBackoff(formData, attempt + 1);
+  }
+
+  return resp;
+}
+
+function buildForm(prompt, { num = 1, magic = false, rendering_speed = "TURBO", style_type = "DESIGN", resolution = "960x832" } = {}) {
+  const fd = new FormData();
+  fd.append("prompt", prompt);
+  fd.append("rendering_speed", rendering_speed);
+  fd.append("style_type", style_type);
+  fd.append("resolution", resolution);
+  fd.append("num_images", String(num));
+  if (magic) {
+    fd.append("magic_prompt", "ON"); // only on the single-image request
+
+  }
+  else {
+    fd.append("magic_prompt", "OFF");
+  }
+  return fd;
+}
+
+function pickUrl(item) {
+  return item?.url ?? item?.image_url ?? item?.imageUrl ?? null;
+}
+
+exports.generateThreeImagesIdeogram = async (req, res) => {
+  try {
+    // Inputs (ensure that prompt always ends with "as an isolated t-shirt graphic")
+    const promptBase = `${req.body.prompt ?? req.body.query}`;
+
+    const resolution = req.body.resolution ?? "960x832";
+    const rendering_speed = req.body.rendering_speed ?? "TURBO";
+    const style_type = req.body.style_type ?? "DESIGN";
+
+    // 1) One request with magic_prompt="ON" and 1 image
+    // 2) One request without magic (omitting the param) and 2 images
+    const [magicResp, plainResp] = await Promise.all([
+      postIdeogramWithBackoff(buildForm(promptBase, { num: 1, magic: true, rendering_speed, style_type, resolution })),
+      postIdeogramWithBackoff(buildForm(promptBase, { num: 2, magic: false, rendering_speed, style_type, resolution })),
+    ]);
+
+    const errors = [];
+
+    const magicJson = await magicResp.json().catch(() => null);
+    if (!magicResp.ok) {
+      errors.push({ part: "magic", status: magicResp.status, error: magicJson ?? { message: "Magic request failed" } });
+    }
+
+    const plainJson = await plainResp.json().catch(() => null);
+    if (!plainResp.ok) {
+      errors.push({ part: "plain", status: plainResp.status, error: plainJson ?? { message: "Plain request failed" } });
+    }
+
+    const magicData = Array.isArray(magicJson?.data) ? magicJson.data : [];
+    const plainData = Array.isArray(plainJson?.data) ? plainJson.data : [];
+
+    // Convert to simple URLs (your OpenAI handler returns plain URLs too)
+    const magicUrls = magicData.map(pickUrl).filter(Boolean);
+    const plainUrls = plainData.map(pickUrl).filter(Boolean);
+
+    // Place the single magic image in the middle of the two plain images
+    // Desired order with 2 plain + 1 magic: [plain[0], magic[0], plain[1]]
+    const merged = (() => {
+      if (!plainUrls.length && !magicUrls.length) return [];
+      if (!plainUrls.length) return magicUrls.slice(0, 1);
+      if (!magicUrls.length) return plainUrls.slice(0, 3);
+
+      const p0 = plainUrls[0];
+      const p1 = plainUrls[1];
+      const m0 = magicUrls[0];
+      const out = [];
+      if (p0) out.push(p0);
+      if (m0) out.push(m0);
+      if (p1) out.push(p1);
+      return out;
+    })();
+
+    if (!merged.length) {
+      return res.status(502).json({ message: "No images generated", errors });
+    }
+
+    return res.status(200).json({
+      message: `Generated ${merged.length} image(s)`,
+      prompt: promptBase,
+      resolution,
+      rendering_speed,
+      style_type,
+      count: merged.length,
+      urls: merged,  // plain image URLs
+      errors,        // any per-call failures
+    });
+  } catch (err) {
+    console.error("Ideogram generate error:", err);
+    return res.status(500).json({ message: "Image generation failed", error: String(err) });
+  }
+};
 
 

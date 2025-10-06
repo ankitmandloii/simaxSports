@@ -32,19 +32,24 @@
 
 
 .subcategoryUl {
-  margin-left: 20px;
+  margin-left: 0;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
+.subcategoryUl span {
+  font-size: 14px;
+}
+
 .subcategoryLi {
   padding: 8px 10px;
   cursor: pointer;
+  list-style: none;
 }
 
 .subcategoryLi:hover {
-  background-color: #f0f0f0;
+  color: var(--blue-color);
 }
 
 .active {
@@ -99,7 +104,7 @@
 }
 
 .subcategoryUl {
-  margin-left: 20px;
+  /* margin-left: 20px; */
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -110,9 +115,9 @@
   cursor: pointer;
 }
 
-.subcategoryLi:hover {
+/* .subcategoryLi:hover {
   background-color: #f0f0f0;
-}
+} */
 
 .active {
 

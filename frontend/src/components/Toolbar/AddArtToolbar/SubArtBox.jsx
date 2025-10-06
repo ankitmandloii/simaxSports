@@ -368,81 +368,150 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
   const navigate = useNavigate();
   const apiKey = process.env.REACT_APP_IDEOGRAM_API_KEY;
   console.log("========apikey", apiKey)
+  // const fetchDalleImages = async (query, pageNumber = 1) => {
+
+  //   if (!query) {
+  //     toast.error('Please enter a search query.');
+  //     return;
+  //   }
+  //   if (generateAbortController) {
+  //     generateAbortController.abort();
+  //   }
+  //   const controller = new AbortController();
+  //   setGenerateAbortController(controller);
+
+  //   const imagesPerPage = 2; // Ideogram max is 4 per request
+
+  //   const prompt = `an image with A photo of a ${query} as an isolated t-shirt graphic`;
+  //   const formData = new FormData();
+  //   formData.append('prompt', prompt);
+  //   formData.append('rendering_speed', 'TURBO');
+  //   formData.append('style_type', 'DESIGN');
+  //   formData.append('resolution', '960x832');
+  //   formData.append('num_images', imagesPerPage.toString());
+
+  //   // console.log('Request Body:', formData);
+  //   setLoading(true);
+
+  //   try {
+  //     // Use CORS proxy to bypass browser restrictions
+  //     const proxyUrl = `https://corsproxy.io/?${encodeURIComponent('https://api.ideogram.ai/v1/ideogram-v3/generate')}`;
+
+  //     const res = await fetch(proxyUrl, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Api-Key': apiKey,
+  //       },
+  //       body: formData,
+  //       signal: controller.signal,
+  //     });
+
+  //     if (!res.ok) {
+  //       throw new Error(`API error: ${res.status} ${res.statusText}`);
+  //     }
+
+  //     const data = await res.json();
+
+  //     // console.log('API Response:', data);
+  //     // if (data.errors?.[0].error?.error?.message) {
+  //     //   throw new Error(data.errors[0].error.error.message);
+  //     // }
+
+  //     if (!data.data || !Array.isArray(data.data)) {
+  //       throw new Error('Invalid response: data not found');
+  //     }
+
+  //     const newResults = data.data.map((item, index) => ({
+  //       id: `${query}-${pageNumber}-${index}`,
+  //       urls: { full: item.url },
+  //       alt_description: query
+  //     }));
+
+  //     setDalleImages(prev => (pageNumber === 1 ? newResults : [...prev, ...newResults]));
+  //     setHasMore(newResults.length === imagesPerPage);
+
+  //   } catch (err) {
+  //     if (err.name === 'AbortError') {
+  //       // console.log('Image generation aborted'); // 👈 silent cancel (no toast)
+  //     } else {
+  //       console.error('API error:', err.message);
+  //       toast.error(err.message ?? 'Failed to generate images');
+  //     }
+  //     // console.error('API error:', err.message);
+  //     // toast.error(err.message ?? 'Failed to generate images');
+  //   } finally {
+  //     setLoading(false);
+  //     setGenerateAbortController(null);
+  //   }
+  // };
+
+
+
   const fetchDalleImages = async (query, pageNumber = 1) => {
     if (!query) {
       toast.error('Please enter a search query.');
       return;
     }
-    if (generateAbortController) {
-      generateAbortController.abort();
-    }
+
+    if (generateAbortController) generateAbortController.abort();
     const controller = new AbortController();
     setGenerateAbortController(controller);
 
-    const imagesPerPage = 3; // Ideogram max is 4 per request
-    const prompt = `an image with ${query} as an isolated t-shirt graphic`;
-    const formData = new FormData();
-    formData.append('prompt', prompt);
-    formData.append('rendering_speed', 'TURBO');
-    formData.append('style_type', 'DESIGN');
-    formData.append('resolution', '960x832');
-    formData.append('num_images', imagesPerPage.toString());
-
-    // console.log('Request Body:', formData);
     setLoading(true);
-
     try {
-      // Use CORS proxy to bypass browser restrictions
-      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent('https://api.ideogram.ai/v1/ideogram-v3/generate')}`;
-
-      const res = await fetch(proxyUrl, {
+      const res = await fetch(`${BASE_URL}imageOperation/ideogram`, {
         method: 'POST',
-        headers: {
-          'Api-Key': apiKey,
-        },
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        // body: JSON.stringify({ `${query}as an isolated t-shirt graphic `, pageNumber }),
+        body: JSON.stringify({
+          query: `${query} as an isolated t-shirt graphic`,  // Corrected the key and string interpolation
+          pageNumber,
+        }),
         signal: controller.signal,
       });
 
+      const ctype = res.headers.get('content-type') || '';
       if (!res.ok) {
-        throw new Error(`API error: ${res.status} ${res.statusText}`);
+        const errBody = ctype.includes('application/json')
+          ? await res.json().catch(() => ({}))
+          : await res.text().catch(() => '');
+        const msg = typeof errBody === 'string'
+          ? errBody.slice(0, 200)
+          : errBody?.error || errBody?.message || res.statusText;
+        throw new Error(msg || `API error: ${res.status}`);
       }
 
-      const data = await res.json();
+      const payload = ctype.includes('application/json') ? await res.json() : {};
+      // payload can be:
+      // { data: [{ url } ...] }  OR  { urls: ["https://...", ...] }
+      let items = [];
 
-      // console.log('API Response:', data);
-      // if (data.errors?.[0].error?.error?.message) {
-      //   throw new Error(data.errors[0].error.error.message);
-      // }
-
-      if (!data.data || !Array.isArray(data.data)) {
-        throw new Error('Invalid response: data not found');
+      if (Array.isArray(payload?.data)) {
+        items = payload.data.map(obj => obj?.url ?? obj?.image_url ?? obj?.imageUrl ?? obj?.urls?.full).filter(Boolean);
+      } else if (Array.isArray(payload?.urls)) {
+        items = payload.urls.filter(Boolean);
+      } else {
+        throw new Error('Invalid API response: expected data[] or urls[]');
       }
 
-      const newResults = data.data.map((item, index) => ({
-        id: `${query}-${pageNumber}-${index}`,
-        urls: { full: item.url },
-        alt_description: query
+      const newResults = items.map((url, i) => ({
+        id: `${query}-${pageNumber}-${i}`,
+        urls: { full: url },
+        alt_description: query,
       }));
 
       setDalleImages(prev => (pageNumber === 1 ? newResults : [...prev, ...newResults]));
-      setHasMore(newResults.length === imagesPerPage);
-
+      setHasMore(newResults.length === 3);
     } catch (err) {
-      if (err.name === 'AbortError') {
-        // console.log('Image generation aborted'); // 👈 silent cancel (no toast)
-      } else {
-        console.error('API error:', err.message);
+      if (err.name !== 'AbortError') {
+        console.error('API error:', err);
         toast.error(err.message ?? 'Failed to generate images');
       }
-      // console.error('API error:', err.message);
-      // toast.error(err.message ?? 'Failed to generate images');
     } finally {
       setLoading(false);
       setGenerateAbortController(null);
     }
   };
-
 
 
 

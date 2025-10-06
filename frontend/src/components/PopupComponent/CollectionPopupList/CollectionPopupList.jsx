@@ -155,17 +155,18 @@ import { FaPlus, FaMinus } from "react-icons/fa6";
 const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) => {
   const dispatch = useDispatch();
 
-  const categories = useSelector(selectCategories);
+  const { featuredBrands, categories } = useSelector(selectCategories);
   const loading = useSelector(selectLoading);
   const hasNextPage = useSelector(selectHasNextPage);
   const cursor = useSelector(selectCursor);
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const [categoryOpen, setCategoryOpen] = useState(true); // Initially, Categories are open
+  const [featuredBrandsOpen, setFeaturedBrandsOpen] = useState(false); // Initially, Featured Brands are closed
   const hasInitialized = useRef(false);
   const onCollectionSelectRef = useRef(onCollectionSelect);
 
-  // keep callback stable
   useEffect(() => {
     onCollectionSelectRef.current = onCollectionSelect;
   }, [onCollectionSelect]);
@@ -184,7 +185,6 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
     if (setLoading) setLoading(loading);
   }, [loading, setLoading]);
 
-  // Initialize only for expandable sections (brands/categories)
   useEffect(() => {
     if (!hasInitialized.current && categories.length > 0) {
       hasInitialized.current = true;
@@ -193,8 +193,7 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
 
   // Category click handler
   const handleCategorySelect = useCallback((category) => {
-    // Toggle expansion for expandable sections only
-    setSelectedCategory(prev =>
+    setSelectedCategory((prev) =>
       prev?.title === category.title ? null : category
     );
   }, []);
@@ -206,6 +205,12 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
       onCollectionSelectRef.current(subcategory.id);
     }
   }, []);
+
+  // Toggle category section
+  const toggleCategoryList = () => setCategoryOpen((prev) => !prev);
+
+  // Toggle featured brands section
+  const toggleFeaturedBrandsList = () => setFeaturedBrandsOpen((prev) => !prev);
 
   // Infinite scroll
   const handleScroll = useCallback(
@@ -221,7 +226,7 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
   );
 
   if (loading && categories.length === 0) {
-    return <div className={styles.loadingContainer}>Loading collections...</div>;
+    return <div className={styles.loadingContainer}></div>;
   }
 
   return (
@@ -230,67 +235,67 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
       onScroll={handleScroll}
     >
       <ul className={styles.collectionUl}>
-        {categories.map((category, index) => {
-          const isExpandable =
-            category.title === 'Featured Brands' || category.title === 'Category';
-          const isExpanded = selectedCategory?.title === category.title;
+        {/* Featured Brands Section */}
 
-          return (
-            <li key={index} className={styles.collectionLi}>
-              {isExpandable ? (
-                <>
-                  {/* Expandable (Brands, Category) */}
-                  <div
-                    className={`${styles.collectionCard} ${isExpanded ? styles.active : ''
-                      }`}
-                    onClick={() => handleCategorySelect(category)}
-                  >
-                    <span>{category.title}</span>
-                    <span className={styles.expandIcon}>
-                      {isExpanded ? <FaMinus /> : <FaPlus />}
-                    </span>
-                  </div>
 
-                  {isExpanded && (
-                    <ul className={styles.subcategoryUl}>
-                      {category.subcategories.map((subcategory) => (
-                        <li
-                          key={subcategory.id}
-                          className={`${styles.subcategoryLi} ${selectedSubcategory?.id === subcategory.id
-                            ? styles.active
-                            : ''
-                            }`}
-                          onClick={() => handleSubcategorySelect(subcategory)}
-                        >
-                          <span>{subcategory.title}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </>
-              ) : (
-                <>
-                  {/* Flat clickable subcategory (no inner list) */}
-                  <h4 className={styles.subcategoryHeader}>{category.title}</h4>
-                  <ul className={styles.subcategoryUl}>
+        {/* Categories Section */}
+        <li className={styles.collectionLi}>
+          <div
+            className={`${styles.collectionCard} ${categoryOpen ? styles.active : ''}`}
+            onClick={toggleCategoryList}
+          >
+            <span>Categories</span>
+            <span className={styles.expandIcon}>
+              {categoryOpen ? <FaMinus /> : <FaPlus />}
+            </span>
+          </div>
+
+          {categoryOpen && (
+            <ul className={styles.subcategoryUl}>
+              {categories.map((category, index) => (
+                <li key={index} className={styles.subcategoryLi}>
+                  <span>{category.title}</span>
+                  <ul className={styles.subcategoryNestedUl}>
                     {category.subcategories.map((subcategory) => (
                       <li
                         key={subcategory.id}
-                        className={`${styles.subcategoryLi} ${selectedSubcategory?.id === subcategory.id
-                          ? styles.active
-                          : ''
-                          }`}
+                        className={`${styles.subcategoryLi} ${selectedSubcategory?.id === subcategory.id ? styles.active : ''}`}
                         onClick={() => handleSubcategorySelect(subcategory)}
                       >
                         <span>{subcategory.title}</span>
                       </li>
                     ))}
                   </ul>
-                </>
-              )}
-            </li>
-          );
-        })}
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+        <li className={styles.collectionLi}>
+          <div
+            className={`${styles.collectionCard} ${featuredBrandsOpen ? styles.active : ''}`}
+            onClick={toggleFeaturedBrandsList}
+          >
+            <span>Featured Brands</span>
+            <span className={styles.expandIcon}>
+              {featuredBrandsOpen ? <FaMinus /> : <FaPlus />}
+            </span>
+          </div>
+
+          {featuredBrandsOpen && (
+            <ul className={styles.subcategoryUl}>
+              {featuredBrands.map((brand) => (
+                <li
+                  key={brand.id}
+                  className={`${styles.subcategoryLi} ${selectedSubcategory?.id === brand.id ? styles.active : ''}`}
+                  onClick={() => handleSubcategorySelect(brand)}
+                >
+                  <span>{brand.title}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
       </ul>
     </div>
   );

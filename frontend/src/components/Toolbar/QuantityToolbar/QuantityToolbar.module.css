@@ -173,8 +173,9 @@
 .footerSection {
   position: sticky;
   bottom: 0;
-  padding-top: 10px;
+  /* padding-top: 10px; */
   background-color: #fff;
+  /* margin-bottom: 80px; */
 }
 
 .toolbarSpan {
@@ -369,7 +370,15 @@
     flex: 1;
     background-color: #fff;
     padding: 10px 15px;
-    margin-bottom: 7rem;
+    /* margin-bottom: 10rem; */
     border-radius: 10px;
+  }
+
+  .calculateBtn {
+    /* margin-bottom: 100px; */
+  }
+
+  .footerSection {
+    margin-bottom: 100px;
   }
 }
