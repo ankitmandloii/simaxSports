@@ -317,7 +317,7 @@ const renderAllImageObjects = (
         base64CanvasImage,
         (img) => {
           setupImage(img)
-          createRemoveBackgroundToggle(img, `canvas-${activeSide}`, removeBg, currentImageObject, handleImage, globalDispatch);
+          createRemoveBackgroundToggle(img, `canvas-${activeSide}`, removeBg, handleImage, globalDispatch);
           createAiEditorButton(img, `canvas-${activeSide}`, removeBg, setOpenAieditorPopup, openAieditorPopup, handleImage, globalDispatch);
           canvas.add(img)
           canvas.requestRenderAll();
