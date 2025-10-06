@@ -1,0 +1,1000 @@
+/* // .toolbarMargin { display: flex; flex - direction: column; height: 100vh; overflow: hidden; } /* Fixed header */
+.toolbar - main - container : global(.toolbar - main - heading) {
+    position: sticky;
+    top: 0;
+    /* background: white; */
+    z - index: 10;
+    /* padding: 20px; */
+    /* border-bottom: 1px solid #e5e7eb; */
+}
+
+.quantityHead {
+    display: flex;
+    align - items: center;
+    /* gap: 12px; */
+    /* margin: 16px 0; */
+}
+
+.arrow {
+    cursor: pointer;
+    display: flex;
+    align - items: center;
+    justify - content: center;
+    width: 36px;
+    height: 36px;
+    border - radius: 50 %;
+    transition: background - color 0.2s;
+}
+
+.arrow:hover {
+    background - color: #f3f4f6;
+}
+
+/* .quantityHead h2 { margin: 0; font-size: 24px; font-weight: 600; } */
+/* Scrollable content area */
+.toolbarBox {
+    flex: 1;
+    overflow - y: auto;
+    overflow - x: hidden;
+    padding: 20px;
+    display: flex;
+    flex - direction: column;
+    gap: 16px;
+}
+
+/* Loader styles */
+.loaderWrapper {
+    display: flex;
+    flex - direction: column;
+    align - items: center;
+    justify - content: center;
+    padding: 60px 20px;
+    gap: 16px;
+}
+
+.loader {
+    border: 4px solid #f3f4f6;
+    border - top: 4px solid #3b82f6;
+    border - radius: 50 %;
+    width: 48px;
+    height: 48px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0 % {
+        transform: rotate(0deg);
+    }
+
+    100 % {
+        transform: rotate(360deg);
+    }
+}
+
+/* Product card */
+.main - top - container {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border - radius: 8px;
+    overflow: hidden;
+    transition: box - shadow 0.2s;
+}
+
+.main - top - container:hover {
+    box - shadow: 0 4px 6px - 1px rgba(0, 0, 0, 0.1);
+}
+
+.quantityToolbarHead {
+    display: flex;
+    align - items: center;
+    gap: 12px;
+    padding: 16px;
+    transition: background - color 0.2s;
+}
+
+.quantityToolbarHead:hover {
+    background - color: #f9fafb;
+}
+
+.downArrow {
+    display: flex;
+    align - items: center;
+    color: #6b7280;
+    font - size: 14px;
+}
+
+.miniProdImgContainer {
+    width: 60px;
+    height: 60px;
+    flex - shrink: 0;
+    border - radius: 6px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+.productMiniImg {
+    width: 100 %;
+    height: 100 %;
+    object - fit: cover;
+}
+
+.rightProductQtyTitle {
+    flex: 1;
+    min - width: 0;
+}
+
+// .rightProductQtyTitle h4 { margin: 0 0 8px 0; font - size: 16px; font - weight: 600; color: #111827; } .rightProductTitleQty { display: flex; align - items: center; gap: 12px; flex - wrap: wrap; } .toolbarSpan { display: inline - flex; align - items: center; gap: 6px; padding: 4px 12px; background: #f3f4f6; border: 1px solid #d1d5db; border - radius: 16px; font - size: 13px; color: #374151; cursor: default ; } .swatchImage { width: 18px; height: 18px; border - radius: 50 %; object - fit: cover; border: 1px solid #d1d5db; } .totalQtyitems { font - size: 14px; color: #6b7280; margin: 0; } /* Size section */ .sizeSection { padding: 16px; background: #f9fafb; border - top: 1px solid #e5e7eb; } .sizeGroup h5 { margin: 0 0 12px 0; font - size: 14px; font - weight: 600; color: #374151; } .sizeInputs { display: grid; grid - template - columns: repeat(auto - fill, minmax(80px, 1fr)); gap: 12px; } .sizeBox { display: flex; flex - direction: column; gap: 6px; } .sizeBox label { font - size: 13px; font - weight: 500; color: #6b7280; } .sizeBox input { padding: 8px; border: 1px solid #d1d5db; border - radius: 6px; font - size: 14px; text - align: center; transition: border - color 0.2s; } .sizeBox input:focus { outline: none; border - color: #3b82f6; box - shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); } /* Fixed footer area - wrap both license and button */ .stickyFooter { position: sticky; bottom: 0; background: white; margin: 16px - 20px - 20px - 20px; padding: 0 1.5rem; border - top: 1px solid #e5e7eb; z - index: 5; box - shadow: 0 - 2px 10px rgba(0, 0, 0, 0.05); } .licenseOptions { background: white; padding: 16px 20px 12px 20px; } .licenseOptions label { display: flex; align - items: center; font - size: 14px; color: #374151; cursor: pointer; } .calculateBtn { font - family: "Helvetica", "Roboto-Regular", sans - serif; width: 100 %; padding: 12px; background: black; margin - top: 10px; margin - bottom: 2rem; text - transform: uppercase; font - size: 16px; color: white; border: none; font - weight: bold; cursor: pointer; border - radius: 100px; transition: all 0.3s ease; display: flex; align - items: center; justify - content: center; gap: 10px; } .calculateBtn:hover { box - shadow: var(--box - shadow - black - color) 0px 2px 8px 0px; } /* .calculateBtn { width: 100%; padding: 16px 24px; background: #3b82f6; color: white; border: none; border-radius: 0; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background-color 0.2s; } .calculateBtn:hover { background: #2563eb; } */ .arrowIcon { display: flex; align - items: center; font - size: 18px; } /* Responsive design */ @media(max - width: 768px) { .toolbar - main - container : global(.toolbar - main - heading) { padding: 16px; } .quantityHead h2 { font - size: 20px; } .toolbarBox { padding: 16px; } body: has(.toolbar - main - container).fabContainer { bottom: 140px; /* Move FAB above the sticky footer */ } .sizeInputs { grid - template - columns: repeat(auto - fill, minmax(70px, 1fr)); gap: 8px; } .quantityToolbarHead { padding: 12px; } .miniProdImgContainer { width: 50px; height: 50px; } .rightProductQtyTitle h4 { font - size: 15px; } .stickyFooter { position: sticky; bottom: 7rem; background: white; margin: 16px - 20px - 20px - 20px; padding: 0 1.5rem; border - top: 1px solid #e5e7eb; z - index: 5; box - shadow: 0 - 2px 10px rgba(0, 0, 0, 0.05); } } @media(max - width: 480px) { .quantityHead { flex - direction: row; gap: 8px; } .quantityHead h2 { font - size: 18px; } .sizeInputs { grid - template - columns: repeat(auto - fill, minmax(60px, 1fr)); } .rightProductTitleQty { flex - direction: column; align - items: flex - start; gap: 6px; }
+// .calculateBtn { font - size: 14px; padding: 14px 20px; } .stickyFooter { position: sticky; bottom: 7rem; background: white; margin: 16px - 20px - 20px - 20px; padding: 0 1.5rem; border - top: 1px solid #e5e7eb; z - index: 5; box - shadow: 0 - 2px 10px rgba(0, 0, 0, 0.05); }
+// }
+
+
+
+.toolbarMargin {
+    display: flex;
+    flex - direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Fixed header */
+.toolbar - main - container : global(.toolbar - main - heading) {
+    position: sticky;
+    top: 0;
+    /* background: white; */
+    z - index: 10;
+    /* padding: 20px; */
+    /* border-bottom: 1px solid #e5e7eb; */
+}
+
+.quantityHead {
+    display: flex;
+    align - items: center;
+    /* gap: 12px; */
+    /* margin: 16px 0; */
+}
+
+.arrow {
+    cursor: pointer;
+    display: flex;
+    align - items: center;
+    justify - content: center;
+    width: 36px;
+    height: 36px;
+    border - radius: 50 %;
+    transition: background - color 0.2s;
+}
+
+.arrow:hover {
+    background - color: #f3f4f6;
+}
+
+/* .quantityHead h2 { margin: 0; font-size: 24px; font-weight: 600; } */
+
+/* Scrollable content area */
+.toolbarBox {
+    flex: 1;
+    overflow - y: auto;
+    overflow - x: hidden;
+    padding: 20px;
+    display: flex;
+    flex - direction: column;
+    gap: 16px;
+}
+
+/* Loader styles */
+.loaderWrapper {
+    display: flex;
+    flex - direction: column;
+    align - items: center;
+    justify - content: center;
+    padding: 60px 20px;
+    gap: 16px;
+}
+
+.loader {
+    border: 4px solid #f3f4f6;
+    border - top: 4px solid #3b82f6;
+    border - radius: 50 %;
+    width: 48px;
+    height: 48px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0 % {
+        transform: rotate(0deg);
+    }
+
+    100 % {
+        transform: rotate(360deg);
+    }
+}
+
+/* Product card */
+.main - top - container {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border - radius: 8px;
+    overflow: hidden;
+    transition: box - shadow 0.2s;
+}
+
+.main - top - container:hover {
+    box - shadow: 0 4px 6px - 1px rgba(0, 0, 0, 0.1);
+}
+
+.quantityToolbarHead {
+    display: flex;
+    align - items: center;
+    gap: 12px;
+    padding: 16px;
+    transition: background - color 0.2s;
+}
+
+.quantityToolbarHead:hover {
+    background - color: #f9fafb;
+}
+
+.downArrow {
+    display: flex;
+    align - items: center;
+    color: #6b7280;
+    font - size: 14px;
+}
+
+.miniProdImgContainer {
+    width: 60px;
+    height: 60px;
+    flex - shrink: 0;
+    border - radius: 6px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+.productMiniImg {
+    width: 100 %;
+    height: 100 %;
+    object - fit: cover;
+}
+
+.rightProductQtyTitle {
+    flex: 1;
+    min - width: 0;
+}
+
+.rightProductQtyTitle h4 {
+    margin: 0 0 8px 0;
+    font - size: 16px;
+    font - weight: 600;
+    color: #111827;
+}
+
+.rightProductTitleQty {
+    display: flex;
+    align - items: center;
+    gap: 12px;
+    flex - wrap: wrap;
+}
+
+.toolbarSpan {
+    display: inline - flex;
+    align - items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border - radius: 16px;
+    font - size: 13px;
+    color: #374151;
+    cursor: default;
+}
+
+.swatchImage {
+    width: 18px;
+    height: 18px;
+    border - radius: 50 %;
+    object - fit: cover;
+    border: 1px solid #d1d5db;
+}
+
+.totalQtyitems {
+    font - size: 14px;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Size section */
+.sizeSection {
+    padding: 16px;
+    background: #f9fafb;
+    border - top: 1px solid #e5e7eb;
+}
+
+.sizeGroup h5 {
+    margin: 0 0 12px 0;
+    font - size: 14px;
+    font - weight: 600;
+    color: #374151;
+}
+
+.sizeInputs {
+    display: grid;
+    grid - template - columns: repeat(auto - fill, minmax(80px, 1fr));
+    gap: 12px;
+}
+
+.sizeBox {
+    display: flex;
+    flex - direction: column;
+    gap: 6px;
+}
+
+.sizeBox label {
+    font - size: 13px;
+    font - weight: 500;
+    color: #6b7280;
+}
+
+.sizeBox input {
+    padding: 8px;
+    border: 1px solid #d1d5db;
+    border - radius: 6px;
+    font - size: 14px;
+    text - align: center;
+    transition: border - color 0.2s;
+}
+
+.sizeBox input:focus {
+    outline: none;
+    border - color: #3b82f6;
+    box - shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Fixed footer area - wrap both license and button */
+.stickyFooter {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    margin: 16px - 20px - 20px - 20px;
+    padding: 0 1.5rem;
+    border - top: 1px solid #e5e7eb;
+    z - index: 5;
+    box - shadow: 0 - 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.licenseOptions {
+    background: white;
+    padding: 16px 20px 12px 20px;
+}
+
+.licenseOptions label {
+    display: flex;
+    align - items: center;
+    font - size: 14px;
+    color: #374151;
+    cursor: pointer;
+}
+
+.calculateBtn {
+    font - family: "Helvetica", "Roboto-Regular", sans - serif;
+    width: 100 %;
+    padding: 12px;
+    background: black;
+    margin - top: 10px;
+    margin - bottom: 2rem;
+    text - transform: uppercase;
+    font - size: 16px;
+    color: white;
+    border: none;
+    font - weight: bold;
+    cursor: pointer;
+    border - radius: 100px;
+    transition: all 0.3s ease;
+    display: flex;
+    align - items: center;
+    justify - content: center;
+    gap: 10px;
+}
+
+.calculateBtn:hover {
+    box - shadow: var(--box - shadow - black - color) 0px 2px 8px 0px;
+}
+
+/* .calculateBtn { width: 100%; padding: 16px 24px; background: #3b82f6; color: white; border: none; border-radius: 0; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background-color 0.2s; } .calculateBtn:hover { background: #2563eb; } */
+
+.arrowIcon {
+    display: flex;
+    align - items: center;
+    font - size: 18px;
+}
+
+/* Responsive design */
+@media(max - width: 768px) {
+    .toolbar - main - container : global(.toolbar - main - heading) {
+        padding: 16px;
+    }
+
+    .quantityHead h2 {
+        font - size: 20px;
+    }
+
+    .toolbarBox {
+        padding: 16px;
+    }
+
+    body: has(.toolbar - main - container).fabContainer {
+        bottom: 140px;
+        /* Move FAB above the sticky footer */
+    }
+
+    .sizeInputs {
+        grid - template - columns: repeat(auto - fill, minmax(70px, 1fr));
+        gap: 8px;
+    }
+
+    .quantityToolbarHead {
+        padding: 12px;
+    }
+
+    .miniProdImgContainer {
+        width: 50px;
+        height: 50px;
+    }
+
+    .rightProductQtyTitle h4 {
+        font - size: 15px;
+    }
+
+    .stickyFooter {
+        position: sticky;
+        bottom: 7rem;
+        background: white;
+        margin: 16px - 20px - 20px - 20px;
+        padding: 0 1.5rem;
+        border - top: 1px solid #e5e7eb;
+        z - index: 5;
+        box - shadow: 0 - 2px 10px rgba(0, 0, 0, 0.05);
+    }
+}
+
+@media(max - width: 480px) {
+    .quantityHead {
+        flex - direction: row;
+        gap: 8px;
+    }
+
+    .quantityHead h2 {
+        font - size: 18px;
+    }
+
+    .sizeInputs {
+        grid - template - columns: repeat(auto - fill, minmax(60px, 1fr));
+    }
+
+    .rightProductTitleQty {
+        flex - direction: column;
+        align - items: flex - start;
+        gap: 6px;
+    }
+
+    .calculateBtn {
+        font - size: 14px;
+        padding: 14px 20px;
+    }
+
+    .stickyFooter {
+        position: sticky;
+        bottom: 7rem;
+        background: white;
+        margin: 16px - 20px - 20px - 20px;
+        padding: 0 1.5rem;
+        border - top: 1px solid #e5e7eb;
+        z - index: 5;
+        box - shadow: 0 - 2px 10px rgba(0, 0, 0, 0.05);
+    }
+}
+
+*/ import style from './QuantityToolbar.module.css';
+
+import {
+    FaChevronDown,
+    FaChevronRight
+}
+
+from "react-icons/fa";
+
+import {
+    useSelector,
+    useDispatch
+}
+
+from 'react-redux';
+
+import {
+    addProduct,
+    resetProducts,
+    setCollegiateLicense,
+    updateSizeQuantity
+}
+
+from '../../../redux/productSelectionSlice/productSelectionSlice.js';
+
+import {
+    useNavigate
+}
+
+from 'react-router-dom';
+
+import {
+    toast
+}
+
+from 'react-toastify';
+
+import {
+    v4 as uuidv4
+}
+
+from "uuid";
+
+import {
+    LuArrowLeft,
+    LuArrowRight
+}
+
+from 'react-icons/lu';
+
+import {
+    apiConnecter
+}
+
+from '../../utils/apiConnector.jsx';
+
+import {
+    FaArrowRightLong
+}
+
+from "react-icons/fa6";
+
+import {
+    useState,
+    useEffect
+}
+
+from 'react';
+
+// const adultSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"];
+// const womenSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
+
+const QuantityToolbar=()=> {
+    const selectedProducts=useSelector((state)=> state.selectedProducts.selectedProducts);
+    console.log(selectedProducts, "selectedProducts");
+    const productState=useSelector((state)=> state.productSelection.products);
+    console.log('productState', productState) const CollegiateLicense=useSelector((state)=> state.productSelection.CollegiateLicense);
+    const nameAndNumberProductList=useSelector((state)=> state.TextFrontendDesignSlice.present["back"].nameAndNumberProductList);
+    console.log("name nand number product list", nameAndNumberProductList) const dispatch=useDispatch();
+    const navigate=useNavigate();
+    const [products,
+    setAllProducts]=useState([]);
+
+    const [expandedProducts,
+    setExpandedProducts]=useState({});
+
+const [licenses,
+setLicenses]=useState({
+    collegiate: CollegiateLicense,
+});
+const [loading,
+setLoading]=useState(false) // const [sizes, setSizes] = useState([]);
+const [availableSizesQuantity,
+setAvailableSizesQuantity]=useState([])
+/** ----------------- Every product gets its own random stable key--------------- */
+const getProductKey=(product)=>product.uniqueKey;
+
+/** ------------------- Update quantity for a size of a product---------------------- */
+const handleQuantityChange=(productKey, size, value)=> {
+    dispatch(updateSizeQuantity({
+            productId: productKey,
+            size,
+            quantity: parseInt(value) || 0,
+        }));
+}
+
+;
+
+/** ⬇------------------ Toggle expand/collapse for product details------------------------------ */
+const toggleProductExpansion=(product)=> {
+    const key=getProductKey(product);
+
+    setExpandedProducts((prev)=> ({
+            ...prev,
+            [key]: !prev[key],
+        }));
+}
+
+;
+
+// --------------------------------------Runs when selected products change-------------------------
+useEffect(()=> {
+        console.log("selectedProducts", selectedProducts) if ( !selectedProducts || selectedProducts?.length===0) return;
+        dispatch(resetProducts(selectedProducts)) const newAllProducts=[];
+
+        const newExpandedProducts= {}
+
+        ;
+
+        // -------------------------------------- Extract variant images (front, back, sleeve) from metafields------------------------- 
+        function getVariantImagesFromMetafields(metafieldss) {
+            let front=null;
+            let back=null;
+            let sleeve=null;
+
+            try {
+                const metafields=metafieldss?.edges || [];
+                const variantImagesField=metafields.find((edge)=> edge?.node?.key==='variant_images'
+                )?.node?.value;
+
+                if (variantImagesField) {
+                    const parsedImages=JSON.parse(variantImagesField);
+                    front=parsedImages.find((img)=> img.includes('_f_fl')) || null;
+                    back=parsedImages.find((img)=> img.includes('_b_fl')) || null;
+                    sleeve=parsedImages.find((img)=> img.includes('_d_fl')) || null;
+                }
+            }
+
+            catch (error) {
+                console.error('Error parsing variant_images metafield:', error);
+            }
+
+            return [front, back, sleeve];
+        }
+
+        // ------------------------Loop through each selected product---------------------
+        selectedProducts?.forEach((product)=> {
+                console.log("products ", product) const addedColors=product?.addedColors || [];
+                const selectedColor=[product?.selectedColor] || [];
+                const consistentTitle=product?.title || product?.name || product?.handle || 'Product';
+
+                // ---------------------- extra variants----------------------
+                const extraProducts=addedColors?.map((variantProduct)=> {
+                        const prod= {
+                            uniqueKey: uuidv4(),
+                            id: variantProduct?.variant?.id?.split("/").reverse()[0],
+                            imgurl: variantProduct?.img,
+                            color: variantProduct?.name,
+                            size: variantProduct?.variant?.selectedOptions[1]?.value,
+                            sizes: getSizeOptions(variantProduct, variantProduct?.name), // Assuming getSizeOptions is defined elsewhere
+                            name: product?.name,
+                            title: consistentTitle,
+                            sku: variantProduct?.variant?.sku,
+                            variantId: variantProduct?.variant?.id,
+                            allImages: getVariantImagesFromMetafields(variantProduct?.variant?.metafields),
+                            selections: [],
+                            price: variantProduct?.variant?.price,
+                            allVariants: variantProduct?.allVariants,
+                            swatchImg: variantProduct?.swatchImg,
+                            inventory_quantity: variantProduct?.variant?.inventoryItem?.inventoryLevels?.edges?.[0] ?.node?.quantities?.[0]?.quantity,
+                            vendor: product?.vendor,
+                            handle: product?.handle
+                        }
+
+                        ;
+                        dispatch(addProduct(prod));
+                        newExpandedProducts[prod.uniqueKey]=true;
+                        return prod;
+                    });
+
+                const extraProducts2=selectedColor?.map((variantProduct)=> {
+                        const prod= {
+                            uniqueKey: uuidv4(),
+                            id: variantProduct?.variant?.id?.split("/").reverse()[0],
+                            imgurl: variantProduct?.img,
+                            color: variantProduct?.name,
+                            size: variantProduct?.variant?.selectedOptions[1]?.value,
+                            sizes: getSizeOptions(variantProduct, variantProduct?.name),
+                            name: product?.name,
+                            title: consistentTitle,
+                            sku: variantProduct?.variant?.sku,
+                            variantId: variantProduct?.variant?.id,
+                            allImages: getVariantImagesFromMetafields(variantProduct?.variant?.metafields),
+                            selections: [],
+                            price: variantProduct?.variant?.price,
+                            allVariants: variantProduct?.allVariants,
+                            swatchImg: variantProduct?.swatchImg,
+                            inventory_quantity: variantProduct?.variant?.inventoryItem?.inventoryLevels?.edges?.[0] ?.node?.quantities?.[0]?.quantity,
+                            vendor: product?.vendor,
+                            handle: product?.handle
+                        }
+
+                        ;
+                        dispatch(addProduct(prod));
+                        newExpandedProducts[prod.uniqueKey]=true;
+                        return prod;
+                    });
+
+                newAllProducts.push(...extraProducts);
+                newAllProducts.push(...extraProducts2);
+            });
+
+        console.log(newAllProducts, "newAllProducts") setAllProducts(newAllProducts);
+        setExpandedProducts(newExpandedProducts);
+
+        // -------------Populate sizes from nameAndNumber state--------------------
+        nameAndNumberProductList?.forEach((product)=> {
+                const selection=productState[product.id];
+                console.log("selections", selection);
+
+                const newObj= {
+                    ...product?.sizeCount
+                }
+
+                ; // existing size counts
+
+                // Merge and take max of each size
+                const availableSizes= {}
+
+                ; // Get all unique size keys
+
+                let allSizes=new Set([ ...Object.keys(newObj),
+                    ...Object.keys(selection?.selections ?? {})]);
+
+                allSizes.forEach((size)=> {
+                        const sizeCount=newObj[size] ?? 0;
+                        const selectionCount=selection?.selections?.[size] ?? 0;
+                        availableSizes[size]=Math.max(sizeCount, selectionCount);
+                    });
+                // Assuming setAvailableSizesQuantity is updated here, e.g.:
+                // setAvailableSizesQuantity(prev => ({ ...prev, [product.id]: availableSizes }));
+            });
+    }
+
+    , [selectedProducts, dispatch, nameAndNumberProductList, productState]);
+
+// Assuming getSizeOptions is defined elsewhere
+const getSizeOptions=(variantProduct, colorName)=> {
+    // Placeholder implementation
+    return []; // Replace with actual logic
+}
+
+;
+
+// Placeholder for handleCalculate or other handlers
+const handleCalculate=()=> {
+    // Implement calculation logic, e.g., using apiConnecter
+    setLoading(true);
+    // ... API call or logic
+    setLoading(false);
+}
+
+;
+
+const handleLicenseChange=(e)=> {
+    const value=e.target.checked;
+    dispatch(setCollegiateLicense(value));
+
+    setLicenses(prev=> ({
+            ...prev, collegiate: value
+        }));
+}
+
+;
+
+if (loading) {
+    return (<div className= {
+            style.loaderWrapper
+        }
+
+        > <div className= {
+            style.loader
+        }
+
+        ></div> <p>Loading...</p> </div>);
+}
+
+const totalQuantity=products.reduce((sum, product)=> {
+        return sum + Object.values(product.selections || {}).reduce((a, b)=> a + (b || 0), 0);
+    }
+
+    , 0);
+
+return (<div className= {
+        style.toolbarMargin
+    }
+
+    > <div className= {
+        style["toolbar-main-container"]
+    }
+
+    > <div className= {
+        `$ {
+            style.quantityHead
+        }
+
+        :global(.toolbar-main-heading)`
+    }
+
+    > <div className= {
+        style.arrow
+    }
+
+    > <LuArrowLeft /> </div> <h2>Quantity Selection</h2> </div> <div className= {
+        style.toolbarBox
+    }
+
+    > {
+        products.length===0 ? (<p>No products selected.</p>) : (products.map((product)=> {
+                    const isExpanded=expandedProducts[getProductKey(product)];
+
+                    const productSelections=productState[product.id]?.selections || {}
+
+                    ;
+                    const key=getProductKey(product);
+
+                    return (<div key= {
+                            key
+                        }
+
+                        className= {
+                            style["main-top-container"]
+                        }
+
+                        > <div className= {
+                            style.quantityToolbarHead
+                        }
+
+                        onClick= {
+                            ()=> toggleProductExpansion(product)
+                        }
+
+                        > <div className= {
+                            style.miniProdImgContainer
+                        }
+
+                        > <img src= {
+                            product.imgurl
+                        }
+
+                        alt= {
+                            product.title
+                        }
+
+                        className= {
+                            style.productMiniImg
+                        }
+
+                        /> </div> <div className= {
+                            style.rightProductQtyTitle
+                        }
+
+                        > <div className= {
+                            style.rightProductTitleQty
+                        }
+
+                        > <h4> {
+                            product.title
+                        }
+
+                        </h4> <span className= {
+                            style.toolbarSpan
+                        }
+
+                        > <img src= {
+                            product.swatchImg
+                        }
+
+                        alt= {
+                            product.color
+                        }
+
+                        className= {
+                            style.swatchImage
+                        }
+
+                        /> {
+                            product.color
+                        }
+
+                        </span> <p className= {
+                            style.totalQtyitems
+                        }
+
+                        > Total: {
+                            Object.values(productSelections).reduce((a, b)=> a + b, 0)
+                        }
+
+                        </p> </div> </div> <div className= {
+                            style.downArrow
+                        }
+
+                        > {
+                            isExpanded ? <FaChevronDown /> : <FaChevronRight />
+                        }
+
+                        </div> </div> {
+                            isExpanded && (<div className= {
+                                    style.sizeSection
+                                }
+
+                                > <div className= {
+                                    style.sizeGroup
+                                }
+
+                                > <h5>Sizes</h5> <div className= {
+                                    style.sizeInputs
+                                }
+
+                                > {
+                                    Object.keys(productSelections).map((size)=> (<div key= {
+                                                size
+                                            }
+
+                                            className= {
+                                                style.sizeBox
+                                            }
+
+                                            > <label> {
+                                                size
+                                            }
+
+                                            </label> <input type="number"
+                                            min="0"
+
+                                            value= {
+                                                productSelections[size] || 0
+                                            }
+
+                                            onChange= {
+                                                (e)=> handleQuantityChange(key, size, e.target.value)
+                                            }
+
+                                            className= {
+                                                style.sizeBox
+                                            }
+
+                                            // Note: input doesn't have separate class, but can add if needed
+                                            /> </div>))
+                                }
+
+                                </div> </div> </div>)
+                        }
+
+                        </div>);
+                }))
+    }
+
+    </div> <div className= {
+        style.stickyFooter
+    }
+
+    > <div className= {
+        style.licenseOptions
+    }
+
+    > <label> <input type="checkbox"
+
+    checked= {
+        licenses.collegiate
+    }
+
+    onChange= {
+        handleLicenseChange
+    }
+
+    /> Collegiate License </label> </div> <button className= {
+        style.calculateBtn
+    }
+
+    onClick= {
+        handleCalculate
+    }
+
+    > Calculate Total <FaArrowRightLong className= {
+        style.arrowIcon
+    }
+
+    /> </button> </div> </div> </div>);
+}
+
+;
+
+export default QuantityToolbar;
