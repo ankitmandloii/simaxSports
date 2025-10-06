@@ -159,7 +159,7 @@
   padding: 10px 15px;
   border-radius: 10px;
   overflow-y: hidden;
-  margin-bottom: 15px;
+  margin-bottom: 4rem;
   display: flex;
   flex-direction: column;
 }
@@ -171,6 +171,8 @@
 }
 
 .footerSection {
+  position: sticky;
+  bottom: 0;
   padding-top: 10px;
   background-color: #fff;
 }
@@ -284,9 +286,13 @@
 }
 
 @media (max-width:1200px) {
+
   /* .toolbarMargin {
     margin-top: 5.5rem;
   } */
+  .toolbarBox {
+    margin-bottom: 8rem;
+  }
 
   .toolbarMainContainer {
     padding: 10px;
@@ -303,6 +309,10 @@
   .sizeInputs {
     gap: 9px;
     padding: 0;
+  }
+
+  .calculateBtn {
+    width: 70%;
   }
 }
 
@@ -359,7 +369,7 @@
     flex: 1;
     background-color: #fff;
     padding: 10px 15px;
-    margin-bottom: 15px;
+    margin-bottom: 7rem;
     border-radius: 10px;
   }
 }

@@ -152,10 +152,8 @@ import {
 import styles from './CollectionPopupList.module.css';
 
 const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) => {
-  console.log("----------collectionLoading", mainloading);
   const dispatch = useDispatch();
 
-  // Use memoized selectors - these won't cause re-renders unless data actually changes
   const categories = useSelector(selectCategories);
   const loading = useSelector(selectLoading);
   const hasNextPage = useSelector(selectHasNextPage);
@@ -166,11 +164,12 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
   const hasInitialized = useRef(false);
   const onCollectionSelectRef = useRef(onCollectionSelect);
 
-  // Keep ref updated but don't trigger effects
+  // keep callback stable
   useEffect(() => {
     onCollectionSelectRef.current = onCollectionSelect;
   }, [onCollectionSelect]);
 
+  // fetch data once
   useEffect(() => {
     dispatch(fetchCollections({ cursor: '' }));
     return () => {
@@ -179,41 +178,35 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
     };
   }, [dispatch]);
 
-  // Tell parent about loading state
+  // inform parent about loading
   useEffect(() => {
-    if (setLoading) {
-      setLoading(loading);
-    }
+    if (setLoading) setLoading(loading);
   }, [loading, setLoading]);
 
-  // Initialize first selection only once when collections first load
+  // Initialize only for expandable sections (brands/categories)
   useEffect(() => {
-    if (!hasInitialized.current && categories.length > 0 && categories[0].subcategories.length > 0) {
-      const firstCategory = categories[0];
-      const firstSub = firstCategory.subcategories[0];
-
-      setSelectedCategory(firstCategory);
-      setSelectedSubcategory(firstSub);
-
-      if (onCollectionSelectRef.current) {
-        onCollectionSelectRef.current(firstSub.id); // Fetch products for the first subcategory
-      }
-
+    if (!hasInitialized.current && categories.length > 0) {
       hasInitialized.current = true;
     }
   }, [categories]);
 
+  // Category click handler
   const handleCategorySelect = useCallback((category) => {
-    setSelectedCategory(prev => prev?.title === category.title ? null : category);
+    // Toggle expansion for expandable sections only
+    setSelectedCategory(prev =>
+      prev?.title === category.title ? null : category
+    );
   }, []);
 
+  // Subcategory click (fetch products)
   const handleSubcategorySelect = useCallback((subcategory) => {
     setSelectedSubcategory(subcategory);
     if (onCollectionSelectRef.current) {
-      onCollectionSelectRef.current(subcategory.id); // Fetch products for the selected subcategory
+      onCollectionSelectRef.current(subcategory.id);
     }
   }, []);
 
+  // Infinite scroll
   const handleScroll = useCallback(
     (e) => {
       const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -227,11 +220,7 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
   );
 
   if (loading && categories.length === 0) {
-    return (
-      <div className={styles.loadingContainer}>
-        Loading collections...
-      </div>
-    );
+    return <div className={styles.loadingContainer}>Loading collections...</div>;
   }
 
   return (
@@ -240,33 +229,67 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
       onScroll={handleScroll}
     >
       <ul className={styles.collectionUl}>
-        {categories.map((category, index) => (
-          <li key={index} className={styles.collectionLi}>
-            <div
-              className={`${styles.collectionCard} ${selectedCategory?.title === category.title ? styles.active : ''}`}
-              onClick={() => handleCategorySelect(category)}
-            >
-              <span>{category.title}</span>
-              <span className={styles.expandIcon}>
-                {selectedCategory?.title === category.title ? '-' : '+'}
-              </span>
-            </div>
+        {categories.map((category, index) => {
+          const isExpandable =
+            category.title === 'Featured Brands' || category.title === 'Category';
+          const isExpanded = selectedCategory?.title === category.title;
 
-            {selectedCategory?.title === category.title && (
-              <ul className={styles.subcategoryUl}>
-                {category.subcategories.map((subcategory) => (
-                  <li
-                    key={subcategory.id}
-                    className={`${styles.subcategoryLi} ${selectedSubcategory?.id === subcategory.id ? styles.active : ''}`}
-                    onClick={() => handleSubcategorySelect(subcategory)} // Directly fetch the product for selected subcategory
+          return (
+            <li key={index} className={styles.collectionLi}>
+              {isExpandable ? (
+                <>
+                  {/* Expandable (Brands, Category) */}
+                  <div
+                    className={`${styles.collectionCard} ${isExpanded ? styles.active : ''
+                      }`}
+                    onClick={() => handleCategorySelect(category)}
                   >
-                    <span>{subcategory.title}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
+                    <span>{category.title}</span>
+                    <span className={styles.expandIcon}>
+                      {isExpanded ? '-' : '+'}
+                    </span>
+                  </div>
+
+                  {isExpanded && (
+                    <ul className={styles.subcategoryUl}>
+                      {category.subcategories.map((subcategory) => (
+                        <li
+                          key={subcategory.id}
+                          className={`${styles.subcategoryLi} ${selectedSubcategory?.id === subcategory.id
+                              ? styles.active
+                              : ''
+                            }`}
+                          onClick={() => handleSubcategorySelect(subcategory)}
+                        >
+                          <span>{subcategory.title}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              ) : (
+                <>
+                  {/* Flat clickable subcategory (no inner list) */}
+                  <h4 className={styles.subcategoryHeader}>{category.title}</h4>
+                  <ul className={styles.subcategoryUl}>
+                    {category.subcategories.map((subcategory) => (
+                      <li
+                        key={subcategory.id}
+                        className={`${styles.subcategoryLi} ${selectedSubcategory?.id === subcategory.id
+                            ? styles.active
+                            : ''
+                          }`}
+                        onClick={() => handleSubcategorySelect(subcategory)}
+                      >
+                        <span>{subcategory.title}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
