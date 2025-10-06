@@ -210,17 +210,17 @@ router.post("/upload", upload.array('images', 5), controllers.fileUploadForImgix
 router.post("/uploadForS3Url", upload.array('images', 5), controllers.fileUploadForS3Url); // Accept both single and multiple files
 router.delete("/delete", controllers.fileDelete);
 // router.post("/image/list",controllers.getImageGalleryList)
-router.post("/editImageByAi",uploadforSingleEditImage.array('image', 1),controllers.editImageByAi);
-router.post("/generateImageByAi",controllers.generateMultipleImagesByAi);
+router.post("/editImageByAi", uploadforSingleEditImage.array('image', 1), controllers.editImageByAi);
+router.post("/generateImageByAi", controllers.generateMultipleImagesByAi);
 // router.post("/uploadToCloudinary",cloudinaryUpload.array("images"), controllers.fileUploadToCloudinary);
-router.post("/fileBlobDataUploadToCloudinary",testUpload.any(), controllers.fileBlobDataUploadToCloudinary);
+router.post("/fileBlobDataUploadToCloudinary", testUpload.any(), controllers.fileBlobDataUploadToCloudinary);
 router.delete("/deleteFromCloudinary", controllers.deleteImageFromCloudinary);
 
 
-router.post("/saveImageUrlToDbWithThereKey",controllers.saveImageUrlToDbWithThereKey)
-router.get("/getImageUrlToDbWithThereKey",controllers.getImageUrlToDbWithThereKey)
+router.post("/saveImageUrlToDbWithThereKey", controllers.saveImageUrlToDbWithThereKey)
+router.get("/getImageUrlToDbWithThereKey", controllers.getImageUrlToDbWithThereKey)
 
-
+router.post('/ideogram', controllers.generateThreeImagesIdeogram)
 
 router.get("/fetch-image", async (req, res) => {
   console.log("--------------------------runnn")
@@ -268,5 +268,23 @@ router.get("/fetch-image", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch image", details: error.message });
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = router;

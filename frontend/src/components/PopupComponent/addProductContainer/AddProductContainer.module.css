@@ -70,6 +70,7 @@
   max-height: 90vh;
   min-height: 600px;
   overflow: hidden;
+  z-index: 1000;
   /* Prevent the outer div from showing scrollbars */
 }
 

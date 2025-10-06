@@ -444,74 +444,67 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
   //     setGenerateAbortController(null);
   //   }
   // };
+
+
+
   const fetchDalleImages = async (query, pageNumber = 1) => {
     if (!query) {
       toast.error('Please enter a search query.');
       return;
     }
 
-    if (generateAbortController) {
-      generateAbortController.abort();
-    }
+    if (generateAbortController) generateAbortController.abort();
     const controller = new AbortController();
     setGenerateAbortController(controller);
 
-    const prompt = `${query} as an isolated t-shirt graphic`;
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent('https://api.ideogram.ai/v1/ideogram-v3/generate')}`;
-
-    const buildForm = (num, withMagic) => {
-      const fd = new FormData();
-      fd.append('prompt', prompt);
-      fd.append('rendering_speed', 'TURBO');
-      fd.append('style_type', 'DESIGN');
-      fd.append('resolution', '960x832');
-      fd.append('num_images', String(num));
-      if (withMagic) fd.append('magic_prompt', 'ON'); // only for the 1-image request
-      return fd;
-    };
-
-    const doPost = async (formData) => {
-      const res = await fetch(proxyUrl, {
-        method: 'POST',
-        headers: { 'Api-Key': apiKey },
-        body: formData,
-        signal: controller.signal,
-      });
-      if (!res.ok) throw new Error(`API error: ${res.status} ${res.statusText}`);
-      const json = await res.json();
-      if (!json.data || !Array.isArray(json.data)) {
-        throw new Error('Invalid response: data not found');
-      }
-      return json.data;
-    };
-
     setLoading(true);
     try {
-      // 1 with magic, 2 without
-      const [magicData, plainData] = await Promise.all([
-        doPost(buildForm(1, true)),
-        doPost(buildForm(2, false)),
-      ]);
-
-      const toItem = (item, indexPrefix) => ({
-        id: `${query}-${pageNumber}-${indexPrefix}`,
-        urls: { full: item.url ?? item.image_url ?? item.imageUrl },
-        alt_description: query,
+      const res = await fetch(`${BASE_URL}imageOperation/ideogram`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // body: JSON.stringify({ `${query}as an isolated t-shirt graphic `, pageNumber }),
+        body: JSON.stringify({
+          query: `${query} as an isolated t-shirt graphic`,  // Corrected the key and string interpolation
+          pageNumber,
+        }),
+        signal: controller.signal,
       });
 
-      // Merge: magic first, then plain (order up to you)
-      const newResults = [
-        ...magicData.map((item, i) => toItem(item, `m-${i}`)),
-        ...plainData.map((item, i) => toItem(item, `p-${i}`)),
-      ];
+      const ctype = res.headers.get('content-type') || '';
+      if (!res.ok) {
+        const errBody = ctype.includes('application/json')
+          ? await res.json().catch(() => ({}))
+          : await res.text().catch(() => '');
+        const msg = typeof errBody === 'string'
+          ? errBody.slice(0, 200)
+          : errBody?.error || errBody?.message || res.statusText;
+        throw new Error(msg || `API error: ${res.status}`);
+      }
 
-      setDalleImages(prev =>
-        pageNumber === 1 ? newResults : [...prev, ...newResults]
-      );
+      const payload = ctype.includes('application/json') ? await res.json() : {};
+      // payload can be:
+      // { data: [{ url } ...] }  OR  { urls: ["https://...", ...] }
+      let items = [];
+
+      if (Array.isArray(payload?.data)) {
+        items = payload.data.map(obj => obj?.url ?? obj?.image_url ?? obj?.imageUrl ?? obj?.urls?.full).filter(Boolean);
+      } else if (Array.isArray(payload?.urls)) {
+        items = payload.urls.filter(Boolean);
+      } else {
+        throw new Error('Invalid API response: expected data[] or urls[]');
+      }
+
+      const newResults = items.map((url, i) => ({
+        id: `${query}-${pageNumber}-${i}`,
+        urls: { full: url },
+        alt_description: query,
+      }));
+
+      setDalleImages(prev => (pageNumber === 1 ? newResults : [...prev, ...newResults]));
       setHasMore(newResults.length === 3);
     } catch (err) {
       if (err.name !== 'AbortError') {
-        console.error('API error:', err.message);
+        console.error('API error:', err);
         toast.error(err.message ?? 'Failed to generate images');
       }
     } finally {
@@ -519,8 +512,6 @@ const SubArtBox = ({ category, queries = [], goBack, searchTerm: initialSearchTe
       setGenerateAbortController(null);
     }
   };
-
-
 
 
 
