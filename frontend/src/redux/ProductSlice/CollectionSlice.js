@@ -257,7 +257,7 @@ export const selectCategories = createSelector(
       new: [],
       tops: [],  // New category for Tops
       jackets: [],  // New category for Jackets
-      usaMade: [],
+      usamade: [],
       others: [],
     };
 
@@ -290,11 +290,11 @@ export const selectCategories = createSelector(
       }
       else if (handle.startsWith('tops-')) {  // New check for Tops category
         categorized.tops.push(collectionData);
-      } else if (handle.startsWith('others-jackets')) {
+      } else if (handle.startsWith('jackets')) {
         console.log("------jackets", collectionData) // New check for Jackets category
         categorized.jackets.push(collectionData);
-      } else if (handle.startsWith('usaMade-')) {  // New check for USA Made category
-        categorized.usaMade.push(collectionData);
+      } else if (handle.startsWith('usamade')) {  // New check for USA Made category
+        categorized.usamade.push(collectionData);
       }
     });
 
@@ -317,7 +317,7 @@ export const selectCategoriesArray = createSelector(
       { key: 'new', title: 'New Arrivals', subcategories: categorized.new },
       { key: 'tops', title: 'Tops', subcategories: categorized.tops },  // Added Tops category
       { key: 'jackets', title: 'Jackets', subcategories: categorized.jackets },  // Added Jackets category
-      { key: 'usaMade', title: 'USA Made', subcategories: categorized.usaMade },  // Added USA Made category
+      { key: 'usaMade', title: 'USA Made', subcategories: categorized.usamade },  // Added USA Made category
       { key: 'others', title: 'Others', subcategories: categorized.others },
 
 

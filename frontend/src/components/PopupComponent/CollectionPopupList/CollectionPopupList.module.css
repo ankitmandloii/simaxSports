@@ -192,7 +192,7 @@
 }
 
 .subcategoryLi {
-  padding: 1px;
+  padding: 1px 15px;
   cursor: pointer;
   list-style: none;
 }
