@@ -409,7 +409,7 @@ const AddTextToolbar = () => {
 
   };
   function getRenderIconForSendToTop() {
-    console.log("'''''''''''renfderr")
+    // console.log("'''''''''''renfderr")
     if (!textContaintObject || (!allTextInputData && !allImagesData)) return;
 
     // Calculate total number of elements (texts + images)
@@ -417,7 +417,7 @@ const AddTextToolbar = () => {
     const layerIndex = textContaintObject.layerIndex;
 
     // If the element is already at the top (highest layerIndex)
-    console.log("------------layerIndex", layerIndex, totalElements);
+    // console.log("------------layerIndex", layerIndex, totalElements);
     if (layerIndex >= totalElements - 1) return true;
 
     return false;
@@ -643,7 +643,7 @@ const AddTextToolbar = () => {
                       <input
                         type="range"
                         name="size"
-                        min="0.1"
+                        min="0.5"
                         max="10"
                         step="0.1"
                         value={rangeValuesSize}
@@ -652,7 +652,7 @@ const AddTextToolbar = () => {
 
                       <input
                         type="number"
-                        min="0.2"
+                        min="0.5"
                         max="10"
                         step="0.1"
                         value={rangeValuesSize}

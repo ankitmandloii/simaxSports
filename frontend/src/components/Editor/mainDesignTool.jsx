@@ -49,6 +49,7 @@ import createWarningForZip from "./warningBoundaries.jsx/createWarningForZip";
 import createWarningForTankTop from "./warningBoundaries.jsx/createWarningForTankTop";
 import createWarningForPolo from "./warningBoundaries.jsx/createWarningForPolo";
 import { getProductSleeveType, getProductType, showBoundaryOnAction } from "./HelpersFunctions/editorHelpers";
+import { removeAllHtmlControls } from "./HelpersFunctions/renderImageHelpers";
 fabric.CurvedText = CurvedText;
 const WarningFunctionMap = {
   "Zip": createWarningForZip,
@@ -197,7 +198,7 @@ const MainDesignTool = ({
   }
   const renderCurveTextObjectsHelper = () => {
     const productCategory = getProductType(activeProductTitle);
-   const globalDispatch = (lable, value, id) => {
+    const globalDispatch = (lable, value, id) => {
       dispatch(
         updateTextState({
           "id": id,
@@ -486,24 +487,24 @@ const MainDesignTool = ({
   //   }
   // }, [zoomLevel]);  // Trigger effect when zoomLevel changes
 
-  function removeAllHtmlControls(canvas) {
-    // return
-    if (!canvas) {
-      canvas = fabricCanvasRef.current;
-    }
-    canvas.getObjects().forEach((obj) => {
-      if (obj._htmlControls) {
-        for (const key in obj._htmlControls) {
-          const el = obj._htmlControls[key];
-          if (el?.parentNode) el.parentNode.removeChild(el);
-        }
-        obj._htmlControls = null;
-      }
-    });
+  // function removeAllHtmlControls(canvas) {
+  //   // return
+  //   if (!canvas) {
+  //     canvas = fabricCanvasRef.current;
+  //   }
+  //   canvas.getObjects().forEach((obj) => {
+  //     if (obj._htmlControls) {
+  //       for (const key in obj._htmlControls) {
+  //         const el = obj._htmlControls[key];
+  //         if (el?.parentNode) el.parentNode.removeChild(el);
+  //       }
+  //       obj._htmlControls = null;
+  //     }
+  //   });
 
-    // Safety net: also remove floating orphan controls (edge case fallback)
-    document.querySelectorAll('[data-fabric-control]').forEach(el => el.remove());
-  }
+  //   // Safety net: also remove floating orphan controls (edge case fallback)
+  //   document.querySelectorAll('[data-fabric-control]').forEach(el => el.remove());
+  // }
   useEffect(() => {
     const canvasElement = canvasRef.current;
     const wrapperElement = canvasElement.parentNode;
@@ -522,11 +523,11 @@ const MainDesignTool = ({
       width: canvasWidth,
       height: canvasHeight,
       // backgroundColor:"red",
-      perPixelTargetFind:false,
+      perPixelTargetFind: false,
       targetFindTolerance: 4,
       preserveObjectStacking: true,
-    // 
-      
+      // 
+
     });
     canvas.preserveObjectStacking = true;
     fabricCanvasRef.current = canvas;
@@ -552,7 +553,7 @@ const MainDesignTool = ({
     canvas.requestRenderAll();
 
     const handleSelection = (e) => {
-      removeAllHtmlControls();
+      // removeAllHtmlControls(canvas);
       if (e.selected.length > 1) {
         canvas.discardActiveObject();
         canvas.requestRenderAll();
@@ -584,7 +585,7 @@ const MainDesignTool = ({
     const handleObjectRemoved = (e) => {
       // console.warn("removedObject................", e.target)
       const removedObject = e.target;
-      removeAllHtmlControls();
+      // removeAllHtmlControls(canvas);
       syncMirrorCanvasHelper(activeSide);
       updateBoundaryVisibility(fabricCanvasRef, activeSide, getProductType(activeProductTitle));
       // dispatch(deleteTextState(removedObject.id));
@@ -593,7 +594,7 @@ const MainDesignTool = ({
 
     };
     const handleObjectAdded = (e) => {
-      removeAllHtmlControls();
+      // removeAllHtmlControls(canvas);
       syncMirrorCanvasHelper(activeSide);
     };
 
@@ -645,13 +646,13 @@ const MainDesignTool = ({
     if (backgroundImage) {
       fabric.Image.fromURL(
         backgroundImage,
-        (img) => {  
+        (img) => {
           const imgWidth = img.width;
           const imgHeight = img.height;
 
           // Calculate scale based on the parent container size
-            const scaleX = (canvasWidth - 130) / imgWidth;
-            const scaleY = (canvasHeight - 130) / imgHeight;
+          const scaleX = (canvasWidth - 130) / imgWidth;
+          const scaleY = (canvasHeight - 130) / imgHeight;
           // const scaleX = (canvasWidth ) / imgWidth;
           // const scaleY = (canvasHeight) / imgHeight;
 
@@ -690,7 +691,7 @@ const MainDesignTool = ({
     // })
     return () => {
       // window.removeEventListener("resize", () => { });
-      removeAllHtmlControls();
+      removeAllHtmlControls(canvas);
       setOpenAieditorPopup(false);
       // Remove all listeners
       Object.entries(eventHandlers).forEach(([event, handler]) => {
@@ -783,14 +784,14 @@ const MainDesignTool = ({
         (obj.type === 'curved-text' || obj.type === 'textbox') &&
         (!textContaintObject || !textContaintObject.some(t => t.id === obj.id))
       ) {
-        removeAllHtmlControls();
+        // removeAllHtmlControls(canvas);
         canvas.remove(obj);
       }
       if (
         obj.type === 'image' &&
         (!imageContaintObject || !imageContaintObject.some(i => i.id === obj.id))
       ) {
-        removeAllHtmlControls();
+        // removeAllHtmlControls(canvas);
         canvas.remove(obj);
       }
     });
@@ -835,7 +836,7 @@ const MainDesignTool = ({
     };
 
     loadAndRender();
-  }, [isZoomedIn, addName, addNumber, nameAndNumberDesignState, activeSide]);
+  }, [isZoomedIn, addName, addNumber, nameAndNumberDesignState, activeSide, activeNameAndNumberPrintSide]);
 
   useEffect(() => {
     const sleeveType = getProductSleeveType(activeProductTitle);
@@ -857,7 +858,7 @@ const MainDesignTool = ({
         obj.id &&
         !textContaintObject.find((txt) => txt.id === obj.id)
       ) {
-        removeAllHtmlControls();
+        // removeAllHtmlControls(canvas);
         canvas.remove(obj);
       }
     });

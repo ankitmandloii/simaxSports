@@ -26,7 +26,7 @@ const ProductToolbar = () => {
   const dispatch = useDispatch();
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  console.log("---selectedsProduct", selectedProducts);
+  // console.log("---selectedsProduct", selectedProducts);
 
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
   // console.log("---activeProduct", activeProduct);

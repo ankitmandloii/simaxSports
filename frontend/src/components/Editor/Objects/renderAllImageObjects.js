@@ -184,12 +184,12 @@ const renderAllImageObjects = (
 
         const toggle = document.getElementById(`canvas-${img.id}`);
         const aiEditorBtn = document.getElementById(`canvas-${img.id}-ai`);
-        if (locked) {
+        if (locked && toggle && aiEditorBtn) {
           toggle.style.display = "none";
           aiEditorBtn.style.display = "none";
           return;
         }
-        if (toggle) {
+        if (toggle && aiEditorBtn) {
           aiEditorBtn.style.display = visible ? "flex" : "none";
           toggle.style.display = visible ? "flex" : "none";
         }
@@ -288,6 +288,7 @@ const renderAllImageObjects = (
         }
       }
       function deselectedhandler() {
+        removeAllHtmlControls(canvas);
         const toggle = document.getElementById(`canvas-${img.id}`);
         const aiButton = document.getElementById(`canvas-${img.id}-ai`);
         if (toggle) toggle.style.display = "none";

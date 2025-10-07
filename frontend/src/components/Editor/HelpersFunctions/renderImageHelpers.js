@@ -470,6 +470,7 @@ async function handleImage(imageSrc, color = "#ffffff", currentImageObject, inve
     }
 }
 function removeAllHtmlControls(canvas) {
+    console.log("removing all html controls calling");
 
     canvas.getObjects().forEach((obj) => {
         if (obj._htmlControls) {

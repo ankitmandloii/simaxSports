@@ -30,6 +30,7 @@
     "ngrok": "^5.0.0-beta.2",
     "node-cron": "^4.1.1",
     "nodemailer": "^7.0.3",
+    "nodemon": "^3.1.10",
     "p-limit": "^6.2.0",
     "redis": "^5.5.6",
     "sharp": "^0.34.3",

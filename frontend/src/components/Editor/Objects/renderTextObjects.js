@@ -41,6 +41,7 @@ const renderCurveTextObjects = (
   if (Array.isArray(textContaintObject)) {
     textContaintObject.forEach((textInput) => {
       const { fontSize, id, content, fontStyle, fontWeight, locked, flipY, flipX, scaleY, scaleX, fontFamily, position, angle, textColor, arc, spacing, outLineColor, outLineSize, layerIndex } = textInput;
+      console.log("given text conetent", content);
       const canvas = fabricCanvasRef.current;
       const existingObj = canvas
         .getObjects()
@@ -59,8 +60,9 @@ const renderCurveTextObjects = (
       const measuredWidth = baseWidth + extraSpacing;
 
       if (existingObj && text.trim() === "") {
+        // console.log("removing object with id", id, "content is empty", content);
         canvas.remove(existingObj);
-        return; 
+        return;
       }
       // if (locked) {
       //   canvas.discardActiveObject();
@@ -119,8 +121,10 @@ const renderCurveTextObjects = (
       }
 
       if (existingObj) {
+        // console.log("updating existing object with id ", id, "content:", content);
         setUpText(existingObj)
       } else if (!existingObj) {
+        // console.log("creating new object with id ", id, "content:", content);
         const curved = new fabric.CurvedText(content, {});
         setUpText(curved);
         curved.on("deselected", deselecteHandler);
@@ -129,10 +133,17 @@ const renderCurveTextObjects = (
         curved.on("mouseup", mouseupHandler);
 
         // Handle deselection (check current path to decide navigation)
-        function deselecteHandler() {
+        function deselecteHandler(e) {
+          const textContent = e?.target?.text;
           removeAllHtmlControls(canvas);
           dispatch(setSelectedTextState(null));
-          navigate('/design/product');  // Use history.push() for navigation
+          if (textContent && textContent.length > 1) {
+            console.log("navigatitinng to desing product ", textContent);
+            navigate('/design/product');
+          }
+          else {
+            console.log("navigatitinng called but text content is empty", textContent);
+          }
         }
 
         function mousedownHandler() {
@@ -142,7 +153,7 @@ const renderCurveTextObjects = (
         }
 
         function handleScale(e) {
-          const clampScale = (value, min = 0.2, max = 10) =>
+          const clampScale = (value, min = 0.5, max = 10) =>
             Math.max(min, Math.min(value, max));
           const obj = e.target;
           if (

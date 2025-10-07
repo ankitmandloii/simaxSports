@@ -354,7 +354,7 @@ const TextFrontendDesignSlice = createSlice({
         side = state.activeSide,
         isRenderOrNot,
       } = action.payload;
-      console.log("-----changesText", changes)
+      // console.log("-----changesText", changes)
       state.past[side].push(JSON.parse(JSON.stringify(state.present[side])));
       const text = state.present[side]?.texts?.find((t) => t.id === id);
       if (text && !text.locked) Object.assign(text, changes);
