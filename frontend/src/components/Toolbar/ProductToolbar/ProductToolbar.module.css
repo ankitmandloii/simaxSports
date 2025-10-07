@@ -21,9 +21,9 @@
   padding-bottom: 7px;
   /* border-bottom: 2px solid black; */
   background: var(--white-color);
-  padding: 15px 18px 15px 9px;
+  padding: 5px 18px 9px;
   border: 1px solid #E3E7EB;
-  border-radius: 5px;
+  border-radius: 10px;
   margin-bottom: 16px;
 }
 
@@ -72,7 +72,7 @@
   gap: 10px;
   flex-direction: column;
   /* background-color: #f1f1f1; */
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
   position: relative;
 
 }
@@ -80,14 +80,14 @@
 
 .crossProdICon {
   position: absolute;
-  right: -17px;
+  right: -13px;
   height: 1rem;
   display: flex;
   justify-content: center;
   width: 1rem;
   align-items: center;
   /* width: 16px; */
-  top: -14px;
+  top: -2px;
   cursor: pointer;
   background-color: #ffffff;
   border-radius: 100%;
@@ -186,7 +186,7 @@
   /* transform: translateX(-50%); */
   /* margin-top: 10px;
    */
-  margin-left: 8px;
+  margin-left: 6px;
   margin-bottom: 5px;
   margin-top: 10px;
   /* margin: auto; */
