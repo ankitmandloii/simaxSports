@@ -154,15 +154,24 @@
   list-style: none;
   padding: 4px 10px;
   cursor: pointer;
-  border-bottom: 1px solid rgb(204, 207, 214);
+  /* border-bottom: 1px solid rgb(204, 207, 214); */
 }
 
 .collectionCard {
   display: flex;
   justify-content: space-between;
-  padding: 10px 1px;
+  padding: 7px 1px;
   cursor: pointer;
-  border-bottom: 1px solid transparent;
+  /* border-bottom: 1px solid transparent; */
+  border-bottom: 1px solid rgb(204, 207, 214);
+}
+
+.collectionCard:hover {
+  color: var(--blue-color);
+}
+
+.collectionCard span {
+  font-weight: 600;
 }
 
 .expandIcon {
@@ -199,9 +208,14 @@
   gap: 0.5rem;
 }
 
+.activee {
+  margin-bottom: 15px;
+}
+
 .active {
   font-weight: bold;
   color: var(--blue-color);
+  /* margin-bottom: 15px; */
 }
 
 .filterImage {
@@ -248,13 +262,13 @@
 }
 
 /* Media query for mobile */
-@media (max-width: 768px) {
-  .collectionSidebar {
-    padding: 0.5rem;
-  }
+@media (max-width: 768px) {}
 
-  .mobileSelect {
-    font-size: 14px;
-    padding: 10px 12px;
-  }
+.react-select__control--is-focused {
+  border-color: var(--blue-color);
+}
+
+.react-select__menu {
+  border: 1px solid rgb(204, 207, 214);
+  border-radius: 8px;
 }
