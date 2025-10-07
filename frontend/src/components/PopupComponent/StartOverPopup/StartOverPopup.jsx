@@ -21,7 +21,7 @@ const StartOverConfirmationPopup = ({ onCancel, onResetclickHandler }) => {
     <div className={style.popupOverlay}>
       <div className={style.popupContainer}>
         <div className={style.header}>
-          <h2 className={style.title}>Start Over?</h2>
+          <h2 className={style.title}>START OVER</h2>
 
           {/* <button className={style.closeIconButton} onClick={onCancel}>
             <CrossIcon />

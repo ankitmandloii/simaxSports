@@ -16,7 +16,7 @@ const ProductAvailableColor = ({
   const colorsToShow = availableColors || product.colors || [];
 
   const popupRef = useRef(null);
-  // console.log("-=-=-=-=-=-=-=actionType", colorsToShow);
+  console.log("-=-=-=-=-=-=-=actionType", actionType);
 
   // Close popup on outside click
   useEffect(() => {
@@ -41,7 +41,7 @@ const ProductAvailableColor = ({
         <span onClick={onClose} className={style.crossProdIConn}>
           <CrossIcon />
         </span>
-        <p>Select a color</p>
+        {actionType == 'change' ? <p>Change  color</p> : <p>Add color</p>}
         {colorsToShow.length > 0 ? (
           <div className={style.colorOptionsGrid}>
             {colorsToShow.map((color, idx) => (

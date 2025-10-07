@@ -117,7 +117,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
               if (Array.isArray(parsed)) {
                 const colorNameLower = color?.toLowerCase().replace(/\s+/g, '');
                 swatchImage = parsed.find(img =>
-                  img.includes('38307_fm') ||
+                  img.includes('_fm') ||
                   img.toLowerCase().includes(colorNameLower)
                 ) || parsed[3] || parsed[0] || '';
               }
@@ -211,7 +211,7 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
         if (Array.isArray(parsed)) {
           const colorNameLower = color.toLowerCase().replace(/\s+/g, '');
           swatchImage = parsed.find(img =>
-            img.includes('38307_fm') ||
+            img.includes('_fm') ||
             img.toLowerCase().includes(colorNameLower)
           ) || parsed[3] || parsed[0] || swatchImage;
         }

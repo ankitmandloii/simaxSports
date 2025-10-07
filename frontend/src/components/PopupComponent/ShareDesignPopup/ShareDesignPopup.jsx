@@ -138,7 +138,7 @@ const ShareDesignPopup = ({ setSavedesignPopupHandler, lastDesign, navigate }) =
         <div className="modal-overlay">
             <div className={styles.popup}>
                 <div className={styles.modalHeader}>
-                    <h3>Share Your Design</h3>
+                    <h3>SHARE YOUR DESSIGN</h3>
                     {/* <span onClick={setSavedesignPopupHandler}><CrossIcon /></span> */}
                     <CloseButton onClose={setSavedesignPopupHandler} />
 

@@ -304,7 +304,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
-          <h3 className={styles.heading}>Add Product</h3>
+          <h3 className={styles.heading}>ADD PRODUCT</h3>
 
           <div className={styles.searchBox}>
             <input

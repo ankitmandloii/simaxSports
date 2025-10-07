@@ -78,7 +78,7 @@ const DesignNotesPopup = ({ handleClose }) => {
         <div className="modal-overlay">
             <div className={styles.popup}>
                 <div className={styles.header}>
-                    <h3 className={styles.title}>Design Notes</h3>
+                    <h3 className={styles.title}>DESIGN NOTES</h3>
                     <CloseButton onClose={handleClosee} />
                     {/* <button onClick={handleClosee} className={styles.close}><CrossIcon /></button> */}
                 </div>
@@ -122,7 +122,7 @@ const DesignNotesPopup = ({ handleClose }) => {
                         className={styles.saveButton}
                         disabled={isSaveDisabled}
                     >
-                        Save Notes
+                        SAVE NOTES
                     </button>
                 </div>
             </div>

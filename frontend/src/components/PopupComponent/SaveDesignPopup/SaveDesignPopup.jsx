@@ -110,7 +110,7 @@ const SaveDesignPopup = ({ setSavedesignPopupHandler }) => {
       <div className={style.popupContainer}>
         <div className={style.popupHeaderr}>
           <div className={style.popupTitle}>
-            <h2>Save Your Design</h2>
+            <h2>SAVE YOUR DESIGN</h2>
             <p>Once saved, share with others and access it from anywhere!</p>
           </div>
           <button className={style.closeBtn} onClick={setSavedesignPopupHandler}>
