@@ -101,7 +101,7 @@ const NamesToolbar = () => {
   }, [addName, addNumber, nameAndNumberDesign, activeSide]);
 
   useEffect(() => {
-    dispatch(setActiveSide("back"));
+    dispatch(setActiveSide(activeNameAndNumberPrintSide));
     getNameAndNumberPrice()
   }, []);
 

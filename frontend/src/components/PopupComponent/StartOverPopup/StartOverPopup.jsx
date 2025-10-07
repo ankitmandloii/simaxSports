@@ -30,7 +30,8 @@ const StartOverConfirmationPopup = ({ onCancel, onResetclickHandler }) => {
 
         </div>
         <div className={style.startOverContent}>
-          <p>Are you sure you want to start over? All unsaved changes will be lost.</p>
+          <p>Are you sure you want to start over ??</p>
+          <p>This will reset your current design without saving</p>
           <div className={style.popupButtons}>
             <button className={`${style.popupButton} ${style.confirmButton}`} onClick={resetAll}>Yes</button>
             <button className={`${style.popupButton} ${style.cancelButton}`} onClick={onCancel}>No</button>
