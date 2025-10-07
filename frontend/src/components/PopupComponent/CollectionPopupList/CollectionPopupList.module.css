@@ -285,7 +285,7 @@
 
 /* -- */
 /* Update mobile media query */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .collectionSidebar {
     padding: 0.5rem;
     height: auto;
