@@ -75,8 +75,8 @@
 }
 
 .modalContentInner {
-  padding-bottom: 105px;
-  max-height: 90vh;
+  /* padding-bottom: 105px; */
+  max-height: 80vh;
   /* Adjust based on padding and other elements */
   overflow-y: auto;
   padding-right: 10px;
@@ -110,7 +110,7 @@
   list-style: none;
   padding-left: 100px;
   padding-right: 100px;
-  margin-top: 20px;
+  /* margin-top: 20px; */
 }
 
 /* .modalProduct {
@@ -131,7 +131,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 12px;
   opacity: 0;
   transition: opacity 0.3s ease-in;
@@ -238,7 +238,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 4rem;
+  /* margin-bottom: 4rem; */
 
 }
 
@@ -534,5 +534,116 @@
 
   .modalHeader {
     /* justify-content: space-around; */
+  }
+}
+
+
+/* Adjusted modal content size */
+/* Adjust size of the product card */
+.modalProduct {
+  position: relative;
+  width: 90%;
+  /* Reduce the width of the product card */
+  padding: 8px;
+  /* Reduced padding for smaller cards */
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  /* Reduce overall card size */
+}
+
+/* Adjust the image size within the card */
+.modalProductImg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+  z-index: 2;
+}
+
+/* Ensure images inside the product card are smaller */
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 80%;
+  /* Aspect ratio for smaller image */
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* Adjust text size to make the card smaller and fit better */
+.modalProductName {
+  margin: 4px 0;
+  font-size: clamp(10px, 1.5vw, 12px);
+  /* Smaller font size */
+}
+
+/* Updated product list grid to accommodate smaller cards */
+.productList {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  /* Default grid of 4 columns */
+  gap: 16px;
+  list-style: none;
+  padding-left: 100px;
+  padding-right: 100px;
+  /* Adjust product list grid layout */
+}
+
+/* For responsiveness - smaller cards on medium screens */
+@media (max-width: 1024px) {
+  .productList {
+    grid-template-columns: repeat(3, 1fr);
+    /* Reduce columns to 3 for medium screens */
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  .modalProduct {
+    width: 100%;
+    /* 100% width for medium screens */
+    padding: 12px;
+    /* Adjust padding */
+  }
+}
+
+/* For smaller devices (mobile) */
+@media (max-width: 768px) {
+  .productList {
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 columns for small devices */
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .modalProduct {
+    padding: 8px;
+    /* Reduced padding for smaller screens */
+  }
+
+  .modalProductName {
+    font-size: 14px;
+    /* Adjust text size for mobile */
+  }
+}
+
+/* For extra small screens (phones) */
+@media (max-width: 480px) {
+  .productList {
+    grid-template-columns: repeat(2, 1fr);
+    /* 1 column for extremely small screens */
+    padding: 0 10px;
+  }
+
+  .modalProduct {
+    width: 100%;
+    /* Full width for very small devices */
+    padding: 8px;
   }
 }

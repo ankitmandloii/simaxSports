@@ -17,12 +17,24 @@
   height: 26%; */
    border-radius: 12px;
    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-   padding: 2rem;
+   height: 14rem;
+   width: 24rem;
+   /* padding: 2rem; */
    display: flex;
    flex-direction: column;
    /* justify-content: space-between; */
    text-align: center;
    position: relative;
+   overflow: hidden;
+ }
+
+ .startOverContent {
+   padding: 2rem;
+ }
+
+ .popupContainer p {
+   font-size: 1rem;
+   line-height: 1.2;
  }
 
  .popupHeaderrr h2 {
@@ -60,7 +72,7 @@
  }
 
  .confirmButton {
-   background-color: #d32f2f;
+   background-color: var(--blue-color);
    color: white;
  }
 
@@ -76,4 +88,22 @@
    top: 1rem;
    right: 1rem;
    cursor: pointer;
+ }
+
+
+
+ .header {
+   padding: 13px 24px;
+   border-bottom: 1px solid #ddd;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   position: relative;
+   background-color: #f9fafc;
+ }
+
+ .title {
+   font-size: 20px;
+   font-weight: 500;
+   color: var(--blue-color);
  }

@@ -20,8 +20,10 @@ const Header = () => {
   const designRoutes = ['/design/product', '/design/addArt', '/design/uploadArt', '/design/addNames', '/design/addText', '/design/addImage', '/design'];
   const isDesktopOrLaptop = useMediaQuery({ query: '(max-width: 750px)' })
   useEffect(() => {
-    setCustomerLogin(searchParams.get("customerEmail"));
-  }, [CustomerLogin])
+    // setCustomerLogin(searchParams.get("customerEmail"));
+    const customerEmail = searchParams.get('customerEmail');
+    setCustomerLogin(customerEmail);
+  }, [searchParams])
 
   const shouldRedirectToReview = (productState) => {
     if (window.location.pathname == "/design/product") return false

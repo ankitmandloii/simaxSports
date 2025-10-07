@@ -1669,7 +1669,7 @@ const AddImageToolbar = () => {
                     <div className='toolbar-box-heading-container'>Center</div>
                   </div>
 
-                  <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`}>
+                  {/* <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`}>
                     <div className={styles.toolbarBoxIconsContainerForTogether}>
 
                       {
@@ -1683,6 +1683,19 @@ const AddImageToolbar = () => {
                         getRenderIconForSendToBack() ? <div className={styles.toolbarBoxIconsContainerLayering2} > <span><LayeringSecondIcon /></span> </div> : <div className={styles.toolbarBoxIconsContainerLayering2}
                           onClick={() => handleBringBackward()}
                         >  <span><LayeringSecondIconWithBlackBg /></span></div>
+                      }
+                    </div>
+                    Layering
+                  </div> */}
+                  <div className={`${styles.toolbarBoxIconsAndHeadingContainer} ${isLocked ? styles.lockedToolbar : ''}`}>
+                    <div className={styles.toolbarBoxIconsContainerForTogether}>
+
+                      {
+                        getRenderIconForSendToTop() ? <div className={styles.toolbarBoxIconsContainerLayering1}  > <span><LayeringFirstIcon /></span> </div> : <div className={styles.toolbarBoxIconsContainerLayering1Active} onClick={() => handleBringForward()} > <span><LayeringFirstIcon /></span></div>
+                      }
+
+                      {
+                        getRenderIconForSendToBack() ? <div className={styles.toolbarBoxIconsContainerLayering2} > <span><LayeringSecondIcon /></span> </div> : <div className={styles.toolbarBoxIconsContainerLayering2Active} onClick={() => handleBringBackward()}>  <span><LayeringSecondIcon /></span></div>
                       }
                     </div>
                     Layering

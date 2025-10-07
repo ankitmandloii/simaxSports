@@ -1,81 +1,82 @@
 
 
-// import React, { useEffect, useState, useCallback } from 'react';
+// seconddd
+
+
+// import React, { useEffect, useState, useCallback, useRef } from 'react';
 // import { useDispatch, useSelector } from 'react-redux';
 // import {
 //   fetchCollections,
 //   resetCollections,
+//   selectCategories,
+//   selectLoading,
+//   selectHasNextPage,
+//   selectCursor,
 // } from '../../../redux/ProductSlice/CollectionSlice';
 // import styles from './CollectionPopupList.module.css';
+// import { FaPlus, FaMinus } from "react-icons/fa6";
 
 // const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) => {
-//   console.log("----------collectionLoading", mainloading)
 //   const dispatch = useDispatch();
-//   const {
-//     collections = [],
-//     loading,
-//     hasNextPage,
-//     cursor,
-//   } = useSelector((state) => state.collections);
+
+//   const { featuredBrands, categories } = useSelector(selectCategories);
+//   const loading = useSelector(selectLoading);
+//   const hasNextPage = useSelector(selectHasNextPage);
+//   const cursor = useSelector(selectCursor);
 
 //   const [selectedCategory, setSelectedCategory] = useState(null);
 //   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+//   const [categoryOpen, setCategoryOpen] = useState(true); // Initially, Categories are open
+//   const [featuredBrandsOpen, setFeaturedBrandsOpen] = useState(false); // Initially, Featured Brands are closed
+//   const hasInitialized = useRef(false);
+//   const onCollectionSelectRef = useRef(onCollectionSelect);
 
 //   useEffect(() => {
-//     dispatch(fetchCollections({ cursor: '' }));
-//     return () => dispatch(resetCollections());
-//   }, [dispatch]);
-
-//   // Tell parent about loading state
-//   useEffect(() => {
-//     if (setLoading) {
-//       setLoading(loading);
-//     }
-//   }, [loading, setLoading]);
-
-//   const categoryCollections = collections.filter(collection =>
-//     collection.handle.includes('category')
-//   );
-
-//   const brandCollections = collections.filter(collection =>
-//     !collection.handle.includes('category')
-//   );
-
-//   const categories = [
-//     {
-//       title: 'Featured Brands',
-//       subcategories: brandCollections.map(collection => ({
-//         id: collection.id,
-//         title: collection.title
-//       })),
-//     },
-//     {
-//       title: 'Category',
-//       subcategories: categoryCollections.map(collection => ({
-//         id: collection.id,
-//         title: collection.title
-//       })),
-//     },
-//   ];
-
-//   // Set the first subcategory as selected by default
-//   useEffect(() => {
-//     if (categories.length > 0 && categories[0].subcategories.length > 0 && !selectedSubcategory) {
-//       const firstSub = categories[0].subcategories[0];
-//       setSelectedSubcategory(firstSub);
-//       onCollectionSelect?.(firstSub.id);
-//     }
-//   }, [collections, selectedSubcategory, onCollectionSelect, categories]);
-
-//   const handleCategorySelect = useCallback((category) => {
-//     setSelectedCategory(prev => prev?.title === category.title ? null : category);
-//   }, []);
-
-//   const handleSubcategorySelect = useCallback((subcategory) => {
-//     setSelectedSubcategory(subcategory);
-//     onCollectionSelect?.(subcategory.id);
+//     onCollectionSelectRef.current = onCollectionSelect;
 //   }, [onCollectionSelect]);
 
+//   // fetch data once
+//   useEffect(() => {
+//     dispatch(fetchCollections({ cursor: '' }));
+//     return () => {
+//       dispatch(resetCollections());
+//       hasInitialized.current = false;
+//     };
+//   }, [dispatch]);
+
+//   // inform parent about loading
+//   useEffect(() => {
+//     if (setLoading) setLoading(loading);
+//   }, [loading, setLoading]);
+
+//   useEffect(() => {
+//     if (!hasInitialized.current && categories.length > 0) {
+//       hasInitialized.current = true;
+//     }
+//   }, [categories]);
+
+//   // Category click handler
+//   const handleCategorySelect = useCallback((category) => {
+//     setSelectedCategory((prev) =>
+//       prev?.title === category.title ? null : category
+//     );
+//   }, []);
+
+//   // Subcategory click (fetch products)
+//   const handleSubcategorySelect = useCallback((subcategory) => {
+//     setSelectedSubcategory(subcategory);
+//     if (onCollectionSelectRef.current) {
+//       onCollectionSelectRef.current(subcategory.id);
+//     }
+//   }, []);
+
+//   // Toggle category section
+//   const toggleCategoryList = () => setCategoryOpen((prev) => !prev);
+
+//   // Toggle featured brands section
+//   const toggleFeaturedBrandsList = () => setFeaturedBrandsOpen((prev) => !prev);
+
+//   // Infinite scroll
 //   const handleScroll = useCallback(
 //     (e) => {
 //       const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -88,12 +89,8 @@
 //     [dispatch, cursor, hasNextPage, loading]
 //   );
 
-//   if (loading && collections.length === 0) {
-//     return (
-//       <div className={styles.loadingContainer}>
-//         Loading collections...
-//       </div>
-//     );
+//   if (loading && categories.length === 0) {
+//     return <div className={styles.loadingContainer}></div>;
 //   }
 
 //   return (
@@ -102,42 +99,74 @@
 //       onScroll={handleScroll}
 //     >
 //       <ul className={styles.collectionUl}>
-//         {categories.map((category, index) => (
-//           <li key={index} className={styles.collectionLi}>
-//             <div
-//               className={`${styles.collectionCard} ${selectedCategory?.title === category.title ? styles.active : ''}`}
-//               onClick={() => handleCategorySelect(category)}
-//             >
-//               <span>{category.title}</span>
-//               <span className={styles.expandIcon}>
-//                 {selectedCategory?.title === category.title ? '-' : '+'}
-//               </span>
-//             </div>
+//         {/* Featured Brands Section */}
 
-//             {selectedCategory?.title === category.title && (
-//               <ul className={styles.subcategoryUl}>
-//                 {category.subcategories.map((subcategory) => (
-//                   <li
-//                     key={subcategory.id}
-//                     className={`${styles.subcategoryLi} ${selectedSubcategory?.id === subcategory.id ? styles.active : ''}`}
-//                     onClick={() => handleSubcategorySelect(subcategory)}
-//                   >
-//                     <span>{subcategory.title}</span>
-//                   </li>
-//                 ))}
-//               </ul>
-//             )}
-//           </li>
-//         ))}
+
+//         {/* Categories Section */}
+//         <li className={styles.collectionLi}>
+//           <div
+//             className={`${styles.collectionCard} ${categoryOpen ? styles.active : ''}`}
+//             onClick={toggleCategoryList}
+//           >
+//             <span>Categories</span>
+//             <span className={styles.expandIcon}>
+//               {categoryOpen ? <FaMinus /> : <FaPlus />}
+//             </span>
+//           </div>
+
+//           {categoryOpen && (
+//             <ul className={styles.subcategoryUl}>
+//               {categories.map((category, index) => (
+//                 <li key={index} className={styles.subcategoryLi}>
+//                   <span>{category.title}</span>
+//                   <ul className={styles.subcategoryNestedUl}>
+//                     {category.subcategories.map((subcategory) => (
+//                       <li
+//                         key={subcategory.id}
+//                         className={`${styles.subcategoryLi} ${selectedSubcategory?.id === subcategory.id ? styles.active : ''}`}
+//                         onClick={() => handleSubcategorySelect(subcategory)}
+//                       >
+//                         <span>{subcategory.title}</span>
+//                       </li>
+//                     ))}
+//                   </ul>
+//                 </li>
+//               ))}
+//             </ul>
+//           )}
+//         </li>
+//         <li className={styles.collectionLi}>
+//           <div
+//             className={`${styles.collectionCard} ${featuredBrandsOpen ? styles.active : ''}`}
+//             onClick={toggleFeaturedBrandsList}
+//           >
+//             <span>Featured Brands</span>
+//             <span className={styles.expandIcon}>
+//               {featuredBrandsOpen ? <FaMinus /> : <FaPlus />}
+//             </span>
+//           </div>
+
+//           {featuredBrandsOpen && (
+//             <ul className={styles.subcategoryUl}>
+//               {featuredBrands.map((brand) => (
+//                 <li
+//                   key={brand.id}
+//                   className={`${styles.subcategoryLi} ${selectedSubcategory?.id === brand.id ? styles.active : ''}`}
+//                   onClick={() => handleSubcategorySelect(brand)}
+//                 >
+//                   <span>{brand.title}</span>
+//                 </li>
+//               ))}
+//             </ul>
+//           )}
+//         </li>
 //       </ul>
 //     </div>
 //   );
 // };
 
 // export default CollectionPopupList;
-
-// seconddd
-
+// second
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -162,14 +191,25 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-  const [categoryOpen, setCategoryOpen] = useState(true); // Initially, Categories are open
-  const [featuredBrandsOpen, setFeaturedBrandsOpen] = useState(false); // Initially, Featured Brands are closed
+  const [categoryOpen, setCategoryOpen] = useState(true);
+  const [featuredBrandsOpen, setFeaturedBrandsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const hasInitialized = useRef(false);
   const onCollectionSelectRef = useRef(onCollectionSelect);
 
   useEffect(() => {
     onCollectionSelectRef.current = onCollectionSelect;
   }, [onCollectionSelect]);
+
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // fetch data once
   useEffect(() => {
@@ -206,6 +246,29 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
     }
   }, []);
 
+  // Handle select change for mobile
+  const handleSelectChange = useCallback((e) => {
+    const value = e.target.value;
+    if (!value) return;
+
+    const [type, id] = value.split('-');
+
+    let subcategory = null;
+    if (type === 'category') {
+      // Find subcategory in categories
+      for (const cat of categories) {
+        subcategory = cat.subcategories.find(sub => sub.id === id);
+        if (subcategory) break;
+      }
+    } else if (type === 'brand') {
+      subcategory = featuredBrands.find(brand => brand.id === id);
+    }
+
+    if (subcategory) {
+      handleSubcategorySelect(subcategory);
+    }
+  }, [categories, featuredBrands, handleSubcategorySelect]);
+
   // Toggle category section
   const toggleCategoryList = () => setCategoryOpen((prev) => !prev);
 
@@ -229,15 +292,52 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
     return <div className={styles.loadingContainer}></div>;
   }
 
+  // Mobile view - Select box
+  if (isMobile) {
+    return (
+      <div className={`${styles.collectionSidebar} ${styles.mobileView} ${mainloading ? styles.disabled : ''}`}>
+        <select
+          className={styles.mobileSelect}
+          value={selectedSubcategory ? `${categories.some(cat => cat.subcategories.find(sub => sub.id === selectedSubcategory.id)) ? 'category' : 'brand'}-${selectedSubcategory.id}` : ''}
+          onChange={handleSelectChange}
+        >
+          <option value="">Select a collection</option>
+
+          <optgroup label="Categories">
+            {categories.map((category) => (
+              category.subcategories.map((subcategory) => (
+                <option
+                  key={subcategory.id}
+                  value={`category-${subcategory.id}`}
+                >
+                  {category.title} - {subcategory.title}
+                </option>
+              ))
+            ))}
+          </optgroup>
+
+          <optgroup label="Featured Brands">
+            {featuredBrands.map((brand) => (
+              <option
+                key={brand.id}
+                value={`brand-${brand.id}`}
+              >
+                {brand.title}
+              </option>
+            ))}
+          </optgroup>
+        </select>
+      </div>
+    );
+  }
+
+  // Desktop view - Original expandable list
   return (
     <div
       className={`${styles.collectionSidebar} ${mainloading ? styles.disabled : ''}`}
       onScroll={handleScroll}
     >
       <ul className={styles.collectionUl}>
-        {/* Featured Brands Section */}
-
-
         {/* Categories Section */}
         <li className={styles.collectionLi}>
           <div
@@ -271,6 +371,8 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
             </ul>
           )}
         </li>
+
+        {/* Featured Brands Section */}
         <li className={styles.collectionLi}>
           <div
             className={`${styles.collectionCard} ${featuredBrandsOpen ? styles.active : ''}`}

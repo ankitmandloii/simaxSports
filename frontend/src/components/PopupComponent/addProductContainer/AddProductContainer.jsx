@@ -339,7 +339,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
             </div>
           ) : (
             <>
-              <p className={styles.paraaa}> Select From Our Most Popular Products</p>
+              {/* <p className={styles.paraaa}> Select From Our Most Popular Products</p> */}
 
               {error || searchError ? (
                 <p style={{ color: "red" }}>{error || searchError}</p>
