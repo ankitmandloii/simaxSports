@@ -1,0 +1,202 @@
+/* CustomSelect.module.css - Create this new CSS file */
+/* .customSelect {
+    position: relative;
+    width: 100%;
+} */
+
+.selectControl {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border: 1px solid rgb(204, 207, 214);
+    border-radius: 8px;
+    background-color: white;
+    cursor: pointer;
+    font-size: 14px;
+    min-height: 44px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.selectControl:hover {
+    border-color: var(--blue-color);
+}
+
+.selectControl:focus {
+    outline: none;
+    border-color: var(--blue-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.selectControl.active {
+    border-color: var(--blue-color);
+}
+
+.selectedValue {
+    flex: 1;
+    color: #333;
+}
+
+.dropdownIcon {
+    margin-left: 8px;
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.selectControl.active .dropdownIcon {
+    transform: rotate(180deg);
+}
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background-color: white;
+    border: 1px solid rgb(204, 207, 214);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.menuList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.group {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.group:last-child {
+    border-bottom: none;
+}
+
+.groupHeading {
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.groupOptions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.option {
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    transition: background-color 0.2s ease;
+}
+
+.option:hover,
+.option.hovered {
+    background-color: var(--blue-color);
+    color: white;
+}
+
+.option.selected {
+    background-color: var(--blue-color);
+    color: white;
+}
+
+
+/* --- */
+/* Update existing .dropdownMenu */
+.dropdownMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background-color: white;
+    border: 1px solid rgb(204, 207, 214);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-height: 70vh;
+    /* Adjusted for mobile */
+    overflow-y: auto;
+    z-index: 10001;
+    /* NEW: Much higher than modal/products/colorPopup */
+}
+
+/* Ensure customSelect container inherits high z-index */
+.customSelect {
+    position: relative;
+    width: 100%;
+    z-index: 10001;
+    /* NEW: Match dropdown */
+}
+
+/* Mobile: Reduce max-height if viewport tight */
+@media (max-width: 768px) {
+    .dropdownMenu {
+        max-height: 60vh;
+        /* NEW: Fit smaller screens */
+        z-index: 10001;
+    }
+
+    .selectControl {
+        min-height: 50px;
+        /* Slightly larger touch target */
+    }
+}
+
+
+/* --- */
+/* Update existing .dropdownMenu */
+.dropdownMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background-color: white;
+    border: 1px solid rgb(204, 207, 214);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-height: 70vh;
+    /* Adjusted for mobile */
+    overflow-y: auto;
+    z-index: 10001;
+    /* NEW: Much higher than modal/products/colorPopup */
+}
+
+/* Ensure customSelect container inherits high z-index */
+.customSelect {
+    position: relative;
+    width: 100%;
+    z-index: 10001;
+    /* NEW: Match dropdown */
+}
+
+/* Mobile: Reduce max-height if viewport tight */
+@media (max-width: 768px) {
+    .dropdownMenu {
+        max-height: 60vh;
+        /* NEW: Fit smaller screens */
+        z-index: 10001;
+    }
+
+    .selectControl {
+        min-height: 50px;
+        /* Slightly larger touch target */
+    }
+}

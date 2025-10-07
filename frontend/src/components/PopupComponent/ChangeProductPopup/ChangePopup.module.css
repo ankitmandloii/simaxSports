@@ -382,3 +382,68 @@
   /* opacity: 0.5; */
 
 }
+
+
+/* ----- */
+
+/* Add these to existing styles */
+.popupContainer {
+  /* ... existing ... */
+  overflow: visible;
+  /* NEW: Allow absolute dropdown to overflow without clipping */
+}
+
+.popupBodyLayout {
+  /* ... existing ... */
+  overflow: visible;
+  /* NEW: Prevent flex child clipping */
+}
+
+.popupSidebar {
+  /* ... existing ... */
+  position: relative;
+  /* NEW: Anchor for absolute dropdown in sidebar */
+  z-index: 10000;
+  /* NEW: Base layer for sidebar content */
+}
+
+.popupProducts {
+  /* ... existing ... */
+  position: relative;
+  /* Ensure products don't override stacking */
+  z-index: 999;
+  /* NEW: Keep below sidebar dropdown */
+}
+
+/* Mobile: Ensure column layout doesn't clip */
+@media (max-width: 1024px) {
+  .popupBodyLayout {
+    flex-direction: column;
+    overflow: visible;
+    /* Reinforce */
+  }
+
+  .popupSidebar {
+    width: 100%;
+    height: auto;
+    /* NEW: Auto-expand for open dropdown */
+    min-height: 60px;
+    /* Min for select control */
+    overflow: visible;
+    /* NEW: Let dropdown escape */
+    z-index: 10000;
+  }
+
+  .popupProducts {
+    width: 100%;
+    z-index: 999;
+  }
+}
+
+@media (max-width: 768px) {
+  .popupSidebar {
+    height: auto;
+    padding-bottom: 20px;
+    /* Extra space below select for dropdown */
+  }
+}

@@ -304,3 +304,28 @@
     width: 100%;
   }
 }
+
+
+
+/* -- */
+/* Ensure products stay behind */
+.modalProduct {
+  /* ... existing ... */
+  position: relative;
+  z-index: 1;
+  /* NEW: Explicit low z-index */
+}
+
+.colorPopup {
+  /* ... existing ... */
+  z-index: 1000;
+  /* Keep as-is, but below custom dropdown */
+}
+
+/* Mobile: Reduce product overlap potential */
+@media (max-width: 767px) {
+  .productListCollection {
+    z-index: 1;
+    /* NEW: Keep grid low */
+  }
+}

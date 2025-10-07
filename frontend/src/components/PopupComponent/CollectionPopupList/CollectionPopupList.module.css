@@ -272,3 +272,33 @@
   border: 1px solid rgb(204, 207, 214);
   border-radius: 8px;
 }
+
+@media (max-width: 768px) {
+  .dropdownMenu {
+    max-height: 60vh;
+    /* You can adjust this as needed */
+    overflow-y: auto;
+  }
+}
+
+
+
+/* -- */
+/* Update mobile media query */
+@media (max-width: 768px) {
+  .collectionSidebar {
+    padding: 0.5rem;
+    height: auto;
+    /* NEW: From previous, but reinforce */
+    overflow: visible;
+    /* NEW: No clipping */
+    position: relative;
+    z-index: 10000;
+    /* NEW: Layer above products */
+  }
+
+  .mobileView {
+    padding: 1rem;
+    height: auto;
+  }
+}

@@ -168,7 +168,8 @@
 // export default CollectionPopupList;
 // second
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+// Updated CollectionPopupList.jsx - Full code with CustomSelect integration
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchCollections,
@@ -180,17 +181,17 @@ import {
 } from '../../../redux/ProductSlice/CollectionSlice';
 import styles from './CollectionPopupList.module.css';
 import { FaPlus, FaMinus } from "react-icons/fa6";
-
+import CustomSelect from '../../CustomSelect/CustomSelect';
 
 const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) => {
   const dispatch = useDispatch();
-  console.log("-----------selectedCategories ", selectCategoriesArray)
   const categories = useSelector(selectCategoriesArray);
   const loading = useSelector(selectLoading);
   const hasNextPage = useSelector(selectHasNextPage);
   const cursor = useSelector(selectCursor);
 
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
   const [openCategories, setOpenCategories] = useState({});
   const [isMobile, setIsMobile] = useState(false);
   const hasInitialized = useRef(false);
@@ -216,6 +217,7 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
     return () => {
       dispatch(resetCollections());
       hasInitialized.current = false;
+      setSelectedOption(null);
     };
   }, [dispatch]);
 
@@ -234,6 +236,20 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
     }
   }, [categories]);
 
+  // Prepare options for CustomSelect (same as before)
+  const options = useMemo(() => {
+    if (!categories || categories.length === 0) {
+      return [];
+    }
+    return categories.map(category => ({
+      label: category.title || category.name || 'Untitled',
+      options: (category.subcategories || category.collections || []).map(subcategory => ({
+        label: subcategory.title || subcategory.name || 'Untitled Sub',
+        value: subcategory,
+      })),
+    }));
+  }, [categories]);
+
   // Toggle category section
   const toggleCategory = useCallback((categoryKey) => {
     setOpenCategories((prev) => ({
@@ -245,29 +261,22 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
   // Subcategory click (fetch products)
   const handleSubcategorySelect = useCallback((subcategory) => {
     setSelectedSubcategory(subcategory);
+    const option = { label: subcategory.title || subcategory.name, value: subcategory };
+    setSelectedOption(option);
     if (onCollectionSelectRef.current) {
       onCollectionSelectRef.current(subcategory.id);
     }
   }, []);
 
   // Handle select change for mobile
-  const handleSelectChange = useCallback((e) => {
-    const value = e.target.value;
-    if (!value) return;
-
-    const [categoryKey, collectionId] = value.split('::');
-
-    // Find the subcategory across all categories
-    let subcategory = null;
-    for (const category of categories) {
-      subcategory = category.subcategories.find(sub => sub.id === collectionId);
-      if (subcategory) break;
+  const handleSelectChange = useCallback((selected) => {
+    if (selected) {
+      handleSubcategorySelect(selected.value);
+    } else {
+      setSelectedOption(null);
+      setSelectedSubcategory(null);
     }
-
-    if (subcategory) {
-      handleSubcategorySelect(subcategory);
-    }
-  }, [categories, handleSubcategorySelect]);
+  }, [handleSubcategorySelect]);
 
   // Infinite scroll
   const handleScroll = useCallback(
@@ -286,33 +295,53 @@ const CollectionPopupList = ({ onCollectionSelect, mainloading, setLoading }) =>
     return <div className={styles.loadingContainer}></div>;
   }
 
-  // Mobile view - Select box
+  // Mobile view - Custom Select
   if (isMobile) {
     return (
       <div className={`${styles.collectionSidebar} ${styles.mobileView} ${mainloading ? styles.disabled : ''}`}>
-        <select
-          className={styles.mobileSelect}
-          value={selectedSubcategory ? `${selectedSubcategory.handle}::${selectedSubcategory.id}` : ''}
-          onChange={handleSelectChange}
-        >
-          <option value="">Select a collection</option>
-
-          {categories.map((category) => (
-            <optgroup key={category.key} label={category.title}>
-              {category.subcategories.map((subcategory) => (
-                <option
-                  key={subcategory.id}
-                  value={`${category.key}::${subcategory.id}`}
-                >
-                  {subcategory.title}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
+        {options.length === 0 ? (
+          <div>No collections available.{loading ? ' Loading...' : ' Check connection.'}</div>
+        ) : (
+          <CustomSelect
+            options={options}
+            value={selectedOption}
+            onChange={handleSelectChange}
+            placeholder="Select a collection"
+            disabled={mainloading}
+          />
+        )}
       </div>
     );
   }
+
+  //  if (isMobile) {
+  //   return (
+  //     <div className={`${styles.collectionSidebar} ${styles.mobileView} ${mainloading ? styles.disabled : ''}`}>
+  //       <select
+  //         className={styles.mobileSelect}
+  //         value={selectedSubcategory ? `${selectedSubcategory.handle}::${selectedSubcategory.id}` : ''}
+  //         onChange={handleSelectChange}
+  //       >
+  //         <option value="">Select a collection</option>
+
+  //         {categories.map((category) => (
+  //           <optgroup key={category.key} label={category.title}>
+  //             {category.subcategories.map((subcategory) => (
+  //               <option
+  //                 key={subcategory.id}
+  //                 value={`${category.key}::${subcategory.id}`}
+  //               >
+  //                 {subcategory.title}
+  //               </option>
+  //             ))}
+  //           </optgroup>
+  //         ))}
+  //       </select>
+  //     </div>
+  //   );
+  // }
+
+
 
   // Desktop view - Expandable list
   return (
