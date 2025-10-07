@@ -27,6 +27,8 @@ import { useNavigate } from 'react-router-dom';
 import ReplaceBackgroundColorPicker from '../../CommonComponent/ChooseColorBox/ReplaceBackgroundColorPicker.jsx';
 import ReplaceBg from '../ReplaceBg/ReplaceBg.jsx';
 import { applyFilterAndGetUrl, getBase64CanvasImage, invertColorsAndGetUrl, processAndReplaceColors, replaceColorAndGetBase64 } from '../../ImageOperation/CanvasImageOperations.js';
+import { store } from '../../../redux/store.js';
+import { original } from '@reduxjs/toolkit';
 
 
 
@@ -200,7 +202,7 @@ const AddImageToolbar = () => {
   };
 
   function updateFilter() {
-
+    setLoading(true);
     const newFilters = BASE_FILTERS.map(filter => {
       const newActiveEffects = activeEffects.filter((f) => f != "invert=true");
       if (filter.name === 'Normal') {
@@ -229,6 +231,7 @@ const AddImageToolbar = () => {
       };
     })
     setFilters(newFilters);
+    setLoading(false);
     return newFilters;
   }
   useEffect(() => {
@@ -703,23 +706,25 @@ const AddImageToolbar = () => {
 
   }
 
-  async function invertColorHandler(base64Image) {
-    // update local state
-    // const value = isActive('invert=true');
-    // toggle('invert=true', value)
-    // console.log("invert color funciton called");
+  async function invertColorHandler() {
+    const state = store.getState();
+    const activeSide = state.TextFrontendDesignSlice.activeSide;
+    const images = state.TextFrontendDesignSlice.present[activeSide].images;
+    const selectedImageId = state.TextFrontendDesignSlice.present[activeSide].selectedImageId;
+    const currentImageObject = images.find((img) => img.id === selectedImageId);
+    const getBase64CanvasImage = currentImageObject?.getBase64CanvasImage || img?.base64CanvasImage || previewUrl;
+    const originalImage = currentImageObject?.src || previewUrl;
     setInvertColor(!invertColor);
     // // update redux store
     globalDispatch("invertColor", !invertColor);
     setResetDefault(false);
-    let Newbase64image;
     if (invertColor) {
-      handleImage(img.src || previewUrl, singleColor, selectedFilter, !invertColor, editColor);
+      handleImage(originalImage || previewUrl, singleColor, selectedFilter, !invertColor, editColor);
       // globalDispatch("base64CanvasImageForSinglelColor", String(Newbase64image));
     }
     else {
       globalDispatch("loading", true);
-      Newbase64image = await invertColorsAndGetUrl(img.getBase64CanvasImage || base64Image || previewUrl);
+      const Newbase64image = await invertColorsAndGetUrl(getBase64CanvasImage || base64Image || previewUrl);
       // console.log("inverted image in base64", Newbase64image);
       globalDispatch("base64CanvasImage", Newbase64image);
       globalDispatch("base64CanvasImageForSinglelColor", String(Newbase64image));

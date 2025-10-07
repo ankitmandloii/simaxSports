@@ -780,6 +780,7 @@
 import { fabric } from "fabric";
 import { deleteImageState, deleteTextState } from "../../../redux/FrontendDesign/TextFrontendDesignSlice";
 import { useDispatch } from "react-redux";
+import { Navigate } from "react-router-dom";
 
 // const dispatch = useDispatch();
 // Placeholder icons as data URLs (replace with your SVG data URLs)
@@ -974,7 +975,7 @@ function positionHtmlControl(el, canvas, left, top) {
 
 
 
-function renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, dispatch) {
+function renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, dispatch, navigate) {
   // const dispatch = useDispatch();
 
 
@@ -1035,6 +1036,7 @@ function renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, d
         }
         dispatch(deleteImageState(fabricObject.id));
         dispatch(deleteTextState(fabricObject.id));
+        navigate("/design/product");
 
         // Remove object from canvas
         canvas.remove(fabricObject);
@@ -1635,7 +1637,7 @@ function rotateWithCenter(eventData, transform, x, y) {
 //   positionHtmlControl(fabricObject._htmlControls.delete, canvas, left, top);
 // }
 // Main exported function to create controls object
-export function createControls(bringPopup, dispatch) {
+export function createControls(bringPopup, dispatch, navigate) {
   return {
     deleteControl: new fabric.Control({
       x: 0.5,
@@ -1643,7 +1645,7 @@ export function createControls(bringPopup, dispatch) {
       offsetY: -16,
       offsetX: 15,
       render: (ctx, left, top, _styleOverride, fabricObject) => {
-        return renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, dispatch)
+        return renderHtmlDeleteControl(ctx, left, top, _styleOverride, fabricObject, dispatch, navigate)
       },
       cornerSize: 15,
     }),

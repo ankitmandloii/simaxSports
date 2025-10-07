@@ -113,7 +113,7 @@ const renderCurveTextObjects = (
         text.dirty = true;
         text.setCoords();
         if (!locked && !isZoomedIn) {
-          text.controls = createControls(bringPopup, dispatch);
+          text.controls = createControls(bringPopup, dispatch, navigate);
         } else {
           console.log("removing controls for", id);
           removeAllHtmlControls(canvas)

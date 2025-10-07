@@ -162,7 +162,7 @@ const renderAllImageObjects = (
         if (canvas.getActiveObjects().find((i) => i.id == id)) {
           toggleVisibility(true, locked)
         }
-        img.controls = createControls(bringPopup, dispatch);
+        img.controls = createControls(bringPopup, dispatch,navigate);
       }
       else {
         toggleVisibility(false, locked)
