@@ -117,7 +117,7 @@
 // };
 
 // export default Header;
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import logo from '../images/simax-design-logo.png'
 import { CartIcon, UserIcon } from '../iconsSvg/CustomIcon';
@@ -181,6 +181,24 @@ const Header = () => {
     console.log("Logged out user."); // Placeholder for actual logout
   };
 
+
+  // Ref to detect outside clicks
+  const userModalRef = useRef(null);
+
+  // Close modal if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userModalRef.current && !userModalRef.current.contains(event.target)) {
+        setIsUserModalOpen(false); // Close the modal
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   return (
     <header className={style.appHeader}>
       <div className={style.leftSection}>
@@ -233,7 +251,7 @@ const Header = () => {
 
           {/* User Modal */}
           {isUserModalOpen && CustomerLogin && (
-            <div className={style.userModal}>
+            <div className={style.userModal} ref={userModalRef}>
               <div className={style.userModalHeader}>
                 <FaUserCircle className={style.userModalIcon} />
                 <div className={style.userModalUserInfo}>
