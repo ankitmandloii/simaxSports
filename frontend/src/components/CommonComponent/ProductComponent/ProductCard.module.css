@@ -206,7 +206,7 @@
 
 .addProductBtnPopup:hover:not(:disabled) {
     border-color: var(--blue-color);
-    box-shadow: 0 1px 6px 0 var(--blue-color);
+    box-shadow: var(--box-shadow);
     background-color: var(--blue-color);
 }
 
@@ -274,4 +274,11 @@
     /* spacing between swatches */
     justify-content: start;
 
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
 }

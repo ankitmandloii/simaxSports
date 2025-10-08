@@ -59,6 +59,9 @@ body {
   --white-color: #ffffff;
   --blue-light: #f1f1f1;
   --box-shadow-black-color: #000000c2;
+  --box-shadow: 0 1px 6px 0 var(--blue-color);
+  --subheading-color: #888;
+
 }
 
 h2,
@@ -218,7 +221,7 @@ h4 {
 }
 
 .black-button:hover {
-  box-shadow: var(--blue-color) 0px 2px 5px 0px;
+  box-shadow: var(--box-shadow);
 }
 
 /* common css of toolbar head */
@@ -264,6 +267,7 @@ h4 {
   font-weight: 400;
   font-size: 14px;
   line-height: 20px;
+  color: var(--subheading-color);
 }
 
 /* .toolbar-main-heading p {

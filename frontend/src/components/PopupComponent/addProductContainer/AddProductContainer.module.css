@@ -263,7 +263,7 @@
 }
 
 .modalAllProductButton:hover {
-  box-shadow: var(--blue-color) 0px 2px 8px 0px;
+  box-shadow: var(--box-shadow);
 }
 
 .closePopupBtn svg {
