@@ -76,9 +76,19 @@
    color: white;
  }
 
+ .confirmButton:hover {
+   box-shadow: var(--box-shadow);
+ }
+
  .cancelButton {
-   background-color: #e0e0e0;
-   color: #333;
+   background-color: #fff;
+   border: 1px solid var(--blue-color);
+
+   color: var(--blue-color);
+ }
+
+ .cancelButton:hover {
+   box-shadow: var(--box-shadow);
  }
 
  .closeIconButton {

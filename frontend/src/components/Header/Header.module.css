@@ -86,6 +86,14 @@ a.step:first-child:after {
   gap: 3px;
 }
 
+.step:hover {
+  color: var(--blue-color);
+}
+
+.step:hover .navSpanNumber {
+  background-color: var(--blue-color);
+  color: #fff;
+}
 
 .deasable {
   pointer-events: none;
