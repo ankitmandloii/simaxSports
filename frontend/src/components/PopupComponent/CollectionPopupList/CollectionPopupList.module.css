@@ -200,7 +200,7 @@
   list-style: none;
 }
 
-.subcategoryLi:hover {
+.subcategoryLi:hover span {
   color: var(--blue-color);
 }
 
