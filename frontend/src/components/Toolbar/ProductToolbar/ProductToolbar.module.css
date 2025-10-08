@@ -264,6 +264,7 @@
 .toolbarProductTitleHead {
   display: flex;
   justify-content: space-between;
+  margin-left: 10px;
   /* justify-content: center; */
   align-items: center;
 }
@@ -293,6 +294,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin-left: 10px;
 }
 
 .miniColorThumbnails {
