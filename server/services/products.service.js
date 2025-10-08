@@ -242,7 +242,42 @@ exports.getAllCollectionList = async function (limit = 50, cursor = null) {
   try {
     const afterCursor = cursor ? `, after: "${cursor}"` : "";
 
-    const query = `{
+    // const query = `{
+    //   collections(first: ${limit}${afterCursor}) {
+    //     pageInfo {
+    //       startCursor
+    //       endCursor
+    //       hasNextPage
+    //       hasPreviousPage
+    //     }
+    //     edges {
+    //       cursor
+    //       node {
+    //         title
+    //         description
+    //         descriptionHtml
+    //         handle
+    //         id
+    //         updatedAt
+    //         image {
+    //           altText
+    //           id
+    //           originalSrc
+    //         }
+    //         products(first: 1) {
+    //           edges {
+    //             node {
+    //               id
+    //             }
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }`;
+
+
+       const query = `{
       collections(first: ${limit}${afterCursor}) {
         pageInfo {
           startCursor
@@ -254,16 +289,8 @@ exports.getAllCollectionList = async function (limit = 50, cursor = null) {
           cursor
           node {
             title
-            description
-            descriptionHtml
             handle
             id
-            updatedAt
-            image {
-              altText
-              id
-              originalSrc
-            }
             products(first: 1) {
               edges {
                 node {
