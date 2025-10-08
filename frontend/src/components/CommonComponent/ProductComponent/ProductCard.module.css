@@ -282,3 +282,16 @@
     justify-content: flex-start;
     width: 100%;
 }
+
+.currentColorDisplay {
+    display: flex;
+    gap: 10px;
+    margin: 4px;
+    align-items: center;
+}
+
+.currentSwatch {
+    height: 1.2rem;
+    width: 1.2rem;
+    border-radius: 2px;
+}
