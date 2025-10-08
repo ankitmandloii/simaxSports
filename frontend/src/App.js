@@ -28,6 +28,8 @@ import Test from '../../frontend/src/components/Test'
 import db from "../src/db/indexDb";
 import { debounce } from "lodash"
 import { handleImage, transformImagesArray } from "./components/utils/transformReduxState";
+import ColorPicker from "./components/PopupComponent/ColorPicker/ColorPicker";
+ 
 enableMapSet();
 function App() {
   usePersistQueryParams();

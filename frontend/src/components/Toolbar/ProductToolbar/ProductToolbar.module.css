@@ -90,12 +90,18 @@
   top: -2px;
   cursor: pointer;
   background-color: #ffffff;
-  border-radius: 100%;
-  border: 1px solid #888;
+  /* border-radius: 100%; */
+  /* border: 1px solid #888; */
 }
 
 .crossProdICon svg {
-  height: 6.5px;
+  height: 10px;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+.crossProdICon svg:hover {
+  color: var(--blue-color);
 }
 
 .toolbarBox {

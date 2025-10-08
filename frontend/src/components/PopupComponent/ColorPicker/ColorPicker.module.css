@@ -1,0 +1,199 @@
+/* ColorPicker.module.css */
+
+/* --- Root CSS Variables --- */
+:root {
+    --header-orange: #E64A19;
+    --text-gray: #4B5563;
+    --light-gray: #F3F4F6;
+    --medium-gray: #E5E7EB;
+    --white: #ffffff;
+    --orange-ring: #F97316;
+    --shadow-gray: #9CA3AF;
+}
+
+/* --- App Container Styling --- */
+.appContainer {
+    min-height: 100vh;
+    background-color: var(--light-gray);
+    display: flex;
+    padding: 32px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* --- Sidebar Mockup Styling --- */
+.sidebarMockup {
+    width: 33.333%;
+    padding: 16px;
+    background-color: var(--white);
+    border-right: 1px solid #E5E7EB;
+    display: none; /* Hide on small screens */
+}
+@media (min-width: 768px) {
+    .sidebarMockup {
+        display: block;
+    }
+}
+
+.productPreviewArea {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+@media (min-width: 768px) {
+    .productPreviewArea {
+        width: 66.666%;
+    }
+}
+
+/* --- Add Color Button Styling --- */
+.addColorButton {
+    width: 128px;
+    height: 144px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 12px;
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid #D1D5DB;
+    color: var(--text-gray);
+    cursor: pointer;
+    background: none;
+}
+.addColorButton:hover {
+    border-color: #FB923C; /* orange-400 */
+    color: #FB923C;
+}
+.addColorButtonSelected {
+    border: 2px solid var(--orange-ring); /* orange-500 */
+    color: var(--orange-ring);
+}
+.addColorIconContainer {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 4px;
+}
+.addColorIconContainer svg {
+    color: currentColor; /* Inherit color from button for the plus sign */
+}
+
+/* --- Modal Styling --- */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background-color: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(2px);
+    transition: opacity 0.3s ease-in-out;
+}
+
+.modalContainer {
+    width: 100%;
+    max-width: 448px; /* md:max-w-md */
+    min-width: 300px;
+    background-color: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    transform: scale(1);
+    transition: transform 0.3s ease-out;
+}
+
+/* --- Header Styling --- */
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.headerContentGroup {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.backButton,
+.closeButton {
+    padding: 4px;
+    border-radius: 9999px; /* rounded-full */
+    background-color: var(--medium-gray);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+.backButton:hover,
+.closeButton:hover {
+    background-color: #D1D5DB; /* Slightly darker gray on hover */
+}
+
+.headerTitle {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.05em; /* tracking-wider */
+    color: var(--header-orange);
+    text-transform: uppercase;
+}
+
+/* --- Body Styling --- */
+.modalBody {
+    padding: 24px;
+}
+
+.bodyTitle {
+    margin-bottom: 16px;
+    color: var(--text-gray);
+    font-weight: 600;
+}
+
+/* --- Swatch Grid Styling --- */
+.swatchGrid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px; /* Base gap for small screens */
+}
+@media (min-width: 640px) {
+    .swatchGrid {
+        gap: 12px; /* sm:gap-3 */
+    }
+}
+
+.swatchItem {
+    width: 100%;
+    height: 32px; /* h-8 */
+    border-radius: 8px; /* rounded-lg */
+    box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-inner */
+    transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    flex-shrink: 0;
+}
+@media (min-width: 640px) {
+    .swatchItem {
+        height: 40px; /* sm:h-10 */
+    }
+}
+.swatchItem:hover:not(.swatchSelected) {
+    box-shadow: 0 0 0 1px var(--shadow-gray); /* hover:ring-1 hover:ring-gray-400 */
+}
+
+.swatchSelected {
+    transform: scale(1.05);
+    /* ring-2 ring-offset-2 ring-orange-500, implemented with nested box-shadows */
+    box-shadow:
+        0 0 0 2px var(--white),   /* White offset */
+        0 0 0 4px var(--orange-ring); /* Orange ring */
+}

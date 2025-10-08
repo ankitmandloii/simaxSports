@@ -78,16 +78,19 @@
 .vendorspan {
     background-color: var(--blue-light);
     width: fit-content;
-    padding: 3px;
+    padding: 4px 8px;
     /* border-radius: 5px; */
     /* margin: 5px auto; */
+    color: #424447;
     font-size: clamp(12px, 2vw, 14px);
+    border-radius: 4px;
 }
 
 .addProductPara {
     /* text-align: center; */
     margin: 5px 0;
-    font-size: clamp(12px, 2vw, 14px);
+    font-size: clamp(12px, 2vw, 12px);
+    color: #424447;
 }
 
 .modalProductColorContainer {

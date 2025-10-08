@@ -345,6 +345,8 @@ const ProductToolbar = () => {
   function testing(text) {
 
   }
+
+  const tritriggerRef = React.useRef(null);
   return (
     // <div className={style.toolbarMainContainer}>
     <div className='toolbar-main-container'>
@@ -469,6 +471,7 @@ const ProductToolbar = () => {
                             <button
                               className={style.toolbarSpan}
                               onClick={(e) => {
+                                tritriggerRef.current = e.currentTarget;
                                 e.stopPropagation();
                                 setColorChangeTarget({ productIndex: index, colorIndex: i, actionType: 'change' });
                                 // console.log("----swatch", color.swatchImage, "--img", color.img)
@@ -488,75 +491,13 @@ const ProductToolbar = () => {
                           colorChangeTarget.actionType === 'change' &&
                           colorChangeTarget.colorIndex === i && (
                             <ProductAvailableColor
+                              triggerRef={tritriggerRef}
                               actionType={colorChangeTarget.actionType}
                               product={product}
                               availableColors={getAvailableColorsForProduct(product)}
                               onClose={() =>
                                 setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null })
                               }
-                              // onAddColor={(productData, color) => {
-                              //   const updated = JSON.parse(JSON.stringify(selectedProducts));
-                              //   const current = { ...updated[index] };
-                              //   const newColor = { ...color, allVariants: productData.allVariants || [] };
-
-                              //   // Process variants data
-                              //   const allVariants = normalizeVariants(productData);
-                              //   const colorName = color.name.toLowerCase().trim();
-                              //   const sizeVariantPairs = allVariants
-                              //     .filter((variant) => {
-                              //       const colorOpt = variant.selectedOptions.find(
-                              //         (opt) => opt.name.toLowerCase() === 'color'
-                              //       );
-                              //       return colorOpt?.value.toLowerCase().trim() === colorName;
-                              //     })
-                              //     .map((variant) => {
-                              //       const sizeOpt = variant.selectedOptions.find(
-                              //         (opt) => opt.name.toLowerCase() === 'size'
-                              //       );
-                              //       return sizeOpt?.value ? { size: sizeOpt.value, variantId: variant.id } : null;
-                              //     })
-                              //     .filter(Boolean);
-
-                              //   newColor.sizes = sizeVariantPairs;
-
-                              //   // Update the targeted color
-                              //   if (colorChangeTarget.colorIndex === 0) {
-                              //     // Changing main color
-                              //     current.selectedColor = newColor;
-                              //     current.imgurl = newColor.img;
-                              //   } else {
-                              //     // Changing a variant color
-                              //     if (!current.addedColors) current.addedColors = [];
-                              //     const variantIndex = colorChangeTarget.colorIndex - 1;
-                              //     current.addedColors[variantIndex] = newColor;
-                              //   }
-
-                              //   updated[index] = { ...current, allVariants: current.allVariants || [] };
-
-                              //   // Create the new active product - always use the changed color
-                              //   const newActiveProduct = {
-                              //     ...current,
-                              //     selectedColor: newColor,
-                              //     imgurl: newColor.img,
-                              //     allVariants: current.allVariants || [],
-                              //   };
-
-                              //   // Dispatch updates in batch
-
-                              //   dispatch(setSelectedProductsAction(updated));
-                              //   dispatch(setActiveProduct(newActiveProduct));
-                              //   dispatch(setRendering());
-
-
-                              //   // Update UI states
-                              //   setActiveThumbnail({
-                              //     productIndex: index,
-                              //     colorIndex: colorChangeTarget.colorIndex
-                              //   });
-                              //   setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null });
-                              //   console.log('Updated selectedProducts:', updated);
-                              //   console.log('New activeProduct:', newActiveProduct);
-                              // }}
                               onAddColor={(productData, color) => {
                                 // Create completely new objects to ensure reference changes
                                 const updated = selectedProducts.map((p, idx) =>
@@ -646,10 +587,15 @@ const ProductToolbar = () => {
                     Change Product
                   </button>
 
-                  <div className={style.addColorBtnMainContainer}>
+                  <div className={style.addColorBtnMainContainer} >
                     <div
+                      key={`add-color-${index}`}
                       className={style.addCartButton}
-                      onClick={() => setColorChangeTarget({ productIndex: index, colorIndex: -1, actionType: 'addColor' })}
+                      onClick={(e) => {
+                        tritriggerRef.current = e.currentTarget;
+                        e.stopPropagation();
+                        setColorChangeTarget({ productIndex: index, colorIndex: -1, actionType: 'addColor' })
+                      }}
                     >
                       <img src={colorwheel} alt="color wheel" className={style.colorImg} />
                       <p>Add Color</p>
@@ -657,6 +603,7 @@ const ProductToolbar = () => {
 
                     {colorChangeTarget.productIndex === index && colorChangeTarget.actionType === 'addColor' && (
                       <ProductAvailableColor
+                        triggerRef={tritriggerRef}
                         actionType={colorChangeTarget.actionType}
                         product={product}
                         availableColors={getAvailableColorsForProduct(product)}
