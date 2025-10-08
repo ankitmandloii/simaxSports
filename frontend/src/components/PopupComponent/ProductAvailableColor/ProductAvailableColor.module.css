@@ -162,7 +162,6 @@
   /* Slight rounding for a modern look */
   cursor: pointer;
   /* Optional: Add a subtle box-shadow for a 'raised' effect */
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
   /* Removing the border since we're using background-color now. */
   border: 1px solid transparent;
   transition: transform 0.1s;
