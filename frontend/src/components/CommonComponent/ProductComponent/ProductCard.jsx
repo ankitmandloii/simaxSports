@@ -365,7 +365,7 @@ const ProductCard = ({ product, onAdd, isExpanded, onToggleExpand, isAlreadySele
                                         alt={currentColor.name}
                                         className={styles.currentSwatch}
                                     />
-                                    <p> {currentColor.name}</p>
+                                    <p className={styles.hovercolorname}> {currentColor.name}</p>
 
                                 </div>
                             )}

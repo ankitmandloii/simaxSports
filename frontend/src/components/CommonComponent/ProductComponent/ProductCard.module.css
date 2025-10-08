@@ -82,7 +82,7 @@
     /* border-radius: 5px; */
     /* margin: 5px auto; */
     color: #424447;
-    font-size: clamp(12px, 2vw, 14px);
+    font-size: clamp(8px, 2vw, 10px);
     border-radius: 4px;
 }
 
@@ -294,4 +294,8 @@
     height: 1.2rem;
     width: 1.2rem;
     border-radius: 2px;
+}
+
+.hovercolorname {
+    font-size: 8px;
 }
