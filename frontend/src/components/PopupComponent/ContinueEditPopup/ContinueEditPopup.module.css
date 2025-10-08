@@ -129,7 +129,8 @@
 }
 
 .primaryBtn {
-  background-color: #000;
+  /* background-color: #000; */
+  background-color: var(--blue-color);
   color: #fff;
   font-weight: 600;
   border: none;
@@ -141,7 +142,7 @@
 }
 
 .primaryBtn:hover:not(:disabled) {
-  background-color: #111;
+  transform: scale(0.9);
 }
 
 .primaryBtn:disabled {
