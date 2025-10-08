@@ -1299,7 +1299,7 @@ const AddImageToolbar = () => {
                         <h5 className='Toolbar-badge'>Upload Art</h5>
                         <span className={styles.crossIcon} onClick={handleBack}><CrossIcon /></span>
                         <h3>Edit Your Artwork</h3>
-                        <p>Our design professionals will select ink colors for you or tellus your preferred colors at checkout.</p>
+                        <p>Edit your artwork by customizing it with your choice of colors and details!t.</p>
                     </div>
 
                     <div className={styles.toolbarBox}>

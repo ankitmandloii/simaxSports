@@ -206,3 +206,104 @@ a.step:first-child:after {
     margin-bottom: 16px;
   }
 }
+
+/*ogin modal  */
+
+/* Container for the user icon and modal to enable relative positioning */
+.userIconContainer {
+  position: relative;
+  /* Essential for modal positioning */
+}
+
+/* Modal styling */
+.userModal {
+  position: absolute;
+  top: 100%;
+  /* Position below the button */
+  right: -60px;
+  /* Align to the right of the button */
+  width: 250px;
+  /* Adjust as needed */
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  /* Ensure it is above other elements */
+  margin-top: 10px;
+  /* Small gap between button and modal */
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Style for the user email section */
+.userModalHeader {
+  display: flex;
+  align-items: center;
+  padding: 8px 8px;
+  border-bottom: 1px solid #eee;
+  /* margin-bottom: 8px; */
+  word-break: break-word;
+  /* Prevents long emails from overflowing */
+}
+
+.userModalUserInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.userModalName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.loginNameContainer {
+  display: flex;
+  align-items: center;
+}
+
+.loginNameContainer svg {
+  height: 20px;
+  width: 22px;
+}
+
+.userModalIcon {
+  font-size: 25px;
+  color: #333;
+  margin-right: 8px;
+}
+
+.userModalEmail {
+  font-size: 14px;
+  font-weight: 600;
+  color: #888;
+}
+
+/* Style for the Logout button */
+.userModalButton {
+  background: none;
+  border: none;
+  padding: 8px 10px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-size: 14px;
+  color: #c0392b;
+  /* A color for logout, like red */
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.userModalButton:hover {
+  background-color: #fcebeb;
+  /* Light red background on hover */
+}
+
+.userModalButtonIcon {
+  margin-right: 8px;
+}

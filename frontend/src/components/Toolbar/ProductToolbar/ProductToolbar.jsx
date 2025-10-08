@@ -20,6 +20,7 @@ import { removeNameAndNumberProduct, setRendering } from '../../../redux/Fronten
 import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSlice';
 import { removeProduct } from '../../../redux/productSelectionSlice/productSelectionSlice';
 import { CgLayoutGrid } from 'react-icons/cg';
+import CloseButton from '../../CommonComponent/CrossIconCommon/CrossIcon';
 
 const ProductToolbar = () => {
 
@@ -363,13 +364,22 @@ const ProductToolbar = () => {
                 <div className={style.toolbarProductTitleHead}>
                   <h4>{product?.name || product?.title}</h4>
                   {selectedProducts.length > 1 && (
-                    <span
-                      className={style.crossProdICon}
-                      onClick={() => handleDeleteProduct(index, product.id)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <CrossIcon />
-                    </span>
+                    <>
+                      {/* <span
+                        className={style.crossProdICon}
+                        onClick={() => handleDeleteProduct(index, product.id)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <CrossIcon />
+                      </span> */}
+                      <span
+                        className={`${style.closeBtn} `}
+                        onClick={() => handleDeleteProduct(index, product.id)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <CrossIcon />
+                      </span>
+                    </>
                   )}
                 </div>
 
