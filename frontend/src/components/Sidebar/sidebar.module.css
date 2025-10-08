@@ -92,7 +92,13 @@
   z-index: 10;
 }
 
+.sidebarLink:hover {
+  color: var(--blue-color);
+}
 
+.sidebarLink:hover .sidebarIcon path {
+  fill: var(--blue-color);
+}
 
 .active {
   background-color: var(--blue-color);
@@ -109,8 +115,8 @@
 
 .sidebarIcon svg {
   font-size: 18px;
-  height: 20px;
-  width: 23px;
+  height: 24px;
+  width: 24px;
   /* color: red; */
 }
 
@@ -126,7 +132,8 @@
 
 .sidebarLabel {
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: .35px;
   text-align: center;
 }
 
@@ -158,4 +165,31 @@
 .active .spannAi {
   background-color: #ffffff;
   color: var(--blue-color)
+}
+
+
+
+
+/* Active class overrides hover effect */
+.sidebarLink.active {
+  background-color: var(--blue-color);
+  color: #fff;
+  box-shadow: 0 2px 4px 0 var(--blue-color);
+}
+
+/* Active state icon color */
+.sidebarLink.active .sidebarIcon path {
+  fill: #fff;
+}
+
+/* Hovered class (optional, if you have a separate hover state) */
+.sidebarLink.hovered {
+  background-color: var(--blue-color);
+  color: #fff;
+}
+
+/* Ensure the icon path remains unaffected by hover when active */
+.sidebarLink.active:hover .sidebarIcon path,
+.sidebarLink.hovered .sidebarIcon path {
+  fill: #fff;
 }

@@ -90,12 +90,18 @@
   top: -2px;
   cursor: pointer;
   background-color: #ffffff;
-  border-radius: 100%;
-  border: 1px solid #888;
+  /* border-radius: 100%; */
+  /* border: 1px solid #888; */
 }
 
 .crossProdICon svg {
-  height: 6.5px;
+  height: 10px;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+.crossProdICon svg:hover {
+  color: var(--blue-color);
 }
 
 .toolbarBox {
@@ -284,10 +290,22 @@
   /* margin: 2px; */
   cursor: pointer;
   border: 1px solid #888;
+  transition: all 0.2s ease;
+}
+
+.crossProdIConofSingleProduct:hover {
+  border: 1px solid var(--blue-color);
+  background-color: var(--blue-light);
+  color: var(--blue-color);
 }
 
 .crossProdIConofSingleProduct svg {
   height: 8px;
+}
+
+.crossProdIConofSingleProduct svg :hover {
+  height: 8px;
+
 }
 
 .productToolbarImageWithBtn {
@@ -371,4 +389,37 @@
   border-radius: 8px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 
+}
+
+.closeBtn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: #f9fafc;
+  background: #cccfd6;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease;
+  position: absolute;
+  top: 0px;
+  right: -12px;
+}
+
+.closeBtn svg {
+  color: #f9fafc;
+  height: 8px;
+  width: 8px;
+}
+
+.closeBtn:hover {
+  background: var(--blue-color);
+}
+
+.closeBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }

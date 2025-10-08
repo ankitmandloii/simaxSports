@@ -1,0 +1,301 @@
+/* ProductCard.module.css */
+/* Adapted to match the exact previous card appearance with absolute positioning for the color popup */
+
+.modalProduct {
+    position: relative;
+    /* Key to anchor popup to this card */
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    transition: box-shadow 0.3s ease;
+}
+
+.modalProduct:hover {
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+}
+
+.productMain {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.imageWrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    /* 1:1 aspect ratio */
+    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+
+.imagePlaceholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #e0e0e0;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #999;
+    z-index: 1;
+}
+
+.modalProductImg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in;
+    z-index: 2;
+}
+
+.modalProductImg.visible {
+    opacity: 1;
+}
+
+.hidden {
+    opacity: 0;
+}
+
+.swatchSection {
+    width: 100%;
+}
+
+.vendorspan {
+    background-color: var(--blue-light);
+    width: fit-content;
+    padding: 4px 8px;
+    /* border-radius: 5px; */
+    /* margin: 5px auto; */
+    color: #424447;
+    font-size: clamp(8px, 2vw, 10px);
+    border-radius: 4px;
+}
+
+.addProductPara {
+    /* text-align: center; */
+    margin: 5px 0;
+    font-size: clamp(12px, 2vw, 12px);
+    color: #424447;
+}
+
+.modalProductColorContainer {
+    display: flex;
+    /* flex-direction: column; */
+    align-items: center;
+    justify-content: start;
+    gap: 8px;
+    margin-top: auto;
+    cursor: pointer;
+    /* padding: 8px; */
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+    /* Optional: subtle separator */
+}
+
+.modalProductColorImg {
+    height: 20px;
+}
+
+.colorPopup {
+    position: absolute;
+    top: 70%;
+    /* Positioned inside modalProduct to match previous */
+    z-index: 1000;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-top: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width: max-content;
+    left: 50%;
+    transform: translateX(-50%);
+    /* Center horizontally */
+}
+
+.colorPopupHeader {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+
+.closePopupBtn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 5px;
+    position: absolute;
+    right: -7px;
+    top: -7px;
+    background-color: #f6f6f6;
+    padding: 2px;
+    border-radius: 100%;
+    border: 1px solid #888;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 1rem;
+    width: 1rem;
+}
+
+.closePopupBtn svg {
+    height: 10px;
+    margin: 2px;
+    cursor: pointer;
+}
+
+/* .colorSwatchList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+    gap: 5px;
+    margin-bottom: 12px;
+} */
+
+.colorSwatch {
+    /* padding: 10px; */
+    margin: 2px;
+    border-radius: 4px;
+    display: inline-block;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    object-fit: cover;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.colorSwatch:hover {
+    border: 2px solid black;
+}
+
+.selected {
+    border: 2px solid black !important;
+}
+
+.popupActions {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.addProductBtnPopup {
+    background: var(--blue-color);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 14px;
+    transition: background 0.2s ease;
+}
+
+.addProductBtnPopup:hover:not(:disabled) {
+    border-color: var(--blue-color);
+    box-shadow: var(--box-shadow);
+    background-color: var(--blue-color);
+}
+
+
+
+
+
+.addProductBtnPopup:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Responsive adjustments to match previous */
+@media (max-width: 1024px) {
+    .imageWrapper {
+        padding-top: 90%;
+    }
+
+    .colorPopup {
+        top: 75%;
+        /* Adjust for smaller cards */
+    }
+}
+
+@media (max-width: 768px) {
+    .colorPopup {
+        width: 90%;
+        left: 5%;
+        transform: none;
+        /* Override centering for mobile */
+        top: 80%;
+        /* Adjust positioning */
+    }
+
+    .colorSwatch {
+        padding: 8px;
+        margin: 3px;
+    }
+
+    .addProductBtnPopup {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modalProductColorContainer {
+        padding: 6px;
+    }
+
+    .colorPopup {
+        top: 85%;
+        padding: 3px;
+    }
+
+    .colorSwatchList {
+        gap: 3px;
+    }
+}
+
+.colorSwatchList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.1rem;
+    /* spacing between swatches */
+    justify-content: start;
+
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.currentColorDisplay {
+    display: flex;
+    gap: 10px;
+    margin: 4px;
+    align-items: center;
+}
+
+.currentSwatch {
+    height: 1.2rem;
+    width: 1.2rem;
+    border-radius: 2px;
+}
+
+.hovercolorname {
+    font-size: 8px;
+}

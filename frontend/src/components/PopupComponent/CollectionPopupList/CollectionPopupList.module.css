@@ -166,12 +166,14 @@
   border-bottom: 1px solid rgb(204, 207, 214);
 }
 
-.collectionCard:hover {
+.collectionCard:hover span {
   color: var(--blue-color);
 }
 
 .collectionCard span {
-  font-weight: 600;
+  font-weight: 700;
+  color: #424447;
+  font-size: 16px;
 }
 
 .expandIcon {
@@ -189,6 +191,7 @@
 
 .subcategoryUl span {
   font-size: 14px;
+  color: #424447;
 }
 
 .subcategoryLi {

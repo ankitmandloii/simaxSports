@@ -104,7 +104,7 @@ const UploadBox = ({ file, imageUrl, onRemoveFile, progress, status = "uploading
             <h4>Copyright & Trademark Notice</h4>
             <p>
               You agree and confirm that you own or have the necessary rights to use the images, logos, text,
-              and/or trademarks in your design and indemnify Printify.
+              and/or trademarks in your design.
             </p>
           </div>
         </div>

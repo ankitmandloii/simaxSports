@@ -690,9 +690,9 @@ export function Dashboard() {
                 <Card key={idx} sectioned>
                   <Box padding="400" style={{ display: "grid", gap: "8px" }}>
                     <NoteRow label="Content" value={t.content} />
-                    <NoteRow label="Font" value={t.fontFamily} />
+                    <NoteRow label="Font Family" value={t.fontFamily} />
                     <NoteRow label="Font Size" value={t.fontSize} />
-                    <NoteRow label="Font Weight" value={t.fontWeight} />
+                    {/* <NoteRow label="Font Weight" value={t.fontWeight} /> */}
                     <NoteRow label="Font Style" value={t.fontStyle} />
                     <NoteRow label="Color" value={t.textColor} />
                     <NoteRow label="Position" value={`X: ${t.position?.x ?? "-"}, Y: ${t.position?.y ?? "-"}`} />

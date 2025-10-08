@@ -250,7 +250,8 @@
   color: var(--blue-color);
   margin: 1rem 0;
   /* margin-top: 1rem; */
-  border: 2px solid var(--blue-color);;
+  border: 2px solid var(--blue-color);
+  ;
   border-radius: 8px;
   font-size: small;
   font-weight: 700;
@@ -262,7 +263,7 @@
 }
 
 .modalAllProductButton:hover {
-  box-shadow: var(--box-shadow-black-color) 0px 2px 8px 0px;
+  box-shadow: var(--box-shadow);
 }
 
 .closePopupBtn svg {

@@ -57,7 +57,9 @@
 }
 
 .footerBtn:hover {
-  background-color: #f0f0f0;
+  background-color: #fff;
+  border-color: var(--blue-color);
+  color: var(--blue-color);
   transform: scale(1.05);
 }
 

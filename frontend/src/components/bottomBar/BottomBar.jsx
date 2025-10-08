@@ -42,13 +42,13 @@ const BottomBar = () => {
   //-----------------------Menu items for bottom bar-------------------------
   const menuItems = [
     { path: "/design/product", icon: <RiTShirt2Line />, label: "Products", data: <ProductToolbar />, snap: 1200 },
-    { path: "/design/addText", icon: <AddProductIcon />, label: "Text", data: <AddTextToolbar />, snap: 600 },
+    { path: "/design/addText", icon: <AddProductIcon />, label: "Add Text", data: <AddTextToolbar />, snap: 600 },
     { path: "/design/uploadArt", icon: <LuHardDriveUpload />, label: "Upload", data: <UploadArtToolbar />, snap: 1200 },
     ...(selectedImageId
       ? [{ path: "/design/addImage", icon: <CiImageOn />, label: "Add Image", data: <AddImageToolbar />, snap: 1200 }]
       : []),
     { path: "/design/addArt", icon: <PiCameraPlusFill />, label: "Add Art", data: <AddArtToolbar />, snap: 1200 },
-    { path: "/design/addNames", icon: <PiListNumbersBold />, label: "Names & Numbers", data: <NamesToolbar />, snap: 1200 },
+    { path: "/design/addNames", icon: <PiListNumbersBold />, label: "Personalize", data: <NamesToolbar />, snap: 1200 },
 
 
   ];

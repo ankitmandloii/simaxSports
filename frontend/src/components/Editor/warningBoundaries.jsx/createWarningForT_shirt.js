@@ -1,13 +1,119 @@
 
-function createWarningForT_shirt({canvasWidth, canvasHeight, canvas,warningColor,activeSide,getProductSleeveType,activeProductTitle,fabric}) {
-    console.log("fabric",fabric)
+function createWarningForT_shirt({ canvasWidth, canvasHeight, canvas, warningColor, activeSide, getProductSleeveType, activeProductTitle, fabric }) {
+    console.log("fabric", fabric)
     let boxWidth = canvasWidth * 0.36;
     let boxHeight = canvasHeight * 0.5;
     let boxLeft = (canvasWidth - boxWidth) / 2;
     let boxTop = (canvasHeight - boxHeight) / 2;
 
     const strokeColor = warningColor || "skyblue";
-    const dashPattern = [3, 1];
+    const dashPattern = [5, 2];
+
+
+    // --- Configuration ---
+    const strokeColorAdult = warningColor || "#FF5722"; // Bright Orange for Adult box (Outer)
+    const strokeColorYouth = warningColor || "#FF5722"; // Use same color for Youth box (Inner)
+    const dashPatternYouth = [5, 2]; // Dashed line for Youth box
+
+    // 1. ADULT BOX (Outer Bounding Box - Solid)
+    let adultBoxWidth = canvasWidth * 0.38;
+    let adultBoxHeight = canvasHeight * 0.5;
+    let adultBoxLeft = (canvasWidth - adultBoxWidth) / 2;
+    let adultBoxTop = (canvasHeight - adultBoxHeight) / 2;
+
+    // Adjustments for sleeve view (Keep existing logic)
+    if (activeSide === "leftSleeve" || activeSide == "rightSleeve") {
+        const sleeveType = getProductSleeveType(activeProductTitle);
+        if (sleeveType == "Sleeveless") return;
+        if (sleeveType == "Long Sleeve") {
+            adultBoxLeft += canvasWidth * 0.1;
+            adultBoxWidth = canvasWidth * 0.2;
+            adultBoxHeight = canvasHeight * 0.4;
+            adultBoxTop -= canvasHeight * 0.03;
+        } else {
+            adultBoxLeft += canvasWidth * 0.1;
+            adultBoxWidth = canvasWidth * 0.2;
+            adultBoxHeight = canvasHeight * 0.23;
+            adultBoxTop -= canvasHeight * 0.03;
+        }
+    }
+
+    // Set the vertical offset for the whole design group
+    const verticalOffset = canvasHeight * 0.10;
+
+
+
+    // 2. YOUTH BOX (Inner Bounding Box - Dashed)
+    // Reduce size for youth (e.g., 85% of adult size)
+    const youthScale = 0.89;
+    const youthBoxWidth = adultBoxWidth * youthScale;
+    const youthBoxHeight = adultBoxHeight * youthScale;
+
+    // Calculate position to center the youth box inside the adult box
+    const youthBoxLeft = adultBoxLeft + (adultBoxWidth - youthBoxWidth) / 2;
+    const youthBoxTop = (adultBoxTop - verticalOffset) + (adultBoxHeight - youthBoxHeight) / 2;
+
+
+    const boundaryBoxYouth = new fabric.Rect({
+        left: youthBoxLeft,
+        top: youthBoxTop,
+        width: youthBoxWidth,
+        height: youthBoxHeight,
+        fill: "transparent",
+        stroke: strokeColorYouth,
+        strokeWidth: 1,
+        selectable: false,
+        evented: false,
+        visible: true,
+        objectCaching: false,
+        strokeDashArray: dashPatternYouth,
+        name: "boundaryBoxInner"
+    });
+
+    // 3. TEXT LABELS (Adult and Youth)
+    const labelFontSize = canvasHeight * 0.025;
+    const labelFontFamily = "proxima-soft, sans-serif";
+    const labelFill = "white";
+    const textVerticalOffset = canvasHeight * 0.001; // Space below the box
+
+    // Youth Label (Placed just below the Youth Box)
+    const youthText = new fabric.Text("Youth", {
+        left: youthBoxLeft + youthBoxWidth / 2, // Centered horizontally on Youth box
+        top: youthBoxTop + youthBoxHeight - (canvasHeight * 0.04), // Below Youth box
+        fontSize: labelFontSize,
+        fontFamily: labelFontFamily,
+        fill: labelFill,
+        selectable: false,
+        evented: false,
+        visible: true,
+        originX: "center",
+        originY: "top",
+        name: "youthText"
+    });
+
+    // Adult Label (Placed just below the Adult Box)
+    const adultText = new fabric.Text("Adult", {
+        left: adultBoxLeft + adultBoxWidth / 2, // Centered horizontally on Adult box
+        top: adultBoxTop - verticalOffset + adultBoxHeight - (canvasHeight * 0.015), // Below Adult box
+        fontSize: labelFontSize,
+        fontFamily: labelFontFamily,
+        fill: labelFill,
+        selectable: false,
+        evented: false,
+        visible: true,
+        originX: "center",
+        originY: "top",
+        name: "adultText"
+    });
+
+    // --- Existing/Other Elements (Commented out for this specific view) ---
+
+
+
+    // boundaryBoxLeft, boundaryBoxRight, leftChestText, rightChestText, centerVerticalLine, leftBorder, rightBorder
+    // These existing elements are currently calculated but will not be added to the canvas in this version
+    // unless you want them visible alongside the Adult/Youth boxes.
+
 
     if (activeSide === "leftSleeve" || activeSide == "rightSleeve") {
         const sleeveType = getProductSleeveType(activeProductTitle);
@@ -45,10 +151,10 @@ function createWarningForT_shirt({canvasWidth, canvasHeight, canvas,warningColor
     const chestBoxWidth = canvasWidth * 0.14;
     const chestBoxHeight = canvasHeight * 0.14;
     const chestBoxLeftOffset = canvasWidth * 0.22;
-    const chestBoxTopOffset = canvasHeight * 0.05;
+    const chestBoxTopOffset = canvasHeight * 0.07;
 
     const boundaryBoxLeft = new fabric.Rect({
-        left: boxLeft + chestBoxLeftOffset,
+        left: boxLeft + chestBoxLeftOffset - (canvasWidth * 0.01),
         top: boxTop - chestBoxTopOffset,
         width: chestBoxWidth,
         height: chestBoxHeight,
@@ -177,6 +283,17 @@ function createWarningForT_shirt({canvasWidth, canvasHeight, canvas,warningColor
         leftBorder,
         rightBorder
     );
+
+    // --- Add all new elements to canvas ---
+    canvas.add(
+        boundaryBoxYouth,
+        youthText,
+        adultText,
+    );
+
+    canvas.bringToFront(boundaryBoxYouth);
+    canvas.bringToFront(youthText);
+    canvas.bringToFront(adultText);
 
     // Layering
     canvas.sendToBack(rightBorder);

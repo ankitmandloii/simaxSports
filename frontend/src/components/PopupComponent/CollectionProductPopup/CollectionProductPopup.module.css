@@ -1,11 +1,9 @@
 .productListCollection {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  /* display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1rem; */
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  list-style: none;
+
 }
 
 /* CollectionProductPopup.module.css */
@@ -106,7 +104,7 @@
 .loadMore {
   margin: 2rem auto 1rem;
   display: block;
-  background-color: black;
+  background-color: var(--blue-color);
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
@@ -117,7 +115,8 @@
 }
 
 .loadMore:hover {
-  background-color: var(--blue-color);
+  /* background-color: var(--blue-color); */
+  box-shadow: var(--box-shadow);
 }
 
 .loadMore:disabled {

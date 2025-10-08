@@ -1,42 +1,203 @@
-/* .colorPopupContainerSpanBox {
-  position: absolute;
-  top: 50%;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 16rem;
-  margin: auto;
-  z-index: 200;
-} */
+.color-popup-overlay {
+  /* position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000 !important; */
+}
+
+/* Update the main container to match the image's size and positioning */
 .colorPopupContainerSpanBox {
-  position: absolute;
-  top: 80%;
-  /* right: 2%; */
+  /* Change position from 'absolute' to 'fixed' */
+  position: fixed;
   background: #fff;
-  padding: 5px;
-  border-radius: 10px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 10rem;
-  margin: auto;
-  z-index: 200;
+  /* padding: 15px 15px 10px 15px; */
+  border-radius: 6px;
+  border: 1px solid black;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 280px;
+  /* margin: auto; <- Remove this, it's not needed with fixed positioning */
+  z-index: 1001;
+  border: 1px solid rgba(0, 0, 0, .2);
+  max-width: 276px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-break: auto;
+  line-height: 1.42857143;
+  text-align: left;
+  text-align: start;
+  text-decoration: none;
+  text-shadow: none;
+  text-transform: none;
+  white-space: normal;
+  word-break: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  font-size: 14px;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, .2);
+  border-radius: 6px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+  /* Set a higher z-index than the overlay (1000) just to be safe */
 }
 
 
+/* Styles for the "ADD ANOTHER COLOR" text */
+.popupTitle {
+  color: var(--primary-color);
+  /* A color close to the orange/red in the image */
+  font-size: 15px;
+  /* Slightly larger text */
+  font-weight: 600;
+  /* Bold text */
+  /* Space below the title */
+  text-transform: uppercase;
+}
+
+.popupHeader {
+  padding: 10px;
+
+  border-bottom: 1px solid #cccfd6;
+  background-color: var(--blue-light);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.arrowLeft {
+  /* // at center left */
+  position: absolute;
+  left: -2px;
+  transform: translateX(-50%);
+  top: 40%;
+  height: 40px;
+  width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: transparent;
+  /* Remove background circle */
+  border-radius: 100%;
+  border: none;
+  /* Remove border */
+  color: black;
+  /* Color the X icon grey */
+  z-index: 20;
+  /* Ensure it's above the title */
+}
+
+.arrowLeft span {
+  border: solid rgba(0, 0, 0, .2);
+  border-width: 0 1px 1px 0;
+  display: inline-block;
+  margin-left: 5px;
+  padding: 5px;
+  transform: rotate(135deg);
+  background-color: white;
+  -webkit-transform: rotate(135deg);
+}
+
+/* Styles for the "Color:" label */
+.colorLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #888;
+  margin: 10px 0 10px 0;
+}
+
+/* Updated grid for the colors */
 .colorOptionsGrid {
+  padding: 10px;
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
-  margin-top: 15px;
+  /* CRITICAL: Set gap to a value that allows 8 columns */
+  gap: 5px;
+  /* This helps to center the grid content if it doesn't fill the full width */
+  justify-content: flex-start;
 }
 
+.currentColorDisplay {
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+}
+
+.colorName {
+  font-size: 14px;
+  font-weight: 500;
+  /* margin-left: 10px; */
+  text-transform: capitalize;
+}
+
+.colorSwatch {
+  width: 1.2rem;
+  /* ~32px on default browsers */
+  height: 1.2rem;
+  border-radius: 20%;
+  cursor: pointer;
+  object-fit: cover;
+  border: 1px solid gray;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  margin: 3px;
+}
+
+/* Updated style for the individual color swatch */
 .colorOptionCard {
-  width: 30px;
-  text-align: center;
+  /* CRITICAL: Adjust size to fit 8 columns across the 280px container */
+  width: 25px;
+  height: 25px;
+  border-radius: 4px;
+  /* Slight rounding for a modern look */
+  cursor: pointer;
+  /* Optional: Add a subtle box-shadow for a 'raised' effect */
+  /* Removing the border since we're using background-color now. */
+  border: 1px solid transparent;
+  transition: transform 0.1s;
 }
 
+
+/* Styles for the 'X' icon */
+.crossProdIConn {
+  position: absolute;
+  /* CRITICAL: Move closer to the top right of the popup */
+  right: 10px;
+  top: 10px;
+  height: 20px;
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: transparent;
+  /* Remove background circle */
+  border-radius: 100%;
+  border: none;
+  /* Remove border */
+  color: #888;
+  /* Color the X icon grey */
+  z-index: 20;
+  /* Ensure it's above the title */
+}
+
+.crossProdIConn svg {
+  height: 12px;
+  /* Make the X icon slightly bigger */
+  width: 12px;
+}
+
+/* Keeping other styles but they are less relevant to the image */
 .colorOptionCard span {
   height: 10px;
 }
@@ -55,22 +216,9 @@
   cursor: pointer;
 }
 
-.crossProdIConn {
-  position: absolute;
-  right: -3px;
-  height: 1rem;
-  display: flex;
-  justify-content: center;
-  width: 1rem;
-  align-items: center;
-  /* width: 16px; */
-  top: -4px;
-  cursor: pointer;
-  background-color: #ffffff;
-  border-radius: 100%;
-  border: 1px solid #888;
-}
-
-.crossProdIConn svg {
-  height: 8px;
+.noColorsMessage {
+  text-align: center;
+  padding: 10px;
+  color: grey;
+  font-size: 1rem;
 }
