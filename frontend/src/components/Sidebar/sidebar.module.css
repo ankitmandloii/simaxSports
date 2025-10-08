@@ -109,8 +109,8 @@
 
 .sidebarIcon svg {
   font-size: 18px;
-  height: 20px;
-  width: 23px;
+  height: 24px;
+  width: 24px;
   /* color: red; */
 }
 
@@ -126,7 +126,8 @@
 
 .sidebarLabel {
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: .35px;
   text-align: center;
 }
 

@@ -23,6 +23,16 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Proxima Soft';
+  src: local('Proxima Soft SemiBold'), local('Proxima-Soft-SemiBold'),
+    url('../public/fonts/ProximaSoft-SemiBold.woff2') format('woff2'),
+    url('../public/fonts/ProximaSoft-SemiBold.woff') format('woff'),
+    url('../public/fonts/ProximaSoft-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -31,11 +41,13 @@
 }
 
 body {
+
   position: relative;
   /* width: 100%; */
   /* font-family: "Roboto-Regular", sans-serif; */
   font-family: "Helvetica", "Roboto-Regular", sans-serif;
   overflow: hidden;
+  letter-spacing: .35px;
 }
 
 :root {
@@ -51,22 +63,26 @@ body {
 
 h2,
 h3 {
+  font-family: "Proxima Soft", sans-serif;
   font-size: 24px;
   font-weight: 500;
 }
 
 p {
+  /* font-family: "Proxima Soft", sans-serif; */
   font-size: 10px;
   font-weight: 400;
   line-height: 15px;
 }
 
 a {
+  color: inherit;
   list-style: none;
   text-decoration: none;
 }
 
 h4 {
+
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;

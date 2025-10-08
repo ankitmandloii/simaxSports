@@ -56,7 +56,7 @@ const AdminSidebar = () => {
     {
       path: "/design/addText",
       icon: <AddProductIcon />,
-      label: "Text",
+      label: " Add Text",
       visible: settings?.settingsForTextSection?.sideBarTextSection,
     },
     {
