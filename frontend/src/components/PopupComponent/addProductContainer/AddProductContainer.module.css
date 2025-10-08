@@ -244,15 +244,16 @@
 
 .modalAllProductButton {
   cursor: pointer;
-  background-color: black;
-  width: 50%;
-  padding: 8px;
-  color: white;
+  background-color: #ffffff;
+  width: 20%;
+  padding: 10px;
+  color: var(--blue-color);
   margin: 1rem 0;
   /* margin-top: 1rem; */
-  /* border: 2px solid #F0F6FE; */
+  border: 2px solid var(--blue-color);;
   border-radius: 8px;
   font-size: small;
+  font-weight: 700;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -480,7 +481,8 @@
   align-items: center;
   justify-content: center;
   font-size: 1.4rem;
-  background: linear-gradient(90deg, var(--blue-color) 0%, #C183FF 100%);
+  background: var(--blue-color);
+  /* linear-gradient(90deg, var(--blue-color) 0%, #C183FF 100%); */
   color: #fff;
   padding: 5px;
   border-radius: 50%;

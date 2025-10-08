@@ -485,7 +485,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                     onClose();
                   }}
                 >
-                  BROWSE ALL PRODUCTS
+                  Browse All Products
                 </button>
               </div>
             </>
