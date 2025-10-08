@@ -215,7 +215,7 @@
   margin-bottom: 15px;
 }
 
-.active {
+.active span {
   font-weight: bold;
   color: var(--blue-color);
   /* margin-bottom: 15px; */
