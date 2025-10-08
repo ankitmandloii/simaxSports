@@ -278,7 +278,7 @@ h4 {
   line-height: 31px;
   margin-bottom: 1rem;
   padding-bottom: 12px;
-  border-bottom: 1px solid #cccfd6;
+  /* border-bottom: 1px solid #cccfd6; */
 }
 
 .cursor {
