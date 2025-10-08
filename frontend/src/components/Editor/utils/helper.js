@@ -420,7 +420,7 @@ const renderNameAndNumberObjectHeloper = (
   addName,
   addNumber
 ) => {
-  console.log("nameAndNumberDesignState.......", nameAndNumberDesignState)
+  // console.log("nameAndNumberDesignState.......", nameAndNumberDesignState)
 
   // const canvas = fabricCanvasRef.current;
   if (!canvas || !nameAndNumberDesignState

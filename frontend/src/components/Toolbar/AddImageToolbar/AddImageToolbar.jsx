@@ -249,6 +249,7 @@ const AddImageToolbar = () => {
 
       setResetDefault(false);
       globalDispatch("loading", true);
+      setLoading(true);
       // globalDispatch("editColor", false);
       // globalDispatch("loading", true); // Corrected the typo here
       console.log("handle image function called with src", imageSrc, color, selectedFilter, invertColor, editColor);
@@ -305,16 +306,26 @@ const AddImageToolbar = () => {
       // Set the base64 image and dispatch it to the global state
       setBase64Image(currentBase64Image);
       // Dispatch the base64 string to your global state (no need to convert it to a string again)
-      globalDispatch("base64CanvasImage", currentBase64Image);
-
-      globalDispatch("base64CanvasImageForNormalColor", String(normalColorImage));
-      globalDispatch("base64CanvasImageForSinglelColor", String(singleColorImage));
-      globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(blackWhiteColorImage));
+      // globalDispatch("base64CanvasImage", currentBase64Image);
+      // globalDispatch("base64CanvasImageForNormalColor", String(normalColorImage));
+      // globalDispatch("base64CanvasImageForSinglelColor", String(singleColorImage));
+      // globalDispatch("base64CanvasImageForBlackAndWhitelColor", String(blackWhiteColorImage));
+      dispatch(updateImageState({
+        id: selectedImageId,
+        changes: {
+          base64CanvasImage: currentBase64Image,
+          base64CanvasImageForNormalColor: String(normalColorImage),
+          base64CanvasImageForSinglelColor: String(singleColorImage),
+          base64CanvasImageForBlackAndWhitelColor: String(blackWhiteColorImage),
+        }
+      }));
       // Set loading to false after the process is done
       globalDispatch("loading", false); // Corrected the typo here
+      setLoading(false);
     } catch (error) {
       globalDispatch("loading", false); // Ensure loading is stopped even in case of error
       console.error("Error:", error); // Log any errors that occur
+      setLoading(false);
     }
   }
 
@@ -505,37 +516,36 @@ const AddImageToolbar = () => {
     return `${base}${transform}`;
   }, [img]);
 
-  const applyTransform = useCallback(
-    async (transform, resetAll, editColor, newActiveEffects) => {
-      if (!img?.src) return;
-      globalDispatch("loading", true);
-      console.log("aply tranform call with tranform", transform);
 
-      const newUrl = buildUrl(transform, resetAll);
+  const applyTransform = async (transform, resetAll, editColor, newActiveEffects) => {
+    if (!img?.src) return;
+    // globalDispatch("loading", true);
+    console.log("aply tranform call with tranform", transform);
 
-      setLoading(true);
-      // Load transformed image
-      const tempImage = new Image();
-      tempImage.onload = async () => {
-        // Only update everything when loaded successfully
-        setPreviewUrl(newUrl);
-        setActiveTransform(transform);
-        globalDispatch("src", newUrl);
-        await handleImage(newUrl, singleColor, selectedFilter, img?.invertColor ?? invertColor, false, newActiveEffects);
-        setLoading(false);
-      };
+    const newUrl = buildUrl(transform, resetAll);
 
-      tempImage.onerror = () => {
-        console.error("Failed to load image:", newUrl);
-        setPreviewUrl(img.src);
-        setLoading(false);
-        globalDispatch("loading", false);
-      };
+    // setLoading(true);
+    setPreviewUrl(newUrl);
+    setActiveTransform(transform);
+    globalDispatch("src", newUrl);
+    await handleImage(newUrl, singleColor, selectedFilter, img?.invertColor ?? invertColor, false, newActiveEffects);
+    // setLoading(false);
+    // Load transformed image
+    // const tempImage = new Image();
+    // tempImage.onload = async () => {
+    //   // Only update everything when loaded successfully
 
-      tempImage.src = newUrl; // Begin load
-    },
-    [img, buildUrl, globalDispatch]
-  );
+    // };
+
+    // tempImage.onerror = () => {
+    //   console.error("Failed to load image:", newUrl);
+    //   setPreviewUrl(img.src);
+    //   setLoading(false);
+    //   globalDispatch("loading", false);
+    // };
+
+    // tempImage.src = newUrl; // Begin load
+  }
 
 
 
@@ -1294,7 +1304,7 @@ const AddImageToolbar = () => {
                           }}
                         >
                           {
-                            loading ? <> <img src={loadingImage} alt={f.name} className={styles.filterImage} /></> : <> {f.image && <img src={f.image} alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} />}</>
+                            img?.loading ? <> <img src={loadingImage} alt={f.name} className={styles.filterImage} /></> : <> {f.image && <img src={f.image} alt={f.name} className={styles.filterImage} onError={e => e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'} />}</>
                           }
 
 
@@ -1423,7 +1433,7 @@ const AddImageToolbar = () => {
                         type="checkbox"
                         checked={invertColor}
                         onChange={() => invertColorHandler(img.getBase64CanvasImage || base64Image)}
-                        disabled={loading}
+                        disabled={img?.loading || loading}
                       />
                       <span className={styles.slider}></span>
                     </label>
@@ -1447,7 +1457,7 @@ const AddImageToolbar = () => {
                         type="checkbox"
                         checked={solidColor}
                         onChange={solidColorHandler}
-                        disabled={loading}
+                           disabled={img?.loading || loading}
                       />
                       <span className={styles.slider}></span>
                     </label>
@@ -1487,7 +1497,7 @@ const AddImageToolbar = () => {
                             id='removeBackgroundInput'
                             // onChange={() => toggle('bg-remove=true', isActive('bg-remove=true'))}
                             onChange={removeBackgroundHandler}
-                            disabled={loading}
+                            disabled={img?.loading || loading}
                           />
                           <span className={styles.slider}></span>
                         </label>
@@ -1513,7 +1523,7 @@ const AddImageToolbar = () => {
                         type="checkbox"
                         checked={cropAndTrim}
                         onChange={cropAndTrimdHandler}
-                        disabled={loading}
+                        disabled={img?.loading || loading}
                       />
                       <span className={styles.slider}></span>
                     </label>
@@ -1532,7 +1542,7 @@ const AddImageToolbar = () => {
                         type="checkbox"
                         checked={isActive('auto=enhance&sharp=80&upscale=true')}
                         onChange={superResolutiondHandler}
-                        disabled={loading}
+                        disabled={img?.loading || loading}
                       />
                       <span className={styles.slider}></span>
                     </label>
