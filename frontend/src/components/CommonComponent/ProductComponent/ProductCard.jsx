@@ -304,10 +304,10 @@ const ProductCard = ({ product, onAdd, isExpanded, onToggleExpand, isAlreadySele
     const currentColor = hoveredColor || selectedColor;
 
     return (
-        <li className={styles.modalProduct}> {/* Reuse existing class or adjust in CSS */}
+        <li className={styles.modalProduct} onClick={toggleExpand}> {/* Reuse existing class or adjust in CSS */}
             <div
                 className={styles.productMain}
-                onClick={toggleExpand}
+
             >
                 <div className={styles.imageWrapper}>
                     {!imageLoaded && (
