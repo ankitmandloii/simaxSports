@@ -802,7 +802,7 @@ const TextFrontendDesignSlice = createSlice({
 
     updateImageState: (state, action) => {
       const { id, changes, side = state.activeSide, isRenderOrNot } = action.payload;
-      console.log("-----changes", changes)
+      // console.log("-----changes", changes)
       const image = state.present[side]?.images?.find(img => img.id === id);
       if (!image || image.locked) return;
 

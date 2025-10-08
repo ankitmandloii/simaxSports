@@ -251,39 +251,58 @@ const ProductAvailableColor = ({
   // State to hold the calculated { top, left } position
   const [position, setPosition] = useState({});
 
-  // --- Positioning Logic (The Core Change) ---
   useEffect(() => {
     const calculatePosition = () => {
       if (triggerRef?.current && popupRef.current) {
         const triggerRect = triggerRef.current.getBoundingClientRect();
-        // Using outer dimensions to ensure the pop-up doesn't overlap
         const popupWidth = popupRef.current.offsetWidth;
         const popupHeight = popupRef.current.offsetHeight;
 
-        // Calculate Position: Pop-up should appear to the right of the trigger
+        let newLeft = triggerRect.right + 10;  // Default to right of trigger
+        let newTop = triggerRect.top - (popupHeight / 2) + (triggerRect.height / 2);  // Vertically aligned with trigger
 
-        // 1. Determine Horizontal Position (Right of the trigger)
-        // We want the pop-up to start near the right edge of the trigger element.
-        // Adding 10px for a slight gap
-        let newLeft = triggerRect.right + 10;
+        // Mobile/Tablet adjustment (small screens)
+        const isMobileOrTablet = window.innerWidth <= 768;
 
-        // 2. Determine Vertical Position (Align top edge with trigger)
-        //center align the top edges
-        let newTop = triggerRect.top - (popupHeight / 2) + (triggerRect.height / 2);
+        if (isMobileOrTablet) {
+          newTop = triggerRect.bottom + 10;  // Below the trigger
+          newLeft = triggerRect.left;       // Align left of the trigger
+          const availableHeight = window.innerHeight - newTop;
+          const availableWidth = window.innerWidth - newLeft;
 
-        // Optional: Add viewport collision detection (to keep it on screen)
-        // If the pop-up overflows the right edge of the viewport, move it left
-        if (newLeft + popupWidth > window.innerWidth) {
-          // Position it to the left of the trigger instead
-          newLeft = triggerRect.left - popupWidth - 10;
+          // Adjust if modal overflows vertically
+          if (popupHeight > availableHeight) {
+            newTop = triggerRect.top - popupHeight - 10; // Try above
+            if (newTop < 10) {
+              newTop = 10; // Ensure it doesn't go off-screen at the top
+              if (popupHeight > window.innerHeight - 20) {
+                newTop = 10; // If still too tall, align to top with scroll
+              }
+            }
+          }
+
+          // Adjust if modal overflows horizontally
+          if (popupWidth > availableWidth) {
+            newLeft = 10; // Align to left edge if too wide
+            if (popupWidth > window.innerWidth - 20) {
+              newLeft = 10; // If still too wide, align to left with scroll
+            }
+          }
+        } else {
+          // Check if the popup overflows the right side of the screen
+          if (newLeft + popupWidth > window.innerWidth) {
+            newLeft = window.innerWidth - popupWidth; // Reposition near the right edge
+            if (newLeft < 10) newLeft = 10; // Ensure it doesn't go off-screen at the left
+          }
+
+          // Check if the popup overflows the bottom side of the screen
+          if (newTop + popupHeight > window.innerHeight) {
+            newTop = window.innerHeight - popupHeight;  // Reposition near the bottom
+            if (newTop < 10) newTop = 10; // Ensure it doesn't go off-screen at the top
+          }
         }
 
-        // If the pop-up overflows the bottom edge, move it up
-        if (newTop + popupHeight > window.innerHeight) {
-          // Align its bottom edge with the trigger's bottom edge
-          newTop = triggerRect.bottom - popupHeight;
-        }
-
+        // Set the new position
         setPosition({
           left: `${newLeft}px`,
           top: `${newTop}px`,
@@ -291,18 +310,17 @@ const ProductAvailableColor = ({
       }
     };
 
-    // Run on mount and when triggerRef changes
+    // Initial calculation
     calculatePosition();
 
-    // Recalculate position on window resize or scroll
+    // Recalculate on window resize to handle layout changes
     window.addEventListener('resize', calculatePosition);
-    window.addEventListener('scroll', calculatePosition);
 
+    // Cleanup resize event listener on component unmount
     return () => {
       window.removeEventListener('resize', calculatePosition);
-      window.removeEventListener('scroll', calculatePosition);
     };
-  }, [triggerRef]); // Dependency ensures recalculation if the trigger changes
+  }, [triggerRef]);
 
   // --- Outside Click Logic (Kept) ---
   useEffect(() => {
@@ -381,7 +399,7 @@ const ProductAvailableColor = ({
                   alt={color.name}
                   title={color.name}
                   className="colorSwatch" // Use a new class for the image swatches
-                 
+
                 />
               </div>
             ))}
