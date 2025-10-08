@@ -775,7 +775,7 @@ async function postIdeogramWithBackoff(formData, attempt = 0) {
   return resp;
 }
 
-function buildForm(prompt, { num = 1, magic = false, rendering_speed = "TURBO", style_type = "DESIGN", resolution = "960x832" } = {}) {
+function buildForm(prompt, { num = 1, magic = false, rendering_speed = "TURBO", style_type = "DESIGN", resolution = "1024x1024" } = {}) {
   const fd = new FormData();
   fd.append("prompt", prompt);
   fd.append("rendering_speed", rendering_speed);
@@ -801,7 +801,7 @@ exports.generateThreeImagesIdeogram = async (req, res) => {
     // Inputs (ensure that prompt always ends with "as an isolated t-shirt graphic")
     const promptBase = `${req.body.prompt ?? req.body.query}`;
 
-    const resolution = req.body.resolution ?? "960x832";
+    const resolution = req.body.resolution ?? "1024x1024";
     const rendering_speed = req.body.rendering_speed ?? "TURBO";
     const style_type = req.body.style_type ?? "DESIGN";
 

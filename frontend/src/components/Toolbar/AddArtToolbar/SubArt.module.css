@@ -255,12 +255,12 @@
   object-fit: cover;
   border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.5s ease, box-shadow 0.3s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .clipartImage:hover {
-  transform: scale(1.4);
+  transform: scale(1.6);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
