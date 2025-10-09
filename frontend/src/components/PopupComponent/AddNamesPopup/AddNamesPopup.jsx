@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CrossIcon, DeleteIcon } from '../../iconsSvg/CustomIcon';
 import styles from './AddNamesPopup.module.css'
+import { FaAngleDown } from "react-icons/fa6";
+import { FaAngleUp } from "react-icons/fa6";
 
 import { useDispatch, useSelector } from 'react-redux';
 import { addNameAndNumberProduct, UpdateNameAndNumberProduct } from '../../../redux/FrontendDesign/TextFrontendDesignSlice.js';
@@ -8,6 +10,79 @@ import { getHexFromName } from '../../utils/colorUtils.js';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CloseButton from '../../CommonComponent/CrossIconCommon/CrossIcon.jsx';
+import CustomSelectSize from '../../CommonComponent/CustomSelectSize/CustomSelectSize.jsx';
+
+
+//=========== customselect Componenet
+// const CustomSelect = ({ value, onChange, options = [], disabled = false, placeholder = "Select..." }) => {
+//   const [isOpen, setIsOpen] = useState(false);
+//   const containerRef = useRef(null);
+
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (containerRef.current && !containerRef.current.contains(event.target)) {
+//         setIsOpen(false);
+//       }
+//     };
+//     document.addEventListener('mousedown', handleClickOutside);
+//     return () => {
+//       document.removeEventListener('mousedown', handleClickOutside);
+//     };
+//   }, []);
+
+//   const displayValue = value || placeholder;
+//   const allOptions = [
+//     { value: '', label: placeholder, disabled: true },
+//     ...options.map((opt) => ({
+//       value: opt.size,
+//       label: opt.size,
+//       disabled: false,
+//     })),
+//   ].filter((opt) => opt.value !== ''); // Filter out empty if it's the only one, but keep for placeholder
+
+//   const handleOptionClick = (optValue) => {
+//     if (optValue !== '') {
+//       onChange(optValue);
+//     }
+//     setIsOpen(false);
+//   };
+
+//   if (disabled) {
+//     return (
+//       <div className={`${styles.customSelectContainer} ${styles.disabled}`}>
+//         <div className={styles.customSelectTrigger}>
+//           {displayValue}
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div ref={containerRef} className={styles.customSelectContainer}>
+//       <div
+//         className={styles.customSelectTrigger}
+//         onClick={() => setIsOpen(!isOpen)}
+//       >
+//         {displayValue}
+//         <span className={styles.dropdownArrow}>{isOpen ? <FaAngleUp /> : <FaAngleDown />}</span>
+//       </div>
+//       {isOpen && (
+//         <ul className={styles.customSelectList}>
+//           {allOptions.map((opt, index) => (
+//             <li
+//               key={index}
+//               className={`${styles.customSelectOption} ${opt.disabled ? styles.disabledOption : ''} ${value === opt.value ? styles.selectedOption : ''}`}
+//               onClick={() => handleOptionClick(opt.value)}
+//               style={opt.disabled ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+//             >
+//               {opt.label}
+//             </li>
+//           ))}
+//         </ul>
+//       )}
+//     </div>
+//   );
+// };
 
 const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
   // const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
@@ -303,10 +378,10 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
 
     <div className={styles.popupOverlay}>
       <div className={styles.popupContainer}>
-        <div className={styles.popupHeader}>
+        <div className={styles.header}>
           <div>
-            <h2>Edit Names & Numbers List</h2>
-            <p>Personalize your apparel with Names and/or Numbers!</p>
+            <h2 className={styles.title}>Edit Names & Numbers List</h2>
+            {/* <p>Personalize your apparel with Names and/or Numbers!</p> */}
           </div>
           {/* <button className={styles.closeBtn} onClick={showAddnamesPopupHandler}>
             <CrossIcon />
@@ -342,35 +417,21 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
 
                   {(rowsByKey[product.id] || [])?.map((row) => (
                     <div key={row.selectionId} className={styles.tableRow}>
-                      <select
+                      <CustomSelectSize
                         value={row.size}
-
-                        onChange={e => {
+                        onChange={(newValue) => {
                           setActiveRowId(row.selectionId)
-                          console.log("selected size", e.target.value);
-                          const productSize = product?.sizes?.find(s => s.size === e.target.value);
+                          console.log("selected size", newValue);
+                          const productSize = product?.sizes?.find(s => s.size === newValue);
                           console.log("productSize", productSize);
                           const newId = productSize?.variantId || row.selectionId;
                           console.log("newId", newId);
-                          updateRow(`${product.id}`, row.selectionId, 'size', e.target.value, newId)
-                        }
-                        }
+                          updateRow(`${product.id}`, row.selectionId, 'size', newValue, newId)
+                        }}
+                        options={product.sizes}
                         disabled={product?.sizes?.length === 0}
-                      >
-                        {product.sizes.length === 0 ? (
-                          <option value="">Not Available</option>
-                        ) : (
-                          <>
-                            <option value="" disabled>Size</option>
-                            {product?.sizes?.map((s, indx) => {
-                              const sizeValue = typeof s === 'object' ? s.size : s;
-                              return (
-                                <option key={indx} value={sizeValue}>{sizeValue}</option>
-                              );
-                            })}
-                          </>
-                        )}
-                      </select>
+                        placeholder={product.sizes.length === 0 ? "Not Available" : "Size"}
+                      />
 
                       <input
                         type="text"

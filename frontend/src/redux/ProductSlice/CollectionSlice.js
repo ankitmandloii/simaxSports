@@ -285,9 +285,10 @@ export const selectCategories = createSelector(
         categorized.promotionalProducts.push(collectionData);
       } else if (handle.startsWith('new-')) {
         categorized.new.push(collectionData);
-      } else if (handle.startsWith('others-')) {
-        categorized.others.push(collectionData);
       }
+      // } else if (handle.startsWith('others-')) {
+      //   categorized.others.push(collectionData);
+      // }
       else if (handle.startsWith('tops-')) {  // New check for Tops category
         categorized.tops.push(collectionData);
       } else if (handle.startsWith('jackets')) {
@@ -295,6 +296,9 @@ export const selectCategories = createSelector(
         categorized.jackets.push(collectionData);
       } else if (handle.startsWith('usamade')) {  // New check for USA Made category
         categorized.usamade.push(collectionData);
+      }
+      else {
+        categorized.others.push(collectionData);
       }
     });
 

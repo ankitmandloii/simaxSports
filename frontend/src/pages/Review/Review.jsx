@@ -300,17 +300,25 @@ const Review = () => {
 
   function base64toBlob(base64String, contentType = "image/png") {
     if (!base64String) return;
-    const base64WithoutPrefix = base64String.replace(
-      /^data:image\/(png|jpeg|gif|webp|svg\+xml);base64,/,
-      ""
-    );
-    const binaryString = atob(base64WithoutPrefix);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
+    try {
+      const base64WithoutPrefix = base64String.replace(
+        /^data:image\/(png|jpeg|gif|webp|svg\+xml);base64,/,
+        ""
+      );
+      const binaryString = atob(base64WithoutPrefix);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      return new Blob([bytes], { type: contentType });
+
     }
-    return new Blob([bytes], { type: contentType });
+    catch (error) {
+      console.error('Error converting base64 to blob:', error);
+      return null;
+    }
+
   }
 
   async function makeCheckDataForShopify(reviewItems, cloudeImages) {

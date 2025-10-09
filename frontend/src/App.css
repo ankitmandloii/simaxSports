@@ -836,6 +836,10 @@ hr {
   h2 {
     font-size: 16px;
   }
+
+  .mini-prod-img-container {
+    width: 90px;
+  }
 }
 
 /* Mobile breakpoint */

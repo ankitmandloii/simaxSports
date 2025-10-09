@@ -359,6 +359,7 @@
     white-space: nowrap;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    padding-bottom: 1rem;
     /* for iOS smooth scrolling */
   }
 

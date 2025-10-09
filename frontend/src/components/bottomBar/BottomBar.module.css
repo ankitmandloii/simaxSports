@@ -1,13 +1,16 @@
 .wrapper {
+  -webkit-overflow-scrolling: touch;
   width: 100%;
   display: none;
   background-color: black;
   color: white;
   /* padding: 0.5rem 0; */
-  overflow-x: auto;
+  /* overflow-x: auto; */
   position: fixed;
   bottom: 0;
   z-index: 999;
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow: visible;
 }
 
 .slide {
@@ -79,5 +82,13 @@
   .wrapper {
     display: block;
     /* background-color: transparent; */
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .wrapper {
+    display: block;
+    z-index: 1001;
+    /* Ensure it's above other elements */
   }
 }

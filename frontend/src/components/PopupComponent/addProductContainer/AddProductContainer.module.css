@@ -66,7 +66,10 @@
   width: 70%;
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   max-height: 90vh;
   min-height: 600px;
   overflow: hidden;
@@ -77,9 +80,10 @@
 .modalContentInner {
   /* padding-bottom: 105px; */
   max-height: 80vh;
+  -webkit-overflow-scrolling: touch;
   /* Adjust based on padding and other elements */
   overflow-y: auto;
-  padding-right: 10px;
+  /* padding-right: 10px; */
   /* Space for scrollbar to avoid clipping content */
 }
 
@@ -362,7 +366,6 @@
   .modalContent {
     width: 85%;
     z-index: 100;
-    top: 7%;
   }
 
   .productList {
@@ -381,13 +384,11 @@
 
 @media (max-width: 768px) {
   .heading {
-    font-size: 15px;
+    font-size: 12px;
   }
 
   .modalContent {
     width: 90%;
-    /* padding: 16px; */
-    top: 10%;
   }
 
   .productList {
@@ -401,6 +402,7 @@
   .modalAllProductButton {
     width: 100%;
     font-size: 14px;
+    margin: 20px 10px;
   }
 
   .colorPopup {
@@ -409,7 +411,7 @@
   }
 
   .modalAllProductButtonContainer {
-    margin-bottom: 7rem;
+    /* margin-bottom: 7rem; */
   }
 
   .searchBox {
@@ -515,7 +517,14 @@
 
   .searchIcon {
     font-size: 0.5rem;
-    padding: 5px;
+    padding: 0;
+    height: 20px;
+    width: 20px;
+  }
+
+  .searchIcon svg {
+    font-size: 5px;
+    height: 9px;
   }
 
   .modalClose {

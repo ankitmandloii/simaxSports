@@ -289,6 +289,8 @@
     gap: 10px;
     margin: 4px;
     align-items: center;
+    max-height: 3rem;
+    height: 2rem;
 }
 
 .currentSwatch {

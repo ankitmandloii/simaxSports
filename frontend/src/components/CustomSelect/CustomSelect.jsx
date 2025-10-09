@@ -1,6 +1,7 @@
 // CustomSelect.jsx - New separate component
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './CustomsSelect.module.css'
+import { FaAngleDown } from 'react-icons/fa';
 const CustomSelect = ({ options, value, onChange, placeholder, disabled = false }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [hoveredOption, setHoveredOption] = useState(null);
@@ -63,7 +64,7 @@ const CustomSelect = ({ options, value, onChange, placeholder, disabled = false 
                 <span className={styles.selectedValue}>
                     {selectedOption ? selectedOption.label : placeholder}
                 </span>
-                <span className={styles.dropdownIcon}>▼</span>
+                <span className={styles.dropdownIcon}><FaAngleDown /></span>
             </div>
 
             {isOpen && (

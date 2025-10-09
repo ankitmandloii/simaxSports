@@ -361,12 +361,15 @@ const ProductCard = ({ product, onAdd, isExpanded, onToggleExpand, isAlreadySele
                                 <div className={styles.currentColorDisplay}>
                                     <p>Color:</p>
                                     <img
-                                        src={currentColor.swatchImg}
+                                        src={currentColor?.swatchImg}
                                         alt={currentColor.name}
                                         className={styles.currentSwatch}
                                     />
-                                    <p className={styles.hovercolorname}>
+                                    {/* <p className={styles.hovercolorname}>
                                         {currentColor.name.split(' ')[0]}
+                                    </p> */}
+                                    <p className={styles.hovercolorname}>
+                                        {currentColor?.name}
                                     </p>
 
                                 </div>

@@ -136,3 +136,23 @@
   border: 1px solid var(--blue-color);
   color: var(--blue-color)
 }
+
+
+
+@media (max-width: 768px) {
+  .buttonsroute {
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .notesroute {
+    position: fixed;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+}
