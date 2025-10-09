@@ -3,9 +3,11 @@
 
 .modalProduct {
     position: relative;
-    /* Key to anchor popup to this card */
+    /* Key to anc
+    r popup to this card */
     width: 100%;
     padding: 10px;
+    /* overflow-x: auto; */
     border: 1px solid #ccc;
     display: flex;
     flex-direction: column;
@@ -290,7 +292,9 @@
     margin: 4px;
     align-items: center;
     max-height: 3rem;
-    height: 2rem;
+    /* flex-wrap: wrap; */
+    height: 5rem;
+    padding: 2rem 0;
 }
 
 .currentSwatch {
@@ -300,5 +304,14 @@
 }
 
 .hovercolorname {
-    font-size: 8px;
+    font-size: 0.8rem;
+    word-wrap: break-word;
+    /* This allows long words to break and wrap to the next line */
+    white-space: normal;
+    /* Allow text to wrap */
+    overflow: visible;
+    /* Allow overflow */
+    text-overflow: clip;
+    /* Remove ellipsis or clipping */
+    /* Add an ellipsis for long text */
 }

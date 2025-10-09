@@ -661,48 +661,56 @@ function ProductContainer() {
           <div className={style.ProuductMirrorContainer}>
             <div className={style.ProuductMirrorLeftContainer}>
 
-              <div className={style.cornerImgCanvaContainer} onClick={ShowFront}>
-                <img
-                  ref={FrontImgRef}
-                  src={frontPreviewImage}
-                  className={`${style.ProductContainerSmallImage} ${activeSide === "front" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
-                  alt="Front View"
-                />
+              <div className={`${style.cornerImgCanvaContainer} ${activeSide === "front" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`} onClick={ShowFront}>
+                <div className={style.imgWrapperr}>
+                  <img
+                    ref={FrontImgRef}
+                    src={frontPreviewImage}
+                    className={`${style.ProductContainerSmallImage} `}
+                    alt="Front View"
+                  />
+                </div>
                 <p>Front</p>
               </div>
 
               {settingsForsides?.enableBackSmallImageSectionShow &&
 
-                <div className={style.cornerImgCanvaContainer} onClick={ShowBack}>
-                  <img
-                    ref={BackImgRef}
-                    src={backPreviewImage}
-                    className={`${style.ProductContainerSmallImage} ${activeSide === "back" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
-                    alt="Back View"
-                  />
+                <div className={`${style.cornerImgCanvaContainer} ${activeSide === "back" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`} onClick={ShowBack}>
+                  <div className={style.imgWrapperr}>
+                    <img
+                      ref={BackImgRef}
+                      src={backPreviewImage}
+                      className={`${style.ProductContainerSmallImage} `}
+                      alt="Back View"
+                    />
+                  </div>
                   <p>Back</p>
                 </div>
 
               }
               {addSleeves && !hidden && (
                 <>
-                  <div className={style.cornerImgCanvaContainer} onClick={ShowRightSleeve}>
-                    <img
-                      ref={LeftImgRef}
-                      src={rightSleevePreviewImage}
-                      className={`${style.ProductContainerSmallImage} ${activeSide === "rightSleeve" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
-                      alt="Right Sleeve"
-                    />
+                  <div className={`${style.cornerImgCanvaContainer} ${activeSide === "rightSleeve" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`} onClick={ShowRightSleeve}>
+                    <div className={style.imgWrapperr}>
+                      <img
+                        ref={LeftImgRef}
+                        src={rightSleevePreviewImage}
+                        className={`${style.ProductContainerSmallImage} `}
+                        alt="Right Sleeve"
+                      />
+                    </div>
                     <p>Right Sleeve</p>
                   </div>
-                  <div className={style.cornerImgCanvaContainer} onClick={ShowLeftSleeve}>
-                    <img
-                      ref={RightImgRef}
-                      src={leftSleevePreviewImage}
-                      className={`${style.ProductContainerSmallImage} ${activeSide === "leftSleeve" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`}
-                      alt="Left Sleeve"
-                    />
-                    <p>Left Sleeve</p>
+                  <div className={`${style.cornerImgCanvaContainer} ${activeSide === "leftSleeve" ? `${style["hover-active"]} ${style["activeBorder"]}` : ""}`} onClick={ShowLeftSleeve}>
+                    <div className={style.imgWrapperr}>
+                      <img
+                        ref={RightImgRef}
+                        src={leftSleevePreviewImage}
+                        className={`${style.ProductContainerSmallImage} `}
+                        alt="Left Sleeve"
+                      />
+                      <p>Left Sleeve</p>
+                    </div>
                   </div>
                 </>
               )}

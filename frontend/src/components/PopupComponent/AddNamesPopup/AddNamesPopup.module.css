@@ -49,7 +49,7 @@
 }
 
 .productMiniImg {
-  height: 50px;
+  height: 60px;
 }
 
 .productColor {
@@ -148,10 +148,14 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  width: 88px;
+  width: 75px;
+  height: 76px;
+  border: 2px solid var(--borderColor);
   border-radius: 8px;
   position: relative;
   padding-top: 4px;
+  justify-content: center;
+  /* box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px; */
 }
 
 .hrUnderline {
@@ -426,7 +430,7 @@ select:disabled {
   }
 
   .productMiniImg {
-    height: 40px;
+    height: 55px;
   }
 
   .canvasBg {

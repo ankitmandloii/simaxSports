@@ -34,6 +34,7 @@
 .ProductContainerButton:active {
   background-color: #888;
   color: #fff;
+  border: 2px solid red;
 }
 
 .ProductContainerButton span {
@@ -80,14 +81,14 @@
   display: flex;
   flex-direction: column;
   padding: 9px 4px;
-  background: var(--blue-light);
+  /* background: var(--blue-light); */
   height: max-content;
   border-radius: 10px;
   gap: 10px;
   /* width: 104px; */
   align-items: center;
   justify-content: center;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  /* box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px; */
 }
 
 .ProuductMirrorContainer {
@@ -102,32 +103,24 @@
   align-items: center;
 }
 
+
 .ProductContainerSmallImage {
-  /* object-fit:cc; */
   height: 70px;
   width: 70px;
-  /* object-fit: cover; */
-  /* margin:5px;   */
-  border-radius: 10px;
-  background-color: white;
-  box-shadow: 0 0 0 1px var(--borderColor);
-  padding: 10px;
+  object-fit: contain;
+  /* border-bottom: 1px solid var(--blue-color); */
+
+  padding: 5px;
   margin-bottom: 2px;
   transition: all 0.5s ease -in -out;
 }
 
-.ProductContainerSmallImage:hover {
-  box-shadow: 0 0 0 2px var(--blue-color);
-}
+
 
 .ProductContainerSmallImage p {
   text-align: center;
 }
 
-.activeBorder {
-  box-shadow: 0 0 0 2px var(--blue-color);
-
-}
 
 .ProductContainerSmallImageZoomButton {
   background-color: white;
@@ -152,10 +145,10 @@
   margin-right: 10px;
 }
 
-.ProductContainerSmallImageZoomButton:hover {
+/* .ProductContainerSmallImageZoomButton:hover {
   background-color: #6c5ce710;
   border: 1px solid var(--borderColor);
-}
+} */
 
 .ProductContainerBottoMListButttons {
   display: flex;
@@ -178,16 +171,38 @@
   /* width: 86px; */
   margin-bottom: 0px;
   border-radius: 10px;
-  background-color: var(--blue-light);
+  /* background-color: var(--blue-light); */
+  background-color: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
   cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 8px 0px;
+  border: 2px solid transparent;
 }
 
-.hoverActive {
-  box-shadow: 0 0 0 2px var(--blue-color);
+.cornerImgCanvaContainer:not(.activeBorder):hover {
+  border: 2px solid var(--blue-color);
 }
+
+.cornerImgCanvaContainer:not(.activeBorder):hover .imgWrapperr img {
+  border-bottom: 4px solid var(--blue-color);
+}
+
+.imgWrapperr img {
+  border-bottom: 4px solid transparent;
+}
+
+
+
+.cornerImgCanvaContainer:hover .ProductContainerSmallImage {
+  /* box-shadow: 0 0 0 2px var(--blue-color); */
+  /* border-bottom: 2px solid var(--blue-color); */
+}
+
+/* .hoverActive {
+  box-shadow: 0 0 0 2px var(--blue-color);
+} */
 
 /* canvas#mirrorCanvasFront {
     width: 86px !important;
@@ -207,17 +222,18 @@ canvas#mirrorCanvasBack {
   padding: 9px;
 }
 
-/* .corner-img-canva-container:hover {
+.corner-img-canva-container:hover {
 
-    box-shadow: 0 0 0 2px red;
-} */
+  box-shadow: 0 0 0 2px red;
+}
 
 .cornerImgCanvaContainer p {
   text-align: center;
   font-weight: bold;
   font-size: 12px;
   font-weight: 500;
-  margin-top: 7px;
+  /* margin-top: 7px; */
+  margin-bottom: 5px;
 }
 
 #mirrorCanvas {
@@ -370,4 +386,17 @@ canvas#mirrorCanvasBack {
     /* align-items: center; */
     justify-content: center;
   }
+}
+
+.imgWrapperr {
+  padding: 0px 10px;
+}
+
+.activeBorder {
+  box-shadow: 0 0 0 2px var(--blue-color);
+}
+
+
+.activeBorder .imgWrapperr img {
+  border-bottom: 4px solid var(--blue-color);
 }
