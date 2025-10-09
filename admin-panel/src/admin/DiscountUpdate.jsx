@@ -71,7 +71,7 @@ export default function DiscountUpdate() {
           body: JSON.stringify({}),
         });
         const data = await res.json();
-        console.log("dzdfsdafdsafsafata", data)
+       
         if (!res.ok) throw new Error(data.error || "Failed to load");
 
         const uiTiers = (data.tiers || []).map(t => ({

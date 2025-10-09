@@ -36,7 +36,6 @@ export function Dashboard() {
   const [deleting, setDeleting] = useState(false);
 
   const [selectedDesign, setSelectedDesign] = useState(null);
-  console.log("--------selectedDesign", selectedDesign);
   const [modalOpen, setModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [galleryIndex, setGalleryIndex] = useState(0);

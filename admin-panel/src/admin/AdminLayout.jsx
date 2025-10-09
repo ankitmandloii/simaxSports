@@ -98,6 +98,8 @@ export default function AdminLayout({ children }) {
     });
     setTimeout(() => {
       localStorage.removeItem('admin-token');
+      localStorage.removeItem('activeLoginEmail');
+      localStorage.removeItem('activeLoginUserName');
 
       navigate('/admin/login');
     }, 2000);

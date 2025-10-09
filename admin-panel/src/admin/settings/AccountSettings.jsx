@@ -19,10 +19,16 @@ import {
 
 
 export default function AccountSettings() {
+  
+
+  const currntUserLoginEmail = localStorage.getItem('activeLoginEmail');
+  const activeLoginUserName = localStorage.getItem('activeLoginUserName');
+ 
+
   const { showToast } = useToast();
 
-  const [AdminName, setAdminName] = useState('admin');
-  const [email, setEmail] = useState('adminsimax@yopmail.com');
+  const [AdminName, setAdminName] = useState(activeLoginUserName || 'admin');
+  const [email, setEmail] = useState(currntUserLoginEmail || 'adminsimax@yopmail.com');
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);

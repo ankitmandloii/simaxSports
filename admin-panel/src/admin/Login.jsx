@@ -82,7 +82,11 @@ export default function Login() {
                     content: 'Welcome back!',
                     icon: <Icon source={EnterIcon} tone="success" />
                 });
+               
                 localStorage.setItem('admin-token', data.result.token);
+                localStorage.setItem('activeLoginEmail', data.result.user.email);
+                localStorage.setItem('activeLoginUserName', data.result.user.name);
+
                 navigate('/admin/dashboard');
             // } else {
             //     throw new Error('Unexpected response from server');
