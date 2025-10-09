@@ -332,10 +332,12 @@ exports.createSmartCollection = async (brandName, tag, brandImageUrl) => {
     : "https://default.image.url";
 
   const collectionTitle = `${brandName}`;
+   const handle = `brand-${brandName}`; // Handle format
 
   const collectionData = {
     "smart_collection": {
       "title": collectionTitle,
+      "handle": handle,
       "body_html": `<strong>${brandName} collection for 2025</strong>`,
       "published": true,
       "rules": [
@@ -408,6 +410,191 @@ exports.createSmartCollection = async (brandName, tag, brandImageUrl) => {
 };
 
 
+// exports.createSmartCollectionForSubCategory = async (subcategoryArray , subcategoryImage) => {
+ 
+//   const imageUrl = subcategoryImage
+//     ? `https://cdn.ssactivewear.com/${subcategoryImage}`
+//     : "https://default.image.url";
+
+//   const headers = {
+//     'Content-Type': 'application/json',
+//     'X-Shopify-Access-Token': process.env.SHOPIFY_API_KEY, // Shopify API Key
+//   };
+
+//   const apiBaseUrl = `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-07`;
+
+//   // Iterate through the subcategoryArray
+//   for (const subcategory of subcategoryArray) {
+//     // Extract the category name (key) and its corresponding ID (value)
+//     const categoryName = Object.keys(subcategory)[0]; // Get the category name
+//     const categoryId = subcategory[categoryName]; // Get the category ID
+
+//     // Construct the collection title, handle, and body
+//     const collectionTitle = `${categoryName}`; // Use category name for the title
+//     const handle = `subcategory-${categoryName}`; // Handle format
+//     const collectionBody = `<strong>${categoryName} collection for 2025</strong>`; // Body HTML
+
+//     // Construct the collection data
+//     const collectionData = {
+//       "smart_collection": {
+//         "title": collectionTitle,
+//         "handle": handle,
+//         "body_html": collectionBody,
+//         "published": true,
+//         "rules": [
+//           {
+//             "column": "tag",
+//             "relation": "equals",
+//             "condition": categoryId  // Tag the collection with the category name
+//           }
+//         ],
+//         "image": {
+//           "src": imageUrl // Optional: Add a default image
+//         }
+//       }
+//     };
+
+//     try {
+//       // 1. Check if collection already exists by title
+//       const existingCollectionsRes = await axios.get(
+//         `${apiBaseUrl}/smart_collections.json?title=${encodeURIComponent(collectionTitle)}`,
+//         { headers }
+//       );
+
+//       const existingCollection = existingCollectionsRes.data.smart_collections.find(
+//         col => col.title === collectionTitle
+//       );
+
+//       if (existingCollection) {
+//         // 2. If collection exists, update it
+//         const updateData = {
+//           smart_collection: {
+//             id: existingCollection.id,
+//             body_html: collectionData.smart_collection.body_html,
+//             rules: collectionData.smart_collection.rules,
+//             image: collectionData.smart_collection.image,
+//           }
+//         };
+
+//         await axios.put(
+//           `${apiBaseUrl}/smart_collections/${existingCollection.id}.json`,
+//           updateData,
+//           { headers }
+//         );
+
+//         console.log(`Smart collection "${collectionTitle}" updated.`);
+//       } else {
+//         // 3. If no existing collection, create a new one
+//         const response = await axios.post(
+//           `${apiBaseUrl}/smart_collections.json`,
+//           collectionData,
+//           { headers }
+//         );
+
+//         console.log(`Smart collection "${collectionTitle}" created.`);
+//       }
+
+//     } catch (error) {
+//       if (error.response) {
+//         console.error('Shopify API error:', error.response.data);
+//       } else {
+//         console.error('Request error:', error.message);
+//       }
+//     }
+//   }
+// };
+
+exports.createSmartCollectionForSubCategory = async (subcategoryArray) => {
+ 
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-Shopify-Access-Token': process.env.SHOPIFY_API_KEY, // Shopify API Key
+  };
+
+  const apiBaseUrl = `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-07`;
+
+  // Iterate through the subcategoryArray
+  for (const subcategory of subcategoryArray) {
+    // Extract the category name (key) and its corresponding ID (value)
+    const categoryName = Object.keys(subcategory)[0]; // Get the category name
+    // const { id, categoryPart, image } = subcategory[categoryName];
+    const { id, categoryPart } = subcategory[categoryName];
+
+    // Construct the collection title, handle, and body
+    const collectionTitle = `${categoryName}`; // Use category name for the title
+    const handle = `${categoryPart}-${categoryName}`; // Handle format
+    const collectionBody = `<strong>${categoryName} collection for 2025</strong>`; // Body HTML
+
+    // Construct the collection data
+    const collectionData = {
+      "smart_collection": {
+        "title": collectionTitle,
+        "handle": handle,
+        "body_html": collectionBody,
+        "published": true,
+        "rules": [
+          {
+            "column": "tag",
+            "relation": "equals",
+            "condition": id  // Tag the collection with the category name
+          }
+        ],
+        // "image": {
+        //   "src": image // Use the category-specific image
+        // }
+      }
+    };
+
+    try {
+      // 1. Check if collection already exists by title
+      const existingCollectionsRes = await axios.get(
+        `${apiBaseUrl}/smart_collections.json?title=${encodeURIComponent(collectionTitle)}`,
+        { headers }
+      );
+
+      const existingCollection = existingCollectionsRes.data.smart_collections.find(
+        col => col.title === collectionTitle
+      );
+
+      if (existingCollection) {
+        // 2. If collection exists, update it
+        const updateData = {
+          smart_collection: {
+            id: existingCollection.id,
+            body_html: collectionData.smart_collection.body_html,
+            rules: collectionData.smart_collection.rules,
+            image: collectionData.smart_collection.image,
+          }
+        };
+
+        await axios.put(
+          `${apiBaseUrl}/smart_collections/${existingCollection.id}.json`,
+          updateData,
+          { headers }
+        );
+
+        console.log(`Smart collection "${collectionTitle}" updated.`);
+      } else {
+        // 3. If no existing collection, create a new one
+        const response = await axios.post(
+          `${apiBaseUrl}/smart_collections.json`,
+          collectionData,
+          { headers }
+        );
+
+        console.log(`Smart collection "${collectionTitle}" created.`);
+      }
+
+    } catch (error) {
+      if (error.response) {
+        console.error('Shopify API error:', error.response.data);
+      } else {
+        console.error('Request error:', error.message);
+      }
+    }
+  }
+};
 
 exports.saveSSProductsToDb = async (req, res) => {
   try {
@@ -485,7 +672,7 @@ exports.syncSandsToShopify = async (req, res) => {
   // const styleIds = await fetchAllStyleIds(); //may be it will fetch from DB Id's
 
   try {
-    const styleID = 12614; //for testing purpose TASC Performance Inc
+    const styleID = 395; //for testing purpose TASC Performance Inc
   
     const job = await StyleIdSyncJob.findOne({ styleId: styleID });
 
@@ -493,7 +680,7 @@ exports.syncSandsToShopify = async (req, res) => {
     let ssData, specs;
 
     try {
-      const styleID = 12614;
+      const styleID = 395;
       ssData = await SSProductMapping.find({ styleID });
       console.log(`[S&S] Fetched styleID from db ${styleID} with ${ssData.length} SKUs`);
       if (!ssData || ssData.length === 0) {
@@ -512,7 +699,7 @@ exports.syncSandsToShopify = async (req, res) => {
     }
 
     // Format the products for Shopify
-    const shopifyFormatted = await mapProducts(ssData, specs, job.title, job.description, job.baseCategory);
+    const shopifyFormatted = await mapProducts(ssData, specs, job.title, job.description, job.baseCategory, job.categories);
 
 
 

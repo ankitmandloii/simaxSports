@@ -86,6 +86,96 @@ const findProductByHandle = async (handle) => {
 
 
 //done with new version
+// const retryAttachment = async (productId, variantId, mediaIds, retries = 5, delay = 2000) => {
+//   let attempt = 0;
+//   let success = false;
+
+//   const productVariantAppendMediaMutation = `
+//     mutation productVariantAppendMedia($productId: ID!, $variantMedia: [ProductVariantAppendMediaInput!]!) {
+//       productVariantAppendMedia(productId: $productId, variantMedia: $variantMedia) {
+//         userErrors {
+//           field
+//           message
+//         }
+//       }
+//     }
+//   `;
+
+//   while (attempt < retries && !success) {
+//     try {
+//       const mediaStatusResponse = await axios.post(
+//         `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-10/graphql.json`,
+//         {
+//           query: `query GetMediaStatus($mediaIds: [ID!]!) {
+//             nodes(ids: $mediaIds) {
+//               ... on MediaImage {
+//                 status
+//               }
+//             }
+//           }`,
+//           variables: { mediaIds },
+//         },
+//         {
+//           headers: {
+//             "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//             "Content-Type": "application/json",
+//           },
+//         }
+//       );
+
+//       const nodes = mediaStatusResponse?.data?.data?.nodes || [];
+//       const allReady = nodes.every((node) => node?.status === 'READY');
+
+//       if (allReady) {
+//         const appendMediaVariables = {
+//           productId,
+//           variantMedia: [{
+//             variantId,
+//             mediaIds,
+//           }],
+//         };
+
+//         const appendRes = await axios.post(
+//           `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-10/graphql.json`,
+//           {
+//             query: productVariantAppendMediaMutation,
+//             variables: appendMediaVariables,
+//           },
+//           {
+//             headers: {
+//               "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
+//               "Content-Type": "application/json",
+//             },
+//           }
+//         );
+
+//         if (appendRes.data.errors || appendRes.data.data.productVariantAppendMedia.userErrors.length) {
+//           console.error('Media attachment errors:', appendRes.data.data.productVariantAppendMedia.userErrors);
+//           throw new Error('Failed to attach media to variant');
+//         }
+
+//         success = true;
+//         console.log(`✅ Attached media to variant ${variantId}`);
+//       } else {
+//         console.log(`⏳ Media not ready. Retrying in ${delay}ms...`);
+//         await new Promise(res => setTimeout(res, delay));
+//         delay = Math.min(delay * 2 + Math.random() * 100, 30000);
+//         attempt++;
+//       }
+//     } catch (error) {
+//       console.error(`❌ Attempt ${attempt + 1} failed:`, error.message);
+//       attempt++;
+//       if (attempt < retries) {
+//         await new Promise(res => setTimeout(res, delay));
+//       }
+//     }
+//   }
+
+//   return success;
+// };
+
+
+
 const retryAttachment = async (productId, variantId, mediaIds, retries = 5, delay = 2000) => {
   let attempt = 0;
   let success = false;
@@ -104,7 +194,7 @@ const retryAttachment = async (productId, variantId, mediaIds, retries = 5, dela
   while (attempt < retries && !success) {
     try {
       const mediaStatusResponse = await axios.post(
-        `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-10/graphql.json`,
+        `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
         {
           query: `query GetMediaStatus($mediaIds: [ID!]!) {
             nodes(ids: $mediaIds) {
@@ -136,7 +226,7 @@ const retryAttachment = async (productId, variantId, mediaIds, retries = 5, dela
         };
 
         const appendRes = await axios.post(
-          `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2025-10/graphql.json`,
+          `https://${process.env.SHOPIFY_STORE_URL}.myshopify.com/admin/api/2024-04/graphql.json`,
           {
             query: productVariantAppendMediaMutation,
             variables: appendMediaVariables,
@@ -150,12 +240,11 @@ const retryAttachment = async (productId, variantId, mediaIds, retries = 5, dela
         );
 
         if (appendRes.data.errors || appendRes.data.data.productVariantAppendMedia.userErrors.length) {
-          console.error('Media attachment errors:', appendRes.data.data.productVariantAppendMedia.userErrors);
           throw new Error('Failed to attach media to variant');
         }
 
         success = true;
-        console.log(`✅ Attached media to variant ${variantId}`);
+        // console.log(`✅ Attached media to variant ${variantId}`);
       } else {
         console.log(`⏳ Media not ready. Retrying in ${delay}ms...`);
         await new Promise(res => setTimeout(res, delay));
@@ -165,12 +254,10 @@ const retryAttachment = async (productId, variantId, mediaIds, retries = 5, dela
     } catch (error) {
       console.error(`❌ Attempt ${attempt + 1} failed:`, error.message);
       attempt++;
-      if (attempt < retries) {
-        await new Promise(res => setTimeout(res, delay));
-      }
     }
   }
 
+  // console.log(`✅ Attached ALL media to variants`);
   return success;
 };
 
@@ -376,7 +463,7 @@ const createProductGraphQL = async (product) => {
     console.log(`✅ Created ${createdVariants.length} variants`);
 
     // Step 5: Wait a bit for media to be fully ready
-    await new Promise(res => setTimeout(res, 2000));
+    await new Promise(res => setTimeout(res, 4000));
 
     // Step 6: Attach images to variants
     for (const variant of product.variants) {

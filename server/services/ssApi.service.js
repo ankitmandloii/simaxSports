@@ -89,7 +89,24 @@ const allowedStyleNames = new Set([
   "1377487", "1389853", "1370155", "1379500", "1387124", "1379755", "1376852",
   "1389864", "1383260", "1389661", "1379492", "1383284", "1383259", "137508",
   "1383272", "1383256", "1377488", "8422", "8420", "8622", "8620", "8420Y",
-  "TM110AB", "TM109AB", "TM405H", "TM310", "TM616", "TM654, "
+  "TM110AB", "TM109AB", "TM405H", "TM310", "TM616", "TM654",
+  "TT97", "TT11", "TT11M", "TT11W", "TT15", "TT15W", "TT15Y", "TT11Y", "TT21W", "TT11H", "TT11HW", "TT11HY",
+  "TT11L", "TT11WL", "TT11YL", "TT21", "TT62", "TT21", "TT51", "TT51W", "TT51Y", "TT51L", "TT51LW", "TT41", "TT31W",
+  "TT31", "TT31Y", "TT73", "TT21C", "TT21CW", "TT31H", "TT31HW", "TT31HY", "TT80", "TT400", "TT96CB", "TT86",
+  "CE10Y", "CE10", "CE10L", "88183", "CE111", "CE111W", "CE111Y", "78183", "CE111L", "CE111T", "CE106W", "CE106",
+  "78181", "78189", "88181", "88181Y", "CE108", "CE108W", "78181P", "88181P", "88181R", "CE104", "CE104W", "CE112",
+  "CE112W", "CE106T", "CE401T", "88181T", "CE101", "CE108T", "78192", "88192", "CE110", "CE112L", "CE112T", "88192T",
+  "CE112C", "CE405W", "CE404", "88224", "88183T", "88190", "78190", "DP610W", "DP184W", "D140SW", "DG20SW", "DP182W", "DG20WB",
+  "DP192W", "DG200W", "DG150W", "D100W", "DP188W", "DP625W", "DG20Z", "DG479W", "DG542", "DG400W", "DG534W", "DP613W", "DG530",
+  "DP611W", "DG20CW", "DG700W", "DG20T", "DG478", "DG20LT", "DG20", "DG20W", "D100", "DG798W", "DG440W", "DG796W", "DG420W",
+  "D620W", "DG798", "DG20L", "DG20LW", "DP121W", "DP122W", "DG101", "DG101W", "DG100W", "DG20C", "DG425W", "DG796", "D640W",
+  "DG100", "DG22W", "DG420", "D620", "DG110", "DG110W","FF01","TR01","21002","FF3001","20001",
+  "N17289","N17175","N17165","N17168","N17923","N17199","N17973","N17974","N17170","N17922","N17397","N17925","N17924","N17990","N17928",
+  "N17991","N17582","N17387","N17182","N17789","6440","3712","1510","3310","3710","3900","1540","1810","3312","1580","6610","3600","6310",
+  "6600","6210","5013","1560","3910","7610","6240","3650","3200","6200","6760","3604","3605","3311","6010","4210","3600SW","3602","3601",
+  "PG100W","PG100","PG400","PG400W","PG410","596799","596800","596802","596801","596803","596920","596921","596807","532989","599120","533007",
+  "599117","531279","599267","538748","532016","532015","539105","625902","631105","535516","537471","535500","595803","537472","631107","538931",
+  "JHA030","JHA001","JHY001","JHA017","JHA011","JHA004","JHA046","JHY004","JHA101","JHA003","JHA009","JHA050","JHA021","JHA043"
 ]);
 
 
@@ -308,16 +325,18 @@ exports.updateUploadBrandSchema = async () => {
         const specs = await withRetry(() => this.fetchSSpecsByStyleId(styleId));
         await delay(1000);
 
-        const noProducts = !Array.isArray(ssData) || ssData?.length === 0;
+        // const noProducts = !(Array.isArray(ssData) && ssData.length > 0);
 
-        if (!noProducts) {
+
+        // if (!noProducts) {
+        if (Array.isArray(ssData) && ssData.length > 0) {
           await this.saveSSProductsAndSpecsData(ssData, specs);
           console.log(`✅ Saved products/specs for styleID: ${styleId}`);
         } else {
           // console.warn(`⚠️ No products for styleID: ${styleId}`);
           //for testing purposes
+          console.log(`⚠️ No products for styleID: ${styleId}, triggering deletion push data for delete`);
           toDelete.push(styleId);
-          console.warn(`⚠️ No products for styleID: ${styleId}, triggering deletion push data for delete`);
           // await this.handleProductDeletion(styleId);
         }
       } catch (err) {
@@ -325,7 +344,7 @@ exports.updateUploadBrandSchema = async () => {
       }
     }
 
-    return toDelete;;
+    return toDelete;
 
   } catch (error) {
     console.error("❌ Error in updateUploadBrandSchema:", error.message);
@@ -382,9 +401,9 @@ function upgradeImageUrls(product) {
     "colorFrontImage",
     "colorBackImage",
     "colorDirectSideImage",
-    "colorOnModelFrontImage",
-    "colorOnModelSideImage",
-    "colorOnModelBackImage",
+    "colorOnModelFrontImage"
+    // "colorOnModelSideImage",
+    // "colorOnModelBackImage",
   ];
 
   for (const field of imageFields) {
@@ -398,12 +417,12 @@ function upgradeImageUrls(product) {
 
 exports.saveSSProductsAndSpecsData = async (ssProducts, specData = []) => {
   try {
-    if (!ssProducts?.length) return { success: true, message: "No products to sync." };
+    // if (!ssProducts?.length) return { success: true, message: "No products to sync." };
 
     const bulkOps = [];
     const styleID = ssProducts[0].styleID;
     const newSkusSet = new Set();
-    const productIds = [];
+    // const productIds = [];
 
     const blockedSizes = ["4XL", "5XL", "6XL", "7XL", "8XL"];
     let skippedCount = 0;
@@ -414,10 +433,13 @@ exports.saveSSProductsAndSpecsData = async (ssProducts, specData = []) => {
         !product.colorSwatchImage?.trim() ||
         !product.colorFrontImage?.trim() ||
         !product.colorDirectSideImage?.trim() ||
-        !product.colorBackImage?.trim() ||
-        !product.colorOnModelFrontImage?.trim() ||
-        !product.colorOnModelSideImage?.trim() ||
-        !product.colorOnModelBackImage?.trim();
+        !product.colorBackImage?.trim();
+      //curnt run code uppr condition
+
+
+      // !product.colorOnModelFrontImage?.trim();
+      // !product.colorOnModelSideImage?.trim() ||
+      // !product.colorOnModelBackImage?.trim();
 
 
 
@@ -426,7 +448,7 @@ exports.saveSSProductsAndSpecsData = async (ssProducts, specData = []) => {
 
       if (isAnyImageMissing || isSizeBlocked) {
         skippedCount++;
-        console.warn(`⚠️ Skipping variant (SKU: ${product.sku}) — one or more core images missing`);
+        console.warn(`⚠️ Skipping variant (SKU: ${product.sku}) — one or more core images and size blocked < 3XL missing`);
         continue;
       }
 
@@ -597,13 +619,13 @@ exports.fetchSingleProductSSByStyleId = async (styleIds) => {
 
 exports.fetchSSpecsByStyleId = async (styleIds) => {
   try {
-   
+
     const response = await axios.get(`${process.env.SS_API_URL}/specs/?style=${styleIds}`, {
       headers: getAuthHeader()
     });
-   
+
     return response.data || [];
-   
+
   } catch (error) {
     console.error("Error fetching S&S Specs by styleID:", error.response?.status, error.response?.data || error.message);
     return [];

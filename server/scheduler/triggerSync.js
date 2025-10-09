@@ -14,10 +14,13 @@ exports.createSmartCollectionForBaseCategory = async (baseCategoryName, tag, bra
     : "https://default.image.url";
 
   const collectionTitle = `${baseCategoryName}`;
+  
+  const handle = `category-${baseCategoryName}`; // Default handle from title
 
   const collectionData = {
     "smart_collection": {
       "title": collectionTitle,
+      "handle": handle,
       "body_html": `<strong>${baseCategoryName} collection for 2025</strong>`,
       "published": true,
       "rules": [
@@ -116,12 +119,13 @@ exports.syncStyle = async (styleID) => {
     }
 
     // Format the products for Shopify
-    const shopifyFormatted = await mapProducts(ssData, specs, job.title, job.description, job.baseCategory);
+    const shopifyFormatted = await mapProducts(ssData, specs, job.title, job.description, job.baseCategory, job.categories);
 
 
     // Upload to Shopify (upload only the first product for now)
     const uploaded = await uploadToShopify(shopifyFormatted);
-    await this.createSmartCollectionForBaseCategory(job.baseCategory, job.baseCategory, job.brandImage);
+    // await this.createSmartCollectionForBaseCategory(job.baseCategory, job.baseCategory, job.brandImage);
+ 
     
     // Mark job as successful
     job.status = "success";

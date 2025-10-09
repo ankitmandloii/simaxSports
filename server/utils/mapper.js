@@ -187,10 +187,7 @@
 
 
 //running code
-
-
-exports.mapProducts = (ssProducts, specs = [], title, description, baseCategoryName) => {
-
+exports.mapProducts = (ssProducts, specs = [], title, description, baseCategoryName, categoriesArray) => {
   const slugify = (str) =>
     (str || "")
       .toLowerCase()
@@ -228,8 +225,8 @@ exports.mapProducts = (ssProducts, specs = [], title, description, baseCategoryN
       item.colorDirectSideImage,
       item.colorSwatchImage,
       item.colorOnModelFrontImage,
-      item.colorOnModelBackImage,
-      item.colorOnModelSideImage,
+      // item.colorOnModelBackImage,
+      // item.colorOnModelSideImage,
     ].filter(Boolean);
 
     const imageUrls = imagePaths.map((img) => `https://cdn.ssactivewear.com/${img}`);
@@ -309,8 +306,8 @@ exports.mapProducts = (ssProducts, specs = [], title, description, baseCategoryN
     const { base, variants, images, colorOptions, srcToColor } = grouped[key];
 
     const variantChunks = [];
-    for (let i = 0; i < variants.length; i += 140) {
-      variantChunks.push(variants.slice(i, i + 140));
+    for (let i = 0; i < variants.length; i += 200) {
+      variantChunks.push(variants.slice(i, i + 200));
     }
 
     variantChunks.forEach((variantGroup, index) => {
@@ -333,6 +330,8 @@ exports.mapProducts = (ssProducts, specs = [], title, description, baseCategoryN
         };
       });
 
+      const categoryTags = categoriesArray || "";    
+      
       shopifyProducts.push({
         title: title || `${base.brandName} ${base.styleName}`,
         body_html:
@@ -344,7 +343,12 @@ exports.mapProducts = (ssProducts, specs = [], title, description, baseCategoryN
         `,
         vendor: base.brandName,
         product_type: "Apparel",
-        tags: [base.colorFamily, base.baseCategoryID, base.brandName, baseCategoryName]
+        tags: [
+          base.colorFamily,
+          categoryTags,  // Use categoryTags dynamically here
+          base.brandName,
+          baseCategoryName,
+        ]
           .filter(Boolean)
           .join(", "),
         handle,
