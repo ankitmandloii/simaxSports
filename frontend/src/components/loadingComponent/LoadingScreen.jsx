@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import styles from './LoadingScreen.module.css';
-import logo from '../images/simax-design-logo.png'
+import logo from '../images/Loadinglogo.png'
 
 const messages = [
   'Initializing system',
