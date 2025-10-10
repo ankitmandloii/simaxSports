@@ -339,7 +339,8 @@ exports.adminChangePassword = async (req, res) => {
 // };
 
 
-exports.trackActiveUsersWithLocation = async (req, res) => {
+exports.trackActiveUsersWithLocation = async (req, res) => {  
+  
   try {
     await dbConnection();
     const { anonId, location } = req.body;
