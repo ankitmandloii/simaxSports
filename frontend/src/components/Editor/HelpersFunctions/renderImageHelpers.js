@@ -146,7 +146,7 @@ function createRemoveBackgroundToggle(fabricImage, canvasId, removeBg, handleIma
             return;
         }
         const addImageToolbarBgBtn = document.querySelector("#removeBackgroundInput");
-        const currentSrc = fabricImage.src;
+        const currentSrc = currentImageObject.src;
 
         const baseSrc = currentSrc.split('?')[0];
         let params = currentSrc.split('?')[1] ? currentSrc.split('?')[1].split('&') : [];
