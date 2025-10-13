@@ -1,11 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import style from './ProductToolbar.module.css';
 import { getHexFromName } from '../../utils/colorUtils';
 import { IoAdd } from 'react-icons/io5';
 import colorwheel from '../../images/colourwheel.png';
-import ChangePopup from '../../PopupComponent/ChangeProductPopup/ChangePopup';
-import AddProductContainer from '../../PopupComponent/addProductContainer/AddProductContainer';
 import ProductAvailableColor from '../../PopupComponent/ProductAvailableColor/ProductAvailableColor';
 import { AddColorSvgIcon, CrossIcon } from '../../iconsSvg/CustomIcon';
 import { useSelector, useDispatch } from 'react-redux';
@@ -21,26 +18,20 @@ import { setActiveProduct } from '../../../redux/ProductSlice/SelectedProductSli
 import { removeProduct } from '../../../redux/productSelectionSlice/productSelectionSlice';
 import { CgLayoutGrid } from 'react-icons/cg';
 import CloseButton from '../../CommonComponent/CrossIconCommon/CrossIcon';
+import { openAddProduct, openChangeProduct } from '../../../redux/Productpopupslice.js';
 
-const ProductToolbar = () => {
-
+const ProductToolbar = ({ isOpen = false, setIsOpen = () => { } } = {}) => {
   const dispatch = useDispatch();
 
   const selectedProducts = useSelector((state) => state.selectedProducts.selectedProducts);
-  // console.log("---selectedsProduct", selectedProducts);
-
+  console.log("-------selectedproducts", selectedProducts)
   const activeProduct = useSelector((state) => state.selectedProducts.activeProduct);
-  // console.log("---activeProduct", activeProduct);
-  const [changeProductPopup, setChangeProductPopup] = useState(false);
-  const [editingProductIndex, setEditingProductIndex] = useState(null);
-  const [isAddingProduct, setIsAddingProduct] = useState(false);
-  const [addProduct, setAddProduct] = useState(false);
+
   const [activeThumbnail, setActiveThumbnail] = useState({ productIndex: null, colorIndex: null });
   const [colorChangeTarget, setColorChangeTarget] = useState({ productIndex: null, colorIndex: null, actionType: null });
   const [hoveredThumbnail, setHoveredThumbnail] = useState({ productIndex: null, colorIndex: null, color: null });
 
   // Clone color safely with fallback for image and variants
-
   const safeCloneColor = (color, fallbackImg = '', allVariants = []) => {
     if (!color || typeof color !== 'object' || Array.isArray(color)) {
       return { name: String(color), img: fallbackImg, swatchImg: fallbackImg, allVariants: allVariants || [] };
@@ -59,117 +50,37 @@ const ProductToolbar = () => {
 
     return {
       ...color,
-      swatchImg, // Include swatchImg
+      swatchImg,
       img: color.img || fallbackImg,
       allVariants: allVariants || color.allVariants || [],
     };
   };
 
-  // Open popup for changing/adding product
+  // Open popup for changing product - now using Redux actions
   const openChangeProductPopup = (isAdd = false, index = null) => {
-    setIsAddingProduct(isAdd);
-    setEditingProductIndex(index);
-    setChangeProductPopup(true);
+    dispatch(openChangeProduct({ isAdd, index }));
   };
 
-  // Open popup for adding new product
+  // Open popup for adding new product - now using Redux actions
   const addProductPopup = () => {
-    setIsAddingProduct(true);
-    setEditingProductIndex(null);
-    setAddProduct(true);
+    dispatch(openAddProduct());
   };
+
   useEffect(() => {
     // console.log('Active Product from useSelector (after render):', activeProduct);
     // console.log('Active Product Color:', activeProduct?.selectedColor?.name);
   }, [activeProduct]);
-  // Handle product selection and update/add it to Redux store
-  // const handleProductSelect = (product, selectedColor = null) => {
-  //   const fallbackImg = product?.img || product?.imgurl || product?.selectedImage || '';
-  //   const clonedColor = selectedColor
-  //     ? safeCloneColor(selectedColor, fallbackImg, product.allVariants)
-  //     : product.selectedColor
-  //       ? safeCloneColor(product.selectedColor, fallbackImg, product.allVariants)
-  //       : product.colors?.[0]
-  //         ? safeCloneColor(product.colors[0], fallbackImg, product.allVariants)
-  //         : { name: 'default', img: fallbackImg, allVariants: product.allVariants || [] };
 
-  //   const updatedProduct = {
-  //     ...product,
-  //     selectedColor: clonedColor,
-  //     imgurl: clonedColor?.img || fallbackImg,
-  //     allVariants: product.allVariants || [],
-  //   };
-
-  //   if (isAddingProduct) {
-  //     dispatch(addProductAction(updatedProduct));
-  //     // Set the newly added product as active and its first thumbnail as active
-  //     const newIndex = selectedProducts.length; // Index of the new product
-  //     dispatch(setActiveProduct(updatedProduct));
-  //     setActiveThumbnail({ productIndex: newIndex, colorIndex: 0 });
-  //   } else if (editingProductIndex !== null) {
-  //     dispatch(updateProductAction({ index: editingProductIndex, product: updatedProduct }));
-  //     // Set the updated product as active and its first thumbnail as active
-  //     dispatch(setActiveProduct(updatedProduct));
-  //     setActiveThumbnail({ productIndex: editingProductIndex, colorIndex: 0 });
-  //   }
-
-  //   // Reset all modal states
-  //   setChangeProductPopup(false);
-  //   setEditingProductIndex(null);
-  //   setIsAddingProduct(false);
-  //   setAddProduct(false);
-  // };
-  // Product selection
-  const handleProductSelect = (product, selectedColor = null) => {
-    console.log("---------product", product)
-    const fallbackImg = product?.img || product?.imgurl || product?.selectedImage || '';
-    const clonedColor = selectedColor
-      ? safeCloneColor(selectedColor, fallbackImg, product.allVariants)
-      : product.selectedColor
-        ? safeCloneColor(product.selectedColor, fallbackImg, product.allVariants)
-        : product.colors?.[0]
-          ? safeCloneColor(product.colors[0], fallbackImg, product.allVariants)
-          : { name: 'default', img: fallbackImg, swatchImg: fallbackImg, allVariants: product.allVariants || [] };
-
-    const updatedProduct = {
-      ...product,
-      selectedColor: clonedColor,
-      imgurl: clonedColor?.img || fallbackImg,
-      swatchImg: clonedColor?.swatchImg || fallbackImg, // Ensure swatchImg at product level
-      allVariants: product.allVariants || [],
-      vendor: product?.vendor
-    };
-
-    if (isAddingProduct) {
-      dispatch(addProductAction(updatedProduct));
-      const newIndex = selectedProducts.length;
-      dispatch(setActiveProduct(updatedProduct));
-      setActiveThumbnail({ productIndex: newIndex, colorIndex: 0 });
-    } else if (editingProductIndex !== null) {
-      dispatch(updateProductAction({ index: editingProductIndex, product: updatedProduct }));
-      dispatch(setActiveProduct(updatedProduct));
-      setActiveThumbnail({ productIndex: editingProductIndex, colorIndex: 0 });
-    }
-
-    setChangeProductPopup(false);
-    setEditingProductIndex(null);
-    setIsAddingProduct(false);
-    setAddProduct(false);
-  };
   // Product deletion
   const handleDeleteProduct = (indexToDelete, id) => {
-    // Remove product at index
-    // console.log("id.................", id);
     let Productid = id.split("/");
     dispatch(removeProduct(Productid[Productid.length - 1]));
     const updated = [...selectedProducts];
     updated.splice(indexToDelete, 1);
 
-    // Dispatch updated product list
     dispatch(deleteProductAction(indexToDelete));
     dispatch(setSelectedProductsAction(updated));
 
-    // Determine and set next active product
     const newActiveProduct = getNextActiveProduct(updated, indexToDelete);
 
     if (newActiveProduct) {
@@ -185,22 +96,6 @@ const ProductToolbar = () => {
     return [];
   };
 
-  // Extract unique color options from Shopify product structure
-  // const normalizeColorsFromShopify = (product) => {
-  //   if (!product?.variants?.edges) return [];
-  //   const colorMap = new Map();
-  //   product.variants.edges.forEach(({ node }) => {
-  //     const colorOption = node.selectedOptions.find((opt) => opt.name.toLowerCase() === 'color');
-  //     if (colorOption && !colorMap.has(colorOption.value)) {
-  //       colorMap.set(colorOption.value, {
-  //         name: colorOption.value,
-  //         img: node.image?.originalSrc || '',
-  //         allVariants: normalizeVariants(product),
-  //       });
-  //     }
-  //   });
-  //   return Array.from(colorMap.values());
-  // };
   const normalizeColorsFromShopify = (product) => {
     if (!product?.variants?.edges) return [];
     const colorMap = new Map();
@@ -213,7 +108,7 @@ const ProductToolbar = () => {
         colorMap.set(colorOption.value, {
           name: colorOption.value,
           img: node.image?.originalSrc || '',
-          swatchImg, // Include swatchImg
+          swatchImg,
           allVariants: normalizeVariants(product),
         });
       }
@@ -221,9 +116,7 @@ const ProductToolbar = () => {
     return Array.from(colorMap.values());
   };
 
-  // Get list of colors not already used by the product
   const getAvailableColorsForProduct = (product) => {
-    // console.log("===============availableeeprodddd", product)
     const allColors = product.colors?.length ? product.colors : normalizeColorsFromShopify(product);
     if (!allColors.length) return [];
 
@@ -238,7 +131,6 @@ const ProductToolbar = () => {
   const getNextActiveProduct = (products, targetIndex, colorIndex) => {
     if (products.length === 0) return null;
 
-    // console.log("data.............", products, targetIndex, colorIndex);
     const safeIndex = Math.min(targetIndex, products.length - 1);
     const colorIndexSafe = colorIndex ?? 0;
     const current = products[safeIndex];
@@ -247,8 +139,6 @@ const ProductToolbar = () => {
     const nextColor = addedColors.length > 0
       ? addedColors[0]
       : current.selectedColor;
-
-    // console.log("color index", colorIndex);
 
     const clickedColor = colorIndexSafe === 0
       ? current.selectedColor
@@ -272,19 +162,14 @@ const ProductToolbar = () => {
       allVariants: originalProduct.allVariants || [],
     };
 
-    // console.log("originalProduct id ", originalProduct);
-
     if (colorIndex === 0) {
-      // Deleting main color
       if (product.addedColors.length > 0) {
-        // Promote the first added color to be the new main color
         const [firstColor, ...rest] = product.addedColors;
         product.selectedColor = safeCloneColor(firstColor, firstColor.img, product.allVariants);
         product.imgurl = firstColor.img;
         product.addedColors = rest;
         updated[productIndex] = product;
 
-        // Set the new active product to this updated product
         const newActiveProduct = {
           ...product,
           selectedColor: safeCloneColor(firstColor, firstColor.img, product.allVariants),
@@ -294,10 +179,8 @@ const ProductToolbar = () => {
 
         dispatch(setActiveProduct(newActiveProduct));
       } else {
-        // No added colors left - delete the entire product
         updated.splice(productIndex, 1);
 
-        // Find the nearest product to activate
         const newIndex = Math.min(productIndex, updated.length - 1);
         const newActiveProduct = updated[newIndex]
           ? {
@@ -311,45 +194,34 @@ const ProductToolbar = () => {
         dispatch(setActiveProduct(newActiveProduct));
       }
     } else {
-      // Remove added color
       product.addedColors.splice(colorIndex - 1, 1);
       updated[productIndex] = product;
     }
 
-    // Update the product list in Redux
     dispatch(setSelectedProductsAction(updated));
 
-    // Determine new active product
     const newActiveProduct = getNextActiveProduct(updated, productIndex, colorIndex);
 
-    // Set the new active product
     if (newActiveProduct) {
       dispatch(setActiveProduct(newActiveProduct));
     } else {
-      // If no products left
       dispatch(setActiveProduct(null));
     }
 
     setActiveThumbnail({ productIndex: null, colorIndex: null });
-    // console.log("---selectedProduct", selectedProducts);
   };
 
   const { list: rawProducts, loading, error } = useSelector(
     (state) => state.products
   );
 
-  // Debug effect to track active product changes
   useEffect(() => {
     // console.log("Active Product Updated:", activeProduct);
   }, [activeProduct]);
 
-  function testing(text) {
-
-  }
-
   const tritriggerRef = React.useRef(null);
+
   return (
-    // <div className={style.toolbarMainContainer}>
     <div className='toolbar-main-container'>
       <div className={style.productToolbar}>
         <div className="toolbar-main-heading">
@@ -364,48 +236,32 @@ const ProductToolbar = () => {
                 <div className={style.toolbarProductTitleHead}>
                   <h5>{product?.name || product?.title}</h5>
                   {selectedProducts.length > 1 && (
-                    <>
-                      {/* <span
-                        className={style.crossProdICon}
-                        onClick={() => handleDeleteProduct(index, product.id)}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <CrossIcon />
-                      </span> */}
-                      <span
-                        className={`${style.closeBtn} `}
-                        onClick={() => handleDeleteProduct(index, product.id)}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <CrossIcon />
-                      </span>
-                    </>
+                    <span
+                      className={`${style.closeBtn} `}
+                      onClick={() => handleDeleteProduct(index, product.id)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <CrossIcon />
+                    </span>
                   )}
                 </div>
 
                 <div className={style.productToolbarImageWithBtn}>
                   {[
-                    // {
-                    //   img: product?.selectedColor?.img || product?.selectedImage,
-                    //   name: product?.selectedColor?.name || product?.name,
-                    //   allVariants: product?.allVariants || [],
-                    // },
                     {
                       img: product?.selectedColor?.img || product?.selectedImage,
-                      swatchImg: product?.selectedColor?.swatchImg || product?.selectedImage, // Ensure swatchImg is included
+                      swatchImg: product?.selectedColor?.swatchImg || product?.selectedImage,
                       name: product?.selectedColor?.name || product?.name,
                       allVariants: product?.allVariants || [],
                     },
                     ...(product?.addedColors || []),
                   ].map((color, i) => {
-                    // console.log("---color", color)
                     const isHovered = hoveredThumbnail.productIndex === index && hoveredThumbnail.colorIndex === i;
                     const imgSrc = isHovered ? hoveredThumbnail.color.img : color.img;
 
                     return (
                       <div
                         key={i}
-
                         className={`mini-prod-img-container ${activeProduct?.id === product?.id &&
                           (
                             (i === 0 &&
@@ -468,23 +324,12 @@ const ProductToolbar = () => {
                                   <CrossIcon />
                                 </span>
                               )}
-                            {/* <button
-                              className={style.toolbarSpan}
-                              style={{ '--indicator-color': getHexFromName(color?.name) }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setColorChangeTarget({ productIndex: index, colorIndex: i, actionType: 'change' });
-                              }}
-                            >
-                              Change
-                            </button> */}
                             <button
                               className={style.toolbarSpan}
                               onClick={(e) => {
                                 tritriggerRef.current = e.currentTarget;
                                 e.stopPropagation();
                                 setColorChangeTarget({ productIndex: index, colorIndex: i, actionType: 'change' });
-                                // console.log("----swatch", color.swatchImage, "--img", color.img)
                               }}
                             >
                               <img
@@ -509,7 +354,6 @@ const ProductToolbar = () => {
                                 setColorChangeTarget({ productIndex: null, colorIndex: null, actionType: null })
                               }
                               onAddColor={(productData, color) => {
-                                // Create completely new objects to ensure reference changes
                                 const updated = selectedProducts.map((p, idx) =>
                                   idx === index ? { ...p } : p
                                 );
@@ -521,7 +365,6 @@ const ProductToolbar = () => {
                                   allVariants: productData.allVariants || []
                                 };
 
-                                // Process variants data
                                 const allVariants = normalizeVariants(productData);
                                 const colorName = color.name.toLowerCase().trim();
                                 newColor.sizes = allVariants
@@ -539,7 +382,6 @@ const ProductToolbar = () => {
                                   })
                                   .filter(Boolean);
 
-                                // Update the product
                                 if (colorChangeTarget.colorIndex === 0) {
                                   current.selectedColor = newColor;
                                   current.imgurl = newColor.img || current.imgurl;
@@ -550,20 +392,14 @@ const ProductToolbar = () => {
 
                                 updated[index] = current;
 
-                                // Create new active product
                                 const newActiveProduct = {
                                   ...current,
                                   selectedColor: newColor,
                                   imgurl: newColor.img || current.imgurl
                                 };
 
-                                // console.log('Dispatching updates...');
-                                // console.log('New active product:', newActiveProduct);
-
-                                // Dispatch separately to ensure each triggers updates
                                 dispatch(setSelectedProductsAction(updated));
                                 dispatch(setActiveProduct(newActiveProduct));
-                                // testing(newActiveProduct, "step 1");
                                 dispatch(setRendering());
 
                                 setActiveThumbnail({
@@ -593,7 +429,7 @@ const ProductToolbar = () => {
                 </div>
 
                 <div className={style.toolbarMiddleButton}>
-                  <button className="black-button" onClick={() => openChangeProductPopup(false, index)}>
+                  <button className="black-button" onClick={() => { openChangeProductPopup(false, index); setIsOpen(false) }}>
                     Change Product
                   </button>
 
@@ -642,16 +478,14 @@ const ProductToolbar = () => {
 
                           newColor.sizes = sizeVariantPairs;
 
-                          // Create a completely new product reference
                           const updatedProduct = {
-                            ...JSON.parse(JSON.stringify(current)), // Deep clone
+                            ...JSON.parse(JSON.stringify(current)),
                             addedColors: [...(current.addedColors || []), newColor],
                             allVariants: current.allVariants || [],
                           };
 
                           updated[index] = updatedProduct;
 
-                          // Dispatch both updates together
                           batch(() => {
                             dispatch(setSelectedProductsAction(updated));
                             dispatch(setActiveProduct({
@@ -662,7 +496,6 @@ const ProductToolbar = () => {
                             }));
                           });
 
-                          // Set the thumbnail of the new color as active
                           const newColorIndex = updatedProduct.addedColors.length;
                           setActiveThumbnail({ productIndex: index, colorIndex: newColorIndex });
 
@@ -681,28 +514,15 @@ const ProductToolbar = () => {
               </div>
             </div>
           ))}
-          <button className={style.addProductBtn} onClick={addProductPopup}>
+          <button className={style.addProductBtn} onClick={() => {
+            setIsOpen(false);
+            addProductPopup();   // <-- call it
+          }}>
             <span><IoAdd /></span>  Add Products
           </button>
         </div>
-
-        {changeProductPopup && (
-          <ChangePopup
-            onClose={() => setChangeProductPopup(false)}
-            onProductSelect={handleProductSelect}
-          />
-        )}
-
-        {addProduct && (
-          <AddProductContainer
-            isOpen={addProduct}
-            onClose={() => setAddProduct(false)}
-            onProductSelect={handleProductSelect}
-            openChangeProductPopup={openChangeProductPopup}
-          />
-        )}
       </div>
-    </div>
+    </div >
   );
 };
 

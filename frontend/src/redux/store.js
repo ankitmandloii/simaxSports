@@ -10,6 +10,7 @@ import settingsReducer from './SettingsSlice/SettingsSlice.js'
 import hoverReducer from './ProductSlice/HoverSlice.js'
 import productSelectionReducer from './productSelectionSlice/productSelectionSlice.js';
 import canvasReducer from './FrontendDesign/CanvasStoreSlice.js';
+import productPopupReducer from './Productpopupslice.js'
 // import TextBackendDesignSlice from "./BackendDesign/TextBackendDesignSlice.js";
 
 export const store = configureStore({
@@ -25,6 +26,7 @@ export const store = configureStore({
     hoverReducer: hoverReducer,
     productSelection: productSelectionReducer,
     canvasReducer: canvasReducer,
+    productPopup: productPopupReducer,
     // TextBackendDesignSlice: TextBackendDesignSlice
   },
   middleware: (getDefaultMiddleware) =>

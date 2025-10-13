@@ -501,21 +501,27 @@
 
 
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import styles from './AddProductContainer.module.css';
 import colorwheel1 from "../../images/color-wheel1.png";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {
+  openChangeProduct
+} from "../../../redux/Productpopupslice.js";
 
 
 import CloseButton from "../../CommonComponent/CrossIconCommon/CrossIcon";
 import ProductCard from "../../CommonComponent/ProductComponent/ProductCard";
 import { SearchIcon } from "../../iconsSvg/CustomIcon";
+import NoProductFound from "../../CommonComponent/NoProductFound/NoProductFound";
 
 const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProductPopup }) => {
+  console.log("----onProductSelect", onProductSelect)
   const { list: rawProducts, loading, error } = useSelector((state) => state.products);
   const selectedProduct = useSelector((state) => state.selectedProducts.selectedProducts);
+  const dispatch = useDispatch();
 
   const [products, setProducts] = useState([]);
   const [activeProductKey, setActiveProductKey] = useState(null);
@@ -685,9 +691,13 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
         };
       });
 
-      setProducts(productsWithKeys);
+      const filteredProducts = productsWithKeys.filter((product) =>
+        !selectedProduct.some((selected) => selected.id === product.id)
+      );
+
+      setProducts(filteredProducts);
     }
-  }, [rawProducts, searchQuery]);
+  }, [rawProducts, searchQuery, selectedProduct]);
 
   const handleSearch = () => {
     fetchProducts(searchQuery);
@@ -699,6 +709,7 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
 
   const handleProductAdd = (selectedData) => {
     onProductSelect(selectedData);
+    console.log("-----selectedData", selectedData)
     setActiveProductKey(null); // Close any open popup
     onClose();
   };
@@ -744,7 +755,8 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
               ) : products.length === 0 && searchQuery ? (
                 <p style={{ color: "gray", textAlign: 'center', fontSize: '1rem', marginTop: '3rem', marginBottom: '3rem' }}>No matching products found.</p>
               ) : products.length === 0 && !searchQuery ? (
-                <p style={{ color: "gray" }}>No products available.</p>
+                // <p style={{ color: "gray" }}>No products available.</p>
+                <NoProductFound />
               ) : (
                 <ul className={styles.productList}>
                   {products.map((product) => (
@@ -764,7 +776,8 @@ const AddProductContainer = ({ isOpen, onClose, onProductSelect, openChangeProdu
                 <button
                   className={styles.modalAllProductButton}
                   onClick={() => {
-                    openChangeProductPopup(true, null);
+                    openChangeProductPopup({ isAdd: true, index: null });
+                    // dispatch(openChangeProduct());
                     onClose();
                   }}
                 >

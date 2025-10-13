@@ -15,8 +15,9 @@ import { setactiveNameAndNumberPrintSide, setActiveSide, setAddName, setAddNumbe
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { apiConnecter } from '../../utils/apiConnector.jsx';
+import { openAddNamesPopup } from '../../../redux/Productpopupslice.js';
 
-const NamesToolbar = () => {
+const NamesToolbar = ({ isOpen = false, setIsOpen = () => { } } = {}) => {
   const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const activeNameAndNumberPrintSide = useSelector((state) => state.TextFrontendDesignSlice.activeNameAndNumberPrintSide);
 
@@ -234,7 +235,10 @@ const NamesToolbar = () => {
           {/* <button className={style.blackButton} onClick={showAddnamesPopupHandler}>
             Step 2: Enter Names/Numbers
           </button> */}
-          <button className={`${style.blackButton} ${isButtonClicked ? style.clicked : ''}`} onClick={showAddnamesPopupHandler}>
+          <button className={`${style.blackButton} ${isButtonClicked ? style.clicked : ''}`} onClick={() => {
+            setIsOpen(false);
+            dispatch(openAddNamesPopup());   // <-- call it
+          }}>
             Step 2: Enter Names/Numbers
           </button>
           <hr />
@@ -247,7 +251,7 @@ const NamesToolbar = () => {
           </div>
         </div>
       </div>
-      {showAddnamesPopup && <AddNamesPopup showAddnamesPopupHandler={showAddnamesPopupHandler} />}
+      {/* {showAddnamesPopup && <AddNamesPopup showAddnamesPopupHandler={showAddnamesPopupHandler} />} */}
     </div>
   );
 };
