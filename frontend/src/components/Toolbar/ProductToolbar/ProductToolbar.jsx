@@ -362,7 +362,7 @@ const ProductToolbar = () => {
             <div className={style.toolbarProductHead} key={index}>
               <div className={style.toolbarHead}>
                 <div className={style.toolbarProductTitleHead}>
-                  <h4>{product?.name || product?.title}</h4>
+                  <h5>{product?.name || product?.title}</h5>
                   {selectedProducts.length > 1 && (
                     <>
                       {/* <span
