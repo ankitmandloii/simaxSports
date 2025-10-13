@@ -10,7 +10,7 @@ const { dbConnection } = require('./config/db');
 // const { initSocket } = require('./socket'); // adjust path
 const helmet = require('helmet');
 const multer = require('multer');
-// const { startScheduler } = require("./scheduler/cronJob.js");
+const { startScheduler } = require("./scheduler/cronJob.js");
 const { ConnectCloadinary } = require('./config/cloudinary.js');
 const cookieParser = require("cookie-parser");
 const { verifyShopifyWebhook } = require('./schema/customerValidation.js');
@@ -55,7 +55,7 @@ cron.schedule('0 2 * * *', async () => {
   await runCleanupNow({ days: 30 });
 });
 
-// startScheduler(); // start scheduled sync for product S&S to Shopify
+startScheduler(); // start scheduled sync for product S&S to Shopify
 
 app.use((err, req, res, next) => {
   if (err.code === "LIMIT_FILE_SIZE") {

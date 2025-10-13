@@ -88,9 +88,9 @@
 import React from "react";
 import "./PromptEx.css";
 import Bear from "../../images/good-news-bears.png";
-import rabbit1 from '../../images/RB1.png'
-import rabbit2 from '../../images/RB2.png'
-import rabbit3 from '../../images/RB3.png'
+import rabbit1 from '../../images/promptGuide1.png'
+import rabbit2 from '../../images/promptGuide2.png'
+import rabbit3 from '../../images/promptGuide3.png'
 import { IoMdClose } from "react-icons/io";
 
 

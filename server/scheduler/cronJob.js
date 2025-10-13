@@ -7,7 +7,7 @@ const StyleIdSyncJob = require("../model/StyleIdSyncJob");
 
 exports.startScheduler = () => {
     // const scheduleTime = process.env.SYNC_CRON_TIME || "0 2 * * *";
-    const scheduleTime = "59 8 * * *";
+    const scheduleTime = "35 10 * * *";
     // Default to 2:00 AM
 
 
@@ -30,7 +30,7 @@ exports.startScheduler = () => {
 
 
     // 🔁 CRON JOB 1: Fetch all style IDs from S&S and store to DB (every day at 1 AM)
-    cron.schedule("25 13 * * *", async () => {
+    cron.schedule("59 7 * * *", async () => {
         try {
             console.log("🌐 Fetching style IDs from S&S at", new Date().toLocaleString());
             // Step 1: Reset data before syncing new data
@@ -63,6 +63,22 @@ exports.startScheduler = () => {
     cron.schedule(scheduleTime, async () => {
 
         const allowedBrands = [
+            // "Adidas"
+            // "AllPro"
+            // "American Apparel"
+            // "Augusta Sportswear",
+            // "AWDis"
+            // "Badger"
+            // "Bayside"
+            // "C2 Sport"
+            "Champion"
+
+
+
+
+
+            // "UltraClub"
+            // "Next level apparelc"
             // "M&O"
             // "Under Armour",
             // "Comfort Colors",
@@ -71,7 +87,7 @@ exports.startScheduler = () => {
             // "Adidas"
             // "BELLA + CANVAS"
             // "ComfortWash by Hanes"
-            "LAT"
+            // "LAT"
             // "Independent Trading Co."
         ];
         try {

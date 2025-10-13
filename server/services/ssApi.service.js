@@ -330,8 +330,14 @@ exports.updateUploadBrandSchema = async () => {
 
         // if (!noProducts) {
         if (Array.isArray(ssData) && ssData.length > 0) {
-          await this.saveSSProductsAndSpecsData(ssData, specs);
           console.log(`✅ Saved products/specs for styleID: ${styleId}`);
+         const status =  await this.saveSSProductsAndSpecsData(ssData, specs);
+         if(!status.success){
+            console.log(`triggering deletion-- ${styleId} hance all sku's is missed`)
+            toDelete.push(styleId);
+         } else {
+           console.log(`${styleId} all sku's is saved`)
+         }
         } else {
           // console.warn(`⚠️ No products for styleID: ${styleId}`);
           //for testing purposes
@@ -490,6 +496,15 @@ exports.saveSSProductsAndSpecsData = async (ssProducts, specData = []) => {
           upsert: true
         }
       });
+    }
+
+
+
+    if (skippedCount === ssProducts.length) {
+      console.log(`⚠️ All products skipped for styleID: ${styleID}, triggering deletion.`);
+      // Trigger deletion of the styleID
+      // Assuming this function exists to handle the deletion.
+      return { success: false, message: "All SKUs skipped, styleID marked for deletion." };
     }
 
     // Upsert new products

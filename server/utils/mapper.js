@@ -333,7 +333,7 @@ exports.mapProducts = (ssProducts, specs = [], title, description, baseCategoryN
       const categoryTags = categoriesArray || "";    
       
       shopifyProducts.push({
-        title: title || `${base.brandName} ${base.styleName}`,
+        title: `${base.styleName} - ${title}` || `${base.brandName} ${base.styleName}`,
         body_html:
           description ||
           `
