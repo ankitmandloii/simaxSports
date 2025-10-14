@@ -181,7 +181,12 @@ const renderAllImageObjects = (
 
       }
       function toggleVisibility(visible, locked) {
+        const state = store.getState();
+        const activeSide = state.TextFrontendDesignSlice.activeSide;
+        const images = state.TextFrontendDesignSlice.present[activeSide].images;
+        const selectedImageId = state.TextFrontendDesignSlice.present[activeSide].selectedImageId;
         if (selectedImageId != img.id) return;
+        console.log(selectedImageId, img.id);
         const toggle = document.getElementById(`canvas-${img.id}`);
         const aiEditorBtn = document.getElementById(`canvas-${img.id}-ai`);
         if (locked && toggle && aiEditorBtn) {
@@ -288,6 +293,7 @@ const renderAllImageObjects = (
         }
       }
       function deselectedhandler() {
+        dispatch(selectedImageIdState(null))
         removeAllHtmlControls(canvas);
         const toggle = document.getElementById(`canvas-${img.id}`);
         const aiButton = document.getElementById(`canvas-${img.id}-ai`);
