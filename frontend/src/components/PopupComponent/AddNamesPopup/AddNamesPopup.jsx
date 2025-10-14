@@ -84,7 +84,7 @@ import CustomSelectSize from '../../CommonComponent/CustomSelectSize/CustomSelec
 //   );
 // };
 
-const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
+const AddNamesPopup = ({ onClose }) => {
   // const activeSide = useSelector((state) => state.TextFrontendDesignSlice.activeSide);
   const activeSide = "back";
   // const { addNumber, addName } = useSelector((state) => state.TextFrontendDesignSlice);
@@ -360,7 +360,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
         }));
       });
 
-      showAddnamesPopupHandler();
+      // showAddnamesPopupHandler();
     }
   };
 
@@ -386,7 +386,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
           {/* <button className={styles.closeBtn} onClick={showAddnamesPopupHandler}>
             <CrossIcon />
           </button> */}
-          <CloseButton onClose={showAddnamesPopupHandler} />
+          <CloseButton onClose={onClose} />
         </div>
 
         <div className={styles.popupBody}>
@@ -513,7 +513,7 @@ const AddNamesPopup = ({ showAddnamesPopupHandler }) => {
 
             <div className={styles.popupFooter}>
               <button className={styles.primaryBtn} onClick={saveAndExit}>Save & Close</button>
-              <button className={styles.linkBtn} onClick={showAddnamesPopupHandler}>Exit Without Saving</button>
+              <button className={styles.linkBtn} onClick={onClose}>Exit Without Saving</button>
             </div>
           </div>
 

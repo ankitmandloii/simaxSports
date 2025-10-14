@@ -443,9 +443,11 @@ import { CrossIcon } from '../../iconsSvg/CustomIcon';
 import ColorWheel from '../../images/color-wheel1.png';
 import ColorSwatchPlaceholder from '../../CommonComponent/ColorSwatchPlaceholder.jsx/ColorSwatchPlaceholder';
 import ProductCard from '../../CommonComponent/ProductComponent/ProductCard';
+import NoProductFound from '../../CommonComponent/NoProductFound/NoProductFound';
 
 const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoading: setParentLoading, setCollectionLoading }) => {
   // console.log("=----collectionId", collectionId)
+  console.log("-------onProductSlelect", onProductSelect)
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const popupRef = useRef(null);
   const selectedProducts = useSelector((state) => state?.selectedProducts?.selectedProducts);
@@ -586,8 +588,13 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
 
         };
       });
+      const filteredProducts = newProducts.filter(product =>
+        !selectedProducts.some(selected => selected.id === product.id)
+      );
 
-      setProducts((prev) => (isLoadMore ? [...prev, ...newProducts] : newProducts));
+      setProducts((prev) => (isLoadMore ? [...prev, ...filteredProducts] : filteredProducts));
+
+      // setProducts((prev) => (isLoadMore ? [...prev, ...newProducts] : newProducts));
       setCursor(pageInfo?.endCursor || '');
       setHasNextPage(pageInfo?.hasNextPage || false);
     } catch (err) {
@@ -736,7 +743,8 @@ const CollectionProductPopup = ({ collectionId, onProductSelect, onClose, setLoa
           <p>Loading products....</p>
         </div>
       ) : products.length === 0 ? (
-        <p>No products found.</p>
+        // <p>No products found.</p>
+        <NoProductFound />
       ) : (
         <>
           <div className={style.productListCollection}>

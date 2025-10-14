@@ -387,9 +387,13 @@
     font-size: 12px;
   }
 
+
   .modalContent {
     width: 90%;
+    height: 100vh;
+    /* top: 0; */
   }
+
 
   .productList {
     grid-template-columns: repeat(2, 1fr);

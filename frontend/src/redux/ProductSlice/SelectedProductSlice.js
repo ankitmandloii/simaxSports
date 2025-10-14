@@ -12,6 +12,7 @@ const selectedProductSlice = createSlice({
       state.selectedProducts = action.payload;
     },
     addProduct(state, action) {
+      console.log("---addProductss", action.payload)
       state.selectedProducts.push(action.payload);
     },
     updateProduct(state, action) {
