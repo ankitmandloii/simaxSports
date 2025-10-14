@@ -359,7 +359,7 @@ const AddNamesPopup = ({ onClose }) => {
           isRenderOrNot: true
         }));
       });
-
+      onClose();
       // showAddnamesPopupHandler();
     }
   };

@@ -136,7 +136,7 @@
 
 .primaryBtn:hover {
   border: 2px solid var(--blue-color);
-
+  color: var(--blue-color)
 }
 
 .linkBtn {
