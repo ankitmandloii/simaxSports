@@ -492,6 +492,7 @@ function updateButtonPosition(existingObj, id) {
         const imageBottom = center.y + (existingObj.getScaledHeight() / 2);
         const imageLeft = center.x;
         const OFFSET = 40;
+        console.log(center.x, center.y, "centerrrrrrrrrr")
         button.style.top = `${imageBottom + OFFSET}px`;
         button.style.left = `${imageLeft}px`;
     }

@@ -185,7 +185,9 @@ const renderAllImageObjects = (
         const activeSide = state.TextFrontendDesignSlice.activeSide;
         const images = state.TextFrontendDesignSlice.present[activeSide].images;
         const selectedImageId = state.TextFrontendDesignSlice.present[activeSide].selectedImageId;
-        if (selectedImageId != img.id) return;
+        if (selectedImageId != img.id || canvas.getActiveObjects().find((obj) => obj.id == img.id)) {
+          return;
+        }
         console.log(selectedImageId, img.id);
         const toggle = document.getElementById(`canvas-${img.id}`);
         const aiEditorBtn = document.getElementById(`canvas-${img.id}-ai`);
@@ -293,7 +295,6 @@ const renderAllImageObjects = (
         }
       }
       function deselectedhandler() {
-        dispatch(selectedImageIdState(null))
         removeAllHtmlControls(canvas);
         const toggle = document.getElementById(`canvas-${img.id}`);
         const aiButton = document.getElementById(`canvas-${img.id}-ai`);
