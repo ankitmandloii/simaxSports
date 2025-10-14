@@ -162,7 +162,7 @@ const renderAllImageObjects = (
         if (canvas.getActiveObjects().find((i) => i.id == id)) {
           toggleVisibility(true, locked)
         }
-        img.controls = createControls(bringPopup, dispatch,navigate);
+        img.controls = createControls(bringPopup, dispatch, navigate);
       }
       else {
         toggleVisibility(false, locked)
@@ -181,7 +181,7 @@ const renderAllImageObjects = (
 
       }
       function toggleVisibility(visible, locked) {
-
+        if (selectedImageId != img.id) return;
         const toggle = document.getElementById(`canvas-${img.id}`);
         const aiEditorBtn = document.getElementById(`canvas-${img.id}-ai`);
         if (locked && toggle && aiEditorBtn) {
@@ -321,7 +321,12 @@ const renderAllImageObjects = (
           createRemoveBackgroundToggle(img, `canvas-${activeSide}`, removeBg, handleImage, globalDispatch);
           createAiEditorButton(img, `canvas-${activeSide}`, removeBg, setOpenAieditorPopup, openAieditorPopup, handleImage, globalDispatch);
           canvas.add(img)
+          console.log("active objects", canvas.getActiveObjects());
+          if (selectedImageId == img.id) {
+            canvas.setActiveObject(img); // Keeps the updated object selected 
+          }
           canvas.requestRenderAll();
+
         },
         { crossOrigin: "anonymous" }
       );
