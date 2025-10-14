@@ -162,7 +162,7 @@ const AddImageToolbar = () => {
     const probe = new Image();
     probe.crossOrigin = "anonymous";
     console.log("----------src", img?.src)
-    console.log("----------probbe", probe.width, probe.height)
+    // console.log("----------probbe", probe.width, probe.height)
 
     probe.src = img.src.split("?")[0];
     probe.onload = () => {

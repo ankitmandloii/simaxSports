@@ -24,7 +24,6 @@ import usePersistQueryParams from "./components/CommonComponent/Customhook";
 import { apiConnecter } from "./components/utils/apiConnector";
 import { fetchSettings } from "./redux/SettingsSlice/SettingsSlice";
 import { restoreEditDesigns } from "./redux/FrontendDesign/TextFrontendDesignSlice";
-import Test from '../../frontend/src/components/Test'
 import db from "../src/db/indexDb";
 import { debounce } from "lodash"
 import { handleImage, transformImagesArray } from "./components/utils/transformReduxState";

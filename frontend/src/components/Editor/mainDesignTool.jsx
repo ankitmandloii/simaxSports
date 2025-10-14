@@ -522,7 +522,7 @@ const MainDesignTool = ({
     const canvas = new fabric.Canvas(canvasElement, {
       width: canvasWidth,
       height: canvasHeight,
-      // backgroundColor:"red",
+      // backgroundColor: "red",
       perPixelTargetFind: false,
       targetFindTolerance: 4,
       preserveObjectStacking: true,
@@ -715,9 +715,7 @@ const MainDesignTool = ({
   useEffect(() => {
     const handleResize = () => {
       // console.log("resizing......................", window.innerWidth);
-      if (!isTabletOrMobile) {
-        setSize(window.innerWidth);
-      }
+      setSize(window.innerWidth);
     };
 
     window.addEventListener("resize", handleResize);
@@ -727,6 +725,46 @@ const MainDesignTool = ({
 
     };
   }, []);
+
+  useEffect(() => {
+    // 1. Get the target element directly (it should exist after the initial render)
+    const targetElement = document.querySelector(".canvas-wrapper");
+
+    // 2. CRITICAL CHECKS: Ensure the element exists and we aren't on mobile (if condition requires it)
+    if (!targetElement) {
+      // console.log("resize observer return (element not found or mobile mode)");
+      return;
+    }
+
+    // 3. Define the observer callback
+    const observerCallback = (entries) => {
+      for (let entry of entries) {
+        const width = entry.contentRect.width;
+        const height = entry.contentRect.height;
+
+        // CORRECT LOGIC: Calculate the size as the MINIMUM of width and height 
+        // to ensure the square fits inside the available space.
+        const newSize = Math.random() * 1000; // Math.min(width, height);
+
+        // Set the new size state
+        setSize(newSize);
+        // console.log(`New square size set: ${newSize}`);
+      }
+    };
+
+    // 4. Create and start observing
+    const resizeObserver = new ResizeObserver(observerCallback);
+    resizeObserver.observe(targetElement);
+
+    // 5. Cleanup function: runs when the component unmounts or dependencies change
+    return () => {
+      resizeObserver.unobserve(targetElement);
+      // console.log("ResizeObserver unobserved/cleaned up.");
+    };
+
+    // Removed canvasRef and fabricCanvasRef from dependencies, as they don't cause the observer to need re-initialization.
+    // Kept isTabletOrMobile as it affects the logic.
+  }, [isTabletOrMobile])
 
 
   useEffect(() => {

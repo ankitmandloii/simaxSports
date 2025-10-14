@@ -1,22 +1,28 @@
 .redoundoContainer {
-  width: 5rem;
+  /* width: 64px; */
+  /* was 80px */
   display: flex;
+  position: fixed;
   flex-direction: column;
   justify-content: flex-start;
   gap: 0;
   margin-top: 0;
-  /* margin-left: clamp(0.5rem, 3.5vw, 1rem);  */
-  border-radius: 0.5rem;
+  border-radius: 8px;
+  /* was 8px */
   background-color: var(--blue-light);
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
   color: black;
-  /* ~8px */
-  z-index: 1000;
-  /* padding: 16px; */
+  z-index: 99;
 }
 
-.redoundoContainer li {
+.redoundoLi {
   list-style: none;
+  width: 100% !important;
+  /* background: RED; */
+}
+
+.redoundoLi button {
+  width: 100% !important;
 }
 
 .productContainerButton {
@@ -26,17 +32,20 @@
   flex-direction: column;
   background-color: #fff;
   border: 1px solid #fff;
-  padding: clamp(0.2rem, 5vh, 1.2rem) clamp(0.2rem, 5vw, 0.8rem);
+  padding: 8px 6px;
+  /* was 19.2px 12.8px */
   border-radius: 0;
-  /* color: #7f7f7f; */
   color: black;
-  font-size: clamp(0.2rem, 1.9vw, 0.75rem);
-  /* 12px */
+  font-size: 10px;
+  /* was 12px */
   font-weight: 600;
-  width: clamp(2.5rem, 10vw, 5rem);
+  /* was 80px */
   white-space: nowrap;
   transition: background-color 0.3s ease, color 0.3s ease;
+  /* box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px; */
+
 }
+
 
 .productContainerButton:hover {
   background-color: black;
@@ -63,56 +72,64 @@
 }
 
 .productContainerButton svg {
-  width: clamp(0.4rem, 5vh, 1.25rem);
-  /* ~20px */
-  height: clamp(0.4rem, 5vh, 1.25rem);
+  width: 16px;
+  /* was 20px */
+  height: 16px;
+  /* was 20px */
 }
 
 /* Rounded corners for first and last list items */
 .redoundoContainer li:first-child .productContainerButton {
-  border-radius: 0.625rem 0.625rem 0 0;
-  /* 10px top corners */
+  border-radius: 8px 8px 0 0;
+  /* was 10px */
   border-bottom: 1px solid #d9d9d9;
 }
 
 .redoundoContainer li:last-child .productContainerButton {
-  border-radius: 0 0 0.625rem 0.625rem;
+  border-radius: 0 0 8px 8px;
+  /* was 10px */
   border-top: 1px solid #d9d9d9;
 }
 
-@media screen and (max-width:1200px) {
+@media screen and (max-width:1100px) {
   .redoundoContainer {
-    padding: 16px;
-    background: none;
-    box-shadow: none;
-  }
-
-}
-
-@media screen and (max-width:600px) {
-  .productContainerButton svg {
-    width: clamp(0.4rem, 3vh, 1.25rem);
-    height: clamp(0.4rem, 3vh, 1.25rem);
-  }
-
-  .productContainerButton {
-    font-size: clamp(0.5rem, 1vw, 0.625rem);
-  }
-
-  .productContainerButton {
+    /* padding: 8px; */
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    background-color: #fff;
-    border: 1px solid #fff;
-    padding: clamp(0rem, 0.5vh, 0.3rem) clamp(1.5rem, 1vw, 0.5rem);
-    border-radius: 0;
-    color: #7f7f7f;
-    font-size: clamp(0.2rem, 1.9vw, 0.75rem);
-    font-weight: 600;
-    width: clamp(2.5rem, 6vw, 3rem);
-    white-space: nowrap;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    width: 100%;
+    /* was 16px */
+    background: none;
+    box-shadow: none;
+    position: relative;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+
+  }
+}
+
+@media screen and (max-width:600px) {
+  .productContainerButton {
+    font-size: 9px;
+    /* was 10px */
+    padding: 6px 0px;
+    /* was 8px 6px */
+    width: 100%;
+    /* was 64px */
+    /* color: #7f7f7f; */
+    /* box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px; */
+
+  }
+
+  .productContainerButton svg {
+    width: 14px;
+    /* was 16px */
+    height: 14px;
+    /* was 16px */
+  }
+}
+
+@media screen and (min-width: 1100px) {
+  .productContainerButton {
+    width: 64px;
   }
 }

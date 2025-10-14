@@ -369,7 +369,7 @@ canvas#mirrorCanvasBack {
   position: absolute;
   left: 10px;
   top: 10px;
-  /* z-index: 20; */
+  z-index: 20;
   gap: 10px;
   padding-left: 10px;
 }
@@ -395,7 +395,7 @@ canvas#mirrorCanvasBack {
     flex-direction: column;
     justify-content: center;
     height: 100%;
-    z-index: 999;
+    /* z-index: 999; */
 
   }
 

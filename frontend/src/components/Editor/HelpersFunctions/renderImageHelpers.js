@@ -2,7 +2,7 @@ import { store } from "../../../redux/store"
 import { processAndReplaceColors, applyFilterAndGetUrl, invertColorsAndGetUrl, getBase64CanvasImage, replaceColorAndGetBase64 } from "../../ImageOperation/CanvasImageOperations";
 
 function createRemoveBackgroundToggle(fabricImage, canvasId, removeBg, handleImage, globalDispatch) {
-    // console.log("button data ", fabricImage, canvasId, callback, removeBg);
+    console.log("removebackground buttton is creating with image ", fabricImage.src, fabricImage, canvasId, removeBg);
     const id = fabricImage.id;
     const buttonId = `canvas-${id}`;
     const canvasElement = document.getElementById(canvasId);
@@ -140,13 +140,12 @@ function createRemoveBackgroundToggle(fabricImage, canvasId, removeBg, handleIma
         const activeSide = state.TextFrontendDesignSlice.activeSide;
         const images = state.TextFrontendDesignSlice.present[activeSide].images;
         const selectedImageId = state.TextFrontendDesignSlice.present[activeSide].selectedImageId;
-
         const currentImageObject = images.find((img) => img.id === selectedImageId);
         if (currentImageObject.loading) {
             return;
         }
-        const addImageToolbarBgBtn = document.querySelector("#removeBackgroundInput");
         const currentSrc = currentImageObject.src;
+        const addImageToolbarBgBtn = document.querySelector("#removeBackgroundInput");
 
         const baseSrc = currentSrc.split('?')[0];
         let params = currentSrc.split('?')[1] ? currentSrc.split('?')[1].split('&') : [];
@@ -174,6 +173,7 @@ function createRemoveBackgroundToggle(fabricImage, canvasId, removeBg, handleIma
         globalDispatch("src", newSrc, id);
         globalDispatch("removeBg", checked, id);
         console.log("currentImageObject before calling handleimage ", currentImageObject)
+        console.log("calling handleImage with ", newSrc, id)
         await handleImage(newSrc, currentImageObject.singleColor, currentImageObject, currentImageObject.invertColor, currentImageObject.editColor, currentImageObject.extractedColors, globalDispatch, id)
         //   globalDispatch("base64CanvasImage", newSrc, id);
 
@@ -207,7 +207,7 @@ function createRemoveBackgroundToggle(fabricImage, canvasId, removeBg, handleIma
 
         // Sync with toolbar checkbox
         const toolbarCheckbox = document.querySelector(`#addImageToolbarBgBtn`);
-        console.log(toolbarCheckbox, "toolbarCheckbox");
+        // console.log(toolbarCheckbox, "toolbarCheckbox");
         if (toolbarCheckbox) {
             toolbarCheckbox.checked = checked;
             const event = new Event('change');
@@ -470,7 +470,7 @@ async function handleImage(imageSrc, color = "#ffffff", currentImageObject, inve
     }
 }
 function removeAllHtmlControls(canvas) {
-    console.log("removing all html controls calling");
+    // console.log("removing all html controls calling");
 
     canvas.getObjects().forEach((obj) => {
         if (obj._htmlControls) {

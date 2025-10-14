@@ -8,10 +8,10 @@ import { useMediaQuery } from 'react-responsive'
 
 const Layout = () => {
   // const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1023px)' })
-  const isDesktopOrLaptop = useMediaQuery({ query: '(min-width: 1200px)' })
+  const isDesktopOrLaptop = useMediaQuery({ query: '(min-width: 1100px)' })
   const location = useLocation();
   const isQuantityPage = location.pathname === "/quantity" || location.pathname === '/review';
-  const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1199px)' });
+  const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1100px)' });
 
   // const isProductPage = location.pathname === "/product";
 

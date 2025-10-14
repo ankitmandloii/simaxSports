@@ -41,7 +41,7 @@ const renderCurveTextObjects = (
   if (Array.isArray(textContaintObject)) {
     textContaintObject.forEach((textInput) => {
       const { fontSize, id, content, fontStyle, fontWeight, locked, flipY, flipX, scaleY, scaleX, fontFamily, position, angle, textColor, arc, spacing, outLineColor, outLineSize, layerIndex } = textInput;
-      console.log("given text conetent", content);
+      // console.log("given text conetent", content);
       const canvas = fabricCanvasRef.current;
       const existingObj = canvas
         .getObjects()
@@ -115,7 +115,7 @@ const renderCurveTextObjects = (
         if (!locked && !isZoomedIn) {
           text.controls = createControls(bringPopup, dispatch, navigate);
         } else {
-          console.log("removing controls for", id);
+          // console.log("removing controls for", id);
           removeAllHtmlControls(canvas)
         }
       }
@@ -138,11 +138,11 @@ const renderCurveTextObjects = (
           removeAllHtmlControls(canvas);
           dispatch(setSelectedTextState(null));
           if (textContent && textContent.length > 1) {
-            console.log("navigatitinng to desing product ", textContent);
+            // console.log("navigatitinng to desing product ", textContent);
             navigate('/design/product');
           }
           else {
-            console.log("navigatitinng called but text content is empty", textContent);
+            // console.log("navigatitinng called but text content is empty", textContent);
           }
         }
 
