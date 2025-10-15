@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 
-router.post('/signup',customerValidation.customerRegister, controllers.signUp);
+// router.post('/signup',customerValidation.customerRegister, controllers.signUp);
 router.post('/login',customerValidation.login ,controllers.login); //currntly use in admin
 // router.post('/verify-otp',controllers.verifyOtp); //currntly use in admin
 // router.post('/resend-otp',controllers.resendOtp); //currntly use in admin
