@@ -69,6 +69,10 @@ const renderAllImageObjects = (
     canvas.requestRenderAll();
   }
 
+  const state = store.getState();
+  const canvasHeight = state.canvasReducer.canvasHeight;
+  const canvasWidth = state.canvasReducer.canvasWidth;
+
   if (!imageContaintObject || imageContaintObject.length === 0) return;
 
   imageContaintObject.forEach(async (imageData) => {
@@ -93,9 +97,11 @@ const renderAllImageObjects = (
       thresholdValue,
       solidColor
     } = imageData;
+    const pixelLeft = ((position?.x) / 100) * canvasWidth;
+    const pixelTop = ((position?.y) / 100) * canvasHeight;
 
     const payload = {
-      id, src, base64CanvasImage, left: position?.x || 100, top: position?.y || 100, angle,
+      id, src, base64CanvasImage, left: pixelLeft || 100, top: pixelTop || 100, angle,
       flipX, flipY, lockMovementX: locked, lockMovementY: locked, originX: "center", originY: "center",
       objectCaching: false, borderColor: "skyblue", borderDashArray: [4, 4], hasBorders: true, hasControls: !locked && !isZoomedIn,
       selectable: !isZoomedIn, locked, evented: !isZoomedIn, customType, isSync: true, layerIndex, lockScalingFlip: true,
@@ -171,7 +177,11 @@ const renderAllImageObjects = (
       if (!update) {
         img.on("scaling", () => toggleVisibility(false, locked));
         img.on("rotating", () => toggleVisibility(false, locked));
-        img.on("moving", () => toggleVisibility(false, locked));
+        // img.on("moving", () => toggleVisibility(false, locked));
+        img.on("moving", () => {
+          toggleVisibility(false, locked);
+          updateButtonPosition(img, id, canvas);
+        });
         img.on("mousedown", mousedownHandler);
         // img.on("moving", movingHandler);
         img.on("mouseup", mouseupHandler)
@@ -246,23 +256,28 @@ const renderAllImageObjects = (
         const center = obj.getCenterPoint();
         obj.setPositionByOrigin(center, "center", "center");
         obj.setCoords();
-        const imageWidthPx = img?.getScaledWidth();
-        const imageHeightPx = img?.getScaledHeight();
+        // const imageWidthPx = img?.getScaledWidth();
+        // const imageHeightPx = img?.getScaledHeight();
 
-        const changes = {};
-        if (position.x != obj.left && position.y != obj.top) {
-          changes.position = { x: obj.left, y: obj.top }
+        const percentX = (obj.left / canvasWidth) * 100;
+        const percentY = (obj.top / canvasHeight) * 100;
+
+        console.log("left and top when setting", obj.left, obj.top)
+        // console.log("percentX and percentY when setting", percentX, percentY)
+
+        if (position.x !== percentX || position.y !== percentY) {
+          dispatch(
+            updateImageState({
+              id: id,
+              changes: {
+                position: { x: percentX, y: percentY },
+                width: percentX,
+                height: percentY,
+                angle: obj.angle,
+              },
+            })
+          );
         }
-        dispatch(updateImageState({
-          id: id,
-          changes: {
-            // loadingText: true,
-            position: { x: obj.left, y: obj.top },
-            width: imageWidthPx,
-            height: imageHeightPx,
-            angle: obj.angle,
-          },
-        }));
         handleScale(e);
         try {
           canvas.requestRenderAll();

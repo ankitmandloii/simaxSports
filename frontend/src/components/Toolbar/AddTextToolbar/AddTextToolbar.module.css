@@ -363,6 +363,17 @@
     /* for iOS smooth scrolling */
   }
 
+
+  @media (max-width: 480px) {
+    .toolbarBoxFontValueSetInnerContainer {
+      padding: 0 7px;
+    }
+
+    .toolbarBoxFontValueSetInnerActionHeading {
+      font-size: 11px;
+    }
+  }
+
   /* .toolbarBox {
     overflow: scroll;
     height: 100vh; 

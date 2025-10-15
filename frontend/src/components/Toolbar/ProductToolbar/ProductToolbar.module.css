@@ -55,6 +55,7 @@
 
 .addColorBtnMainContainer {
   position: relative;
+  right: 8px;
 }
 
 
@@ -266,7 +267,7 @@
 }
 
 .addCartButton p {
-  font-size: 14px;
+  font-size: 10px;
   letter-spacing: 0%;
 }
 

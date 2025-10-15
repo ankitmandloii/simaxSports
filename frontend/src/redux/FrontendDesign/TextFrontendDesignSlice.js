@@ -775,8 +775,8 @@ const TextFrontendDesignSlice = createSlice({
       const totalElements = state.present[side]?.texts?.length + state.present[side]?.images?.length;
       const canvasComponent = document.querySelector(`#canvas-${side}`);
       const rect = canvasComponent.getBoundingClientRect();
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
+      const centerX = 50
+      const centerY = 50
 
       const newImage = createNewImage(
         { src, dpi },

@@ -803,6 +803,10 @@ hr {
   h2 {
     font-size: 16px;
   }
+
+  input[type="range"] {
+    width: 165px;
+  }
 }
 
 /* textarea {
