@@ -726,6 +726,7 @@ const updateProduct = async (productId, product) => {
       status: product.status,
     },
   };
+  // category: "gid://shopify/TaxonomyCategory/vp-1-5-4-13"
 
   try {
     const response = await axios.post(
