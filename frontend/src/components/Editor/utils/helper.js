@@ -242,6 +242,7 @@
 import { fabric } from "fabric";
 import { useSelector } from "react-redux";
 import renderNameAndNumber from "../Objects/renderNameAndNumberObject";
+import { store } from "../../../redux/store";
 
 
 /**
@@ -308,6 +309,11 @@ const renderAllImageObjectsHelper = (imageContentObjects, canvas) => {
           resolve();
           return;
         }
+        const state = store.getState();
+        const canvasHeight = state.canvasReducer.canvasHeight;
+        const canvasWidth = state.canvasReducer.canvasWidth;
+        const pixelLeft = ((position?.x) / 100) * canvasWidth;
+        const pixelTop = ((position?.y) / 100) * canvasHeight;;
 
         const { scaleX: finalX, scaleY: finalY } = getScaled(
           img,
@@ -317,8 +323,8 @@ const renderAllImageObjectsHelper = (imageContentObjects, canvas) => {
 
         img.set({
           id,
-          left: position.x,
-          top: position.y,
+          left: pixelLeft,
+          top: pixelTop,
           angle,
           scaleX: finalX,
           scaleY: finalY,
