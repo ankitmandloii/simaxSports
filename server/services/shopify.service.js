@@ -1409,10 +1409,10 @@ exports.uploadToShopify = async (products) => {
       } else {
         console.log(`🆕 Creating product: ${product.title} (${product.handle})`);
         productId = await createProductGraphQL(product);
-        const productGID = `gid://shopify/Product/${productId}`;
-        await publishProductToSalesChannels(productGID);
       }
-
+      
+      const productGID = `gid://shopify/Product/${productId}`;
+      await publishProductToSalesChannels(productGID);
       await addOrUpdateVariants(productId, product.variants);
 
       uploadedProducts.push({
