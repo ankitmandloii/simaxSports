@@ -1249,7 +1249,7 @@ const updateSSMappingWithShopifyData = async (productId, variants) => {
         product(id: $id) {
           id
           title
-          variants(first: 150) {
+          variants(first: 250) {
             edges {
               node {
                 id
@@ -1340,13 +1340,13 @@ const updateSSMappingWithShopifyData = async (productId, variants) => {
         );
         console.log(`[✅ StyleIdSyncJob] styleID ${styleIdForSyncJob} marked as 'success'.`);
       } else {
-        await StyleIdSyncJob.create({
-          styleId: styleIdForSyncJob,
-          status: "success",
-          syncedProducts: updatedCount,
-          lastAttemped: new Date(),
-        });
-        console.log(`[✅ New Sync Job] styleID ${styleIdForSyncJob} created and marked as 'success'.`);
+        // await StyleIdSyncJob.create({
+        //   styleId: styleIdForSyncJob,
+        //   status: "success",
+        //   syncedProducts: updatedCount,
+        //   lastAttemped: new Date(),
+        // });
+        console.log(`[✅ New Sync Job] styleID ${styleIdForSyncJob} created and marked as 'success' else condition.`);
       }
     }
 
